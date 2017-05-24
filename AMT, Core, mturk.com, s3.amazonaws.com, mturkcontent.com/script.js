@@ -58700,9 +58700,9 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ document.body.appendChild(d1d);
 			
 			var detailsDiv = document.createElement('div');
-			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:8%;height:72px;line-height:24px;background-color:#eee;border:1px solid black;')
+			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:99%;height:72px;line-height:24px;background-color:#eee;border:1px solid black;')
 			document.body.appendChild(detailsDiv);
-			detailsDiv.innerText = 'Track:\nArtist:\nComposer:';
+			detailsDiv.innerText = 'Facility:'+o.facility+'\nAddress:'+o.address+'\nPhone:'+o.phone;
 			
 			//~ var tTitle = document.createElement('textarea');
 			//~ tTitle.setAttribute('style', 'position:absolute;left:8%;Top:0px;width:85%;height:24px;border:1px solid black;')
@@ -58801,23 +58801,56 @@ Laurens Hammond, Chicago, Ill.**/
 				// array: [ $row1, $row2, $row3, ..., $row_N ]
 				for (var i in results_array) {
 					var x = results_array[i];
-					console.log(x); continue;
+					//~ console.log(x);
+					/**
+					address1:"993 E. DIVISION STREET, SUITE A"
+					address2:""
+					city:"COAL CITY"
+					county:"GRUNDY"
+					facility:"DAVITA - COAL CITY HOME TRAINING"
+					full_address:"993"
+					id:"4080"
+					location:"COAL CITY, IL 60416↵(41.291285, -88.281737)"
+					organization:"INDEPENDENT"
+					phone:"(815) 634-0840"
+					provider_num:"142804"
+					relevance:"7.845065593719482"
+					state:"IL"
+					zip:"60416"**/
+					console.log(x.facility)
+					console.log(x.address1)
+					console.log(x.phone)
 					// 
-					var n1 = MT__bold(x[1], o.fbold);
-					var n2 = MT__bold(x[2], o.abold, {color:'blue'}).bold_string;
-					var n3 = MT__bold(x[3], o.pbold, {color:'brown'}).bold_string;
+					var n1 = MT__bold(x.facility, o.fbold);
+					var n2 = MT__bold(x.organization, o.fbold);
+					var n3 = MT__bold(x.address1, o.abold, {color:'blue'}).bold_string;
+					var n4 = MT__bold(x.phone, o.pbold, {color:'brown'}).bold_string;
 					// ...
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = 'T: ' + n1;
-					eldiv.innerHTML+= '<br>A: ' + n2;
-					eldiv.innerHTML+= '<br>C: ' + n3;
-					eldiv.code = x[0];
+					eldiv.innerHTML = 'F1: ' + n1;
+					eldiv.innerHTML+= '<br>F2: ' + n2;
+					eldiv.innerHTML+= '<br>A: ' + n3;
+					eldiv.innerHTML+= '<br>P: ' + n4;
+					eldiv.code = x.provider_num;
+					eldiv.clicked = false;
+					eldiv.onmouseover = eldiv.onmousemove = function() {
+						var x = document.getElementsByClassName('exe');
+						for (var i=0; i<x.length; i++) {
+							if (x[i].code != this.code && !x[i].clicked) {
+								x[i].style.backgroundColor = '';
+							} else if (!x[i].clicked) {
+								x[i].style.backgroundColor = 'LightGreen';
+							}
+						}
+					}
 					//~ eldiv.output_field = output_field; // Input field.....
 					eldiv.onclick = function() {
 						o.q[0].value = this.code;
 						this.style.backgroundColor = 'aqua';
+						this.clicked = true;
+						try_sbm();
 					}
 					div.appendChild(eldiv);
 					//~ if (
