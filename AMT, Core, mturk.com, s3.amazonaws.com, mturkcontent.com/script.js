@@ -58639,6 +58639,226 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();return;
 	}
+	// "Aidin"
+	// 
+	// AMT_Requester_Aidin.facilities
+	// 
+	s = '<li>Search for the righr Provider Number using:&nbsp; https://data.medicare.gov/Dialysis-Facility-Compare/Dialysis-Facility-Compare-Listing-by-Facility/23ew-n7w9</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function(){}
+		run.prototype.f = function() {
+			console.log('--');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;left:50% !important;}'); // Left:50%
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');//width:40% !important;	
+			
+			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
+			GM_addStyle('input {width:90%;}');
+			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				//stores: [],
+				facility: td[1].innerText.trim(),
+				address: td[3].innerText.trim(),
+				phone: td[5].innerText.trim(),
+				q: [
+					document.getElementsByName('textinput')[0],
+				],
+				bold: [],
+				fbold: [],
+				abold: [],
+				pbold: [],
+				auto: false,
+			}
+			// fix phone
+			var x = /^(\d{3})-(\d{3})-(\d{4})$/.exec(o.phone);
+			if (x) {
+				o.phone = '('+x[1]+') '+x[2]+'-'+x[3];
+			}
+			o.fbold = o.facility.clean_string_to_array();
+			o.abold = o.address.clean_string_to_array();
+			o.pbold = o.phone.clean_string_to_array();
+
+			/* BEGIN ITEMS */
+			var d1a = document.createElement('div');
+			d1a.setAttribute('style', 'position:absolute;width:33%;left:0%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1a);
+			
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1c);
+
+			//~ var d1d = document.createElement('div');
+			//~ d1d.setAttribute('style', 'position:absolute;width:24.5%;left:73.5%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			//~ document.body.appendChild(d1d);
+			
+			var detailsDiv = document.createElement('div');
+			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:8%;height:72px;line-height:24px;background-color:#eee;border:1px solid black;')
+			document.body.appendChild(detailsDiv);
+			detailsDiv.innerText = 'Track:\nArtist:\nComposer:';
+			
+			//~ var tTitle = document.createElement('textarea');
+			//~ tTitle.setAttribute('style', 'position:absolute;left:8%;Top:0px;width:85%;height:24px;border:1px solid black;')
+			//~ document.body.appendChild(tTitle);
+			//~ tTitle.value = o.title;
+
+			//~ var tArtist = document.createElement('textarea');
+			//~ tArtist.setAttribute('style', 'position:absolute;left:8%;Top:24px;width:85%;height:24px;backgroundColor:#eee;border:1px solid black;')
+			//~ document.body.appendChild(tArtist);
+			//~ tArtist.value = o.artist;
+
+			//~ var tComposer = document.createElement('textarea');
+			//~ tComposer.setAttribute('style', 'position:absolute;left:8%;Top:48px;width:85%;height:24px;backgroundColor:#eee;border:1px solid black;')
+			//~ document.body.appendChild(tComposer);
+			//~ tArtist.value = o.artist;
+			
+			/* END ITEMS */
+			
+			// Onblur
+			//~ tArtist.onblur = tTitle.onblur = search;
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1a,
+					d1b,
+					d1c,
+					//~ d1d
+				],
+				offset: 72
+			});
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+			}
+			// init
+			search();
+			// ...
+			function search() {
+				d1a.innerText = d1b.innerText = d1c.innerText;// = d1d.innerText = '';
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT_Requester_Aidin',
+						encodeStrings: [ { facility: o.facility, address: o.address, phone: o.phone } ],
+						//~ __seed__: input,
+					},
+					process
+				);
+			}
+			//~ /**
+			 //~ * window.onkeypress
+			 //~ */
+			//~ window.addEventListener('keypress', function(e) {
+				//~ var char = String.fromCharCode(e.charCode).toLowerCase();
+				//~ // z
+				//~ if (char == 'z') {
+					//~ o.q[1].value = '1';
+					//~ if (/^\d+$/.exec(o.q[0].value)) {
+						//~ doSubmit();
+					//~ }
+				//~ } else if (char == 'x') {
+					//~ o.q[1].value = '2';
+					//~ if (/^\d+$/.exec(o.q[0].value)) {
+						//~ doSubmit();
+					//~ }
+				//~ } else if (char == 'c') {
+					//~ o.q[0].value = '';
+					//~ o.q[1].value = '3';
+					//~ doSubmit();
+				//~ }
+			//~ }, false);
+					
+			function try_sbm() {
+				// Only numbers.
+				// At least one number.
+				if (/^\d+$/.exec(o.q[0].value)) {
+					doSubmit();
+				}
+			}
+			// ...
+			function make_boxes(results_array, div) {
+				if (results_array.length == 0) {
+					div.innerText = 'No results!';
+					return;
+				}
+				// array: [ $row1, $row2, $row3, ..., $row_N ]
+				for (var i in results_array) {
+					var x = results_array[i];
+					console.log(x); continue;
+					// 
+					var n1 = MT__bold(x[1], o.fbold);
+					var n2 = MT__bold(x[2], o.abold, {color:'blue'}).bold_string;
+					var n3 = MT__bold(x[3], o.pbold, {color:'brown'}).bold_string;
+					// ...
+					var eldiv = document.createElement('div');
+					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					eldiv.className = 'exe';
+					eldiv.innerHTML = 'T: ' + n1;
+					eldiv.innerHTML+= '<br>A: ' + n2;
+					eldiv.innerHTML+= '<br>C: ' + n3;
+					eldiv.code = x[0];
+					//~ eldiv.output_field = output_field; // Input field.....
+					eldiv.onclick = function() {
+						o.q[0].value = this.code;
+						this.style.backgroundColor = 'aqua';
+					}
+					div.appendChild(eldiv);
+					//~ if (
+						//~ div == d1a &&
+						//~ x[1].clean_str_to_auto() == o.title.clean_str_to_auto() &&
+						//~ x[2].clean_str_to_auto() == o.artist.clean_str_to_auto() &&
+						//~ x[1].clean_str_to_auto().length >= 4 &&
+						//~ x[2].clean_str_to_auto().length >= 4 &&
+						//~ !o.auto
+						//~ ) {
+						//~ o.auto = true;
+						//~ eldiv.click();
+						//~ o.q[1].value = '1';
+						//~ try_sbm();
+					//~ }
+					//~ else if ( // try auto 2 (no "The"
+						//~ s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						//~ s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						//~ s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
+						//~ s.mall_no_the.clean_str_to_auto().length >= 3 &&
+						//~ !s.auto
+						//~ ) {
+						//~ s.auto = true;
+						//~ eldiv.click();
+					//~ }
+				}
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				div .appendChild(eldiv);
+			}
+			// ...
+			function process(database_object) {
+				//database_object.responseObject.[['track+artist'=>'','artist'=>'','track'=>'']]
+				make_boxes(database_object.responseObject['facility'], d1a);
+				make_boxes(database_object.responseObject['address'], d1b);
+				make_boxes(database_object.responseObject['phone'], d1c);
+				//~ make_boxes(database_object.responseObject['composer'], d1d);
+			}
+		};
+		new run().f();return;
+	}
 	// Rory Bernard
 	// Find correct ID for audio metadata
 	// AMT_Requester_Rory_Bernard.tracks
