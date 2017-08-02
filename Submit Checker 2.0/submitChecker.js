@@ -28,15 +28,9 @@ function changeIcon(id) {
 }
  
 //Figure out who's logged into this computer, and set the icon accordingly
-GM_xmlhttpRequest({
-			method: 'GET',
-			url: 'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignIn=1',
-			onload: function(response) {
-				var rs = response.responseText;
-				console.log(rs);
-				changeIcon(rs);
-			}
-		});
+chrome.storage.sync.get('userName', function(userName) {
+	changeIcon(userName);
+});			
  
 
 chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
@@ -47,47 +41,30 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 		changeIcon(request.changeIcon);
 	}
 	if(request.signIn) {
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url: 'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?signIn='+request.signIn + '&User=' + request.id,
-			onload: function(response) {
-				var rs = response.responseText;
-				sendResponse({id:rs});
-			}
-		});
+		
+		chrome.storage.sync.get('computerId', function(userName) {
+			sendResponse({userName: userName});
+		});        
 		return true;
+
 	}
 	
 	if(request.getSignIn) {
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url: 'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignIn=1',
-			onload: function(response) {
-				var rs = response.responseText;
-				console.log(rs);
-				
-				//Hopefully we still have access to sendResponse
-				console.log(sendResponse);
-				sendResponse({id: rs});
-			}
-		});
-		return true; //see if this also works for onRequest
+		
+	    chrome.storage.sync.get('computerId', function(userName) {
+			sendResponse({userName: userName});
+        });
+        
+		return true;
 	}
 	
 	if(request.getSignInAndCompId) {
-		GM_xmlhttpRequest({
-				method: 'GET',
-				url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
-				onload: function(response) {
-					console.log(response);
-
-					var compAndName = JSON.parse(response.responseText);
-					computerId = compAndName.ComputerId;
-					userName = compAndName.User;
-					sendResponse({id: computerId, name:userName});
-				}
-				});
-			return true;
+		
+	    chrome.storage.sync.get('computerId', function(signIn) {
+			chrome.storage.sync.get('userName', function(userName) {
+				sendResponse({computerId: computerId, userName:userName})
+			});			
+        });        
 	}
 	
 	if(request.WhatsMyTab) {
