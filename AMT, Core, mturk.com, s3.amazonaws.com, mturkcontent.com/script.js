@@ -27,6 +27,213 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Preferred Networks, Inc (IIP)
+	// Write an instruction to move an object
+	// 
+	s = '	<li>move the brownish plushie next to the coke to the box on the right.</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('')
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.row {height:400px;}');
+			document.getElementsByClassName('row')[0].style.height=0; // Make height of first 0
+			
+			var a = document.getElementsByTagName('a');
+			var unique = '';
+			for (var i=1;i<=5;i++) {
+				unique += document.getElementsByTagName('img')[i].alt+'|';
+			}
+			console.log(unique);
+			var o = {
+				u: unique,
+				current_field: document.getElementById('tag0'),
+				q: [
+					document.getElementById('tag0'),
+					document.getElementById('tag1'),
+					document.getElementById('tag2'),
+					document.getElementById('tag3'),
+					document.getElementById('tag4'),
+				]
+			}
+			AMT___addUserDecision(
+				'375MF9UHMRX6YX9DO34C04X70HNXSW,July2017',
+				function() { return o.u; },
+				[
+					"Id(tag0)",
+					"Id(tag1)",
+					"Id(tag2)",
+					"Id(tag3)",
+					"Id(tag4)",
+				]
+			);
+			//~ // dbl
+			//~ for (var i in o.q) {
+				//~ o.q[i].ondblclick = function() {
+					//~ this.value = '';
+				//~ }
+			//~ }
+			// Turn off form submit.
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			// Focus on first field. And set initial value.
+			document.getElementById('tag0').value = 'Move ';
+			window.setTimeout(function() {document.getElementById('tag0').focus();}, 1000);
+			window.setTimeout(function() {document.getElementById('tag0').focus();}, 2000);
+			// Set default text on entering field.
+			for (var i=0;i<=4;i++) {
+				//blur
+				o.q[i].onblur = function(e) {
+					this.value = this.value.replace(/\s+/g, ' ');
+				}
+				//focus
+				o.q[i].onfocus = function(e) {
+					if (this.value == '') {
+						this.value = 'Move ';
+					}
+					o.current_field = this; // Update current
+					var img = this.parentNode.parentNode.parentNode.getElementsByTagName('img')[0];
+					img.scrollIntoView(false);
+				}
+			}
+			// keys 1
+			window.addEventListener('keydown', function(e) {
+				var c = e.keyCode;
+				console.log(c);
+				var cstr = String.fromCharCode(e.keyCode);
+				// Enter key
+				if (c == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				// Auto fills
+				else if (
+					cstr == '1' ||
+					cstr == '2' ||
+					cstr == '3' ||
+					cstr == '4'
+					) {
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				// TAB key.
+				else if (c == 9) {
+					hide_fields();
+				}
+			}, false);
+			// keys 2
+			window.addEventListener('keyup', function(e) {
+				var c = e.keyCode;
+				console.log(c);
+				var cstr = String.fromCharCode(e.keyCode);
+				// Enter key
+				if (c == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+					// Good to go?
+					for (var i=0;i<=4;i++) {
+						o.q[i].value = o.q[i].value.trim();
+						o.q[i].value = o.q[i].value.replace(/\s+/g, ' ');
+						// Must not be blank
+						// Must not be only "Move"
+						// Must have the word "Move"
+						if (o.q[i].value == '' || o.q[i].value.trim() == 'Move' || o.q[i].value.indexOf('Move') == -1) {
+							alert('There is a blank in the form. No submit.');
+							o.q[i].style.border = '4px solid blue';
+							return false;
+						}
+					}
+					AMT___recordAndSubmit();
+					return false;
+				}
+				// TAB key.
+				else if (c == 9) {
+					//remove_dbl_spaces();
+					//~ hide_fields();
+				}
+				// Auto-fill for number keys.
+				else if (cstr == '1') {
+					fill_in('top-left');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				else if (cstr == '2') {
+					fill_in('top-right');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				else if (cstr == '3') {
+					fill_in('bottom-left');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				else if (cstr == '4') {
+					fill_in('bottom-right');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				
+				//~ // Asterisk key (reset form).
+				//~ else if (c == 106) {
+					//~ set0();
+				//~ }
+			}, false);
+			// Auto fill
+			function fill_in(position) {
+				if (o.current_field.value.indexOf(' from ') == -1) {
+					o.current_field.value += ' from '+position+' box ';
+				} else if (o.current_field.value.indexOf(' to ') == -1) {
+					o.current_field.value += ' to '+position+' box.';
+				} else {
+					// Error handling goes here.
+				}
+				// Remove double spaces (often).
+				remove_dbl_spaces();
+			}
+			// Remove dbl spaces
+			function remove_dbl_spaces() {
+				for (var i=0;i<=4;i++) {
+					o.q[i].value = o.q[i].value.trim();
+					o.q[i].value = o.q[i].value.replace(/\s+/g, ' ');
+				}
+			}
+			// Hide fields
+			function hide_fields() {
+				console.log(o.current_field.value);
+				if (o.current_field.value != '' && o.current_field.value.trim() != 'Move') {
+					var img = o.current_field.parentNode.parentNode.parentNode.getElementsByTagName('img')[0];
+					img.style.height = '10px';
+					o.current_field.parentNode.parentNode.parentNode.style.height = '0px';
+					//~ o.current_field.parentNode.parentNode.parentNode.style.overflow = 'hidden';
+					
+				}
+				//~ for (var i=0;i<=4;i++) {
+					//~ o.q[i].value = o.q[i].value.trim();
+					//~ if (o.q[i].value != '') {
+						//~ document.getElementById('workContent'+i).style.height = '0px';
+						//~ document.getElementById('workContent'+i).style.overflow = 'hidden';
+					//~ }
+				//~ }
+			}
+		}
+		new run().f();
+		return;
+	}
+
+	
+	
+	
+	
+	
+	
 	// "m"
 	// [EASY] Collect data from a Website
 	// requesterId A6T6J0YK95YSY
