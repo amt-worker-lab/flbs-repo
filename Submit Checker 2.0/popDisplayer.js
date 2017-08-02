@@ -51,6 +51,7 @@ function createSubmissionDisplay(callback) {
 	//alert('here');
 	//alert(COMPUTER_ID);
 	//alert(USER_NAME);
+	console.log('sending USER_NAME', USER_NAME,' COMPUTER_ID', COMPUTER_ID)
 	GM_xmlhttpRequest({
 		method: 'Get',
 		url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?GetLatest=1&UserName='+USER_NAME.trim()+'&ComputerId='+COMPUTER_ID,
