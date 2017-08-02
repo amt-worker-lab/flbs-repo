@@ -204,7 +204,7 @@ function signIn(id) {
 		id: id
 	},
 	function(response) {
-		console.log('id: '+id);
+		console.log('id: '+ id);
 		var allSignInButtons = document.getElementsByName('signin');
 		console.log(document.getElementById(id));
 		for(var i = 0; i < allSignInButtons.length; i++) {
@@ -258,62 +258,74 @@ function buildUserInterface() {
 					   function (response) {
 					});
 				  };
-	createSubmissionDisplay(function() {
+				  
+	createSubmissionDisplay(function() {				 
+	 var signInButton = document.createElement('input');
+	 signInButton.type = 'button';
+	 signInButton.style.width = '33%';
+	 signInButton.value = 'Dave';
+	 signInButton.name = 'signin';
+	 signInButton.id = 'Dave';
+	 document.body.appendChild(signInButton);
+	 signInButton = document.getElementById('Dave');
+	 signInButton.onclick = function() {
+		 this.style.backgroundColor = 'lightgreen';
+		 signIn(this.id);
+	 };
+	 
+	 var signInButton = document.createElement('input');
+	 signInButton.type = 'button';
+	 signInButton.style.width = '33%';
+	 signInButton.value = 'Mom';
+	 signInButton.name = 'signin';
+	 signInButton.id = 'Mom';
+	 document.body.appendChild(signInButton);
+	 signInButton = document.getElementById('Mom');
+	 signInButton.onclick = function() {
+		 this.style.backgroundColor = 'lightgreen';
+		 signIn(this.id);
+	 };
+	 
+	 var signInButton = document.createElement('input');
+	 signInButton.type = 'button';
+	 signInButton.style.width = '33%';
+	 signInButton.value = 'Ben';
+	 signInButton.name = 'signin';
+	 signInButton.id = 'Ben';
+	 document.body.appendChild(signInButton);
+	 signInButton = document.getElementById('Ben');
+	 signInButton.onclick = function() {
+		 this.style.backgroundColor = 'lightgreen';
+		 signIn(this.id);
+	 };
 
-				 
-				 var signInButton = document.createElement('input');
-				 signInButton.type = 'button';
-				 signInButton.style.width = '33%';
-				 signInButton.value = 'Dave';
-				 signInButton.name = 'signin';
-				 signInButton.id = 'Dave';
-				 document.body.appendChild(signInButton);
-				 signInButton = document.getElementById('Dave');
-				 signInButton.onclick = function() {
-					 this.style.backgroundColor = 'lightgreen';
-					 signIn(this.id);
-				 };
-				 
-				 var signInButton = document.createElement('input');
-				 signInButton.type = 'button';
-				 signInButton.style.width = '33%';
-				 signInButton.value = 'Mom';
-				 signInButton.name = 'signin';
-				 signInButton.id = 'Mom';
-				 document.body.appendChild(signInButton);
-				 signInButton = document.getElementById('Mom');
-				 signInButton.onclick = function() {
-					 this.style.backgroundColor = 'lightgreen';
-					 signIn(this.id);
-				 };
-				 
-				 var signInButton = document.createElement('input');
-				 signInButton.type = 'button';
-				 signInButton.style.width = '33%';
-				 signInButton.value = 'Ben';
-				 signInButton.name = 'signin';
-				 signInButton.id = 'Ben';
-				 document.body.appendChild(signInButton);
-				 signInButton = document.getElementById('Ben');
-				 signInButton.onclick = function() {
-					 this.style.backgroundColor = 'lightgreen';
-					 signIn(this.id);
-				 };
-				 
-				//Determine who this computer is signed in as
-				chrome.extension.sendMessage(
-				{
-					getSignIn:true
-				},
-				function(response)
-				{
-					console.log(response);
-					document.getElementById(response.id).style.backgroundColor = 'lightgreen';
-					UI_INITIALIZED = true;
-				}
-				);
+	 var signInButton = document.createElement('input');
+	 signInButton.style.width = '33%%';
+	 signInButton.id = 'computerId';
+	 document.body.appendChild(signInButton);
+	 signInButton = document.getElementById('computerId');
+	 signInButton.onblur = function() {
+		this.style.backgroundColor = 'lightgreen';
+		chrome.extension.sendMessage({
+			setCompId:true
+		});
+	 };
+	 
+	//Determine who this computer is signed in as
+	chrome.extension.sendMessage(
+	{
+		getSignInAndCompId:true
+	},
+	function(response)
+	{
+		console.log(response);
+		document.getElementById(response.userName).style.backgroundColor = 'lightgreen';
+		document.getElementById('computerId').value = response.computerId;
+		UI_INITIALIZED = true;
+	}
+	);
 
-			});
+	});
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -338,8 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	},
 	function(response) {
 	
-		COMPUTER_ID = response.id;
-		USER_NAME = response.name;
+		COMPUTER_ID = response.computerId;
+		USER_NAME = response.userName;
 		//alert(USER_NAME);
 		
 		buildUserInterface();

@@ -214,91 +214,87 @@ AMT__Global_Vars.initializeTabId = function() {
  //Assumption: initializeGroupId has already run
  AMT__Global_Vars.initializeHitRecordDetails= function() {
 	 //alert('hit');
-		//Check Assumptions
-		if(!AMT__Global_Vars.isTopWindow)
-			alert('error in initializeHitRecordDetails');
-		if(AMT__Global_Vars.isPreview)
-			alert('error in initializeHitRecordDetails');	
-		if (document.body.innerHTML.indexOf('<span id="alertboxHeader">\n    \n        There are currently no HITs assigned to you.\n    \n    </span>') != -1) {
-			return;
-		}
-		
-		//Get COMPUTER_ID and Current User from localhost 
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
-			onload: function(response) {
-			//console.log(response);
+	//Check Assumptions
+	if(!AMT__Global_Vars.isTopWindow)
+		alert('error in initializeHitRecordDetails');
+	if(AMT__Global_Vars.isPreview)
+		alert('error in initializeHitRecordDetails');	
+	if (document.body.innerHTML.indexOf('<span id="alertboxHeader">\n    \n        There are currently no HITs assigned to you.\n    \n    </span>') != -1) {
+		return;
+	}
 
-			var compAndName = JSON.parse(response.responseText);
-			AMT__Global_Vars.computerId = compAndName.ComputerId;
-			AMT__Global_Vars.userName = compAndName.User;
-			var rew = document.getElementsByClassName("reward")[1].innerText.trim();
-			rew = (rew.replace(/\$/, "")) * 1; //0.03
-			
-			var reqId = document.getElementsByClassName('requesterId');
-			if(reqId && reqId[0] && reqId[0].value)
-			{
-				reqId = reqId.trim();
+	//Get COMPUTER_ID and Current User from localhost 
+	chrome.extension.sendMessage({
+		  getSignInAndCompId: true
+	  }, function(response) {
+		AMT__Global_Vars.computerId = response.computerId;
+		AMT__Global_Vars.userName = response.userName;
+		
+		var rew = document.getElementsByClassName("reward")[1].innerText.trim();
+		rew = (rew.replace(/\$/, "")) * 1; //0.03
+		
+		var reqId = document.getElementsByClassName('requesterId');
+		if(reqId && reqId[0] && reqId[0].value)
+		{
+			reqId = reqId.trim();
+		}
+		else
+		{
+			//Attempt a regex on it
+			reqIdReg = /name="requesterId" value="([^"]*)"/
+			if(reqId = reqIdReg.exec(document.body.innerHTML)) {
+				reqId = reqId[1];
 			}
-			else
+			else 
 			{
-				//Attempt a regex on it
-				reqIdReg = /name="requesterId" value="([^"]*)"/
+				//Attempt to grab it from the 'contact' part of the page
+				reqIdReg = /requesterId=([^&]*)/
 				if(reqId = reqIdReg.exec(document.body.innerHTML)) {
 					reqId = reqId[1];
+					if(reqId == '')
+						reqId = 'Undefined Requester Id';
 				}
-				else 
+				else if(false)
 				{
-					//Attempt to grab it from the 'contact' part of the page
-					reqIdReg = /requesterId=([^&]*)/
-					if(reqId = reqIdReg.exec(document.body.innerHTML)) {
-						reqId = reqId[1];
-						if(reqId == '')
-							reqId = 'Undefined Requester Id';
-					}
-					else if(false)
-					{
-						//Attempt to grab it from the link, or from the child frame's link
-					}
-					else
-					{
-						reqId = "Undefined Requester Id";
-					}
-				}	
-			}
+					//Attempt to grab it from the link, or from the child frame's link
+				}
+				else
+				{
+					reqId = "Undefined Requester Id";
+				}
+			}	
+		}
+		
+		var reqName = document.getElementsByClassName("capsule_field_text")[0].innerHTML.trim();
+		var jName = document.getElementsByClassName("capsulelink_bold")[0].getElementsByTagName('div')[0].innerHTML.trim();
+		var gId = AMT__Global_Vars.groupId;
+		var hId = AMT__Global_Vars.hitId; 
+		
+		var dur = document.getElementsByClassName('capsule_field_text')[3].innerText.trim();		
+		
+		AMT__Global_Vars.hitRecordDetails = new HIT(rew, reqId, reqName,jName, gId, hId, dur);
+		//alert('here');
+		GM_xmlhttpRequest({
+		method: 'GET',
+		asynchronous: false,
+		url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + AMT__Global_Vars.computerId + '&HIT=' + encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails)),
+		onload: function(response) {
+			//console.log('Response Recieved');
+			if(response) {
 			
-			var reqName = document.getElementsByClassName("capsule_field_text")[0].innerHTML.trim();
-			var jName = document.getElementsByClassName("capsulelink_bold")[0].getElementsByTagName('div')[0].innerHTML.trim();
-			var gId = AMT__Global_Vars.groupId;
-			var hId = AMT__Global_Vars.hitId; 
+			var rs = response.responseText;
 			
-			var dur = document.getElementsByClassName('capsule_field_text')[3].innerText.trim();		
-			
-			AMT__Global_Vars.hitRecordDetails = new HIT(rew, reqId, reqName,jName, gId, hId, dur);
-			//alert('here');
-			GM_xmlhttpRequest({
-			method: 'GET',
-			asynchronous: false,
-			url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + AMT__Global_Vars.computerId + '&HIT=' + encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails)),
-			onload: function(response) {
-							//console.log('Response Recieved');
-							if(response) {
-							
-							var rs = response.responseText;
-							
-							if (response.status == 200) {
-									//console.log(rs);
-									if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
-										alert('Debug: Failed to record hit b/c it has already been recorded');
-									}
-								}
-							}
+			if (response.status == 200) {
+					//console.log(rs);
+					if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
+						alert('Debug: Failed to record hit b/c it has already been recorded');
+					}
+				}
 			}
-			}); 
-
-			}
-			});
+		}
+		}); 
+		
+	});
  }
  
  

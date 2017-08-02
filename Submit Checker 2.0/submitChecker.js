@@ -8,6 +8,7 @@ console.log("COGITO ERGO SUM!");
 
 
 function changeIcon(id) {
+	console.log('changing icon, id', id);
 	switch(id) {
 			case 'Ben':
 		   chrome.browserAction.setIcon({
@@ -40,18 +41,19 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 	if(request.changeIcon) {
 		changeIcon(request.changeIcon);
 	}
+
 	if(request.signIn) {
-		
-		chrome.storage.sync.get('computerId', function(userName) {
+		console.log('recieved request to sign in');
+		chrome.storage.sync.set('userName', function(userName) {
+			console.log('userName', userName)
 			sendResponse({userName: userName});
 		});        
 		return true;
-
 	}
 	
 	if(request.getSignIn) {
 		
-	    chrome.storage.sync.get('computerId', function(userName) {
+	    chrome.storage.sync.get('userName', function(userName) {
 			sendResponse({userName: userName});
         });
         
@@ -60,11 +62,21 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 	
 	if(request.getSignInAndCompId) {
 		
-	    chrome.storage.sync.get('computerId', function(signIn) {
+	    chrome.storage.sync.get('computerId', function(computerId) {
+			let computerId = computerId;
 			chrome.storage.sync.get('userName', function(userName) {
 				sendResponse({computerId: computerId, userName:userName})
 			});			
         });        
+	}
+	
+	if(request.setCompId) {
+
+		chrome.storage.sync.set('computerId', function(computerId) {
+			console.log('setting computerId', computerId)
+			sendResponse({computerId: computerId});
+		});        
+	
 	}
 	
 	if(request.WhatsMyTab) {
@@ -84,35 +96,31 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 	
 	
     if(request.resolvedHit){
+		let request = request;
 		//Get the computerId and UserName
-		GM_xmlhttpRequest({
-						method: 'GET',
-						url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
-						onload: function(response) {
-						console.log(response);
+	    chrome.storage.sync.get('computerId', function(computerId) {
+			let computerId = computerId;
+			chrome.storage.sync.get('userName', function(userName) {
+				console.log('request.resolvedHit got userName', userName, ' computerId', computerId);
+				//alert(userName);
+				request.resolvedHit.computerId = computerId;
+				request.resolvedHit.userName = userName;
 
-						var compAndName = JSON.parse(response.responseText);
-						computerId = compAndName.ComputerId;
-						userName = compAndName.User;
-						//alert(userName);
-						request.resolvedHit.computerId = computerId;
-						request.resolvedHit.userName = userName;
-						//alert(request.resolvedHit.userName);
-						console.log(request.resolvedHit);
-						GM_xmlhttpRequest({
-						method: 'GET',
-						url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId + '&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit)),
-						onload: function(response) {
-										console.log('Response Recieved');
-										if(response) {										
-											var rs = response.responseText;
-											console.log(rs);
-										}
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId + '&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit)),
+					onload: function(response) {
+						console.log('Response Recieved');
+						if(response) {										
+							var rs = response.responseText;
+							console.log(rs);
 						}
-						});
 					}
-					})
- 
+				});
+				
+			});			
+        });
+        
 	}
     
     
