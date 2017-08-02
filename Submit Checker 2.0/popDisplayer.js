@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			USER_NAME = 'Ben';
 			chrome.extension.sendMessage({'signIn': 'Ben'})
 		}
-		if(!COMPUTER_ID.computerId) {
+		if(!COMPUTER_ID) {
 			COMPUTER_ID = 1;
 			chrome.extension.sendMessage({'setCompId': '1'})
 		}
