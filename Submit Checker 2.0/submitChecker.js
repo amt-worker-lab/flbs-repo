@@ -44,11 +44,7 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 
 	if(request.signIn) {
 		console.log('recieved request to sign in');
-		chrome.storage.sync.set('userName', function(userName) {
-			console.log('userName', userName)
-			sendResponse({userName: userName});
-		});        
-		return true;
+		chrome.storage.sync.set({'userName':request.signIn});
 	}
 	
 	if(request.getSignIn) {
@@ -61,22 +57,20 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 	}
 	
 	if(request.getSignInAndCompId) {
-		
+		console.log('trace getSignInAndCompId')
 	    chrome.storage.sync.get('computerId', function(computerId) {
-			let computerId = computerId;
+			console.log('got computerId', computerId);
 			chrome.storage.sync.get('userName', function(userName) {
+				console.log('got userName', userName);
 				sendResponse({computerId: computerId, userName:userName})
 			});			
-        });        
+        });      
+        return true;  
 	}
 	
 	if(request.setCompId) {
 
-		chrome.storage.sync.set('computerId', function(computerId) {
-			console.log('setting computerId', computerId)
-			sendResponse({computerId: computerId});
-		});        
-	
+		chrome.storage.sync.set({'computerId': request.setCompId});	
 	}
 	
 	if(request.WhatsMyTab) {
@@ -96,10 +90,8 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 	
 	
     if(request.resolvedHit){
-		let request = request;
 		//Get the computerId and UserName
 	    chrome.storage.sync.get('computerId', function(computerId) {
-			let computerId = computerId;
 			chrome.storage.sync.get('userName', function(userName) {
 				console.log('request.resolvedHit got userName', userName, ' computerId', computerId);
 				//alert(userName);

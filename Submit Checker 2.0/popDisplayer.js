@@ -304,10 +304,10 @@ function buildUserInterface() {
 	 signInButton.id = 'computerId';
 	 document.body.appendChild(signInButton);
 	 signInButton = document.getElementById('computerId');
-	 signInButton.onblur = function() {
+	 signInButton.onchange = function() {
 		this.style.backgroundColor = 'lightgreen';
 		chrome.extension.sendMessage({
-			setCompId:true
+			setCompId:this.value
 		});
 	 };
 	 
@@ -349,9 +349,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		getSignInAndCompId: true
 	},
 	function(response) {
-	
+		console.log('response from getSignInAndCompId', response);
 		COMPUTER_ID = response.computerId;
 		USER_NAME = response.userName;
+		
+		if(!USER_NAME || typeof USER_NAME == 'object') {
+			USER_NAME = 'Ben';
+		}
+		if(!COMPUTER_ID || typeof COMPUTER_ID == 'object') {
+			COMPUTER_ID = 1;
+		}
+		
 		//alert(USER_NAME);
 		
 		buildUserInterface();
