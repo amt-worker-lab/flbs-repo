@@ -212,7 +212,6 @@ function signIn(id) {
 				allSignInButtons[i].style.backgroundColor = '';
 			}
 		}
-		chrome.runtime.sendMessage({ "changeIcon" : id});
 		USER_NAME = id;
 		createSubmissionDisplay();
 	}
@@ -222,44 +221,43 @@ function signIn(id) {
 
 
 function buildUserInterface() {
-				var centReset = document.createElement("input");
-				centReset.type = "button";
-				centReset.style.width = "25%";
-				centReset.value = "Reset";
-				document.body.appendChild(centReset);
-				centReset.onclick = function() {
-						if(localStorage["SUBMIT CHECKER HITS"]) {
-							localStorage["SUBMIT CHECKER HITS"] = JSON.stringify(new Array());
-							this.style.backgroundColor = 'lightgreen';
-						}
-					}
+	var centReset = document.createElement("input");
+	centReset.type = "button";
+	centReset.style.width = "25%";
+	centReset.value = "Reset";
+	document.body.appendChild(centReset);
+	centReset.onclick = function() {
+			if(localStorage["SUBMIT CHECKER HITS"]) {
+				localStorage["SUBMIT CHECKER HITS"] = JSON.stringify(new Array());
+				this.style.backgroundColor = 'lightgreen';
+			}
+		}
 
-				var timeButton = document.createElement("input");
-				timeButton.type ="button";
-				timeButton.style.width = "35%";
-				timeButton.value = "10 Minute Timer";
-				document.body.appendChild(timeButton);
-				timeButton.onclick = function() { 
-					this.style.backgroundColor = 'lightgreen';
-					chrome.extension.sendMessage({recording10: "true"},
-					   function (response) {
-					});
-				  };
-				 
-				var timeButton30 = document.createElement("input");
-				timeButton30.type ="button";
-				timeButton30.style.width = "35%";
-				timeButton30.value = "30 Minute Timer";
-				document.body.appendChild(timeButton30);
-				timeButton30.onclick = function() { 
-					this.style.backgroundColor = 'lightgreen';
+	var timeButton = document.createElement("input");
+	timeButton.type ="button";
+	timeButton.style.width = "35%";
+	timeButton.value = "10 Minute Timer";
+	document.body.appendChild(timeButton);
+	timeButton.onclick = function() { 
+		this.style.backgroundColor = 'lightgreen';
+		chrome.extension.sendMessage({recording10: "true"},
+		   function (response) {
+		});
+	  };
+	 
+	var timeButton30 = document.createElement("input");
+	timeButton30.type ="button";
+	timeButton30.style.width = "35%";
+	timeButton30.value = "30 Minute Timer";
+	document.body.appendChild(timeButton30);
+	timeButton30.onclick = function() { 
+		this.style.backgroundColor = 'lightgreen';
 
-					chrome.extension.sendMessage({recording30: "true"},
-					   function (response) {
-					});
-				  };
+		chrome.extension.sendMessage({recording30: "true"},
+		   function (response) {
+		});
+	  };
 				  
-	createSubmissionDisplay(function() {				 
 	 var signInButton = document.createElement('input');
 	 signInButton.type = 'button';
 	 signInButton.style.width = '33%';
@@ -307,7 +305,7 @@ function buildUserInterface() {
 	 signInButton.onchange = function() {
 		this.style.backgroundColor = 'lightgreen';
 		chrome.extension.sendMessage({
-			setCompId:this.value
+			setCompId:this.value.trim()
 		});
 	 };
 	 
@@ -318,14 +316,20 @@ function buildUserInterface() {
 	},
 	function(response)
 	{
-		console.log(response);
-		document.getElementById(response.userName).style.backgroundColor = 'lightgreen';
-		document.getElementById('computerId').value = response.computerId;
+		USER_NAME = response.userName;
+		COMPUTER_ID = response.computerId;
+		if(!USER_NAME || typeof USER_NAME == 'object') {
+			USER_NAME = 'Ben';
+		}
+		if(!COMPUTER_ID || typeof COMPUTER_ID == 'object') {
+			COMPUTER_ID = 1;
+		}
+		console.log('In build user interface, USER_NAME', USER_NAME);
+		document.getElementById(USER_NAME).style.backgroundColor = 'lightgreen';
+		document.getElementById('computerId').value = COMPUTER_ID;
 		UI_INITIALIZED = true;
-	}
-	);
-
 	});
+
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -352,13 +356,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		console.log('response from getSignInAndCompId', response);
 		COMPUTER_ID = response.computerId;
 		USER_NAME = response.userName;
-		
-		if(!USER_NAME || typeof USER_NAME == 'object') {
+
+		if(!USER_NAME) {
 			USER_NAME = 'Ben';
+			chrome.extension.sendMessage({'signIn': 'Ben'})
 		}
-		if(!COMPUTER_ID || typeof COMPUTER_ID == 'object') {
+		if(!COMPUTER_ID.computerId) {
 			COMPUTER_ID = 1;
+			chrome.extension.sendMessage({'setCompId': '1'})
 		}
+		
+		
 		
 		//alert(USER_NAME);
 		

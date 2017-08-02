@@ -30,7 +30,7 @@ function changeIcon(id) {
  
 //Figure out who's logged into this computer, and set the icon accordingly
 chrome.storage.sync.get('userName', function(userName) {
-	changeIcon(userName);
+	changeIcon(userName.userName);
 });			
  
 
@@ -44,13 +44,14 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 
 	if(request.signIn) {
 		console.log('recieved request to sign in');
-		chrome.storage.sync.set({'userName':request.signIn});
+		chrome.storage.sync.set({'userName':request.id});
+		changeIcon(request.id);
 	}
 	
 	if(request.getSignIn) {
 		
 	    chrome.storage.sync.get('userName', function(userName) {
-			sendResponse({userName: userName});
+			sendResponse({userName: userName ? userName.userName : null});
         });
         
 		return true;
@@ -62,7 +63,9 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 			console.log('got computerId', computerId);
 			chrome.storage.sync.get('userName', function(userName) {
 				console.log('got userName', userName);
-				sendResponse({computerId: computerId, userName:userName})
+				
+				sendResponse({computerId: computerId ? computerId.computerId : null, 
+							  userName  : userName   ? userName.userName : null});
 			});			
         });      
         return true;  
@@ -95,8 +98,8 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 			chrome.storage.sync.get('userName', function(userName) {
 				console.log('request.resolvedHit got userName', userName, ' computerId', computerId);
 				//alert(userName);
-				request.resolvedHit.computerId = computerId;
-				request.resolvedHit.userName = userName;
+				request.resolvedHit.computerId = computerId.computerId;
+				request.resolvedHit.userName = userName.userName;
 
 				GM_xmlhttpRequest({
 					method: 'GET',
