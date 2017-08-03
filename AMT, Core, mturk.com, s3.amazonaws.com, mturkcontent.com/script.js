@@ -27,7 +27,7 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
-	// Preferred Networks, Inc (IIP)
+// Preferred Networks, Inc (IIP)
 	// Write an instruction to move an object
 	// 
 	s = '	<li>move the brownish plushie next to the coke to the box on the right.</li>';
@@ -36,6 +36,10 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('')
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.row {height:400px;}');
+			GM_addStyle('.image {margin-bottom: -10px !important;}'); // Move input boxes upward toward image.
+			//~ GM_addStyle('@media (min-width: 768px)');
+			GM_addStyle('.col-sm-6 {width: auto !important;}'); // Change image size?
+			GM_addStyle('.fields {width: 100% !important;}'); // Make input boxes full width. No float right.
 			document.getElementsByClassName('row')[0].style.height=0; // Make height of first 0
 			
 			var a = document.getElementsByTagName('a');
@@ -93,8 +97,9 @@ function MT__RUN() {
 						this.value = 'Move ';
 					}
 					o.current_field = this; // Update current
-					var img = this.parentNode.parentNode.parentNode.getElementsByTagName('img')[0];
-					img.scrollIntoView(false);
+					//~ var img = this.parentNode.parentNode.parentNode.getElementsByTagName('img')[0];
+					//~ img.scrollIntoView(false);
+					this.scrollIntoView(false); // Scroll into view text box not image.
 				}
 			}
 			// keys 1
