@@ -66,12 +66,11 @@ function MT__RUN() {
 					"Id(tag4)",
 				]
 			);
-			//~ // dbl
-			//~ for (var i in o.q) {
-				//~ o.q[i].ondblclick = function() {
-					//~ this.value = '';
-				//~ }
-			//~ }
+			o.q[0].next_field = o.q[1];
+			o.q[1].next_field = o.q[2];
+			o.q[2].next_field = o.q[3];
+			o.q[3].next_field = o.q[4];
+			o.q[4].next_field = false;
 			// Turn off form submit.
 			document.getElementById('mturk_form').onsubmit = function(e) {
 				e.stopPropagation();
@@ -155,8 +154,8 @@ function MT__RUN() {
 					//remove_dbl_spaces();
 					//~ hide_fields();
 				}
-				// Auto-fill for number keys.
-				else if (cstr == '1') {
+				// Auto-fill for number keys. (TODO alt q-w-a-s but solve shift issue)
+				else if (cstr == '1') { // || (cstr == 'Q' && e.shiftkey) 
 					fill_in('top-left');
 					e.stopPropagation();
 					e.preventDefault();
@@ -188,15 +187,21 @@ function MT__RUN() {
 			}, false);
 			// Auto fill
 			function fill_in(position) {
+				// Remove double spaces (often).
+				remove_dbl_spaces();
+				//
 				if (o.current_field.value.indexOf(' from ') == -1) {
 					o.current_field.value += ' from '+position+' box ';
 				} else if (o.current_field.value.indexOf(' to ') == -1) {
 					o.current_field.value += ' to '+position+' box.';
+					// Simulate tab.
+					hide_fields();
+					if (o.current_field.next_field) {
+						o.current_field.next_field.focus(); // Go to next field.
+					}
 				} else {
 					// Error handling goes here.
 				}
-				// Remove double spaces (often).
-				remove_dbl_spaces();
 			}
 			// Remove dbl spaces
 			function remove_dbl_spaces() {
@@ -215,18 +220,12 @@ function MT__RUN() {
 					//~ o.current_field.parentNode.parentNode.parentNode.style.overflow = 'hidden';
 					
 				}
-				//~ for (var i=0;i<=4;i++) {
-					//~ o.q[i].value = o.q[i].value.trim();
-					//~ if (o.q[i].value != '') {
-						//~ document.getElementById('workContent'+i).style.height = '0px';
-						//~ document.getElementById('workContent'+i).style.overflow = 'hidden';
-					//~ }
-				//~ }
 			}
 		}
 		new run().f();
 		return;
 	}
+
 
 	
 	
