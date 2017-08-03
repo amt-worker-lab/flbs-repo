@@ -372,6 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		//alert(USER_NAME);
 		
 		buildUserInterface();
+		createSubmissionDisplay();
 	});
 
 });
