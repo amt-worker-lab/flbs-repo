@@ -20824,6 +20824,118 @@ Laurens Hammond, Chicago, Ill.**/
 	 * a max of 6 requests per domain per Chrome session are usually allowed.
 	 * 
 	 */
+	// Matt Holder
+	// 
+	// 
+	//
+	s = '<p>(2) Once on the website, use the provided website URL and click "Run Test"</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:100%;height:100px;}');
+			
+			//~ var td = document.getElementsByTagName('td');
+			var x = /<div class="well">2\) Enter ([^&]+)(&nbsp;)and click "Run Test"<\/div>/.exec(ih);
+			x[1] = x[1].replace(/ /g, ''); // Remove spaces
+			var o = {
+				url: __js_clean_html_str(x[1]).trim(),
+				domain: null,
+				u: null,
+				q: [
+					document.getElementById('result')
+				]
+			}
+			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
+			o.url = (!/^https?:\/\//i.exec(o.url)) ? 'http://' + o.url : o.url;
+			o.url = o.url.replace(/([a-z])\?/i, '$1/?'); // Replace com?asdf with com/?asdf
+			o.domain = o.url.replace(/^https?:\/\//i, '').replace(/[\/\?&][\d\D]*/, '').replace(/^(www|m)\./, ''); // / OR ? OR &
+			//https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&url=http%3A%2F%2Fwww.google.com%2F&strategy=mobile&filter_third_party_resources=false&callback=x
+			
+			o.u =
+				'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?'+
+				//~ 'key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&'+
+				'key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&'+
+				'url='+ encodeURIComponent(o.url)+
+				'&strategy=mobile&filter_third_party_resources=false&callback=x';
+			o.u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.u);
+			console.log(o);
+			
+			// Xhr
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.u,
+				onload: function(response) {
+					var rs=response.responseText; //console.log(rs);
+					if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+						document.body.style.backgroundColor = 'yellow';
+						return;
+					}
+					
+					rs = rs.replace(/^\/\/ API callback[\r\n\t\s]+x\(/, '');
+					rs = rs.replace(/[\r\n\t\s]+\); *$/, '');
+					rs = JSON.parse(rs);
+					console.log(rs);
+					// Error
+					if (rs.hasOwnProperty('error')) {
+						var err1 = // Blocked by robots.txt. Both of these true... 
+							rs.error.errors[0].message.indexOf('The requested URL redirected to ') != -1 &&
+							rs.error.errors[0].message.indexOf('which is disallowed by robots.txt.') != -1;
+						if  (
+							rs.error.errors[0].message == 'Failed to fetch the requested URL.' ||
+							err1
+							)
+						{
+							//~ o.q[0].value = 'E';
+							o.q[0].value = 'No';
+							doSubmit();
+						} else {
+							document.body.style.backgroundColor = 'Blue';
+							// Here are two where trying again sometimes fixes the problem:
+							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "An error occurred while fetching or analyzing the page." } ], "code": 500, "message": "An error occurred while fetching or analyzing the page." } } );
+							// // API callback x({ "error": { "errors": [ { "domain": "pagespeedInsights", "reason": "noDocumentLoaded", "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } ], "code": 400, "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } } );
+						}
+						return;
+					}
+					// ... no id, no indexOf(domain)
+					// Usually this is because the URL was forwarded
+					// to another domain!
+					// E.g. "http://www.dougashleyrealtors.com/" going to "http://dougashley.mccid.com/", 
+					if (!rs.hasOwnProperty('id') || !rs.id) { //  Oct. 2015, removed this:  ||rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1
+						document.body.style.backgroundColor = 'LightGreen';
+						return;
+					}
+					// ...
+					if  (
+						!rs.hasOwnProperty('ruleGroups') || !rs.ruleGroups ||
+						!rs.ruleGroups.hasOwnProperty('USABILITY') || !rs.ruleGroups.USABILITY ||
+						!rs.ruleGroups.USABILITY.hasOwnProperty('pass')
+						)
+					{
+						console.log('ruleGroups');
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					//
+					if (rs.ruleGroups.USABILITY.pass && rs.ruleGroups.USABILITY.pass == true) {
+						o.q[0].value = 'Yes';
+						doSubmit();
+					} else if (rs.ruleGroups.USABILITY.pass == false) {
+						o.q[0].value = 'No';
+						doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Airlab
 	// 
 	// 
