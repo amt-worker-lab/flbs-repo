@@ -6,8 +6,11 @@
  *			e.g. function a(){ return false}; console.log(a() == false) // true
  * 
  * Note: On starting scrapy...
- * cd /home/dave/share/Development/scrapy/ && ./start-scrapyd.sh
- * cd scrapy_amt/ && scrapyd-deploy
+ * 		cd /home/dave/share/Development/scrapy/
+ * 		./start-scrapyd.sh
+ * 		cd scrapy_amt/
+ *		scrapyd-deploy
+ * 
  * Note: If running on David's computer then run scrapyd-deploy a second
  * time because it fails the first time.
  * 
@@ -15,7 +18,6 @@
 function init__scrapy() {
 	/**
 	 * scrapy
-	 * // scrapy
 	 * 
 	 * Amazon Requester Inc.- EPS Marketing
 	 * garrett grohman
@@ -52,7 +54,7 @@ function init__scrapy() {
 	 */
 	// PACED Ltd.
 	// Collect email addresses from a Website
-	// 
+	// A82ZMBH9P2V5A
 	// 
 	var s = '<p>Click the link below to review the Website. Collect the following information if it\'s available:</p>\n\n<ul>\n	<li>Contact email</li>\n</ul>';
 	if (ih.indexOf(s) != -1)
@@ -61,7 +63,8 @@ function init__scrapy() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');// Set width=width:30% !important;
+			// Move container down the page so it is not hidden by our work screens.
+				GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');
 			//~ GM_addStyle('#workContent {float:right}');
 			/*GM_addStyle('input[type="text"],select {width:80% !important;}');*/
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
@@ -234,7 +237,8 @@ function init__scrapy() {
 								input_send_success: o.q[0],
 								skip_if_no_emails: true,
 								accept_if_emails: true,
-								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) {
+									// RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									if (AMT__Global_Vars.isPreview) {
 										return false;
 									}
@@ -280,8 +284,8 @@ function init__scrapy() {
 										// Auto return and accept because
 										// there are no emails found.
 										// R&A from global.js...
-										//Send a message to the top window and
-										//tell it to return and acceptfresh
+										// ...Send a message to the top window and
+										// ...tell it to return and acceptfresh
 										new AMT___core_factory().
 											iframe2parent__postMessage( //
 												{
