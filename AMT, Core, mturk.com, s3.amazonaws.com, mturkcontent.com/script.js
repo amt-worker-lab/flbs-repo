@@ -20842,14 +20842,16 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('#submitButton {width:100%;height:100px;}');
 			
 			//~ var td = document.getElementsByTagName('td');
-			var x = /<div class="well">2\) Enter ([^&]+)(&nbsp;)and click "Run Test"<\/div>/.exec(ih);
+			// <div class="well">(2) Enter http://www.taurusrgc.com/&nbsp;and click "Run Test"</div>
+			var x = /<div class="well">\(2\) Enter ([^&]+)(&nbsp;)and click "Run Test"<\/div>/.exec(ih);
 			x[1] = x[1].replace(/ /g, ''); // Remove spaces
 			var o = {
 				url: __js_clean_html_str(x[1]).trim(),
 				domain: null,
 				u: null,
 				q: [
-					document.getElementById('result')
+					document.getElementById('result'),
+					document.getElementById('resultReason')
 				]
 			}
 			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
@@ -20872,12 +20874,18 @@ Laurens Hammond, Chicago, Ill.**/
 				method: "GET",
 				url: o.u,
 				onload: function(response) {
-					var rs=response.responseText; //console.log(rs);
+					var rs=response.responseText;
 					if (response.status != 200 || (rs*1>200 && rs*1<600)) {
 						document.body.style.backgroundColor = 'yellow';
 						return;
 					}
-					
+					/**
+					 * Yes - Found Site & Confirmed
+					 * No - Could Not Load Site
+					 * No - URL not formatted properly
+					 * No - URL doesn't belong to a small business
+					 * No - Other
+					 */
 					rs = rs.replace(/^\/\/ API callback[\r\n\t\s]+x\(/, '');
 					rs = rs.replace(/[\r\n\t\s]+\); *$/, '');
 					rs = JSON.parse(rs);
@@ -20894,12 +20902,15 @@ Laurens Hammond, Chicago, Ill.**/
 						{
 							//~ o.q[0].value = 'E';
 							o.q[0].value = 'No';
+							o.q[1].value = 'No - Could Not Load Site';
 							doSubmit();
 						} else {
 							document.body.style.backgroundColor = 'Blue';
 							// Here are two where trying again sometimes fixes the problem:
 							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "An error occurred while fetching or analyzing the page." } ], "code": 500, "message": "An error occurred while fetching or analyzing the page." } } );
 							// // API callback x({ "error": { "errors": [ { "domain": "pagespeedInsights", "reason": "noDocumentLoaded", "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } ], "code": 400, "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } } );
+							// TODO:
+							// Auto r&a here?
 						}
 						return;
 					}
@@ -20925,9 +20936,11 @@ Laurens Hammond, Chicago, Ill.**/
 					//
 					if (rs.ruleGroups.USABILITY.pass && rs.ruleGroups.USABILITY.pass == true) {
 						o.q[0].value = 'Yes';
+						o.q[1].value = 'Yes - Found Site & Confirmed';
 						doSubmit();
 					} else if (rs.ruleGroups.USABILITY.pass == false) {
 						o.q[0].value = 'No';
+						o.q[1].value = 'No - Other';
 						doSubmit();
 					}
 				}
