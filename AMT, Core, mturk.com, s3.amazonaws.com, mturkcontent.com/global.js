@@ -2951,6 +2951,7 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  * 
  * etc...
  * 
+ * proxy_resolve_URL
  * xhr
  * server_load_asynchronously
  * xhr_with_disk_cache
@@ -2959,6 +2960,18 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
+/**
+ * function pdf_to_thumbnail
+ * 
+ * options						Object.
+ * options.URL					Required. String.
+ * options.success_callback		Function. Callback for completed.
+ * 
+ * @return				.
+ */
+AMT___requests_factory.prototype.pdfimages = function(options) {
+}
+
 /**
  * function proxy_resolve_URL
  * 
@@ -3067,6 +3080,7 @@ AMT___requests_factory.prototype.xhr = function(options) {
 }
 /**
  * function server_load_asynchronously
+ * Load a URL asynchonously on server and process callback when complete.
  * 
  * URL					Required. String.
  * success_callback		Function. Callback for completed.
