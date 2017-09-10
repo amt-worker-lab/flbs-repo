@@ -50,6 +50,7 @@ function MT__RUN() {
 				u: a[1].href,
 				image_divs: [], // To be filled...
 				first_keypress: false, // To be updated...
+				rotation: 0, // Sets image rotation
 				q: [
 					document.getElementById('field1')
 				],
@@ -84,15 +85,33 @@ function MT__RUN() {
 					var rs = response.responseText;
 					// Load images.
 					for (var i=0; i<=parseInt(rs); i++) {
+						// Div.
+						// TODO: Add rotate 90-degrees.
 						var d = document.createElement('div');
-						d.setAttribute('style', 'border:1px solid #444;display:inline;');
+						d.setAttribute('style',
+							'border:1px solid #444;display:inline;cursor:pointer;');
 						d.appendChild(document.createTextNode(i));
 						d.num = i;
+						//~ d.ondblclick = function(e) {
+							//~ this.style.transform = 'rotate(90deg)';
+							//~ transform: rotate(90deg);
+							//~ -ms-transform: rotate(90deg); 
+							//~ -webkit-transform: rotate(90deg); 
+						//~ }
+						d.onclick = function(e) {
+							this.expand();
+						}
 						var n = document.createElement('img');
 						n.setAttribute('style', 'max-height:200px;');
 						n.src = MT___host+'/mturk/.cached/'+response.filename+'-'+i+'.png';
 						n.pdiv = d;
-						n.onclick = function() {
+						n.onclick = function(e) {
+							// Stop click.
+							e.stopPropagation();
+							e.preventDefault();
+							// Set first keypress to false, as it is
+							// no longer necessary.
+							o.first_keypress = true;
 							// Call div expand when image onclick.
 							this.pdiv.expand();
 						}
@@ -104,15 +123,26 @@ function MT__RUN() {
 						o.image_divs.push(d);
 						// Expand method.
 						// This also minimizes other images.
-						d.expand = function() {
+						d.expand = function(e) {
+							if (this.is_expanded) {
+								// Scroll image to bottom.
+								this.image.scrollIntoView(false);
+								// Re-focus on input.
+								o.q[0].focus();
+								return;
+							}
 							for (var i in o.image_divs) {
 								o.image_divs[i].image.setAttribute('style',
 									'max-height:8px;max-width:8px;');
+								o.image_divs[i].is_expanded = false;
 							}
+							this.is_expanded = true;
 							this.image.src = MT___host+'/mturk/.cached/'+
 								response.filename+'full-'+this.num+'.png';
 							this.image.setAttribute('style',
 								'max-height:1200px;max-width:60%;');
+							// Re-focus on input.
+							o.q[0].focus();
 						}
 					}
 					// Append spacer div.
@@ -169,6 +199,16 @@ function MT__RUN() {
 					o.first_keypress = true;
 					o.image_divs[ parseInt(cstr) ].expand();
 					o.q[0].focus();
+				}
+				// Rotate?
+				if (cstr == '+') {
+					e.stopPropagation();
+					e.preventDefault();
+					o.rotation += 90;
+					if (o.rotation == 360) {
+						o.rotation = 0; // probably unnecessary
+					}
+					GM_addStyle('img {transform:rotate('+o.rotation+'deg);}');
 				}
 			}, false);
 		}
