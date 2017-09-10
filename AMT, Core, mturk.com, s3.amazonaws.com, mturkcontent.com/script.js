@@ -41,8 +41,8 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
-			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:0px;left:0px;zoom:2;}');// Move content to bottom...
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');// Move content to bottom...
+			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:0px;left:0px;}');// Move content to bottom...
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			// Elements
 			var a = document.getElementsByTagName('a');
@@ -63,7 +63,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:20px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:40px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -75,7 +75,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 20 // offset top
+				offset: 40 // offset top
 			});
 			// Init pdf loader
 			AMT___requests_factory.prototype.pdfimages({
@@ -91,6 +91,11 @@ function MT__RUN() {
 						var n = document.createElement('img');
 						n.setAttribute('style', 'max-height:200px;');
 						n.src = MT___host+'/mturk/.cached/'+response.filename+'-'+i+'.png';
+						n.pdiv = d;
+						n.onclick = function() {
+							// Call div expand when image onclick.
+							this.pdiv.expand();
+						}
 						d.appendChild(n);
 						d.image = n; // Set image.
 						// Add to main div.
@@ -107,9 +112,11 @@ function MT__RUN() {
 							this.image.src = MT___host+'/mturk/.cached/'+
 								response.filename+'full-'+this.num+'.png';
 							this.image.setAttribute('style',
-								'max-height:1200px;max-width:auto;');
+								'max-height:1200px;max-width:60%;');
 						}
 					}
+					// Append spacer div.
+					d1.appendChild(''.div({style:'height:2000px'}));
 				}
 			});
 			// Turn off form submit.
@@ -118,16 +125,24 @@ function MT__RUN() {
 				e.preventDefault();
 				return false;
 			}
-			// Watch for keypresses.
-			window.addEventListener('keydown', function(e) {
-				var c = e.keyCode;
-				// Enter key
-				if (c == 13) {
-					e.stopPropagation();
-					e.preventDefault();
-				}
-			}, false);
-			window.addEventListener('keyup', function(e) {
+			//~ // Watch for keypresses.
+			//~ window.addEventListener('keydown', function(e) {
+				//~ var c = e.keyCode;
+				//~ // Enter key
+				//~ if (c == 13) {
+					//~ e.stopPropagation();
+					//~ e.preventDefault();
+				//~ }
+			//~ }, false);
+			//~ window.addEventListener('keyup', function(e) {
+				//~ var c = e.keyCode;
+				//~ // Enter key
+				//~ if (c == 13) {
+					//~ e.stopPropagation();
+					//~ e.preventDefault();
+				//~ }
+			//~ }, false);
+			window.addEventListener('keypress', function(e) {
 				var c = e.keyCode;
 				console.log(c);
 				var cstr = String.fromCharCode(e.keyCode);
@@ -147,10 +162,13 @@ function MT__RUN() {
 				// First keydown?
 				// Expand the selected image.
 				// Minimize the other images.
-				if (/^\d$/.exec(cstr)) {
-				//~ if (!o.first_keypress && /^\d$/.exec(cstr)) {
+				//~ if (/^\d$/.exec(cstr)) {
+				if (!o.first_keypress && /^\d$/.exec(cstr)) {
+					e.stopPropagation();
+					e.preventDefault();
 					o.first_keypress = true;
 					o.image_divs[ parseInt(cstr) ].expand();
+					o.q[0].focus();
 				}
 			}, false);
 		}
