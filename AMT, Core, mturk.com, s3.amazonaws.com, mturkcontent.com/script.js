@@ -47,7 +47,9 @@ function MT__RUN() {
 			// Elements
 			var a = document.getElementsByTagName('a');
 			var o = {
-				u: a[0].href,
+				u: a[1].href,
+				image_divs: [], // To be filled...
+				first_keypress: false, // To be updated...
 				q: [
 					document.getElementById('field1')
 				],
@@ -58,27 +60,99 @@ function MT__RUN() {
 					return o.u;
 				}, ['Id(field1)']
 			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:20px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 20 // offset top
+			});
 			// Init pdf loader
-			
+			AMT___requests_factory.prototype.pdfimages({
+				url: o.u,
+				callback: function(response) {
+					var rs = response.responseText;
+					// Load images.
+					for (var i=0; i<=parseInt(rs); i++) {
+						var d = document.createElement('div');
+						d.setAttribute('style', 'border:1px solid #444;display:inline;');
+						d.appendChild(document.createTextNode(i));
+						d.num = i;
+						var n = document.createElement('img');
+						n.setAttribute('style', 'max-height:200px;');
+						n.src = MT___host+'/mturk/.cached/'+response.filename+'-'+i+'.png';
+						d.appendChild(n);
+						d.image = n; // Set image.
+						// Add to main div.
+						d1.appendChild(d);
+						// Add to data structure.
+						o.image_divs.push(d);
+						// Expand method.
+						// This also minimizes other images.
+						d.expand = function() {
+							for (var i in o.image_divs) {
+								o.image_divs[i].image.setAttribute('style',
+									'max-height:8px;max-width:8px;');
+							}
+							this.image.src = MT___host+'/mturk/.cached/'+
+								response.filename+'full-'+this.num+'.png';
+							this.image.setAttribute('style',
+								'max-height:1200px;max-width:auto;');
+						}
+					}
+				}
+			});
+			// Turn off form submit.
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
 			// Watch for keypresses.
-			
-			//~ /* BEGIN ITEMS */
-			//~ var d1 = document.createElement('input');
-			//~ d1.setAttribute('style',
-				//~ 'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
-			//~ );
-			//~ document.body.appendChild(d1);
-			//~ /* END ITEMS */
-			//~ // innerHeight
-			//~ new AMT___core_factory().el_innerHeight({
-				//~ // This set the elements d1,d1b, and d1c
-				//~ // to fill up the whole window, minus their
-				//~ // distance from page top (top:XX pixels;).
-				//~ elements: [
-					//~ d1
-				//~ ],
-				//~ offset: 0 // offset top
-			//~ });
+			window.addEventListener('keydown', function(e) {
+				var c = e.keyCode;
+				// Enter key
+				if (c == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+				}
+			}, false);
+			window.addEventListener('keyup', function(e) {
+				var c = e.keyCode;
+				console.log(c);
+				var cstr = String.fromCharCode(e.keyCode);
+				console.log(cstr);
+				// Enter key
+				if (c == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+					// Good to go?
+					// Digit with option decimal and up to
+					// two decimals.
+					if (/^\d+(\.\d{1,2}|)$/.exec(o.q[0].value)) {
+						AMT___recordAndSubmit();
+					}
+					return false;
+				}
+				// First keydown?
+				// Expand the selected image.
+				// Minimize the other images.
+				if (/^\d$/.exec(cstr)) {
+				//~ if (!o.first_keypress && /^\d$/.exec(cstr)) {
+					o.first_keypress = true;
+					o.image_divs[ parseInt(cstr) ].expand();
+				}
+			}, false);
 		}
 		new run().f();
 		return;
