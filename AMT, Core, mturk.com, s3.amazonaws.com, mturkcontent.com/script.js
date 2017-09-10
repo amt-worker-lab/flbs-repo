@@ -42,7 +42,7 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');// Move content to bottom...
-			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:0px;left:0px;}');// Move content to bottom...
+			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');// Move content to bottom...
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			// Elements
 			var a = document.getElementsByTagName('a');
@@ -51,6 +51,7 @@ function MT__RUN() {
 				image_divs: [], // To be filled...
 				first_keypress: false, // To be updated...
 				rotation: 0, // Sets image rotation
+				selected_image: null, // To be filled...
 				q: [
 					document.getElementById('field1')
 				],
@@ -64,7 +65,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:40px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:10%;width:89%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -76,7 +77,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 40 // offset top
+				offset: 0 // offset top
 			});
 			// Init pdf loader
 			AMT___requests_factory.prototype.pdfimages({
@@ -92,12 +93,7 @@ function MT__RUN() {
 							'border:1px solid #444;display:inline;cursor:pointer;');
 						d.appendChild(document.createTextNode(i));
 						d.num = i;
-						//~ d.ondblclick = function(e) {
-							//~ this.style.transform = 'rotate(90deg)';
-							//~ transform: rotate(90deg);
-							//~ -ms-transform: rotate(90deg); 
-							//~ -webkit-transform: rotate(90deg); 
-						//~ }
+						d.scrolled = false
 						d.onclick = function(e) {
 							this.expand();
 						}
@@ -124,9 +120,16 @@ function MT__RUN() {
 						// Expand method.
 						// This also minimizes other images.
 						d.expand = function(e) {
+							o.selected_image = this.num // update global var
 							if (this.is_expanded) {
-								// Scroll image to bottom.
-								this.image.scrollIntoView(false);
+								// Scroll image.
+								if (!this.scrolled) {	// to bottom
+									this.image.scrollIntoView(false);
+									this.scrolled = true;
+								} else {				// to top 
+									this.image.scrollIntoView(true);
+									this.scrolled = false;
+								}
 								// Re-focus on input.
 								o.q[0].focus();
 								return;
@@ -140,7 +143,7 @@ function MT__RUN() {
 							this.image.src = MT___host+'/mturk/.cached/'+
 								response.filename+'full-'+this.num+'.png';
 							this.image.setAttribute('style',
-								'max-height:1200px;max-width:60%;');
+								'max-height:1200px;max-width:70%;');
 							// Re-focus on input.
 							o.q[0].focus();
 						}
@@ -155,23 +158,7 @@ function MT__RUN() {
 				e.preventDefault();
 				return false;
 			}
-			//~ // Watch for keypresses.
-			//~ window.addEventListener('keydown', function(e) {
-				//~ var c = e.keyCode;
-				//~ // Enter key
-				//~ if (c == 13) {
-					//~ e.stopPropagation();
-					//~ e.preventDefault();
-				//~ }
-			//~ }, false);
-			//~ window.addEventListener('keyup', function(e) {
-				//~ var c = e.keyCode;
-				//~ // Enter key
-				//~ if (c == 13) {
-					//~ e.stopPropagation();
-					//~ e.preventDefault();
-				//~ }
-			//~ }, false);
+			// Watch for keypresses.
 			window.addEventListener('keypress', function(e) {
 				var c = e.keyCode;
 				console.log(c);
@@ -196,8 +183,12 @@ function MT__RUN() {
 				if (!o.first_keypress && /^\d$/.exec(cstr)) {
 					e.stopPropagation();
 					e.preventDefault();
+					// If image [int] exists then expand it.
+					// Otherwise, turn off first_keypress.
+					// Note: Still ignores the last keypress!
+					if (o.image_divs[ parseInt(cstr) ])
+						o.image_divs[ parseInt(cstr) ].expand();
 					o.first_keypress = true;
-					o.image_divs[ parseInt(cstr) ].expand();
 					o.q[0].focus();
 				}
 				// Rotate?
@@ -209,6 +200,27 @@ function MT__RUN() {
 						o.rotation = 0; // probably unnecessary
 					}
 					GM_addStyle('img {transform:rotate('+o.rotation+'deg);}');
+				}
+				// Change to next image.
+				if (cstr == '-') {
+					e.stopPropagation();
+					e.preventDefault();
+					if (o.image_divs[o.selected_image+1])
+						o.image_divs[o.selected_image+1].expand();
+				}
+				// Change to previous image.
+				if (cstr == '*') {
+					e.stopPropagation();
+					e.preventDefault();
+					if (o.image_divs[o.selected_image-1])
+						o.image_divs[o.selected_image-1].expand();
+				}
+				// Move down to bottom of image.
+				// (same as clicking big image)
+				if (cstr == '/') {
+					e.stopPropagation();
+					e.preventDefault();
+					o.image_divs[o.selected_image].expand();
 				}
 			}, false);
 		}
