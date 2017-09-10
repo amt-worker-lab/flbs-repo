@@ -2961,15 +2961,60 @@ function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * function pdf_to_thumbnail
+ * function pdfimages
  * 
- * options						Object.
- * options.URL					Required. String.
- * options.success_callback		Function. Callback for completed.
+ * options				Object.
+ * options.url			Required. String.
+ * options.callback		Function. Callback for completed.
  * 
  * @return				.
  */
 AMT___requests_factory.prototype.pdfimages = function(options) {
+	// Sent callback.
+	var sent_callback_boolean = false;
+	// Set filename
+	options.filename = new AMT___requests_factory().md5(options.url);
+	// Init
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: MT___host + '/mturk/util.php?AMT__pdfimages='+
+			encodeURIComponent(JSON.stringify(options)),
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				alert('@1.AMT___requests_factory.prototype.pdfimages');
+			}
+		}
+	});
+	// Set interval watch.....
+	var xint = setInterval(watch, 2000);
+	// watch
+	// On complete, the file ".complete" will contain the number of 
+	// pages that were thumbnailed.
+	function watch() {
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: MT___host + '/mturk/.cached/'+options.filename+'.complete',
+			onload: function(response) {
+				var rs = response.responseText.trim();
+				if (response.status != 200 || rs == '') {
+					return;
+				}
+				// Made it.
+				clearInterval(xint);
+				if (sent_callback_boolean) return; // Already completed once!
+				sent_callback_boolean = true;
+				// Check.
+				if (!/^\d+$/.exec(response.responseText)) {
+					alert('@2.AMT___requests_factory.prototype.pdfimages');
+					return;
+				}
+				// Callback.
+				options.responseText = response.responseText; // Set options.response.
+				options.callback(options);
+			}
+		});
+	}
 }
 
 /**
