@@ -2967,7 +2967,9 @@ function AMT___requests_factory(obj_vars) {
  * options.url			Required. String.
  * options.callback		Function. Callback for completed.
  * 
- * @return				.
+ * @return				{String or Int-String} If string, error message.
+ * 						If Int-String, then returns the number of images
+ * 						converted from the pdf.
  */
 AMT___requests_factory.prototype.pdfimages = function(options) {
 	// Sent callback.
@@ -3006,7 +3008,12 @@ AMT___requests_factory.prototype.pdfimages = function(options) {
 				sent_callback_boolean = true;
 				// Check.
 				if (!/^\d+$/.exec(response.responseText)) {
-					alert('@2.AMT___requests_factory.prototype.pdfimages');
+					//~ alert('@2.AMT___requests_factory.prototype.pdfimages');
+					if (response.responseText == 'Error: No files converted!') {
+						// Callback.
+						options.responseText = response.responseText; // Set options.response.
+						options.callback(options);
+					}
 					return;
 				}
 				// Callback.

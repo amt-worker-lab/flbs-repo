@@ -84,6 +84,16 @@ function MT__RUN() {
 				url: o.u,
 				callback: function(response) {
 					var rs = response.responseText;
+					// Return if an error occurs.
+					if (rs == 'Error: No files converted!') {
+						new AMT___core_factory().
+							iframe2parent__postMessage( //
+								{
+									action: 'return_and_accept'
+								}
+							);
+						return;
+					}
 					// Load images.
 					for (var i=0; i<=parseInt(rs); i++) {
 						// Div.
