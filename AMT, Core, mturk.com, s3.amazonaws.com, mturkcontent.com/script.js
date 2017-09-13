@@ -146,14 +146,15 @@ function MT__RUN() {
 							}
 							for (var i in o.image_divs) {
 								o.image_divs[i].image.setAttribute('style',
-									'max-height:8px;max-width:8px;');
+									'max-height:2px;max-width:2px;');
 								o.image_divs[i].is_expanded = false;
 							}
 							this.is_expanded = true;
 							this.image.src = MT___host+'/mturk/.cached/'+
 								response.filename+'full-'+this.num+'.png';
 							this.image.setAttribute('style',
-								'max-height:1200px;max-width:70%;');
+								'max-height:1600px;max-width:85%;');
+								//~ 'max-height:1200px;max-width:70%;');
 							// Re-focus on input.
 							o.q[0].focus();
 						}
