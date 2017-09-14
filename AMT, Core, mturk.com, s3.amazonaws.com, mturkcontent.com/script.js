@@ -21048,7 +21048,7 @@ Laurens Hammond, Chicago, Ill.**/
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('#submitButton {width:100%;height:100px;}');
 			
@@ -21063,6 +21063,15 @@ Laurens Hammond, Chicago, Ill.**/
 				q: [
 					document.getElementById('result'),
 					document.getElementById('resultReason')
+				],
+				opts: [
+					"Yes - Found Site & Confirmed it's Optimized",
+					"No - Confirmed Website IS NOT Optimized",
+					"No - Could Not Load Site",
+					"No - URL not formatted properly",
+					"No - URL belongs to a known brand (ie Google or Yahoo)",
+					"No - URL is an email",
+					"No - Other",
 				]
 			}
 			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
@@ -21079,6 +21088,24 @@ Laurens Hammond, Chicago, Ill.**/
 				'&strategy=mobile&filter_third_party_resources=false&callback=x';
 			o.u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.u);
 			console.log(o);
+			// Validate opts
+			// Ensure that o.opts (static version) matches the job
+			// (dynamic b/c requester could change options).
+			var n = o.q[1].getElementsByTagName('option');
+			for (var i=0; i<o.opts.length; i++) {
+				console.log(n[i])
+				console.log(n[i].value)
+				console.log(n[i+1])
+				if (n[i+1].value != o.opts[i]) {
+					alert('Job changed: Update o.opts!');
+					return;
+				}
+			}
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:0px;left:0%;width:99%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			/* END ITEMS */
 			
 			// Xhr
 			GM_xmlhttpRequest({
@@ -21091,11 +21118,14 @@ Laurens Hammond, Chicago, Ill.**/
 						return;
 					}
 					/**
-					 * Yes - Found Site & Confirmed
-					 * No - Could Not Load Site
-					 * No - URL not formatted properly
-					 * No - URL doesn't belong to a small business
-					 * No - Other
+					 * 
+						"Yes - Found Site & Confirmed it's Optimized",
+						"No - Confirmed Website IS NOT Optimized",
+						"No - Could Not Load Site",
+						"No - URL not formatted properly",
+						"No - URL belongs to a known brand (ie Google or Yahoo)",
+						"No - URL is an email",
+						"No - Other",
 					 */
 					rs = rs.replace(/^\/\/ API callback[\r\n\t\s]+x\(/, '');
 					rs = rs.replace(/[\r\n\t\s]+\); *$/, '');
@@ -21108,6 +21138,7 @@ Laurens Hammond, Chicago, Ill.**/
 							rs.error.errors[0].message.indexOf('which is disallowed by robots.txt.') != -1;
 						if  (
 							rs.error.errors[0].message == 'Failed to fetch the requested URL.' ||
+							rs.error.errors[0].message == 'The requested URL is disallowed by robots.txt.' ||
 							err1
 							)
 						{
@@ -21117,11 +21148,13 @@ Laurens Hammond, Chicago, Ill.**/
 							doSubmit();
 						} else {
 							document.body.style.backgroundColor = 'Blue';
+							d1.innerText = JSON.stringify(rs.error);
+							
 							// Here are two where trying again sometimes fixes the problem:
 							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "An error occurred while fetching or analyzing the page." } ], "code": 500, "message": "An error occurred while fetching or analyzing the page." } } );
 							// // API callback x({ "error": { "errors": [ { "domain": "pagespeedInsights", "reason": "noDocumentLoaded", "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } ], "code": 400, "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } } );
 							// TODO:
-							// Auto r&a here?
+							//		Auto r&a here?
 						}
 						return;
 					}
@@ -21131,9 +21164,11 @@ Laurens Hammond, Chicago, Ill.**/
 					// E.g. "http://www.dougashleyrealtors.com/" going to "http://dougashley.mccid.com/", 
 					if (!rs.hasOwnProperty('id') || !rs.id) { //  Oct. 2015, removed this:  ||rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1
 						document.body.style.backgroundColor = 'LightGreen';
+						
+						d1.innerText = JSON.stringify(rs.error);
 						return;
 					}
-					// ...
+					// ... ?
 					if  (
 						!rs.hasOwnProperty('ruleGroups') || !rs.ruleGroups ||
 						!rs.ruleGroups.hasOwnProperty('USABILITY') || !rs.ruleGroups.USABILITY ||
@@ -21142,16 +21177,18 @@ Laurens Hammond, Chicago, Ill.**/
 					{
 						console.log('ruleGroups');
 						document.body.style.backgroundColor = 'pink';
+						
+						d1.innerText = JSON.stringify(rs.error);
 						return;
 					}
 					//
 					if (rs.ruleGroups.USABILITY.pass && rs.ruleGroups.USABILITY.pass == true) {
 						o.q[0].value = 'Yes';
-						o.q[1].value = 'Yes - Found Site & Confirmed';
+						o.q[1].value = 'Yes - Found Site & Confirmed it\'s Optimized';
 						doSubmit();
 					} else if (rs.ruleGroups.USABILITY.pass == false) {
 						o.q[0].value = 'No';
-						o.q[1].value = 'No - Other';
+						o.q[1].value = 'No - Confirmed Website IS NOT Optimized';
 						doSubmit();
 					}
 				}
