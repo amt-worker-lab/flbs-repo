@@ -21139,6 +21139,7 @@ Laurens Hammond, Chicago, Ill.**/
 						if  (
 							rs.error.errors[0].message == 'Failed to fetch the requested URL.' ||
 							rs.error.errors[0].message == 'The requested URL is disallowed by robots.txt.' ||
+							rs.error.errors[0].message == 'An error occurred while fetching or analyzing the page.' ||
 							err1
 							)
 						{
