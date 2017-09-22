@@ -138489,6 +138489,127 @@ qatar,80
 		new run().f();
 		return;
 	}
+	/**
+	 * create_dashboard_facebook_pages
+	 * JONATHAN G MONSARRAT
+	 * Brendan
+	 * 
+	 */
+	// Brendan
+	// Find the Facebook Page URL for Restaurants
+	// 
+	// 
+	var s = '<li>Recommended Method: copy and paste restaurant name into Facebook search bar, find correct link and copy / paste to Turk.</li>\n	<li>City name has been added to the end of each restaurant name to speed up search times.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1200px !important}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp:	td[1].innerText.trim(),
+				addr: td[3].innerText.trim(),
+				phone:	td[5].innerText.trim(),
+				cshort:	null,
+				cquote:	null,
+				boldArray: [],
+				q: [
+					document.getElementById('page_exists'),
+					document.getElementById('web_url')
+				]
+			}
+			o.bold = o.comp.clean_string_to_array();
+			o.bold_extra = o.addr.clean_string_to_array()
+						.concat(o.phone.clean_string_to_array());
+			o.cquote = '"' + o.comp.split(' ').join(" ") + '"';
+			o.cshort = o.comp.replace(/,[^,]+$/, '').trim(); // Remove final comma to end
+			console.log(o);
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:30%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:0px;left:30%;width:70%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1b);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1,d1b
+				],
+				offset: 0 // offset top
+			});
+			
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_facebook_pages({
+				bold: {
+					black: o.bold,
+					blue: o.bold_extra,
+					//~ brown:,
+				},
+				searches:[
+					//~ o.comp,
+					//~ o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
+					//~ o.comp + ' ' + o.phone,
+					o.comp,
+					o.comp + ' ' + o.addr,
+					o.comp + ' ' + o.addr + ' ' + o.phone,
+				],
+				onclick: function() {
+					this.clicked = true;
+					this.style.backgroundColor = 'LightGreen';
+					if (this.is_permanently_closed) {
+						o.q[0].value = 'Y';
+						alert('Y!');
+						return;
+					} else {
+						o.q[0].value = 'N';
+					}
+					o.q[1].value = this.link;
+					if (
+						//~ !/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
+						/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[1].value)
+						)
+						//~ AMT___recordAndSubmit();
+						doSubmit();
+				},
+				out_element: o.q[1],
+				parent: d1b,
+				offsetTop: 0,
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				bold_array: o.bold,
+				search: {
+					str_add_to_searches_hidden: ' site:facebook.com/pages/ ',
+					use_full_urls: true,
+					replace_urls_in_result_body: true,
+				},
+				searches:[
+					o.comp,
+					o.comp + ' ' + o.addr,
+					o.comp + ' ' + o.addr + ' ' + o.phone,
+				],
+				out_element: null,//o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ naText:'N/A',
+			});
+		}
+		new run().f();
+		return;
+	}
 	// JONATHAN G MONSARRAT
 	// "Top 1% Employer! Find Website Address for Baby Doctors (OBGYN)"
 	// Note: ("* Facebook company search")

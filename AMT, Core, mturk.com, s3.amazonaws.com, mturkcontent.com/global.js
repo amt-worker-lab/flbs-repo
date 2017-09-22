@@ -10284,12 +10284,15 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 /**
  * create_dashboard_facebook_pages
  * 
- * e.g. JONATHAN G MONSARRAT
+ * e.g.
+ * 	JONATHAN G MONSARRAT
+ * 	Brendan
  * 
  * @params
  * 
- * searches		Array of objects
- *  
+ * onclick		Function: Callback for onclick of result.
+ * searches		Array: Array of strings.
+ * 
  * 
  * @returns
  * Default is Profile URL to .out_element
@@ -10315,6 +10318,21 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	}
 	if (!options_object.bold.hasOwnProperty('brown')) { // Default=[]
 		options_object.bold.brown = [];
+	}
+	if (!options_object.hasOwnProperty('onclick')) { // Default=Function...
+		options_object.onclick = function() {
+			this.clicked = true;
+			this.style.backgroundColor = 'LightGreen';
+			o.q[0].value = this.link;
+			if (
+				!/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
+				/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[0].value)
+				)
+				AMT___recordAndSubmit();
+				//~ doSubmit();
+		}
+	} else { // onclick is set by calling program.
+		
 	}
 	var o = {
 		bold: {
@@ -10504,6 +10522,10 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 		return str;
 	}
 	
+	function click() {
+		
+	}
+	
 	// facebook_company_reviews
 	function init(input) {
 		
@@ -10516,7 +10538,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 		var u = 
 			'https://graph.facebook.com/search'+
 			'?q='+encodeURIComponent(v)+'&type=page'+ //&type=user
-			'&fields=category,id,name,likes,talking_about_count,location,link,company_overview'+
+			'&fields=category,id,name,likes,talking_about_count,location,link,company_overview,is_permanently_closed'+
 			'&limit=12'+
 			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 			//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
@@ -10551,19 +10573,23 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 					if (r[i].type) {
 						if (r[i].type == 'event') continue;
 					}
-					if  (
-						!r[i].link || 
-						/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link) // This is a generic / unclaimed profile!
-						)
-					{
-						// Append a "blank"
-						out.appendChild(
-							(r[i].name).div({style:'border-bottom:2px solid teal;'})
-							//(r[i].name+'\nL:'+r[i].likes).div({style:'border-bottom:2px solid teal;'})
-						);
-						c++;// // //
-						continue;
-					}
+					
+					// If filtering unclaimed generic, then uncomment
+					// this section.
+					//
+					//~ if  (
+						//~ !r[i].link || 
+						//~ /^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link) // This is a generic / unclaimed profile!
+						//~ )
+					//~ {
+						//~ // Append a "blank"
+						//~ out.appendChild(
+							//~ (r[i].name).div({style:'border-bottom:2px solid teal;'})
+							//~ //(r[i].name+'\nL:'+r[i].likes).div({style:'border-bottom:2px solid teal;'})
+						//~ );
+						//~ c++;// // //
+						//~ continue;
+					//~ }
 					
 					if (r[i].talking_about_count != null) {
 						//
@@ -10602,6 +10628,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 					tmp += bold_blue_black(r[i].name);
 					tmp += '<br>L:<b>'+MT___numberWithCommas(r[i].likes)+'</b>';
 					tmp += '<br>T:'+r[i].talking_about_count;
+					tmp += '<br>Closed:'+r[i].is_permanently_closed;
 					if (r[i].company_overview)
 						tmp += '<hr>O:'+bold_blue_black(r[i].company_overview.substr(0,200)); // only 200 chars
 					// loc
@@ -10622,18 +10649,10 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 					tmp += '<hr>' + r[i].link;
 					// innerHTML
 					div.innerHTML = tmp;
+					// div.is_permanently_closed
+					div.is_permanently_closed = (r[i].is_permanently_closed) ? true : false;
 					// onclick
-					div.onclick = function() {
-						this.clicked = true;
-						this.style.backgroundColor = 'LightGreen';
-						o.q[0].value = this.link;
-						if (
-							!/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
-							/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[0].value)
-							)
-							AMT___recordAndSubmit();
-							//~ doSubmit();
-					}
+					div.onclick = options_object.onclick;
 					// onmouseover
 					div.onmouseover = function() {
 						var x = document.getElementsByClassName(this.className);
