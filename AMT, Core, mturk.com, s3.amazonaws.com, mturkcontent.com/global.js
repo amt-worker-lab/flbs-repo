@@ -10562,7 +10562,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 				//~ console.log(r);
 				
 				// Mark as loaded
-				finish_loading(r.data.length);
+				finish_loading(r.length);
 				
 				// Loop...
 				//
