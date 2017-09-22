@@ -10292,7 +10292,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
  * 
  * onclick		Function: Callback for onclick of result.
  * searches		Array: Array of strings.
- * 
+ * AutoReturnAcceptIfZero	Boolean: .
  * 
  * @returns
  * Default is Profile URL to .out_element
@@ -10344,6 +10344,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 		//~ bold_location_array: options_object.bold_location_array,
 		//~ bold_types_array: options_object.bold_types_array,
 		panels_loaded: 0,
+		has_results: false, // True or False
 		num_panels: 3,
 		domain_counts: {}, // obj
 		first_domains: [],
@@ -10442,24 +10443,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 		
 		o.num_panels = 2; // Overwrite!
 		
-		//~ // Location
-		//~ if (options_object.searches[0].location) {
-			//~ d4.innerText = options_object.searches[0].location;
-		//~ }
-		//~ if (options_object.searches[1].location) {
-			//~ d4b.innerText = options_object.searches[1].location;
-		//~ }
 	} else {
-		//~ // Location
-		//~ if (options_object.searches[0].location) {
-			//~ d4.innerText = options_object.searches[0].location;
-		//~ }
-		//~ if (options_object.searches[1].location) {
-			//~ d4b.innerText = options_object.searches[1].location;
-		//~ }
-		//~ if (options_object.searches[2].location) {
-			//~ d4c.innerText = options_object.searches[2].location;
-		//~ }
 	}
 	// innerHeight
 	new AMT___core_factory().el_innerHeight({
@@ -10522,10 +10506,26 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 		return str;
 	}
 	
-	function click() {
-		
+	// Loaded
+	// Int: num_results
+	function finish_loading(num_results) {
+		o.panels_loaded++;
+		if (num_results > 0) {
+			o.has_results = true
+		}
+		if (o.panels_loaded == options_object.searches.length) {
+			if (o.has_results == false && options_object.AutoReturnAcceptIfZero) {
+				//Send a message to the top window and
+				//tell it to return and acceptfresh
+				new AMT___core_factory().
+					iframe2parent__postMessage( //
+						{
+							action: 'return_and_accept'
+						}
+					);
+			}
+		}
 	}
-	
 	// facebook_company_reviews
 	function init(input) {
 		
@@ -10560,9 +10560,9 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 				}
 				r = r.data;
 				//~ console.log(r);
-
-				//~ // Show full search term...
-				//~ out.appendChild((o.comp).div({style:'border-bottom:2px solid blue;'}));
+				
+				// Mark as loaded
+				finish_loading(r.data.length);
 				
 				// Loop...
 				//
@@ -10639,7 +10639,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 								l.push(r[i].location[j]);
 								//~ tmp += '<hr>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
 						}
-						tmp += '<hr>A:'+l.join(',');
+						tmp += '<hr>A:'+bold_blue_black(l.join(','));
 					}
 					// cat
 					if (r[i].category) {

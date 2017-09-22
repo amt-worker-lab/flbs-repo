@@ -138528,14 +138528,14 @@ qatar,80
 			o.cshort = o.comp.replace(/,[^,]+$/, '').trim(); // Remove final comma to end
 			console.log(o);
 			/* BEGIN ITEMS */
-			var d1 = document.createElement('div');
-			d1.setAttribute('style',
-				'position:absolute;top:0px;left:0%;width:30%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
-			);
-			document.body.appendChild(d1);
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style',
+				//~ 'position:absolute;top:0px;left:0%;width:30%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			//~ );
+			//~ document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
-				'position:absolute;top:0px;left:30%;width:70%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1b);
 			/* END ITEMS */
@@ -138546,7 +138546,7 @@ qatar,80
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1,d1b
+					d1b
 				],
 				offset: 0 // offset top
 			});
@@ -138559,9 +138559,6 @@ qatar,80
 					//~ brown:,
 				},
 				searches:[
-					//~ o.comp,
-					//~ o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
-					//~ o.comp + ' ' + o.phone,
 					o.comp,
 					o.comp + ' ' + o.addr,
 					o.comp + ' ' + o.addr + ' ' + o.phone,
@@ -138571,7 +138568,7 @@ qatar,80
 					this.style.backgroundColor = 'LightGreen';
 					if (this.is_permanently_closed) {
 						o.q[0].value = 'Y';
-						alert('Y!');
+						alert('Y! (Uncomment code to submit)');
 						return;
 					} else {
 						o.q[0].value = 'N';
@@ -138587,25 +138584,25 @@ qatar,80
 				out_element: o.q[1],
 				parent: d1b,
 				offsetTop: 0,
+				AutoReturnAcceptIfZero: true,
 			});
-			// create_dashboard_find_url
-			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.bold,
-				search: {
-					str_add_to_searches_hidden: ' site:facebook.com/pages/ ',
-					use_full_urls: true,
-					replace_urls_in_result_body: true,
-				},
-				searches:[
-					o.comp,
-					o.comp + ' ' + o.addr,
-					o.comp + ' ' + o.addr + ' ' + o.phone,
-				],
-				out_element: null,//o.q[0],
-				parent: d1,
-				offsetTop: 0,
-				//~ naText:'N/A',
-			});
+			//~ // create_dashboard_find_url
+			//~ AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.bold,
+				//~ search: {
+					//~ str_add_to_searches_hidden: ' site:facebook.com/pages/ ',
+					//~ use_full_urls: true,
+					//~ replace_urls_in_result_body: true,
+				//~ },
+				//~ searches:[
+					//~ o.comp,
+					//~ o.comp + ' ' + o.addr,
+					//~ o.comp + ' ' + o.addr + ' ' + o.phone,
+				//~ ],
+				//~ out_element: null,//o.q[0],
+				//~ parent: d1,
+				//~ offsetTop: 0,
+			//~ });
 		}
 		new run().f();
 		return;
