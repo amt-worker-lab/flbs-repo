@@ -135120,7 +135120,7 @@ qatar,80
 	// 
 	//
 	// 
-	var s = '<li>Enter the address for the <strong> official website</strong> of the city.</li>\n	<li>Include the full address, e.g. http://www.clearlakeiowa.com.</li>';
+	var s = '<li>Search the company name provided on google.co.uk</li>\n	<li>From the results, identify the official website of the company&nbsp;(do not&nbsp;consider URLs to city guides, listings like Citysearch or websites like Wikipedia, Bloomberg, Facebook)</li>\n	<li>Go to the homepage of the official company website</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -135133,10 +135133,11 @@ qatar,80
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			// Elements
 			var td = document.getElementsByTagName('td');
+			var td1= td[1].getElementsByTagName('p');
 			var o = {
-				comp: td[1].innerText.trim().string_to_mixed_case(),	// city
-				field2: td[3].innerText.trim().string_to_mixed_case(),	//state
-				//~ field3: td[5].innerText.trim().string_to_mixed_case(), 
+				comp: td1[0].innerText.trim().string_to_mixed_case(),	// comp
+				field2: td1[1].innerText.trim().string_to_mixed_case(),	// country
+				field3: td[3].innerText.trim().string_to_mixed_case(),	// address
 				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
 				boldArray: [],
 				boldArray2: [],
@@ -135145,13 +135146,17 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
+			// remove crazy "zip" from tail.
+			o.field3 = o.field3.replace(/[, ]*[\w\d]{2,4} [\w\d]{2,4}$/i, '')
 			o.boldArray = o.comp.clean_string_to_array();
-			o.boldArray2= o.field2.clean_string_to_array();
+			o.boldArray2= o.field2.clean_string_to_array().concat(
+				o.field2.clean_string_to_array()
+				);
 			//~ o.boldArray3= o.field3.clean_string_to_array();
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			console.log(o);
 			AMT___addUserDecision(
-				'Team AMS,2017', function() {
+				'Teodora Micu,2017', function() {
 					return o.comp + '|' + o.field2;
 				}, ['Id(web_url)']
 			)
@@ -135181,7 +135186,7 @@ qatar,80
 				searches:[
 					o.comp,
 					o.comp +', '+ o.field2,
-					o.comp +', '+ o.field2.stateAbbrToFull(),
+					o.comp +', '+ o.field3,
 				],
 				search_results: {
 					//~ use_domain_only: true,
