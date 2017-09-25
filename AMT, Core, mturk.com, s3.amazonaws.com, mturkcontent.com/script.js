@@ -135146,8 +135146,15 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
+			// gb or uk
+			if (o.field2.toLowerCase() == 'gb') {
+				o.field2 = '(gb OR uk)';
+			}
 			// remove crazy "zip" from tail.
-			o.field3 = o.field3.replace(/[, ]*[\w\d]{2,4} [\w\d]{2,4}$/i, '')
+			o.field3 = o.field3.replace(/[, ]*[\w\d]{2,4} [\w\d]{2,4}$/gi, '');
+			// Remove all but possibly city in last field
+			o.field3 = o.field3.trim().split(' ');
+			o.field3 = o.field3[o.field3.length - 1]
 			o.boldArray = o.comp.clean_string_to_array();
 			o.boldArray2= o.field2.clean_string_to_array().concat(
 				o.field2.clean_string_to_array()
