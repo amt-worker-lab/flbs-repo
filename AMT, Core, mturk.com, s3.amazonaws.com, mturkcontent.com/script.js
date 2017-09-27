@@ -98186,6 +98186,15 @@ qatar,80
 	}
 	/**
 	 * Youtube Email
+	 * Note: Needs update!
+	 * 			So... Youtube changed the layout. But moreover it appears
+	 * 			that rather than filling a captcha to see the email
+	 * 			YT now is requiring an "I'm not a robot" checkbox.
+	 * 			Which means that rather than entering captchas it is
+	 * 			going to be a task of "Find boxes with street signs".
+	 * 			And not just one attempt per captcha but instead
+	 * 			they require that it be solved for multiple images!
+	 * 			Anyway. Would need to be updated for this.
 	 * 
 	 * Ex:
 	 * Mark Carey
@@ -98193,7 +98202,7 @@ qatar,80
 	 * 
 	 */
 	// Gustav Kvick
-	//
+	// Note: Needs update!
 	s = '<p>Enter the URL and get email&nbsp;from the Youtuber\'s about page.</p>\n\n<p><strong>Email can be found in the "Description" or in "Details"</strong></p>\n\n<ul>\n	<li>Format for email: johndoe@email.com</li>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -98586,9 +98595,6 @@ qatar,80
 				if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length) {// || !emailReg.exec(about[0].innerText)) {
 					//~ scrapy(dom);
 					d4c.appendChild('--'.div());
-					// Do NA
-					o.q[0].value = 'NA';
-					doSubmit();
 					return;
 				}
 				// emailReg 
