@@ -98184,10 +98184,703 @@ qatar,80
 		}
 		new run().f();return;
 	}
-	// 
+	/**
+	 * Youtube Email
+	 * 
+	 * Ex:
+	 * Mark Carey
+	 * Gustav Kvick
+	 * 
+	 */
+	// Gustav Kvick
+	//
+	s = '<p>Enter the URL and get email&nbsp;from the Youtuber\'s about page.</p>\n\n<p><strong>Email can be found in the "Description" or in "Details"</strong></p>\n\n<ul>\n	<li>Format for email: johndoe@email.com</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input {margin:0 !important;padding:0 !important;font-size:10px;}');
+			//~ GM_addStyle('#mturk_form {margin-top:200px !important;}');
+			GM_addStyle('#submitButton {width:40%;height:40px;position:absolute;top:1000px;}');
+			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			GM_addStyle('.form-control {width:60% !important;height:24px !important;position:absolute;left:40%;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: td[3].innerText,
+				bold: [],
+				
+				channel_id: null,
+				session_token: null, // To be filled in at em0() (May be unnecessary)
+				challenge_id: null, // To be filled in at em1()
+				
+				rand_id: Math.random(),
+				cookie_filename: null,
+				
+				final_rs: null,
+				q: [
+					document.getElementsByName('Email')[0],
+				],
+				SKIP_SITES: null,
+			}
+			
+			function cookie() {
+				o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + o.rand_id + '.cookie');
+				//~ o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + '.cookie');
+			}
+			o.channel_id = /channel\/([^\/]+)\//.exec(o.url)[1]; // e.g. UCFN3lenUT-LVL3SMvn-z7Vg
+			//~ o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + o.rand_id + '.csookie');
+			
+			/*BEGIN ITEMS*/
+			// d1
+			var d1 = document.createElement('img');
+			d1.setAttribute('style',
+				'position:absolute;top:0;left:0;height:70px;width:200px;border:1px solid #a2a2a2;cursor:pointer;zoom:2;z-index:10;' // 115x35
+			);
+			document.body.appendChild(d1);
+			// d2
+			var d2 = document.createElement('div');
+			d2.setAttribute('style', 'position:absolute;top:140px;left:40%;height:400px;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			document.body.appendChild(d2);
+			// d3
+			var d3 = document.createElement('input');
+			d3.setAttribute('style', 'position:absolute;left:0;top:140px;height:100px;width:40%;font-size:36px;'); //
+			document.body.appendChild(d3);
+			// d4
+			var d4 = document.createElement('div');
+			d4.setAttribute('style', 'position:absolute;top:0px;left:40%;height:140px;width:45%;background-color:#eee;border:1px solid blue;overflow:auto;               display:none;'); //display:none;
+			document.body.appendChild(d4);
+			// d4
+			var d4b = document.createElement('div');
+			d4b.setAttribute('style', 'position:absolute;top:0px;left:85%;height:140px;width:14%;background-color:#eee;border:1px solid blue;overflow:auto;               display:none;'); //display:none;
+			document.body.appendChild(d4b);
+			// d4
+			var d4c = document.createElement('div');
+			d4c.setAttribute('style', 'position:absolute;top:240px;left:0%;height:140px;width:40%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			document.body.appendChild(d4c);
+			/*END ITEMS*/
+			
+			// createScriptVar
+			new AMT___core_factory().createScriptVar('MC-Submit', '13');		// Enter-key
+			setTimeout(function() {
+				new AMT___core_factory().createScriptVar('MC-Reload', '49');	// 1-key
+			}, 1000);
+			// Onkeyup
+			d3.onkeyup = function(e) {
+				console.log(e.keyCode);
+				// Remove any unnecessary characters, i.e. typos.
+				if (/[^a-z0-9]/gi.exec(this.value)) {
+					this.value = this.value.replace(/[^a-z0-9]/gi, '');
+				}
+				// Key to submit CAPTCHA
+				// Use parseInt.
+				if (e.keyCode == parseInt( AMT__Global_Vars.scriptVars['MC-Submit']) ) {
+					this.blur(); // No more focus.
+					em2(); // Email2
+				}
+				// Reload CAPTCHA
+				// Use parseInt.
+				if (e.keyCode == parseInt( AMT__Global_Vars.scriptVars['MC-Reload']) ) {
+					d1.click();
+				}
+			}
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d2
+				],
+				offset: 140 // offset top
+			});
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d4c
+				],
+				offset: 240 // offset top
+			});
+			// d1
+			d1.onclick = function() {
+				this.src = 'http://localhost/';
+				d3.value = '';
+				d3.focus();
+				em0();
+			}
+			
+			// Add to tabs q
+			//~ if (!AMT__Global_Vars.isPreview) {
+				//~ AMT___doPastBehavior(
+					//~ 'GustavKvick,2017',
+					//~ 1
+				//~ );
+				//~ AMT___addUserDecision(
+					//~ 'GustavKvick,2017',
+					//~ function() {
+						//~ return o.url
+					//~ },
+					//~ ['Id(web_url)']
+				//~ );
+			//~ }
+			
+			// INIT
+			// Check for email then....
+			//~ ema();
+			
+			//~ // Get skips file
+			//~ new AMT___requests_factory().fs__load_skips({
+				//~ skips_key: 'austin_load_skips',
+				//~ callback: init,
+				//~ callback_err: function() {}
+			//~ });
+			//~ // Init
+			//~ function init(SKIP_SITES) {
+				//~ o.SKIP_SITES = SKIP_SITES; // Populate.
+				//~ ema(); // INIT
+			//~ }
+			
+			// Init
+			ema();
+			
+			/**
+			 * skip
+			 */
+			//~ function skip() {
+				//~ AMT___Floater.skip();
+				//~ d2.innerText = 'Skip';
+				//~ d2.style.backgroundColor = 'pink';
+			//~ }
+			/**
+			 * scrapy
+			 */
+			//~ function scrapy(dom) {//start_urls, allowed_domains) {
+				
+				//~ // any in dom?
+				//~ var c = dom.getElementsByClassName('about-metadata branded-page-box-padding clearfix'); // Container
+				//~ if (!c || c.length != 1) {
+					//~ skip();return;
+				//~ }
+				//~ c = c[0];
+				//~ var l = c.getElementsByClassName('about-channel-link')
+				//~ if (!l || !l.length) {
+					//~ skip();return;
+				//~ }
+				//~ // Here...
+				//~ var start_urls = [];
+				//~ var allowed_domains = [];
+				//~ for (var i=0;i<l.length;i++) {
+					//~ var hr = l[i].getAttribute('href').trim().toLowerCase();
+					//~ if (!/^https?:\/\//.exec(hr)) {
+						//~ hr = 'http://'+hr;
+					//~ }
+					//~ if  (
+						//~ /^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
+						//~ )
+					//~ {
+						//~ continue; // Skip
+					//~ }
+					//~ if  (
+						//~ hr.indexOf('facebook.com') != -1 ||
+						//~ /^https?:\/\/plus\.google\.com\/\d+\/?$/i.exec(hr) //https://plus.google.com/116596412095727572255
+						//~ )
+					//~ {	 // Add about page!
+						//~ if (hr[hr.length - 1] != '/')
+							//~ start_urls.push(hr + '/about');	// Not trailing slash
+						//~ else
+							//~ start_urls.push(hr + 'about');	// Trailing slash
+						//~ continue;
+					//~ }
+					//~ if (/^https?:\/\/plus\.google\.com\//i.exec(hr)) { //https://plus.google.com/............
+						//~ continue;
+					//~ }
+					//~ // Fill in o.q[1] and o.q[2]
+					//~ if  (
+						//~ hr.indexOf('facebook.com') != -1
+						//~ )
+					//~ {
+						//~ o.q[1].value = hr;
+					//~ }
+					//~ if  (
+						//~ hr.indexOf('twitter.com') != -1
+						//~ )
+					//~ {
+						//~ o.q[2].value = hr;
+					//~ }
+					//~ //
+					//~ var x = hr.replace(/^https?:\/\/(w+\d*\.|)/g, '');	// Initial...
+					//~ x = x.replace(/([^\/]+)[\d\D]*/, '$1');				// Trailing...
+					//~ console.log('domain:'+x);
+					//~ console.log('full:'+hr);
+					//~ var el_inp_skip2__obj = new AMT___items_factory().
+						//~ create__input_skip_button2(
+							//~ {
+								//~ domain: x,
+								//~ load_file: 'austin_load_skips', 
+								//~ var_skip_sites: o.SKIP_SITES, 
+								//~ callback_function: false
+							//~ }
+						//~ );
+					//~ if (el_inp_skip2__obj.isSkip) {
+						//~ var x = ''.div({style:'border-bottom:1px solid teal;'});
+						//~ x.appendChild(el_inp_skip2__obj.el_btn);
+						//~ d4b.appendChild(x);
+						//~ continue; // END
+					//~ }
+					//~ // Here...
+					//~ var out = ''.div({style:'border-bottom:1px solid teal;'});
+					//~ d4.appendChild(out);
+					//~ out.appendChild(el_inp_skip2__obj.el_btn);
+					//~ out.appendChild(document.createTextNode(x));
+					//~ out.appendChild(hr.div());
+					//~ // Add to queue...
+					//~ start_urls.push(hr);
+					//~ allowed_domains.push(x);
+				//~ }
+				//~ if (!start_urls.length && !allowed_domains.length) {
+					//~ skip();return;
+				//~ }
+				//~ d4.appendChild(''.div({style:'height:2000px;'})); // If results then append to d4
+				//~ console.log(start_urls);
+				//~ console.log(allowed_domains);
+				//~ //
+				//~ var s_obj = 
+				//~ {
+					//~ project: 'scrapy_amt',
+					//~ spider: 'AMTSpider',
+					//~ arg_allowed_domains: allowed_domains,	// array
+					//~ arg_start_urls: start_urls,		// array
+					//~ arg_max_pages_to_fetch: 60,
+					//~ arg_type_scrape: 'all_emails',	// all_emails or str_match
+					//~ settings: [
+							//~ //'DEPTH_LIMIT=4',
+							//~ //'SCHEDULER_ORDER=BFO',
+						//~ 'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+							//~ //'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						//~ 'CONCURRENT_ITEMS=40', //DEFAUL = 100
+						//~ 'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+						//~ 'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+						//~ 'AJAXCRAWL_ENABLED=1', //true
+						//~ 'COOKIES_ENABLED=0', //false
+							//~ //'RETRY_ENABLED=0', //false
+							//~ //'DI=0', //false
+						//~ 'REDIRECT_MAX_TIMES=1'//,
+							//~ //'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+							//~ //'AJAXCRAWL_ENABLED=1', //true
+					//~ ]
+				//~ }
+				//~ var req = new AMT___requests_factory();
+				//~ AMT___POPUP__initializeGlobals(
+					//~ function() {
+						//~ req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							//~ s_obj,
+							//~ new AMT___items_factory().create_dashboard__powers_v1,
+							//~ {
+								//~ div: d2,
+								//~ input_send_success: o.q[0],
+								//~ do_submit_callback: function() {
+									//~ // do nothing
+									//~ // ...
+								//~ },
+								//~ // RUNS BEFORE DASHBOARD IS FILLED IN !
+								//~ callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									//~ if (!callback_obj.matches || !callback_obj.matches.length) {
+										//~ skip();
+										//~ // If in preview mode then add to queue!
+										//~ if (!AMT__Global_Vars.isPreview) {
+										//~ }
+										//~ return false;
+									//~ }
+									//~ if (AMT__Global_Vars.isPreview) {
+										//~ AMT___Floater.accept();
+										//~ return false;
+									//~ }
+									//~ // Here...
+									//~ addToTabsQ();
+									//~ // Move divs
+									//~ d1.parentNode.removeChild(d1);
+									//~ d3.parentNode.removeChild(d3);
+									//~ d2.style.left = '0';
+									//~ d2.style.width = '99%';
+									//~ d4c.style.height = '140px';
+									//~ d4c.style.top = '0px';
+								//~ },
+								//~ input_onclick_callback: function() {
+									//~ this.style.backgroundColor = 'LightGreen';
+									//~ if  (
+										//~ this.email.length > 6 &&
+										//~ this.email.indexOf('@') != -1 &&
+										//~ !/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
+										//~ )
+									//~ {
+										//~ o.q[0].value = this.email;
+										//~ doSubmit();
+									//~ }
+								//~ },
+							//~ }
+						//~ );
+					//~ }
+				//~ );
+			//~ }
+			/**
+			 * function about_fb_tw
+			 */
+			//~ function about_fb_tw(rs) {
+				//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
+				//~ // any in dom?
+				//~ var c = dom.getElementsByClassName('about-metadata branded-page-box-padding clearfix'); // Container
+				//~ if (!c || c.length != 1) {
+					//~ return;
+				//~ }
+				//~ c = c[0];
+				//~ var l = c.getElementsByClassName('about-channel-link')
+				//~ if (!l || !l.length) {
+					//~ return;
+				//~ }
+				//~ // Here...
+				//~ for (var i=0;i<l.length;i++) {
+					//~ var hr = l[i].getAttribute('href').trim().toLowerCase();
+					//~ if (!/^https?:\/\//.exec(hr)) {
+						//~ hr = 'http://'+hr;
+					//~ }
+					//~ if  (
+						//~ /^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
+						//~ )
+					//~ {
+						//~ continue; // Skip
+					//~ }
+					//~ // Fill in o.q[1] and o.q[2]
+					//~ if  (
+						//~ hr.indexOf('facebook.com') != -1 || 
+						//~ hr.indexOf('//fb.me') != -1 ||
+						//~ hr.indexOf('www.fb.me') != -1 ||
+						//~ hr.indexOf('fb.me') == 0
+						//~ )
+					//~ {
+						//~ o.q[1].value = hr;
+					//~ }
+					//~ if  (
+						//~ hr.indexOf('twitter.com') != -1 ||
+						//~ hr.indexOf('//t.co') != -1 ||
+						//~ hr.indexOf('www.t.co') != -1 ||
+						//~ hr.indexOf('t.co') == 0
+						//~ )
+					//~ {
+						//~ o.q[2].value = hr;
+					//~ }
+				//~ }
+			//~ }
+			/**
+			 * function about_text
+			 */
+			function about_text(dom) {
+				// Fill in dom.title
+				d4c.innerText = '';
+				d4c.appendChild((dom.title.replace('- YouTube', '').trim()).div({style:'border-bottom:1px solid teal;'}));
+				// about-description
+				var about = dom.getElementsByClassName('about-description');
+				// Skip?
+				if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length) {// || !emailReg.exec(about[0].innerText)) {
+					//~ scrapy(dom);
+					d4c.appendChild('--'.div());
+					// Do NA
+					o.q[0].value = 'NA';
+					doSubmit();
+					return;
+				}
+				// emailReg 
+				var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
+				// Accept if emails are here.......
+				var has_em = emailReg.exec(about[0]);
+				if (AMT__Global_Vars.isPreview && has_em) {
+					AMT___Floater.accept();
+					return;
+				} else if (has_em) {
+					//addToTabsQ();
+				}
+				// Here...
+				emailReg.lastIndex = 0; // Reset lastIndex
+				var eobj = {};
+				var earr = [];
+				var em;
+				about = about[0].innerText.trim();
+				while (em = emailReg.exec(about)) {
+					eobj[ em[1] ] = true;
+					earr.push( em[1] );
+				}
+				// Bold
+				about = about.replace(/[<>]/g, ''); // Remove arrows, <>
+				about = MT__bold(about, earr);
+				var adiv = about.div({innerHTML: true});
+				for (var i in eobj) {
+					var btn = i.div({style:'border-bottom:1px solid #a2a2a2;'});
+					btn.className = 'exe';
+					btn.onclick = function() {
+						this.style.backgroundColor = 'teal';
+						o.q[0].value = this.innerText;
+						if (o.q[0].value.indexOf('@') != -1 && o.q[0].value.length > 6) {
+							//~ AMT___recordAndSubmit();
+						}
+					}
+					d4c.appendChild(btn);
+				}
+				d4c.appendChild(adiv);
+				d4c.appendChild(''.div({style:'height:2000px;'}));
+				// And now do scrapy.......
+				//~ scrapy(dom);
+			}
+			/**
+			 * 
+			 */
+			function ema() {
+				d2.innerText = 'Loading initial check...';
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						// Skip?
+						if (!/<span class="[^"]+">(View email address|Afficher l&#39;adresse e-mail)<\/span>/.exec(rs)) { // In fr also...
+							// If only in CAPTCHA mode then skip here!
+							//
+							//
+							new AMT___core_factory().createScriptVar('MC-CAPTCHA-Only', '0');
+							//~ if (AMT__Global_Vars.scriptVars['MC-CAPTCHA-Only'] == '1') {
+								// Never continue here... //&& AMT__Global_Vars.isPreview) {
+								//~ new AMT___core_factory().
+								//~ iframe2parent__postMessage( //
+									//~ {
+										//~ action: 'return_and_accept'
+									//~ }
+								//~ );
+								//~ skip();
+								//~ return;
+							//~ }
+							// Check for e-mail ...
+							//
+							//
+							var dom =  new DOMParser().parseFromString(rs,'text/html');
+							about_text(dom, true); // True = Scrapy if no emails found...
+							//...
+							return;
+						}
+						//~ // Check for fb and tw
+						//~ about_fb_tw(rs);
+						// Accept
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.accept();
+							//~ return;
+						//~ } else { // Accepted...
+							//~ //addToTabsQ();
+						//~ }
+						// Next...
+						em0();
+					}
+					
+				});
+			}
+			/**
+			 * function em0
+			 * Check page for email. Fill in session_token (necessary?). Else check for other links.
+			 * Do not cache here...
+			 */
+			function em0() {
+				d2.innerText = 'Loading page...';
+				cookie(); // Set cookie for this "run".
+				// ...
+				var opts = {
+					url: o.url,
+					do_not_save_to_file: true,		// Need to save to file here if skipping.....!
+					cookie_filename: o.cookie_filename	// Set this because the cookie needs to be set NOW for CAPTCHA to work later on....
+				}
+				opts = JSON.stringify(opts);
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (/^\d{3}$/.exec(rs)) { // If status code is returned
+							// Display output
+							d2.innerText = 'START ERROR='+rs;
+							// ...
+							return;
+						}
+						// Here...
+						// Session token
+						// e.g. QFFLUhqbWYzQWZzX0k5VUVrbTI5NGt2SkJsYkpwRU9yUXxBQ3Jtc0tuTXlYcEhBQU54SjB1ZThkMzFURWhnSXV1d1RiSk02bzhPMXU0QlNHMmI5MlZaNHFZcU9ucDVjUXlKeGFqei1RSmxNdlp2S0s2Z0tUWnlpYVhBSllRSHJrTXVLb0ZnREtHZTZUczctM3h6c3lqalpTRThlZkNDbXdkTFE0Q0hIektfbnl0YWUyNUV2a0gyYl9CSTZkV2JkWUJTYm5RM21yOXVLbFF1cWxRSExPLW45Slk=
+						//~ var reg = /name="session_token" value="([^"]+)"/.exec(rs);
+						var reg = /'XSRF_TOKEN': "([^"]+)"/.exec(rs);
+						if (!reg) {
+							d2.innerText = 'session!';
+							o.session_token = '';
+							return;
+						}
+						o.session_token = __js_clean_html_str(reg[1]);
+						
+						//~ o.session_token = ''; // Unnecessary?
+						em1();
+					}
+				});
+			}
+			/**
+			 * function em1
+			 * Get a CAPTCHA
+			 */
+			function em1() {
+				d2.innerText = 'Loading CAPTCHA...';
+				var harray = [
+					'accept-encoding: gzip, deflate, sdch',
+					'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+					'pragma: no-cache',
+					'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36',
+					'accept: */*',
+					'cache-control: no-cache',
+					'authority: www.youtube.com',
+					'referer: ' + o.url
+				];
+				// ...
+				// URL changed from c4_profile_ajax to channels_profile_ajax
+				// Feb 26 2016.
+				var opts = {
+					url: 'https://www.youtube.com/channels_profile_ajax?action_get_business_email_captcha=1', // CHANGED  
+					//~ url: 'https://www.youtube.com/c4_profile_ajax?action_get_business_email_captcha=1', 
+					do_not_save_to_file: true,
+					cookie_filename: o.cookie_filename,
+					headers_array: harray
+				}
+				opts = JSON.stringify(opts);
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (/^\d{3}$/.exec(rs)) { // If status code is returned
+							// Display output
+							d2.innerText = 'START ERROR='+rs;
+							// ...
+							return;
+						}
+						// 
+						d2.innerText = 'Loaded! Fill in...';
+						// Image d1
+						rs = JSON.parse(rs);
+						if (!rs.str_code || rs.str_code != 'CAPTCHA') {
+							d2.innerText = rs.str_code;
+							return;
+						}
+						rs = rs.html_content;
+						// e.g. AP4KNMhpCtdm789v-KSJbSMBt3knbMcq-_AAfJwlrmoT_QovM9wGc7VvSLo_MEeqH6bsqxSH2bCbO2ITRb9NHKLwUXczXSqsgg
+						var reg = /<img src="\/cimg\?c=([^"]+)" class="captcha-image" id="captcha-image">/.exec(rs);
+						if (!reg) {
+							d2.innerText = 'cimg!';
+							return;
+						}
+						// Still here
+						reg = __js_clean_html_str(reg[1]);
+						o.challenge_id = reg;
+						d1.src = 'https://www.youtube.com/cimg?c='+reg;
+						// Focus on input.
+						d3.focus();
+					}
+				});
+			}
+			/**
+			 * function em2
+			 * 
+			 * 
+			 */
+			function em2() {
+				d2.innerText = 'Submitting CAPTCHA...';
+				// Go showNextTab! The wait here is around 0.4s to 2.0s!
+				new AMT___core_factory().createScriptVar("SNT on Captcha Attempt", '0');
+				if(AMT__Global_Vars.scriptVars['SNT on Captcha Attempt'] != '0')
+					showNextTab();
+				
+				// ...
+				var strp =
+					'response='+d3.value+
+					'&challenge='+encodeURIComponent(o.challenge_id)+
+					'&channel_id='+encodeURIComponent(o.channel_id)+
+					'&session_token='+encodeURIComponent(o.session_token);
+				// ...
+				// CHANGED: c4_profile_ajax TO channels_profile_ajax
+				// Feb 26 2016
+				var opts = {
+					url: 'https://www.youtube.com/channels_profile_ajax?action_verify_business_email_captcha=1',
+					//url: 'https://www.youtube.com/c4_profile_ajax?action_verify_business_email_captcha=1',
+					do_not_save_to_file: true,
+					cookie_filename: o.cookie_filename,
+					post_object_as_str: strp,
+					headers_array: [
+						'origin: https://www.youtube.com',
+						'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36',
+						'content-type: application/x-www-form-urlencoded',
+						'referer: ' + o.url,
+						'X-YouTube-Client-Version:1.20151022',
+						'X-YouTube-Page-CL:106104429',
+						'X-YouTube-Page-Label:youtube_20151022_RC1',
+						'X-YouTube-Variants-Checksum:',
+					]
+					
+				}
+				opts = JSON.stringify(opts);
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (/^\d{3}$/.exec(rs)) { // If status code is returned
+							// Display output
+							d2.innerText = '2 ERROR='+rs;
+							// FOCUS AND DO AGAIN!!!
+							// Use same CAPTCHA as first time!
+							d3.focus();
+							//addToTabsQ(); // Add to queue.....
+							// ...
+							return;
+						}
+						console.log(rs);
+						rs = JSON.parse(rs);
+						console.log(rs);
+						if (!rs.str_code || rs.str_code != 'EMAIL_ADDR') {
+							d2.innerText = '!=email_addr';
+							//addToTabsQ(); // Add to queue.....
+							return;
+						}
+						rs = rs.html_content;
+						var reg = /<a href="mailto:([^@]+@[^"]+)"/.exec(rs);
+						if (!reg) {
+							d2.innerText = 'BAD EMAIL / ' + rs;
+							//addToTabsQ(); // Add to queue.....
+							return;
+						}
+						d2.innerText = 'Success!';
+						// Sbm
+						var m = __js_clean_html_str(reg[1]).trim();
+						o.q[0].value = m;
+						if (m.length > 6) {
+							doSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();return;
+	}
 	// Mark Carey
 	// Find the business enquiries email address of given YouTube channel
 	// 3QLL1RLFYUGHXA7A8G5E8R9FP6KG4S
+	//
 	s = 'If there is no "view email address" button, the email may be included as part of the channel description text. If not, you may find the email by other means, often emails can be found at the top of their Instagram profile or their blog, if linked from "About" page. If you can\'t find an email after reasonable efforts, please enter na@na.com (such submissions will be spot-checked)';
 		//~ s = '<p>Find the business enquiries email address for the following YouTube channel</p>';
 	if (ih.indexOf(s) != -1) {
