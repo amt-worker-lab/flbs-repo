@@ -12780,9 +12780,9 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			//try_sbm
 			function try_sbm() {
-				if (/^([\d\w,]+ to [\d\w,]+)$/i.exec(o.q[0].value)	|| // 1 to 10
-					/^([\d\w,]+ *- *[\d\w,]+)$/i.exec(o.q[0].value)		|| // 1-10 or 1 - 10
-					/^[\d,]+\+$/i.exec(o.q[0].value)		   		// 10,000+
+				if (/^([\d\w,]+ to [\d\w,]+)$/i.exec(o.q[0].value)	||	// 1 to 10
+					/^([\d\w,]+ *- *[\d\w,]+)$/i.exec(o.q[0].value)	||	// 1-10 or 1 - 10
+					/^[\d\w,]+ *\+$/i.exec(o.q[0].value)	   			// 10,000+ or 10k +
 				) {
 					AMT___recordAndSubmit();
 				}
@@ -12900,8 +12900,26 @@ Laurens Hammond, Chicago, Ill.**/
 					URL: href,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
-						if (/!<dt>Employees:<\/dt><dd>([\d,\w]+ - [\d,\w]+|[\d,\w]+\+) \|/i.exec(rs)) { // No "Showing results "
+						console.log(rs);
+						if (!/<dt>Employees:<\/dt><dd>([\d,\w]+ *- *[\d,\w]+|[\d,\w]+ *\+) \|/i.exec(rs)) {
 							document.body.style.backgroundColor = 'yellow';
+							// Is it not good version of employees?
+							// Then...
+							if (rs.indexOf('Employees:</dt><dd><a href=\'/organization/') != -1) {
+								//          Employees:</dt><dd><a href='/organization
+								// r&a
+								// return_and_accept
+								new AMT___core_factory().
+									iframe2parent__postMessage(
+										{
+											action: 'return_and_accept_button__nextTab'
+										}
+									);
+								return true; // Save page.
+							} else {
+								// Utility window.
+								AMT__setUtilityTabs([{url: href}]);
+							}
 							return false;
 						} else
 							return true;
@@ -12913,7 +12931,9 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			function cb_success(response) {
 				var rs = response.responseText;
-				var r = /<dt>Employees:<\/dt><dd>([\d,\w]+ - [\d,\w]+|[\d,\w]+\+) \|/i.exec(rs); // range (1 - 10) or exact with "+" (10,000+)
+				var r = /<dt>Employees:<\/dt><dd>([\d,\w]+ *- *[\d,\w]+|[\d,\w]+ *\+) \|/i.exec(rs); // range (1 - 10) or range (1-10) or exact with "+" (10,000+) or (10k +)
+				//~ console.log(rs);
+				console.log(r);
 				if (r) { // No "Showing results "
 					o.q[0].value = r[1];
 					try_sbm();
