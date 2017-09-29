@@ -11535,14 +11535,17 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	var NUM_FOUND_SEARCH = 0;
 	var SKIP_SITES;
 	// try_mt_host, Default=true
-	function company_URL__load_skips(try_mt_host) {
+	function company_URL__load_skips(try_other_host) {
 		var tmp_host = MT___host;
-		if (!try_mt_host) {
+		if (!try_other_host) {
 			var tmp_host = 'http://'+AMT__Global_Vars.scriptVars['Server Location']; // E.g., change 192.168.1.2 to localhost
 		}
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: tmp_host+'/mturk/util.php?austin_load_skips=',
+			onerror: function(response) {
+				company_URL__load_skips(false); // Retry
+			},
 			onload: function (response) {
 				if (response.status != 200) {
 					company_URL__load_skips(false);
@@ -11572,7 +11575,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	}
 	// Init
 	//
-	company_URL__load_skips();
+	company_URL__load_skips(false);
 	/**
 	 * company_URL__SP_init
 	 */
