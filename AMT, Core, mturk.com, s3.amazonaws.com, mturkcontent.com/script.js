@@ -12684,6 +12684,9 @@ Laurens Hammond, Chicago, Ill.**/
 	}
 	/**
 	 * Crunchbase business.
+	 * Latest code is ME Voss. CB search and scrape becomes super
+	 * 	blocked pretty quickly. So in terms of CB search a better
+	 *  method is mostly necessary.
 	 * 
 	 * Dale Chang
 	 * Mary-Elizabeth Voss
@@ -12828,7 +12831,7 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ 'x-requested-with: XMLHttpRequest',
 					],
 					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
-					post_object_as_str: '{"field_ids":["identifier","category_groups","headquarters_identifiers","short_description","rank"],"order":[],"query":[{"type":"predicate","field_id":"short_description","operator_id":"contains","values":["'+encodeURIComponent(d2.value)+'"]}],"field_aggregators":[],"limit":50}'
+					post_object_as_str: '{"field_ids":["identifier","category_groups","headquarters_identifiers","short_description","rank"],"order":[],"query":[{"type":"predicate","field_id":"short_description","operator_id":"contains","values":["'+d2.value.replace(/"/g, '')+'"]}],"field_aggregators":[],"limit":50}'
 					//~ '{"params":"query='+encodeURIComponent(d2.value)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
 				};
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
@@ -12848,9 +12851,9 @@ Laurens Hammond, Chicago, Ill.**/
 							alert('unsuccessful load');
 							return;
 						}
-						console.log(rs);
 						rs = JSON.parse(rs); // Array of objects
-						console.log(rs);return;
+						console.log(rs);
+						
 						if (!rs.hasOwnProperty('entities') || !rs.entities.length) {
 							d1.innerHTML = '0 - crunchbase';
 							return;
@@ -12858,26 +12861,29 @@ Laurens Hammond, Chicago, Ill.**/
 						rs = rs.entities;
 						var first = true;
 						for (var i in rs) {
-							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
-							var p = rs[i].profile_image_url;
-							console.log(rs[i]);
+							// info on comp.
+							var id = rs[i].properties.identifier;
+							// short desc of comp.
+							var sd = rs[i].properties.short_description;
+							
+							//~ if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
+							//~ var p = rs[i].profile_image_url;
+							//~ console.log(rs[i]);
 							
 							var div = document.createElement('div');
 							div.setAttribute('style', 'float:left; width:49%;');
-							rs[i].domain = (!rs[i].domain) ? '' : rs[i].domain;
+							//~ rs[i].domain = (!rs[i].domain) ? '' : rs[i].domain;
 							div.className = 'exe';
-							div.compName = rs[i].name;
-							//~ div.href = 'https://www.crunchbase.com/'+rs[i].api_path.replace(/organizations/, 'organization');
-							// http
-							div.href = 'http://www.crunchbase.com'+rs[i].url.replace(/organizations/, 'organization');
+							div.compName = id.value;
 							// https
-							//~ div.href = 'https://www.crunchbase.com/'+rs[i].url.replace(/organizations/, 'organization');
+							div.href = 'https://www.crunchbase.com/organization/'+id.permalink;
 							
 							var div2 = document.createElement('div');
-							div2.innerHTML = MT__bold(rs[i].name, o.bold) + // o.bold
-								'<br>' + MT__bold(rs[i].primary_role + ':' +rs[i].description, o.bold)+
-								'<br>' + MT__bold(div.href, o.bold);
-								//~ '<br>' + MT__bold(rs[i].domain, o.bolddm);
+							div2.innerHTML =
+										MT__bold(div.compName, o.bold) +
+								'<br>' +MT__bold(id.entity_def_ids.join(' '), o.bold)+
+								'<br>' +MT__bold(sd, o.bold)+
+								'<br>' +MT__bold(div.href, o.bold);
 							div2.setAttribute('style', 'float:left;');
 							div.appendChild(div2);
 							div.onclick = function() {
@@ -12892,11 +12898,11 @@ Laurens Hammond, Chicago, Ill.**/
 							
 							// Auto
 							console.log('auto');
-							console.log(o.comp_auto + ' ' + rs[i].name.clean_str_to_auto());
-							console.log(o.comp_auto == rs[i].name.clean_str_to_auto());
+							console.log(o.comp_auto + ' ' + div.compName.clean_str_to_auto());
+							console.log(o.comp_auto == div.compName.clean_str_to_auto());
 							if  (
 								first &&
-								o.comp_auto == rs[i].name.clean_str_to_auto() &&
+								o.comp_auto == div.compName.clean_str_to_auto() &&
 								o.comp_auto.length > 3
 								) {
 								//alert('(auto...)');
@@ -13020,6 +13026,8 @@ Laurens Hammond, Chicago, Ill.**/
 				});
 			}*/
 			function cb_profile(href) {
+				// Start by going to next tab.
+				new AMT___core_factory().nextTab();
 				// Need to scrape: <dt>Employees:</dt><dd>251 - 500 |
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: href,
