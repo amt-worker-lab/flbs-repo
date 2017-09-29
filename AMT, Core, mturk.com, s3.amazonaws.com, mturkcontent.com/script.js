@@ -12795,6 +12795,131 @@ Laurens Hammond, Chicago, Ill.**/
 				d1.innerHTML = '';
 				d2.value = d2.value.trim();
 				//post_object
+				var ux = 'https://www.crunchbase.com/v4/data/companies/search';
+				var opts = {
+					headers_array: [
+						'x-distil-ajax: fswseuqf',
+						'origin: https://www.crunchbase.com',
+						'accept-encoding: gzip, deflate, br',
+						'x-requested-with: XMLHttpRequest',
+						'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+						'content-type: application/json;charset=UTF-8',
+						'accept: application/json, text/plain, */*',
+						'referer: https://www.crunchbase.com/app/search/companies/97ed465c7ab84d83c0bd98ec90f209b2d0f92847',
+						'authority: www.crunchbase.com',
+						'cookie: _vdl=1; __cfduid=dfc22298b5776dd0210e370da0779ee3d1506717868; AMCVS_6B25357E519160E40A490D44%40AdobeOrg=1; AMCV_6B25357E519160E40A490D44%40AdobeOrg=1099438348%7CMCMID%7C92017189821656264722386573426854406689%7CMCAID%7CNONE%7CMCOPTOUT-1506725071s%7CNONE%7CvVersion%7C2.1.0; D_SID=75.138.163.160:wlQY61BYibhH/2FgEyMQnibJdR2EOha4GqRJLmpmqUY; jaco_uid=9b17ae0f-fcd2-4d06-bf46-248ce97ac872; _site_session=1499e7e500c60af80962f442989cb77a; s_cc=true; s_pers=%20s_getnr%3D1506720941610-New%7C1569792941610%3B%20s_nrgvo%3DNew%7C1569792941611%3B; _okdetect=%7B%22token%22%3A%2215067209476740%22%2C%22proto%22%3A%22https%3A%22%2C%22host%22%3A%22www.crunchbase.com%22%7D; _ok=1554-355-10-6773; _okbk=cd5%3Davailable%2Ccd4%3Dtrue%2Cvi5%3D0%2Cvi4%3D1506720949128%2Cvi3%3Dactive%2Cvi2%3Dfalse%2Cvi1%3Dfalse%2Ccd8%3Dchat%2Ccd6%3D0%2Ccd3%3Dfalse%2Ccd2%3D0%2Ccd1%3D0%2C; _px=eyJ0IjoxNTA2NzIxNjM3MDU1LCJzIjp7ImEiOjAsImIiOjB9LCJoIjoiMjdkYjVlMTdmYmZhMDBkOTZkZDVlZjQ1N2ZjMzM2MGMzNDhhYTlhMTk1YjMyYWE2Nzk4MjU3OTJlZmY3NWVkMCJ9; _oklv=1506721500472%2CNUAYII46ijfj0cln3F6pZ0T0820JEaBZ; D_PID=78F4C3D5-389F-3941-A4E1-D1C81337DA57; D_IID=379D2CD6-3E1E-3965-A2D4-8E04A58057EE; D_UID=3FC495AB-DABE-3E71-8B0E-628D96F4B2F3; D_HID=sGflAA/Uqobk5XO7tuMBJNotv/EPfwvMkPP4x7jAduQ; D_ZID=98C60B07-0E07-3B03-AEA0-7E1C8A0B8709; D_ZUID=92743809-07D3-3B91-AAB7-633DA113B896; olfsk=olfsk8145516547371503; wcsid=NUAYII46ijfj0cln3F6pZ0T0820JEaBZ; hblid=sqHQrQj9IZUSllNe3F6pZ0T0820JEVob; jaco_referer=none; jaco_provided_id_f73fd0e6-c993-4c08-86e7-e393d07ab113=41662f4a-8d92-fc8d-9e7c-4d59da4a124b; __stripe_sid=644f9ae5-9c69-4e50-9f29-68093a847226; __stripe_mid=31ddae0e-bbaf-4940-b6d6-500071cd22c8',
+						
+						
+						//~ 'authority: www.crunchbase.com',
+						//~ 'method: POST',
+						//~ 'path: /v4/data/companies/search',
+						//~ 'scheme: https',
+						//~ 'accept: application/json, text/plain, */*',
+						//~ 'accept-encoding: gzip, deflate, br',
+						//~ 'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						//~ 'content-length: 249',
+						//~ 'content-type: application/json;charset=UTF-8',
+						//~ 'cookie: _vdl=1; __cfduid=dfc22298b5776dd0210e370da0779ee3d1506717868; AMCVS_6B25357E519160E40A490D44%40AdobeOrg=1; AMCV_6B25357E519160E40A490D44%40AdobeOrg=1099438348%7CMCMID%7C92017189821656264722386573426854406689%7CMCAID%7CNONE%7CMCOPTOUT-1506725071s%7CNONE%7CvVersion%7C2.1.0; D_SID=75.138.163.160:wlQY61BYibhH/2FgEyMQnibJdR2EOha4GqRJLmpmqUY; jaco_uid=9b17ae0f-fcd2-4d06-bf46-248ce97ac872; _site_session=1499e7e500c60af80962f442989cb77a; s_cc=true; s_pers=%20s_getnr%3D1506720941610-New%7C1569792941610%3B%20s_nrgvo%3DNew%7C1569792941611%3B; _okdetect=%7B%22token%22%3A%2215067209476740%22%2C%22proto%22%3A%22https%3A%22%2C%22host%22%3A%22www.crunchbase.com%22%7D; _ok=1554-355-10-6773; _okbk=cd5%3Davailable%2Ccd4%3Dtrue%2Cvi5%3D0%2Cvi4%3D1506720949128%2Cvi3%3Dactive%2Cvi2%3Dfalse%2Cvi1%3Dfalse%2Ccd8%3Dchat%2Ccd6%3D0%2Ccd3%3Dfalse%2Ccd2%3D0%2Ccd1%3D0%2C; _px=eyJ0IjoxNTA2NzIxNjM3MDU1LCJzIjp7ImEiOjAsImIiOjB9LCJoIjoiMjdkYjVlMTdmYmZhMDBkOTZkZDVlZjQ1N2ZjMzM2MGMzNDhhYTlhMTk1YjMyYWE2Nzk4MjU3OTJlZmY3NWVkMCJ9; _oklv=1506721500472%2CNUAYII46ijfj0cln3F6pZ0T0820JEaBZ; D_PID=78F4C3D5-389F-3941-A4E1-D1C81337DA57; D_IID=379D2CD6-3E1E-3965-A2D4-8E04A58057EE; D_UID=3FC495AB-DABE-3E71-8B0E-628D96F4B2F3; D_HID=sGflAA/Uqobk5XO7tuMBJNotv/EPfwvMkPP4x7jAduQ; D_ZID=98C60B07-0E07-3B03-AEA0-7E1C8A0B8709; D_ZUID=92743809-07D3-3B91-AAB7-633DA113B896; olfsk=olfsk8145516547371503; wcsid=NUAYII46ijfj0cln3F6pZ0T0820JEaBZ; hblid=sqHQrQj9IZUSllNe3F6pZ0T0820JEVob; jaco_referer=none; jaco_provided_id_f73fd0e6-c993-4c08-86e7-e393d07ab113=41662f4a-8d92-fc8d-9e7c-4d59da4a124b; __stripe_sid=644f9ae5-9c69-4e50-9f29-68093a847226; __stripe_mid=31ddae0e-bbaf-4940-b6d6-500071cd22c8',
+						//~ 'origin: https://www.crunchbase.com',
+						//~ 'referer: https://www.crunchbase.com/app/search/companies/97ed465c7ab84d83c0bd98ec90f209b2d0f92847',
+						//~ 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+						//~ 'x-distil-ajax: scraatcab',
+						//~ 'x-requested-with: XMLHttpRequest',
+					],
+					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+					post_object_as_str: '{"field_ids":["identifier","category_groups","headquarters_identifiers","short_description","rank"],"order":[],"query":[{"type":"predicate","field_id":"short_description","operator_id":"contains","values":["'+encodeURIComponent(d2.value)+'"]}],"field_aggregators":[],"limit":50}'
+					//~ '{"params":"query='+encodeURIComponent(d2.value)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
+						opts
+					));
+				d1.innerHTML = '';
+				// Xhr request
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							alert('unsuccessful load');
+							return;
+						}
+						console.log(rs);
+						rs = JSON.parse(rs); // Array of objects
+						console.log(rs);return;
+						if (!rs.hasOwnProperty('entities') || !rs.entities.length) {
+							d1.innerHTML = '0 - crunchbase';
+							return;
+						}
+						rs = rs.entities;
+						var first = true;
+						for (var i in rs) {
+							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
+							var p = rs[i].profile_image_url;
+							console.log(rs[i]);
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'float:left; width:49%;');
+							rs[i].domain = (!rs[i].domain) ? '' : rs[i].domain;
+							div.className = 'exe';
+							div.compName = rs[i].name;
+							//~ div.href = 'https://www.crunchbase.com/'+rs[i].api_path.replace(/organizations/, 'organization');
+							// http
+							div.href = 'http://www.crunchbase.com'+rs[i].url.replace(/organizations/, 'organization');
+							// https
+							//~ div.href = 'https://www.crunchbase.com/'+rs[i].url.replace(/organizations/, 'organization');
+							
+							var div2 = document.createElement('div');
+							div2.innerHTML = MT__bold(rs[i].name, o.bold) + // o.bold
+								'<br>' + MT__bold(rs[i].primary_role + ':' +rs[i].description, o.bold)+
+								'<br>' + MT__bold(div.href, o.bold);
+								//~ '<br>' + MT__bold(rs[i].domain, o.bolddm);
+							div2.setAttribute('style', 'float:left;');
+							div.appendChild(div2);
+							div.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								cb_profile(this.href);
+							}
+							var br = document.createElement('br');
+							br.clear = 'both';
+							div.appendChild(br);
+							// Append
+							d1.appendChild(div);
+							
+							// Auto
+							console.log('auto');
+							console.log(o.comp_auto + ' ' + rs[i].name.clean_str_to_auto());
+							console.log(o.comp_auto == rs[i].name.clean_str_to_auto());
+							if  (
+								first &&
+								o.comp_auto == rs[i].name.clean_str_to_auto() &&
+								o.comp_auto.length > 3
+								) {
+								//alert('(auto...)');
+								div.click();
+							}
+							first = false; // Set false
+						}
+						if (d1.innerText != '')
+							d1.appendChild(''.div({style:'height:1600px;'}));
+						else
+						{
+							d1.innerText = '0 - crunchbase';
+						}
+					}
+				});
+			}
+			// OLD CB.
+			/**function cb() {
+				document.body.style.backgroundColor = '#fff';
+				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
+				d1.innerHTML = '';
+				d2.value = d2.value.trim();
+				//post_object
 				var ux = 'https://a0ef2haqr0-2.algolia.io/1/indexes/main_production/query';
 				var opts = {
 					headers_array: [
@@ -12804,7 +12929,7 @@ Laurens Hammond, Chicago, Ill.**/
 						'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
 						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36',
 						'Content-type: application/json',
-						'Accept: */*',
+						'Accept: *',
 						'X-Algolia-Application-Id: A0EF2HAQR0',
 						'Referer: https://www.crunchbase.com/search?show_results=1&navigation_search_input='+encodeURIComponent(d2.value),
 						'Connection: keep-alive'
@@ -12893,7 +13018,7 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					}
 				});
-			}
+			}*/
 			function cb_profile(href) {
 				// Need to scrape: <dt>Employees:</dt><dd>251 - 500 |
 				new AMT___requests_factory().xhr_with_disk_cache({
@@ -12912,7 +13037,7 @@ Laurens Hammond, Chicago, Ill.**/
 								new AMT___core_factory().
 									iframe2parent__postMessage(
 										{
-											action: 'return_and_accept_button__nextTab'
+											action: 'return_and_accept'
 										}
 									);
 								return true; // Save page.
