@@ -12683,10 +12683,12 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	/**
-	 * Crunchbase business.
-	 * Latest code is ME Voss. CB search and scrape becomes super
-	 * 	blocked pretty quickly. So in terms of CB search a better
-	 *  method is mostly necessary.
+	 * Crunchbase businesses.
+	 * Latest code is ME Voss.
+	 * 
+	 * CB search and scrape becomes super
+	 * 	blocked by CB pretty quickly. So in terms of CB search a better
+	 *  method is mostly necessary. CB API appears to be useless.
 	 * 
 	 * Dale Chang
 	 * Mary-Elizabeth Voss
@@ -29707,6 +29709,170 @@ Laurens Hammond, Chicago, Ill.**/
 			});
 		}
 		new run().f();
+	}
+	/**
+	 * Google image search.
+	 * 
+	 * Daniel D Preiss
+	 * Matthew Joseph
+	 * 
+	 */
+	// Matthew Joseph
+	//
+	s = '<p>Please copy&nbsp;the image hyperlinks for the first 40&nbsp;images on the Google search page and enter them in the fields below. Each hyperlink should be unique and end in ".jpg" or ".png" - to copy an image hyperlink, right-click the image and select "Copy Image Address". Then paste the hyperlink in this form.</p>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:800px;}');
+			//~ GM_addStyle('em {zoom:2;}');
+			
+			var a = document.getElementsByTagName('a');
+			o = {
+				url: a[1].href,
+				//~ q: [
+				//~ ]
+			}
+			//~ o.bold_array = o.school.clean_string_to_array();
+			console.log(o);
+			
+			/*BEGIN ITEMS*/
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style','position:absolute;top:140px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			//~ document.body.appendChild(d1);
+			//~ var d2 = document.createElement('textarea');
+			//~ d2.setAttribute('style','position:absolute;top:100px;left:0%;width:80%;height:40px;');
+			//~ document.body.appendChild(d2);
+			//~ d2.value = o.url;
+			/*END ITEMS*/
+			
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 140 // offset top
+			//~ });
+			
+			// ...
+			//~ var ef = new AMT___events_factory();
+			//~ d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ d2.onblur = function() {
+				//~ google_image_search();
+			//~ }
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				//~ var x = document.getElementById('web_url');
+				//~ x.value = x.value.trim();
+				//~ if (x.value == '') return false;
+			}
+			
+			// INIT
+			google_image_search();
+			
+			//~ function images__imgClick(e) {
+				//~ console.log(this);
+				
+				//~ // Set value
+				//~ document.getElementById('web_url').value = this.submit_src;
+				
+				//~ // Do src and submit_src match?
+				//~ // If no then set src and do not submit.
+				//~ // On next run will submit.
+				
+				//~ if (this.src != this.submit_src) {
+					//~ this.src = this.submit_src;
+					//~ this.style.border = '4px dashed blue';
+					//~ return;
+				//~ }
+				
+				//~ // Here?
+				//~ if (document.getElementById('web_url').value.length > 16) {
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+			//~ }
+
+			function google_image_search() {
+		
+				// small & large
+				// https://www.google.com/search?q='++'&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch
+				
+				//~ d1.innerHTML = '';
+				
+				//~ // Reset
+				//~ d1.style.backgroundColor = '#eee';
+				
+				//~ // Add tbs= to set size > 300x400
+				//~ // ?!! encode (&) breaks
+				//~ var u = 'https://www.google.com/search?q='+
+						//~ encodeURIComponent(o.school.replace(/&/g, 'and'))+
+						//~ '&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch&num=20&biw=&bih=&sei=&tbs=isz:lt,islt:qsvga&'+
+						//~ Math.random()*1000;
+				
+				// Google
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							d1.style.backgroundColor = 'pink';
+							//~ window.open(, 'new');
+							
+							// UTILITY WINDOW HERE.
+							// Utility window.
+							AMT__setUtilityTabs([{url: o.url}]);
+							return;
+						}
+						
+						//<div class="rg_meta">
+						var r, m, meta, img, div, el_img, count = 1;
+						r = /<!--m-->((.|\s)*?(?=<!--n-->|$)|$)/g;
+						while (m = r.exec(rs)) {
+							
+							if (count >= 41) break;
+							
+							var dom = new DOMParser().parseFromString(m[1], 'text/html');
+							
+							var d = dom.getElementsByClassName('rg_meta notranslate')[0].innerHTML;
+							d = JSON.parse(d);
+							console.log(d.ou);
+							
+							document.getElementById('Image'+count).value = d.ou.trim();
+							
+							count++;
+						}
+						
+						for (var i=1; i<=40; i++) {
+							var d = document.getElementById('Image'+i);
+							if (d.value.trim() == '') {
+								d.focus();
+								return;
+							}
+						}
+						// Here?
+						// Sbm
+						setTimeout(function() {
+							doSubmit();
+						}, 14000); // Wait six seconds to look "good" :p
+						
+						return;
+					}
+				});
+			}
+		}
+		new run().f(); return;
 	}
 	// 
 	// Daniel D Preiss
