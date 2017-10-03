@@ -30213,7 +30213,7 @@ Laurens Hammond, Chicago, Ill.**/
 	}
 	// Matthew Joseph
 	// https://medpix.nlm.nih.gov/search?allen=true&allt=true&alli=true&query=Integumentary%20System%20Skin%20Grafts
-	s = '<div class="panel-body" id="instructionBody">\n<p>When you press the link you\'ll see a page of image search results. For the first 40 images on the page, please select each image by pressing on it, then copy the hyperlink for the "Show Answer" button that appears in the middle of the page and paste it in the corresponding field below. To copy the hyperlink, right-click the "Show Answer" button and select "Copy Link". There are no duplicate images on the page, so every hyperlink should be unique. If there are fewer than 40 links, leave the remaining fields below empty.</p>\n</div>';
+	s = '<p>When you press the link you\'ll see a page of image search results. For the first 40 images on the page, please select each image by pressing on it, then copy the hyperlink for the "Show Answer" button that appears in the middle of the page and paste it in the corresponding field below. To copy the hyperlink, right-click the "Show Answer" button and select "Copy Link". There are no duplicate images on the page, so every hyperlink should be unique. If there are fewer than 40 links, leave the remaining fields below empty.</p>';
 	if (
 		ih.indexOf(s) != -1
 		)
@@ -30230,11 +30230,20 @@ Laurens Hammond, Chicago, Ill.**/
 			// https://medpix.nlm.nih.gov/search?allen=true&allt=true&alli=true&query=Integumentary%20System%20Skin%20Grafts
 			o = {
 				url: a[1].href,
+				query: null,
 				//~ q: [
 				//~ ]
 			}
 			//~ o.bold_array = o.school.clean_string_to_array();
 			console.log(o);
+			
+			// Changed url?
+			if (!/https:\/\/medpix\.nlm\.nih\.gov\/search\?allen=true&allt=true&alli=true&query=[^&]+$/.exec(o.url)) {
+				alert('changed url?');
+				return;
+			}
+			o.query = /https:\/\/medpix\.nlm\.nih\.gov\/search\?allen=true&allt=true&alli=true&query=([^&]+)$/.exec(o.url)[1];
+			o.query = decodeURIComponent(o.query);
 			
 			/*BEGIN ITEMS*/
 			//~ var d1 = document.createElement('div');
@@ -30275,8 +30284,18 @@ Laurens Hammond, Chicago, Ill.**/
 			image_search();
 			
 			
-
+			function image_search() {
+				
 				var ux = 'https://medpix.nlm.nih.gov/search/submit';
+				var post_obj = {
+					inAllEncounter:"true",
+					inAllImage:"true",
+					inAllTopic:"true",
+					inEncounter:true,
+					inImage:true,
+					inTopic:true,
+					query:o.query
+				}
 				var opts = {
 					headers_array: [
 						'POST /search/submit HTTP/1.1',
@@ -30296,28 +30315,7 @@ Laurens Hammond, Chicago, Ill.**/
 						
 					],
 					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
-					//~ post_object_as_str: '{"params":"query='+encodeURIComponent(d2.value)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
-					//inAllEncounter
-//~ :
-//~ "true"
-//~ inAllImage
-//~ :
-//~ "true"
-//~ inAllTopic
-//~ :
-//~ "true"
-//~ inEncounter
-//~ :
-//~ true
-//~ inImage
-//~ :
-//~ true
-//~ inTopic
-//~ :
-//~ true
-//~ query
-//~ :
-//~ "Integumentary System Skin Grafts"
+					post_object_as_str: JSON.stringify(post_obj),
 				};
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 					encodeURIComponent(ux) +
@@ -30336,94 +30334,53 @@ Laurens Hammond, Chicago, Ill.**/
 							return;
 						}
 						console.log(rs);
-						
-			//~ function images__imgClick(e) {
-				//~ console.log(this);
-				
-				//~ // Set value
-				//~ document.getElementById('web_url').value = this.submit_src;
-				
-				//~ // Do src and submit_src match?
-				//~ // If no then set src and do not submit.
-				//~ // On next run will submit.
-				
-				//~ if (this.src != this.submit_src) {
-					//~ this.src = this.submit_src;
-					//~ this.style.border = '4px dashed blue';
-					//~ return;
-				//~ }
-				
-				//~ // Here?
-				//~ if (document.getElementById('web_url').value.length > 16) {
-					//~ new AMT___core_factory().nextTab();
-					//~ doSubmit();
-				//~ }
-			//~ }
-
-			function image_search() {
-		
-				// small & large
-				// https://www.google.com/search?q='++'&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch
-				
-				//~ d1.innerHTML = '';
-				
-				//~ // Reset
-				//~ d1.style.backgroundColor = '#eee';
-				
-				//~ // Add tbs= to set size > 300x400
-				//~ // ?!! encode (&) breaks
-				//~ var u = 'https://www.google.com/search?q='+
-						//~ encodeURIComponent(o.school.replace(/&/g, 'and'))+
-						//~ '&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch&num=20&biw=&bih=&sei=&tbs=isz:lt,islt:qsvga&'+
-						//~ Math.random()*1000;
-				
-				// Google
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: o.url,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						if (response.status != 200) {
-							d1.style.backgroundColor = 'pink';
-							//~ window.open(, 'new');
-							
-							// UTILITY WINDOW HERE.
-							// Utility window.
-							AMT__setUtilityTabs([{url: o.url}]);
+						rs = JSON.parse(rs);
+						if (!rs.results) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						} else if (rs.results.length == 0) {
+							document.body.style.backgroundColor = 'blue';
 							return;
 						}
-						
-						//<div class="rg_meta">
-						var r, m, meta, img, div, el_img, count = 1;
-						r = /<!--m-->((.|\s)*?(?=<!--n-->|$)|$)/g;
-						while (m = r.exec(rs)) {
-							
-							if (count >= 41) break;
-							
-							var dom = new DOMParser().parseFromString(m[1], 'text/html');
-							
-							var d = dom.getElementsByClassName('rg_meta notranslate')[0].innerHTML;
-							d = JSON.parse(d);
-							console.log(d.ou);
-							
-							document.getElementById('Image'+count).value = d.ou.trim();
-							
-							count++;
-						}
-						
-						for (var i=1; i<=40; i++) {
-							var d = document.getElementById('Image'+i);
-							if (d.value.trim() == '') {
-								d.focus();
-								return;
+						console.log(rs.results);
+						var count = 1;
+						for (var i in rs.results) {
+							if (count > 40)
+								break;
+							var z = rs.results[i];
+							if (z.doctype == 'encounter' ||
+								z.doctype == 'image') {
+								z = rs.results[i].firstImageID;
+								z = 'https://medpix.nlm.nih.gov/case?id=' + z;
+								document.getElementById('Image'+count).value = z;
+								count++;
+								
+								if (z == null || z == 'null') {
+									// Ensure no "null" !
+									document.body.style.backgroundColor = 'red';
+									return;
+								}
+							} else if (z.doctype == 'topic') {
+								// SKIP ???
+								// Raise Flag with Reqeuster on this question.
+								continue;
 							}
 						}
+						
 						// Here?
-						// Sbm
+						// Only submit when all 40 are non-blank.
+						// Because med site has more images HIDDEN
+						// by hitting PG+DOWN!!!
 						setTimeout(function() {
-							doSubmit();
-						}, 14000); // Wait six seconds to look "good" :p
+							for (var i=1;i<=40;i++) {
+								// At least one blank.
+								if (document.getElementById('Image'+i).value == '') {
+									document.body.style.backgroundColor = 'green';
+									return;
+								}
+								doSubmit();
+							}
+						}, 10000); // Wait ten seconds to look "good" :p
 						
 						return;
 					}
