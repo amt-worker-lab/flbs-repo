@@ -11405,8 +11405,6 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	
-	//
-	// 
 	// Veronica Alvarado
 	// Does website product match Amazon listing?
 	s='For products formatted as xxxx-OG-xxxx-O-xxxx, please see what option has been pre-selected and compare to that option.';
