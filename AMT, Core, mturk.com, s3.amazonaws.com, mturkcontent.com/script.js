@@ -11457,16 +11457,16 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ d0.setAttribute('style','position:absolute;top:0px;height:20px;width:100%;color:#eee;');
 			//~ document.body.appendChild(d0);
 			var d1a = document.createElement('div');
-			d1a.setAttribute('style','position:absolute;top:0px;width:50%;height:40px;left:20%;font-size:2em;background-color:#eee;border:1px solid black;font-size:1.4em !important;')
+			d1a.setAttribute('style','position:absolute;top:0px;width:50%;height:60px;left:20%;font-size:2em;background-color:#eee;border:1px solid black;font-size:1.4em !important;overflow:auto;')
 			document.body.appendChild(d1a);
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:20px;width:90%;height:20px;left:10%;font-size:2em;background-color:#eee;border:1px solid black;')
 			//~ document.body.appendChild(d1b);
 			var d2a = document.createElement('div');
-			d2a.setAttribute('style','position:absolute;top:40px;width:50%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
+			d2a.setAttribute('style','position:absolute;top:60px;width:50%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
 			document.body.appendChild(d2a);
 			var d2b = document.createElement('div');
-			d2b.setAttribute('style','position:absolute;top:40px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:70%;overflow:auto;');
+			d2b.setAttribute('style','position:absolute;top:60px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:70%;overflow:auto;');
 			document.body.appendChild(d2b);
 			//~ var d3a = document.createElement('div');
 			//~ d3a.setAttribute('style','position:absolute;top:600px;width:70%;height:250px;background-color:#eee;border:1px solid black;');
@@ -11488,7 +11488,7 @@ Laurens Hammond, Chicago, Ill.**/
 				elements: [
 					d2a, d2b
 				],
-				offset: 40 // offset top
+				offset: 60 // offset top
 			});
 			
 			/**
