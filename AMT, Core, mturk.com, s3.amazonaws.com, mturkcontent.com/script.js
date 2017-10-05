@@ -547,14 +547,153 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
-
-
 	
-	
-	
-	
-	
-	
+	// Shane Kim
+	// spectrum.com scrape.
+	// 
+	s = '<li>Open the following link in an Incognito window of the Google Chrome browser or in a Private Window using Mozilla Firefox: <a href="https://www.spectrum.com" target="_blank">https://www.spectrum.com</a></li>\n	<li>Enter the provided street address on the right-side of the page in the box labeled &ldquo;Start typing your address.&rdquo; <i> There is no need to enter an Apt/Unit.</i></li>\n	<li>Enter the Zip Code in the &ldquo;Zip Code&rdquo; box</li>\n	<li>Click &ldquo;VIEW ALL OFFERS&rdquo;</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				a1: td[3].innerText,
+				a2: td[5].innerText,
+				updatedA1: td[3].innerText,
+				updatedA2: td[5].innerText,
+				q: [
+				]
+			}
+			AMT___addUserDecision(
+				'ShaneKim,Oct2017',
+				function() { return o.a1+'|'+o.a2; },
+				[
+					"Name(spectrum_address_match)[0]",
+					"Name(spectrum_pre_existing_acct)[0]",
+					"Id(spectrum_new_street_address)",
+					"Id(spectrum_new_zip)",
+					"Name(spectrum_service_available_primary)[0]",
+					"Name(spectrum_service_available_primary)[1]",
+					"Id(spectrum_min_speed)",
+					"Id(spectrum_plan_cost)",
+				]
+			);
+			// dbl
+			//~ for (var i in o.q) {
+				//~ o.q[i].ondblclick = function() {
+					//~ this.value = '';
+				//~ }
+			//~ }
+			// Turn off form submit.
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				return false;
+			}
+			// Headers.
+			
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://buy.spectrum.com/api/serviceabilityaddresses/v1/serviceabilityaddress?'+
+					'line1='+encodeURIComponent(o.a1)+
+					'&line2=&postalCode='+encodeURIComponent(o.a2),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = '1px solid blue';
+						document.body.appendChild('--'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.appendChild('--'.div());
+						return;
+					}
+					rs = JSON.parse(rs);
+					var sbm = true;
+					if (rs.content.length > 1) {
+						document.body.appendChild(('address length ='+rs.content.length).div());
+						sbm = false;
+					}
+					rs = rs.content[0];
+					// Address matches?
+					if (rs.address.line1 != o.a1) {
+						document.getElementById('spectrum_new_street_address').value = rs.address.line1;
+						document.body.appendChild('new address1'.div());
+						o.updatedA1 = rs.address.line1;
+						sbm = false;
+					}
+					if (rs.address.postalCode != o.a1) {
+						document.getElementById('spectrum_new_zip').value = rs.address.postalCode;
+						document.body.appendChild('new address2'.div());
+						o.updatedA2 = rs.address.postalCode;
+						sbm = false;
+					}
+					if (rs.address.line1 == o.a1 && rs.address.postalCode == o.a1) {
+						document.getElementsByTagName('spectrum_address_match')[0].checked = true;
+					} else { // not sbm here.
+						document.getElementsByTagName('spectrum_pre_existing_acct')[0].checked = true;
+					}
+					if (sbm) {
+						check_servicable();
+					}
+					//.
+						//	AMT___recordAndSubmit();
+				}
+			});
+			function check_servicable() {
+				var ux = 'https://buy.spectrum.com/rest/bean/com/charter/localization/facade/LocalizationFacade/processLocalization?v=ORG&mso=TWC';
+				var opts = {
+					headers_array: [
+						 'Origin: https://buy.spectrum.com',
+						 'Accept-Encoding: gzip, deflate, br',
+						 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+						 'Content-Type: application/json',
+						 'Accept: application/json, text/plain, */*',
+						 'Referer: https://buy.spectrum.com/buyflow/buyflow-localization?v=ORG',
+						 'Cookie: MINIFY=true; ADRUM=s=1507243443157&r=https%3A%2F%2Fwww.spectrum.com%2F%3F0; JSESSIONID=2-K0fKEJviIvb51k5QwQ6Rv2.sc58lecabp07; BIGipServer~Eco_102~Spectrum.com-PB-HTTPS=!0sIh5gaolrLtG8rbwhNqLctHajm4rAkhy/jHdom7Pi9bT1w7CtGXqaHX2GaiQLOuHcBEHogaJMjIq0zSKHhdevnPNrCAmYuFqfJCk36+4b4=; AMCV_97C902BE53295FC80A490D4C%40AdobeOrg=1999109931%7CMCMID%7C91283995433975729499220629491358759128%7CMCAID%7CNONE; DYN_USER_ID=p2u218292025; DYN_USER_CONFIRM=ef4eaa623d10734e33acafc01f5258e4; userPrefLanguage=en_US; mbox=check#true#1507243545|session#1507243443997-979265#1507245345; affiliate="{\"v\":\"ORG\",\"barAndRestaurant\":false,\"cbo\":false,\"911\":false,\"tos\":false,\"mso\":\"\",\"originatingFlowId\":\"ORG\",\"ID\":\"118700-CHTR\",\"loc\":true}"; UA_INFO="{\"browser\":\"Chrome\",\"browser_ver\":\"60.0.3112.113\",\"os\":\"Linux\",\"height\":1080,\"width,\":1920}"',
+						 'Connection: keep-alive'
+						 
+						 
+						'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+						'Accept: text/html, */*; q=0.01',
+						'Referer: '+o.url,
+						'X-Requested-With: XMLHttpRequest',
+					],
+					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+					post_object_as_str: '{"arg1":{"atg-rest-class-type":"com.charter.localization.to.LocalizationRestRequestTO","address1":"'+encodeURIComponent(o.updatedA2)+'","postalCode":"'+encodeURIComponent(o.updatedA2)+'"},"atg-rest-depth":"4"}',
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
+						opts
+					));
+				// Xhr request
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							alert('unsuccessful load');
+							return;
+						}
+						console.log(rs);
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
 	// "m"
 	// [EASY] Collect data from a Website
 	// requesterId A6T6J0YK95YSY
