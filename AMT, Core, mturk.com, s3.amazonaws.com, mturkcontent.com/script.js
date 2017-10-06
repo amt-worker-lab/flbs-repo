@@ -668,7 +668,7 @@ function MT__RUN() {
 						'X-Requested-With: XMLHttpRequest',
 					],
 					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
-					post_object_as_str: '{"arg1":{"atg-rest-class-type":"com.charter.localization.to.LocalizationRestRequestTO","address1":"'+encodeURIComponent(o.updatedA2)+'","postalCode":"'+encodeURIComponent(o.updatedA2)+'"},"atg-rest-depth":"4"}',
+					post_object_as_str: '{"arg1":{"atg-rest-class-type":"com.charter.localization.to.LocalizationRestRequestTO","address1":"'+encodeURIComponent(o.updatedA1)+'","postalCode":"'+encodeURIComponent(o.updatedA2)+'"},"atg-rest-depth":"4"}',
 				};
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 					encodeURIComponent(ux) +
@@ -687,6 +687,10 @@ function MT__RUN() {
 							return;
 						}
 						console.log(rs);
+						rs = JSON.parse(rs);
+						if (rs.errors.length == 0) {
+							
+						}
 					}
 				});
 			}
