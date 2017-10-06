@@ -742,17 +742,19 @@ function MT__RUN() {
 							
 						],
 						//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
-						short_filename: new AMT___requests_factory().md5(Math.random()+new Date().getTime())+'-sk',
+						short_filename:
+							new AMT___requests_factory().md5(o.updatedA1 + '-' +o.updatedA2)+
+							Math.random()+new Date().getTime()+'-sk',
 						post_object_as_str: 
 							'{"arg1":{"atg-rest-class-type":"com.charter.localization.to.LocalizationRestRequestTO",'+
 							'"address1":"'+encodeURIComponent(o.updatedA1)+'","postalCode":"'+encodeURIComponent(o.updatedA2)+'"},"atg-rest-depth":"4"}',
 					},
 					callback_function: function(response) {
-						var rs = response.responseText;
-						if(response.status != 200) {
-							alert('unsuccessful load');
-							return;
-						}
+						var rs = response.response.responseText;
+						//~ if(response.status != 200) {
+							//~ alert('unsuccessful load');
+							//~ return;
+						//~ }
 						rs = JSON.parse(rs);
 						console.log(rs);
 						var sbm = false;
@@ -760,7 +762,6 @@ function MT__RUN() {
 							rs.additionalOffers.length) {
 							for (var n in rs.additionalOffers) {
 								var offer = rs.additionalOffers[n];
-								//~ console.log(offer.displayName);
 								if (offer.displayName == 'Internet') {
 									var x = /Speeds up to (\d+) Mbps/.exec(offer.highlights);
 									if (x) {
@@ -770,7 +771,7 @@ function MT__RUN() {
 									if (offer.monthlyPrice && /^\d+\.\d{2}$/.exec(offer.monthlyPrice)) {
 										document.getElementById('spectrum_plan_cost').value = Math.round(offer.monthlyPrice);
 										if (sbm) {
-											console.log('__SBM__');
+											//~ console.log('__SBM__');
 											if (document.getElementById('spectrum_min_speed').value == 60 &&
 												document.getElementById('spectrum_plan_cost').value == 45) {
 												doSubmit();
@@ -791,7 +792,7 @@ function MT__RUN() {
 					}
 				};
 				
-				// Init.
+				// Init async load.
 				new AMT___requests_factory().server_load_asynchronously2(opts);
 			}
 		}

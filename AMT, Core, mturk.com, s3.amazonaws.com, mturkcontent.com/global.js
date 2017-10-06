@@ -3225,33 +3225,16 @@ AMT___requests_factory.prototype.server_load_asynchronously = function(options) 
  * function server_load_asynchronously2
  * Load a URL asynchonously on server and process callback when complete.
  * 
- * url					Required. String.
- * success_callback		Function. Callback for completed.
+ * options							Required. Object.
+ * options.server_opts				Required. Object. Passed to util.php.
+ * options.server_opts.filename		Required. Object. Passed to util.php.
+  * options.callback_function		Required. Function. Callback for completed.
  * 
  * @return	.success_filename
  * 			.options {}, initial object passed in
  * 			.response {responseText, status, finalUrl,... etc.}
  */
 AMT___requests_factory.prototype.server_load_asynchronously2 = function(options) {
-	// e.g.
-	//~ // Load the image asynchronously.
-	//~ new AMT___core_factory().server_load_asynchronously({ // Default=to MD5 the URL to create a filename. Default=Saved to .cached.
-		//~ url: x,
-		//~ __seed: imgs[i],// Used only in callback `on_success`!
-		//~ on_success: function(completed_obj) { // callback
-			//~ var options = completed_obj.options;
-			//~ options.__seed.src = completed_obj.
-		//~ }
-	//~ });
-	//~ setInterval(check_complete, 1000);
-	
-	//~ options.host = options.host ? options.host : MT___host;
-	//~ options.filename = options.filename ? options.filename : new AMT___requests_factory().md5(options.URL); // md5 URL
-	//~ options.file_folder = options.file_folder ? options.file_folder : '.cached';
-	//~ options.host = MT___host;
-	//~ options.filename = new AMT___requests_factory().md5(options.URL); // md5 URL
-	//~ options.file_folder = '.cached';
-	//~ options.method = 'get';
 	
 	init_dl();
 	read_from_disk(); // init watcher
@@ -3266,7 +3249,7 @@ AMT___requests_factory.prototype.server_load_asynchronously2 = function(options)
 			//~ //do_not_save_to_file: options.do_not_save_to_file, // Do not ever save this to file. (Always new.)
 			//~ //post_object_as_str:
 		//~ }
-		opts = options;
+		opts = options.server_opts;
 		opts.browser_exit = true;
 		opts.silent_output = true;
 		opts = JSON.stringify(opts);
@@ -3274,7 +3257,7 @@ AMT___requests_factory.prototype.server_load_asynchronously2 = function(options)
 		// XHR to download PDF
 		GM_xmlhttpRequest({
 			method: "POST",
-			url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+			url: MT___host + '/mturk/util.php',
 			data: 'AMT__output_html_from_URL='+
 				'&AMT__output_html_from_URL__options='+
 				encodeURIComponent(opts),
@@ -3295,29 +3278,28 @@ AMT___requests_factory.prototype.server_load_asynchronously2 = function(options)
 		var time_init = new Date().getTime(); // ms
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: options.host + '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+
+			url: MT___host + '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+
 				encodeURIComponent(JSON.stringify({
 					host: MT___host,
-					filename: options.filename; // md5 URL
-					file_folder: '.cached';
-					method: 'get';
+					filename: options.server_opts.short_filename,
+					file_folder: '.cached',
+					method: 'get',
 				}))+
 				'&random='+Math.random(),
 			onload: function (response) {
 				var rs = response.responseText;
-				
 				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
 					// Reset
 					var now = new Date().getTime(); // ms
-					var next = 1000 - (now - time_init); // e.g. 1 - (5-2) = -2; 1 - (2.5-2) = 0.5.
+					var next = 2000 - (now - time_init); // e.g. 2 - (-2) = -2; 2 - (2.5-2) = 1.5.
 					console.log('NEXT:'+next);
 					setTimeout(read_from_disk, next);
 				} else {
 					console.log('-----\nRESPONSE CACHED!\n-----');
-					options.success_callback({
+					options.callback_function({
 						response: response,
 						options: options,
-						success_filename: MT___host + '/mturk/.cached/' + options.filename
+						success_filename: MT___host + '/mturk/.cached/' + options.server_opts.short_filename
 					});
 				}
 			}
