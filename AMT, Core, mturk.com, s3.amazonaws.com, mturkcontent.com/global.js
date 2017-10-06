@@ -579,10 +579,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		// console.log('recieved NTPassBy Check msg');
 		// console.log('==============');
 		if (chrome.runtime.id == 'epflnpjnljncblipaikibpjhobgkfmoh') {
-			console.log('chrome.runtime.id == epflnpjnljncblipaikibpjhobgkfmoh. Exiting!');
+			//~ console.log('chrome.runtime.id == epflnpjnljncblipaikibpjhobgkfmoh. Exiting!');
 			return;
 		} else {
-			console.log('chrome.runtime.id == '+chrome.runtime.id + '. Continuing!');
+			//~ console.log('chrome.runtime.id == '+chrome.runtime.id + '. Continuing!');
 		}
 		
 		//Passby if we're already submitting
@@ -620,8 +620,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		}
 		else if(AMT__Global_Vars.isTopWindow) {
 			if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
-				console.log('focusing');
-				console.log(document.getElementsByTagName('iframe')[0]);
+				//~ console.log('focusing');
+				//~ console.log(document.getElementsByTagName('iframe')[0]);
 				document.getElementsByTagName('iframe')[0].focus();
 			}
 		} else {

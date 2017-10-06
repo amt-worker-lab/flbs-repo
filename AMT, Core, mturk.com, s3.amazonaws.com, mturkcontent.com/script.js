@@ -618,7 +618,7 @@ function MT__RUN() {
 					var sbm = true;
 					if (rs.content.length > 1) {
 						document.body.appendChild(('address length ='+rs.content.length).div());
-						sbm = false;
+						//sbm = false;
 					}
 					rs = rs.content[0];
 					// Remove extra four optional digits from postal code.
@@ -628,11 +628,13 @@ function MT__RUN() {
 					// Address matches?
 					if (rs.address.line1 != o.a1) {
 						document.getElementById('spectrum_new_street_address').value = rs.address.line1;
+						document.getElementById('spectrum_new_zip').value = rs.address.postalCode;
 						document.body.appendChild('new address1'.div());
 						o.updatedA1 = rs.address.line1;
 						sbm = false;
 					}
 					if (rs.address.postalCode != o.a2) {
+						document.getElementById('spectrum_new_street_address').value = rs.address.line1;
 						document.getElementById('spectrum_new_zip').value = rs.address.postalCode;
 						document.body.appendChild('new address2'.div());
 						o.updatedA2 = rs.address.postalCode;
@@ -728,7 +730,8 @@ function MT__RUN() {
 					}
 				});
 			}
-			function check_pricing() {
+			function check_pricing(tried) {
+				var tried = tried;
 				var ux = 'https://buy.spectrum.com/rest/bean/com/charter/commerce/services/checkout/StorefrontPageFacade/retrieveStorefrontPageView';
 				var opts = {
 					headers_array: [
@@ -785,6 +788,10 @@ function MT__RUN() {
 									break;
 								}
 							}
+						} else if (rs.additionalOffers.length == 0) {
+							// Try restarting once.
+							if (!tried)
+								check_pricing(true);
 						} else {
 							// show error
 							sbm = false;
