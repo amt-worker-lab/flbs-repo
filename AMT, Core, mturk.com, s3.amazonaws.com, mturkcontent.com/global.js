@@ -3152,7 +3152,6 @@ AMT___requests_factory.prototype.server_load_asynchronously = function(options) 
 			//~ options.__seed.src = completed_obj.
 		//~ }
 	//~ });
-	
 	//~ setInterval(check_complete, 1000);
 	
 	options.host = MT___host;
@@ -3170,6 +3169,8 @@ AMT___requests_factory.prototype.server_load_asynchronously = function(options) 
 			short_filename: options.filename, // Save as filename // i.e. o.basename + o.cuname + '.pdf'
 			browser_exit: true, // Tell PHP to kill the browser XHR request.
 			silent_output: true, // No output!
+			//do_not_save_to_file: options.do_not_save_to_file, // Do not ever save this to file. (Always new.)
+			//post_object_as_str:
 		}
 		opts = JSON.stringify(opts);
 		
@@ -3177,12 +3178,14 @@ AMT___requests_factory.prototype.server_load_asynchronously = function(options) 
 		GM_xmlhttpRequest({
 			method: "POST",
 			url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
-			data: 'AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts),
+			data: 'AMT__output_html_from_URL='+
+				'&AMT__output_html_from_URL__options='+
+				encodeURIComponent(opts),
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded"
 			},
 			onload: function(response) {
-				var rs = response.responseText;//console.log(rs);//alert(rs);
+				var rs = response.responseText;
 				if (/^\d{3}$/.exec(rs)) { // If status code is returned
 					alert(rs);
 					return;
