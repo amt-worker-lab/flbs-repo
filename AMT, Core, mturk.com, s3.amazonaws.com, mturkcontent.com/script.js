@@ -578,20 +578,20 @@ function MT__RUN() {
 					"Id(spectrum_plan_cost)",
 				]
 			);
-			// dbl
-			//~ for (var i in o.q) {
-				//~ o.q[i].ondblclick = function() {
-					//~ this.value = '';
-				//~ }
-			//~ }
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:10%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
 			// Turn off form submit.
-			document.getElementById('mturk_form').onsubmit = function(e) {
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
 				//~ e.stopPropagation();
 				//~ e.preventDefault();
 				//~ AMT___recordAndSubmit(); // Do it here.
 				//~ return false;
-			}
-			// Headers.
+			//~ }
 			
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -640,6 +640,7 @@ function MT__RUN() {
 						o.updatedA2 = rs.address.postalCode;
 						sbm = false;
 					}
+					// One of these two has to be checked.
 					if (rs.address.line1 == o.a1 && rs.address.postalCode == o.a2) {
 						document.getElementsByName('spectrum_address_match')[0].checked = true;
 					} else { // not sbm here.
@@ -701,17 +702,17 @@ function MT__RUN() {
 						check_pricing();
 						return;
 						
-						if (rs.errors.length == 0) {
-							// Check good.
-							document.getElementsByName('spectrum_service_available_primary')[0].checked = true;
-							// Go next
-							check_pricing();
+						//~ if (rs.errors.length == 0) {
+							//~ // Check good.
+							//~ document.getElementsByName('spectrum_service_available_primary')[0].checked = true;
+							//~ // Go next
+							//~ check_pricing();
 							
 							
 							
-						} else {
-							// show error
-						}
+						//~ } else {
+							//~ // show error
+						//~ }
 					}
 				});
 			}
@@ -783,6 +784,10 @@ function MT__RUN() {
 										document.getElementById('spectrum_plan_cost').value = Math.round(offer.monthlyPrice);
 										if (sbm) {
 											console.log('__SBM__');
+											if (document.getElementById('spectrum_min_speed').value == 60 &&
+												document.getElementById('spectrum_plan_cost').value == 45) {
+												doSubmit();
+											}
 										}
 									}
 									break;
@@ -794,6 +799,7 @@ function MT__RUN() {
 						} else {
 							// show error
 							sbm = false;
+							d1.innerText += '\nrs.additionalOffers={}';
 						}
 						
 					}
