@@ -665,10 +665,13 @@ function MT__RUN() {
 						 'Accept: application/json, text/plain, */*',
 						 'Referer: https://buy.spectrum.com/buyflow/buyflow-localization?v=ORG',
 						 
-						 'Cookie: MINIFY=true; ADRUM=s=1507243443157&r=https%3A%2F%2Fwww.spectrum.com%2F%3F0; JSESSIONID=2-K0fKEJviIvb51k5QwQ6Rv2.sc58lecabp07; BIGipServer~Eco_102~Spectrum.com-PB-HTTPS=!0sIh5gaolrLtG8rbwhNqLctHajm4rAkhy/jHdom7Pi9bT1w7CtGXqaHX2GaiQLOuHcBEHogaJMjIq0zSKHhdevnPNrCAmYuFqfJCk36+4b4=; AMCV_97C902BE53295FC80A490D4C%40AdobeOrg=1999109931%7CMCMID%7C91283995433975729499220629491358759128%7CMCAID%7CNONE; DYN_USER_ID=p2u218292025; DYN_USER_CONFIRM=ef4eaa623d10734e33acafc01f5258e4; userPrefLanguage=en_US; mbox=check#true#1507243545|session#1507243443997-979265#1507245345; affiliate="{\"v\":\"ORG\",\"barAndRestaurant\":false,\"cbo\":false,\"911\":false,\"tos\":false,\"mso\":\"\",\"originatingFlowId\":\"ORG\",\"ID\":\"118700-CHTR\",\"loc\":true}"; UA_INFO="{\"browser\":\"Chrome\",\"browser_ver\":\"60.0.3112.113\",\"os\":\"Linux\",\"height\":1080,\"width,\":1920}"',
+						 'Cookie: MINIFY=true; ADRUM=s=1507243443157&r=https%3A%2F%2Fwww.spectrum.com%2F%3F0; JSESSIONID=2-K0fKEJviIvb51k5QwQ6Rv2.sc58lecabp07; BIGipServer~Eco_102~Spectrum.com-PB-HTTPS=!0sIh5gaolrLtG8rbwhNqLctHajm4rAkhy/jHdom7Pi9bT1w7CtGXqaHX2GaiQLOuHcBEHogaJMjIq0zSKHhdevnPNrCAmYuFqfJCk36+4b4=; AMCV_97C902BE53295FC80A490D4C%40AdobeOrg=1999109931%7CMCMID%7C91283995433975729499220629491358759128%7CMCAID%7CNONE; DYN_USER_ID=p2u218292025; DYN_USER_CONFIRM=ef4eaa623d10734e33acafc01f5258e4; userPrefLanguage=en_US; mbox=check#true#1507243545|session#1507243443997-979265#1507245345; affiliate="{\"v\":\"null\",\"barAndRestaurant\":false,\"cbo\":false,\"911\":false,\"tos\":false,\"mso\":\"\",\"originatingFlowId\":\"\",\"ID\":\"118700-CHTR\",\"loc\":true}"; UA_INFO="{\"browser\":\"Chrome\",\"browser_ver\":\"60.0.3112.113\",\"os\":\"Linux\",\"height\":1080,\"width,\":1920}"',
 						 
 						 'Connection: keep-alive'
 						 
+						 //affiliate="{\"v\":\"ORG\"
+						//originatingFlowId\":\"ORG\"
+						
 					],
 					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
 					post_object_as_str: '{"arg1":{"atg-rest-class-type":"com.charter.localization.to.LocalizationRestRequestTO","address1":"'+encodeURIComponent(o.updatedA1)+'","postalCode":"'+encodeURIComponent(o.updatedA2)+'"},"atg-rest-depth":"4"}',
@@ -691,37 +694,19 @@ function MT__RUN() {
 						}
 						console.log(rs);
 						rs = JSON.parse(rs);
+						// Check good.
+						// Just do it...?
+						document.getElementsByName('spectrum_service_available_primary')[0].checked = true;
+						// Go next
+						check_pricing();
+						return;
+						
 						if (rs.errors.length == 0) {
 							// Check good.
 							document.getElementsByName('spectrum_service_available_primary')[0].checked = true;
 							// Go next
 							check_pricing();
 							
-							// ..
-							//~ var sbm = false;
-							//~ if (rs.additionalOffers && 
-								//~ rs.additionalOffers.length) {
-								//~ var n = rs.additionalOffers;
-								//~ for (var offer in n) {
-									//~ if (offer.displayName == 'Internet') {
-										//~ var x = /Speeds up to (\d+) Mbps/.exec(offer.highlights);
-										//~ if (x) {
-											//~ document.getElementById('spectrum_min_speed').value = x[1];
-											//~ sbm = true;
-										//~ }
-										//~ break;
-									//~ }
-								//~ }
-							//~ } else {
-								//~ // show error
-								//~ sbm = false;
-							//~ }
-							//~ if (rs.monthlyPrice && /^\d+\.\d{2}$/.exec(rs.monthlyPrice)) {
-								//~ document.getElementById('spectrum_plan_cost').value = rs.monthlyPrice;
-								//~ if (sbm) {
-									//~ console.log('__SBM__');
-								//~ }
-							//~ }
 							
 							
 						} else {
@@ -742,12 +727,27 @@ function MT__RUN() {
 						'Content-Type: application/json',
 						'Accept: application/json, text/plain, */*',
 						'Referer: https://buy.spectrum.com/buyflow/store-front',
-						'Cookie: MINIFY=true; ADRUM=s=1507243443157&r=https%3A%2F%2Fwww.spectrum.com%2F%3F0; BIGipServer~Eco_102~Spectrum.com-PB-HTTPS=!0sIh5gaolrLtG8rbwhNqLctHajm4rAkhy/jHdom7Pi9bT1w7CtGXqaHX2GaiQLOuHcBEHogaJMjIq0zSKHhdevnPNrCAmYuFqfJCk36+4b4=; AMCV_97C902BE53295FC80A490D4C%40AdobeOrg=1999109931%7CMCMID%7C91283995433975729499220629491358759128%7CMCAID%7CNONE; DYN_USER_ID=p2u218292025; DYN_USER_CONFIRM=ef4eaa623d10734e33acafc01f5258e4; chr-cookie-address="{\"zipCode\":\"'+JSON.stringify(o.updatedA2)+'\",\"address1\":\"'+JSON.stringify(o.updatedA1)+'\"}"; userPrefLanguage=en_US; JSESSIONID=znGZqUSIYJ8gh9xH0clGrh6r.sc58lecabp03; mbox=check#true#1507246438|session#1507246377478-160672#1507248238; affiliate="{\"v\":\"ORG\",\"barAndRestaurant\":false,\"cbo\":false,\"911\":false,\"tos\":false,\"mso\":\"\",\"originatingFlowId\":\"ORG\",\"ID\":\"118700-CHTR\",\"loc\":true}"; UA_INFO="{\"browser\":\"Chrome\",\"browser_ver\":\"60.0.3112.113\",\"os\":\"Linux\",\"height\":1080,\"width,\":1920}";',
+						'Cookie: MINIFY=true; ADRUM=s=1507243443157&r=https%3A%2F%2Fwww.spectrum.com%2F%3F0; BIGipServer~Eco_102~Spectrum.com-PB-HTTPS=!0sIh5gaolrLtG8rbwhNqLctHajm4rAkhy/jHdom7Pi9bT1w7CtGXqaHX2GaiQLOuHcBEHogaJMjIq0zSKHhdevnPNrCAmYuFqfJCk36+4b4=; AMCV_97C902BE53295FC80A490D4C%40AdobeOrg=1999109931%7CMCMID%7C91283995433975729499220629491358759128%7CMCAID%7CNONE; DYN_USER_ID=p2u218292025; DYN_USER_CONFIRM=ef4eaa623d10734e33acafc01f5258e4; chr-cookie-address="{\"zipCode\":\"'+JSON.stringify(o.updatedA2)+'\",\"address1\":\"'+JSON.stringify(o.updatedA1)+'\"}"; userPrefLanguage=en_US; JSESSIONID=znGZqUSIYJ8gh9xH0clGrh6r.sc58lecabp03; mbox=check#true#1507246438|session#1507246377478-160672#1507248238; affiliate="{\"v\":\"null\",\"barAndRestaurant\":false,\"cbo\":false,\"911\":false,\"tos\":false,\"mso\":\"\",\"originatingFlowId\":\"null\",\"ID\":\"118700-CHTR\",\"loc\":true}"; UA_INFO="{\"browser\":\"Chrome\",\"browser_ver\":\"60.0.3112.113\",\"os\":\"Linux\",\"height\":1080,\"width,\":1920}";',
 							//~ .replace(/\{\\"zipCode\\":\\"[^\\]*\\"/, JSON.stringify(o.updatedA2)).replace(/\\"address1\\":\\"[^\\]*\\"/, JSON.stringify(o.updatedA2)),
 						'Connection: keep-alive'
+						
+						//affiliate="{\"v\":\"ORG\"
+						//originatingFlowId\":\"ORG\"
+						
+						//curl 'https://buy.spectrum.com/rest/bean/com/charter/commerce/services/checkout/StorefrontPageFacade/retrieveStorefrontPageView'//,
+						//~ 'Origin: https://buy.spectrum.com'//,
+						//~ 'Accept-Encoding: gzip, deflate, br'//,
+						//~ 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2'//,
+						//~ 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36'//,
+						//~ 'Content-Type: application/json'//,
+						//~ 'Accept: application/json, text/plain, */*'//,
+						//~ 'Referer: https://buy.spectrum.com/buyflow/store-front'//,
+						//~ 'Cookie: MINIFY=true; ADRUM=s=1507243443157&r=https%3A%2F%2Fwww.spectrum.com%2F%3F0; BIGipServer~Eco_102~Spectrum.com-PB-HTTPS=!0sIh5gaolrLtG8rbwhNqLctHajm4rAkhy/jHdom7Pi9bT1w7CtGXqaHX2GaiQLOuHcBEHogaJMjIq0zSKHhdevnPNrCAmYuFqfJCk36+4b4=; AMCV_97C902BE53295FC80A490D4C%40AdobeOrg=1999109931%7CMCMID%7C91283995433975729499220629491358759128%7CMCAID%7CNONE; DYN_USER_ID=p2u218292025; DYN_USER_CONFIRM=ef4eaa623d10734e33acafc01f5258e4; JSESSIONID=0mNaX4uTB+rUxIGW51kV4wAH.sc58lecabp15_2; userPrefLanguage=en_US; affiliate="{\"v\":\"null\",\"barAndRestaurant\":false,\"cbo\":false,\"911\":false,\"tos\":false,\"mso\":\"CHTR\",\"originatingFlowId\":\"null\",\"ID\":\"118746-CHTR\",\"loc\":true}"; chr-cookie-address="{\"zipCode\":\"05679\",\"address1\":\"105 BROCKWAY HILL RD\"}"; mbox=session#1507250991665-14946#1507255830|check#true#1507254030; UA_INFO="{\"browser\":\"Chrome\",\"browser_ver\":\"60.0.3112.113\",\"os\":\"Linux\",\"height\":900,\"width,\":1440}"'//,
+						//~ 'Connection: keep-alive' --data-binary '{"atg-rest-depth":"4"}' --compressed
 					],
 					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
-					post_object_as_str: '{"atg-rest-depth":"4"}',
+					post_object_as_str: '{"arg1":{"atg-rest-class-type":"com.charter.localization.to.LocalizationRestRequestTO","address1":"'+encodeURIComponent(o.updatedA1)+'","postalCode":"'+encodeURIComponent(o.updatedA2)+'"},"atg-rest-depth":"4"}',
+					//~ post_object_as_str: '{"atg-rest-depth":"4"}',
 				};
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 					encodeURIComponent(ux) +
@@ -788,10 +788,9 @@ function MT__RUN() {
 									break;
 								}
 							}
-						} else if (rs.additionalOffers.length == 0) {
+						} else if (!tried) {
 							// Try restarting once.
-							if (!tried)
-								check_pricing(true);
+							check_pricing(true);
 						} else {
 							// show error
 							sbm = false;
