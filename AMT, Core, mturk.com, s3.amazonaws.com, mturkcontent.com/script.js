@@ -556,6 +556,7 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;}');
 			var td = document.getElementsByTagName('td');
 			var o = {
 				a1: td[3].innerText,
@@ -595,7 +596,7 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:0px;left:0%;width:10%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:0px;left:0%;width:100%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
 			/*End Items*/
@@ -649,6 +650,37 @@ function MT__RUN() {
 						console.log(rs);
 						var sbm = false;
 						
+						// Out of area?
+						// Same as "validation issues".
+						if (rs.RedirectUrl &&
+							rs.RedirectUrl.indexOf('/learn/landing/out-of-footprint?StreetAddress=') != -1) {
+							document.getElementsByName('comcast_service_available')[0].checked = false;
+							document.getElementsByName('comcast_service_available')[1].checked = true;
+							document.getElementsByName('comcast_business_address')[1].checked = false;
+							doSubmit();
+							return;
+						}
+						
+						// Out of area?
+						// Same as "validation issues".
+						if (rs.RedirectUrl &&
+							rs.RedirectUrl.indexOf('//business.comcast.com/landingpage/') != -1) {
+							document.getElementsByName('comcast_business_address')[0].checked = true;
+							document.getElementsByName('comcast_business_address')[1].checked = false;
+							// Bad address as well?
+							if (response.response.responseText.indexOf(
+								'The address you entered could not be recognized.') != -1) {
+								document.getElementsByName('comcast_service_available')[0].checked = false; // =Yes
+								document.getElementsByName('comcast_service_available')[1].checked = true;	// =No
+							}
+							doSubmit();
+							return;
+						}
+						
+						// Working with Data.
+						// Goes here.
+						//
+						//
 						if (rs.Data == null) {
 							// Return. It is a biz maybe?
 							d1.innerText = 'Data is Null (biz?)\n'+JSON.stringify(rs);
@@ -672,15 +704,17 @@ function MT__RUN() {
 							return;	
 						}
 						
-						// Out of area?
-						// Same as "validation issues".
-						if (rs.RedirectUrl &&
-							rs.RedirectUrl.indexOf('/learn/landing/out-of-footprint?StreetAddress=') != -1) {
-							document.getElementsByName('comcast_service_available')[0].checked = false;
-							document.getElementsByName('comcast_service_available')[1].checked = true;
-							document.getElementsByName('comcast_business_address')[1].checked = false;
-							doSubmit();
-							return;
+						// "Looks like your building has multiple units. Please enter your apartment number."
+						// Address "validation issues"?
+						// ValidationIssues
+						//
+						if (d.ValidationIssues &&
+							d.ValidationIssues.length &&
+							d.ValidationIssues[0].messages &&
+							d.ValidationIssues[0].messages.length &&
+							d.ValidationIssues[0].messages[0] == 'Looks like your building has multiple units. Please enter your apartment number.') {
+							d1.innerText = '"Looks like your building has multiple units. Please enter your apartment number."';
+							return;	
 						}
 						
 						// Has apartments?
@@ -703,7 +737,7 @@ function MT__RUN() {
 						// Good ?
 						if (d.ApiServiceResult && 
 							d.ApiServiceResult.IsSuccess &&
-							d.CustomerType === 1 &&
+							//~ d.CustomerType === 1 && // Does not make a difference ... 1 or "7"
 							d.IsFullyLocalized &&
 							!d.HasSimilarAddress &&
 							d.SimilarAddresses.length == 0 &&
@@ -717,7 +751,7 @@ function MT__RUN() {
 							d1.innerText = 'Other error (bad address?)\n'+JSON.stringify(rs);
 							console.log(d.ApiServiceResult)
 							console.log(d.ApiServiceResult.IsSuccess)
-							console.log(d.CustomerType === 1)
+							//~ console.log(d.CustomerType === 1)
 							console.log(d.IsFullyLocalized)
 							console.log(!d.HasSimilarAddress)
 							console.log(d.SimilarAddresses.length == 0)
