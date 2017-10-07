@@ -560,8 +560,9 @@ function MT__RUN() {
 			var o = {
 				a1: td[3].innerText,
 				a2: td[5].innerText,
-				updatedA1: td[3].innerText,
-				updatedA2: td[5].innerText,
+				unit: null,
+				//~ updatedA1: td[3].innerText,
+				//~ updatedA2: td[5].innerText,
 				q: [
 				]
 			}
@@ -691,11 +692,12 @@ function MT__RUN() {
 						],
 						//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
 						short_filename:
-							new AMT___requests_factory().md5(o.a1 + '-' +o.a2)+
+							new AMT___requests_factory().md5(o.a1 + '-' +o.a2 + '-' + o.unit)+
 							Math.random()+new Date().getTime()+'-sk-xf',
 						post_object_as_str: 
 							'{"Address":{"StreetAddress":'+JSON.stringify(o.a1)+','+
-							'"UnitNumber":"","ZipCode":'+JSON.stringify(o.a2)+'},'+
+							'"UnitNumber":'+(o.unit != '' ? JSON.stringify(o.unit) : '""')+','+
+							'"ZipCode":'+JSON.stringify(o.a2)+'},'+
 							'"OfferId":"","PageName":"shop|learn|offers","RedirectURL":"reload"}',
 					},
 					callback_function: function(response) {
@@ -708,7 +710,59 @@ function MT__RUN() {
 						console.log(rs);
 						var sbm = false;
 						
+						if (rs.Data == null) {
+							// Return. It is a biz maybe?
+							d1.innerText = 'Data is Null (biz?)\n'+JSON.stringify(rs);
+							return;
+						}
 						
+						var d = rs.Data;
+						
+						// Has apartments?
+						var d = rs.Data;
+						if (d.Messages[0].MessageCode == '') {
+							if (!tried &&
+								d.Result &&
+								d.Result.CustomerProfile &&
+								d.Result.CustomerProfile.length &&
+								d.Result.CustomerProfile[0].address &&
+								d.Result.CustomerProfile[0].address.StreetAddress1 == o.a1 &&
+								d.Result.CustomerProfile[0].address.ZipCode == o.a2 &&
+								d.Result.CustomerProfile[0].address.UnitNumber
+								) { // Try once. Same address but add a unit.
+								o.unit = d.Result.CustomerProfile[0].address.UnitNumber;
+								check_pricing(true);
+							}
+							return;
+						}
+						
+						
+						
+						if (d.ApiServiceResult && 
+							d.ApiServiceResult.IsSuccess &&
+							d.CustomerType === 1 &&
+							d.IsFullyLocalized &&
+							!d.HasSimilarAddress &&
+							d.SimilarAddresses.length == 0 &&
+							d.ApiServiceResult.Result &&
+							d.ApiServiceResult.Result.MarketReference &&
+							d.ApiServiceResult.Result.MarketReference.MarketId
+							) {
+							get_market(d.ApiServiceResult.Result.MarketReference.MarketId);
+						} else {
+							// Return. It is a biz maybe?
+							d1.innerText = 'Other error (bad address?)\n'+JSON.stringify(rs);
+							console.log(d.ApiServiceResult)
+							console.log(d.ApiServiceResult.IsSuccess)
+							console.log(d.CustomerType === 1)
+							console.log(d.IsFullyLocalized)
+							console.log(!d.HasSimilarAddress)
+							console.log(d.SimilarAddresses.length == 0)
+							console.log(d.ApiServiceResult.Result)
+							console.log(d.ApiServiceResult.Result.MarketReference)
+							console.log(d.ApiServiceResult.Result.MarketReference.MarketId)
+							return;
+						}
 						//~ if (rs.additionalOffers && 
 							//~ rs.additionalOffers.length) {
 							//~ for (var n in rs.additionalOffers) {
@@ -742,6 +796,49 @@ function MT__RUN() {
 					}
 				};
 				
+				// Init async load.
+				new AMT___requests_factory().server_load_asynchronously2(opts);
+			}
+			function get_market(id) {
+				var opts = {
+					server_opts: {
+						url: 'https://www.xfinity.com/learn/api/neptune/offers/deal-finder?sc_itemid=e32b1db6-4fb1-4071-82dd-104491ccd967',
+						headers_array: [
+							'origin: https://www.xfinity.com',
+							'accept-encoding: gzip, deflate, br',
+							'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+							'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+							'content-type: application/json;charset=UTF-8',
+							'accept: application/json, text/plain, */*',
+							'referer: https://www.xfinity.com/learn/offers?lob=internet%7Chsd-0+hsd-10+hsd-8+hsd-22+hsd-25+hsd-55+hsd-70+hsd-75+hsd-100+hsd-150+hsd-200+hsd-250+hsd-300+hsd-350',
+							'authority: www.xfinity.com' ,
+							'cookie: PSC=RC.MKT='+encodeURIComponent(id)+'&CustomerStatus=New',
+						],
+						//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+						short_filename:
+							new AMT___requests_factory().md5(o.a1 + '-' +o.a2)+
+							Math.random()+new Date().getTime()+'-sk-xf-market',
+						//~ post_object_as_str: 
+							//~ '{"Address":{"StreetAddress":'+JSON.stringify(o.a1)+','+
+							//~ '"UnitNumber":"","ZipCode":'+JSON.stringify(o.a2)+'},'+
+							//~ '"OfferId":"","PageName":"shop|learn|offers","RedirectURL":"reload"}',
+					},
+					callback_function: function(response) {
+						var rs = response.response.responseText;
+						rs = JSON.parse(rs);
+						if (rs.Data == null) { // ?
+							d1.innerText = 'Market error?\n'+JSON.stringify(rs);
+							return;
+						}
+						for (i in rs.Data.Results) {
+							var u = rs.Data.Results[i];
+							if (u.InternetPackage != null && u.TvPackage == null && u.PhonePackage == null && u.HomePackage == null) {
+								console.log(u)
+								console.log(u.Price)
+							}
+						}
+					}
+				}
 				// Init async load.
 				new AMT___requests_factory().server_load_asynchronously2(opts);
 			}
