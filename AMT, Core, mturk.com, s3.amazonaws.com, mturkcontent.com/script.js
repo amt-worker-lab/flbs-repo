@@ -549,6 +549,207 @@ function MT__RUN() {
 	}
 	
 	// Shane Kim
+	// xfinity scrape.
+	// 
+	s = '<li>Open the following link in an Incognito window of the Google Chrome browser or in a Private Window using Mozilla Firefox: <a href="http://www.xfinity.com/internet-service.html" target="_blank"> http://www.xfinity.com/internet-service.html</a></li>\n	<li>Under “Browse XFINITY Internet Offers”, click “Change Location.”</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				a1: td[3].innerText,
+				a2: td[5].innerText,
+				updatedA1: td[3].innerText,
+				updatedA2: td[5].innerText,
+				q: [
+				]
+			}
+			AMT___addUserDecision(
+				'ShaneKim-xf,Oct2017',
+				function() { return o.a1+'|'+o.a2; },
+				[
+					"Id(comcast_plan1_speed_field)",
+					"Id(comcast_plan1_cost_field)",
+					"Id(comcast_plan2_speed_field)",
+					"Id(comcast_plan2_cost_field)",
+					"Id(comcast_plan3_speed_field)",
+					"Id(comcast_plan3_cost_field)",
+					"Id(comcast_plan4_speed_field)",
+					"Id(comcast_plan4_cost_field)",
+					"Id(comcast_plan5_speed_field)",
+					"Id(comcast_plan5_cost_field)",
+					"Id(comcast_plan6_speed_field)",
+					"Id(comcast_plan6_cost_field)",
+					"Id(comcast_plan7_speed_field)",
+					"Id(comcast_plan7_cost_field)",
+					"Id(comcast_plan8_speed_field)",
+					"Id(comcast_plan8_cost_field)",
+					"Id(comcast_plan9_speed_field)",
+					"Id(comcast_plan9_cost_field)",
+					"Id(comcast_plan10_speed_field)",
+					"Id(comcast_plan10_cost_field)",
+				]
+			);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:10%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
+			// Turn off form submit.
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				//~ return false;
+			//~ }
+			
+			// Init.
+			check_pricing();
+			
+			function check_servicable() {
+				var ux = 'https://buy.spectrum.com/rest/bean/com/charter/localization/facade/LocalizationFacade/processLocalization?v=ORG&mso=TWC';
+				var opts = {
+					headers_array: [
+						 'Origin: https://buy.spectrum.com',
+						 'Accept-Encoding: gzip, deflate, br',
+						 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+						 'Content-Type: application/json',
+						 'Accept: application/json, text/plain, */*',
+						 'Referer: https://buy.spectrum.com/buyflow/buyflow-localization?v=ORG',
+						 
+						 'Cookie: MINIFY=true; ADRUM=s=1507243443157&r=https%3A%2F%2Fwww.spectrum.com%2F%3F0; JSESSIONID=2-K0fKEJviIvb51k5QwQ6Rv2.sc58lecabp07; BIGipServer~Eco_102~Spectrum.com-PB-HTTPS=!0sIh5gaolrLtG8rbwhNqLctHajm4rAkhy/jHdom7Pi9bT1w7CtGXqaHX2GaiQLOuHcBEHogaJMjIq0zSKHhdevnPNrCAmYuFqfJCk36+4b4=; AMCV_97C902BE53295FC80A490D4C%40AdobeOrg=1999109931%7CMCMID%7C91283995433975729499220629491358759128%7CMCAID%7CNONE; DYN_USER_ID=p2u218292025; DYN_USER_CONFIRM=ef4eaa623d10734e33acafc01f5258e4; userPrefLanguage=en_US; mbox=check#true#1507243545|session#1507243443997-979265#1507245345; affiliate="{\"v\":\"null\",\"barAndRestaurant\":false,\"cbo\":false,\"911\":false,\"tos\":false,\"mso\":\"\",\"originatingFlowId\":\"\",\"ID\":\"118700-CHTR\",\"loc\":true}"; UA_INFO="{\"browser\":\"Chrome\",\"browser_ver\":\"60.0.3112.113\",\"os\":\"Linux\",\"height\":1080,\"width,\":1920}"',
+						 
+						 'Connection: keep-alive'
+						 
+						 //affiliate="{\"v\":\"ORG\"
+						//originatingFlowId\":\"ORG\"
+						
+					],
+					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+					post_object_as_str: '{"arg1":{"atg-rest-class-type":"com.charter.localization.to.LocalizationRestRequestTO","address1":"'+encodeURIComponent(o.updatedA1)+'","postalCode":"'+encodeURIComponent(o.updatedA2)+'"},"atg-rest-depth":"4"}',
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
+						opts
+					));
+				// Xhr request
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							alert('unsuccessful load');
+							return;
+						}
+						console.log(rs);
+						rs = JSON.parse(rs);
+						// Check good.
+						// Just do it...?
+						document.getElementsByName('spectrum_service_available_primary')[0].checked = true;
+						// Go next
+						check_pricing();
+						return;
+						
+						//~ if (rs.errors.length == 0) {
+							//~ // Check good.
+							//~ document.getElementsByName('spectrum_service_available_primary')[0].checked = true;
+							//~ // Go next
+							//~ check_pricing();
+							
+							
+							
+						//~ } else {
+							//~ // show error
+						//~ }
+					}
+				});
+			}
+			function check_pricing(tried) {
+				var tried = tried;
+				var opts = {
+					server_opts: {
+						url: 'https://www.xfinity.com/learn/api/neptune/localize',
+						
+						headers_array: [
+							'origin: https://www.xfinity.com',
+							'accept-encoding: gzip, deflate, br',
+							'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+							'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+							'content-type: application/json;charset=UTF-8',
+							'accept: application/json, text/plain, */*',
+							'referer: https://www.xfinity.com/learn/offers?lob=internet%7Chsd-0+hsd-10+hsd-8+hsd-22+hsd-25+hsd-55+hsd-70+hsd-75+hsd-100+hsd-150+hsd-200+hsd-250+hsd-300+hsd-350',
+							'authority: www.xfinity.com',
+						
+							
+						],
+						//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+						short_filename:
+							new AMT___requests_factory().md5(o.a1 + '-' +o.a2)+
+							Math.random()+new Date().getTime()+'-sk-xf',
+						post_object_as_str: 
+							'{"Address":{"StreetAddress":'+JSON.stringify(o.a1)+','+
+							'"UnitNumber":"","ZipCode":'+JSON.stringify(o.a2)+'},'+
+							'"OfferId":"","PageName":"shop|learn|offers","RedirectURL":"reload"}',
+					},
+					callback_function: function(response) {
+						var rs = response.response.responseText;
+						//~ if(response.status != 200) {
+							//~ alert('unsuccessful load');
+							//~ return;
+						//~ }
+						rs = JSON.parse(rs);
+						console.log(rs);
+						var sbm = false;
+						
+						
+						//~ if (rs.additionalOffers && 
+							//~ rs.additionalOffers.length) {
+							//~ for (var n in rs.additionalOffers) {
+								//~ var offer = rs.additionalOffers[n];
+								//~ if (offer.displayName == 'Internet') {
+									//~ var x = /Speeds up to (\d+) Mbps/.exec(offer.highlights);
+									//~ if (x) {
+										//~ document.getElementById('spectrum_min_speed').value = x[1];
+										//~ sbm = true;
+									//~ }
+									//~ if (offer.monthlyPrice && /^\d+\.\d{2}$/.exec(offer.monthlyPrice)) {
+										//~ document.getElementById('spectrum_plan_cost').value = Math.round(offer.monthlyPrice);
+										//~ if (sbm) {
+											//~ if (document.getElementById('spectrum_min_speed').value == 60 &&
+												//~ document.getElementById('spectrum_plan_cost').value == 45) {
+												//~ doSubmit();
+											//~ }
+										//~ }
+									//~ }
+									//~ break;
+								//~ }
+							//~ }
+						//~ } else if (!tried) {
+							//~ // Try restarting once.
+							//~ check_pricing(true);
+						//~ } else {
+							//~ // show error
+							//~ sbm = false;
+							//~ d1.innerText += '\nrs.additionalOffers={}';
+						//~ }
+					}
+				};
+				
+				// Init async load.
+				new AMT___requests_factory().server_load_asynchronously2(opts);
+			}
+		}
+		new run().f();
+		return;
+	}
+	// Shane Kim
 	// spectrum.com scrape.
 	// 
 	s = '<li>Open the following link in an Incognito window of the Google Chrome browser or in a Private Window using Mozilla Firefox: <a href="https://www.spectrum.com" target="_blank">https://www.spectrum.com</a></li>';
