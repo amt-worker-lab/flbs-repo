@@ -3249,7 +3249,12 @@ AMT___requests_factory.prototype.server_load_asynchronously2 = function(options)
 			//~ //do_not_save_to_file: options.do_not_save_to_file, // Do not ever save this to file. (Always new.)
 			//~ //post_object_as_str:
 		//~ }
-		opts = options.server_opts;
+		var opts = {} 
+		for (var property in options.server_opts) {
+			if (options.server_opts.hasOwnProperty(property)) {
+				opts[property] = options.server_opts[property];
+			}
+		}
 		opts.browser_exit = true;
 		opts.silent_output = true;
 		opts = JSON.stringify(opts);

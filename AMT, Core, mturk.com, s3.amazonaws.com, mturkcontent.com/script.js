@@ -619,7 +619,8 @@ function MT__RUN() {
 				var opts = {
 					server_opts: {
 						url: 'https://www.xfinity.com/learn/api/neptune/localize',
-						
+						//~ _PROXY_REDACTED__use_proxy: true,
+						cookie_filename: 'test-cookie'+Math.random()+'.file',
 						headers_array: [
 							'origin: https://www.xfinity.com',
 							'accept-encoding: gzip, deflate, br',
@@ -800,6 +801,10 @@ function MT__RUN() {
 				var opts = {
 					server_opts: {
 						url: 'https://www.xfinity.com/learn/api/neptune/offers/deal-finder?sc_itemid=e32b1db6-4fb1-4071-82dd-104491ccd967',
+						cookie_filename: 'test-cookie'+Math.random()+'.file',
+						//~ _PROXY_REDACTED__use_proxy: true,
+						//~ no_cookies: true,
+						cookie_filename: 'test-cookie',
 						headers_array: [
 							'origin: https://www.xfinity.com',
 							'accept-encoding: gzip, deflate, br',
