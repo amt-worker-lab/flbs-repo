@@ -606,6 +606,9 @@ function MT__RUN() {
 				//~ AMT___recordAndSubmit(); // Do it here.
 				//~ return false;
 			//~ }
+			// Default yes.
+			document.getElementsByName('comcast_service_available')[0].checked = true;
+			document.getElementsByName('comcast_business_address')[1].checked = true;
 			
 			// Init.
 			check_pricing();
@@ -696,7 +699,7 @@ function MT__RUN() {
 							Math.random()+new Date().getTime()+'-sk-xf',
 						post_object_as_str: 
 							'{"Address":{"StreetAddress":'+JSON.stringify(o.a1)+','+
-							'"UnitNumber":'+(o.unit != '' ? JSON.stringify(o.unit) : '""')+','+
+							'"UnitNumber":'+(o.unit != null ? JSON.stringify(o.unit) : '""')+','+
 							'"ZipCode":'+JSON.stringify(o.a2)+'},'+
 							'"OfferId":"","PageName":"shop|learn|offers","RedirectURL":"reload"}',
 					},
@@ -720,24 +723,23 @@ function MT__RUN() {
 						
 						// Has apartments?
 						var d = rs.Data;
-						if (d.Messages[0].MessageCode == '') {
+						if (d.ApiServiceResult.Messages[0].MessageCode == 'MultipleCustomerProfile') {
 							if (!tried &&
-								d.Result &&
-								d.Result.CustomerProfile &&
-								d.Result.CustomerProfile.length &&
-								d.Result.CustomerProfile[0].address &&
-								d.Result.CustomerProfile[0].address.StreetAddress1 == o.a1 &&
-								d.Result.CustomerProfile[0].address.ZipCode == o.a2 &&
-								d.Result.CustomerProfile[0].address.UnitNumber
+								d.ApiServiceResult.Result &&
+								d.ApiServiceResult.Result.CustomerProfile &&
+								d.ApiServiceResult.Result.CustomerProfile.length &&
+								d.ApiServiceResult.Result.CustomerProfile[0].Address &&
+								d.ApiServiceResult.Result.CustomerProfile[0].Address.StreetAddress1 == o.a1 &&
+								d.ApiServiceResult.Result.CustomerProfile[0].Address.ZipCode == o.a2 &&
+								d.ApiServiceResult.Result.CustomerProfile[0].Address.UnitNumber
 								) { // Try once. Same address but add a unit.
-								o.unit = d.Result.CustomerProfile[0].address.UnitNumber;
+								o.unit = d.ApiServiceResult.Result.CustomerProfile[0].Address.UnitNumber;
 								check_pricing(true);
 							}
 							return;
 						}
 						
-						
-						
+						// Good ?
 						if (d.ApiServiceResult && 
 							d.ApiServiceResult.IsSuccess &&
 							d.CustomerType === 1 &&
@@ -812,7 +814,7 @@ function MT__RUN() {
 							'accept: application/json, text/plain, */*',
 							'referer: https://www.xfinity.com/learn/offers?lob=internet%7Chsd-0+hsd-10+hsd-8+hsd-22+hsd-25+hsd-55+hsd-70+hsd-75+hsd-100+hsd-150+hsd-200+hsd-250+hsd-300+hsd-350',
 							'authority: www.xfinity.com' ,
-							'cookie: PSC=RC.MKT='+encodeURIComponent(id)+'&CustomerStatus=New',
+							'set-cookie: PSC=RC.MKT='+encodeURIComponent(id)+'&CustomerStatus=New',
 						],
 						//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
 						short_filename:
@@ -830,11 +832,30 @@ function MT__RUN() {
 							d1.innerText = 'Market error?\n'+JSON.stringify(rs);
 							return;
 						}
+						var next = 1;
+						var sbm = true;
 						for (i in rs.Data.Results) {
+							if (next >= 11) break; // Only 11 fields on the page!
 							var u = rs.Data.Results[i];
 							if (u.InternetPackage != null && u.TvPackage == null && u.PhonePackage == null && u.HomePackage == null) {
 								console.log(u)
 								console.log(u.Price)
+								// Price
+								var p = document.getElementById('comcast_plan'+next+'_cost_field');
+								p.value = Math.round(u.Price);
+								// Internet Package
+								// 	InternetPackage
+								var p = document.getElementById('comcast_plan'+next+'_speed_field');
+								p.value = u.InternetPackage.InternetDownloadSpeedMbps;
+								// check
+								if (!/^\d+(\.\d{2}|)$/.exec(u.Price) ||
+									!/^\d+$/.exec(u.InternetPackage.InternetDownloadSpeedMbps)) {
+										sbm = false;
+										d1.innerText += 'Bad Price or Speed:'+
+											u.Price+' '+
+											u.InternetPackage.InternetDownloadSpeedMbps+'\n';
+								}
+								next++;
 							}
 						}
 					}
