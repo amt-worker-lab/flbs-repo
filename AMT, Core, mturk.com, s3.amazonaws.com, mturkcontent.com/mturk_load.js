@@ -186,6 +186,13 @@ function mturk_load()
 		/**
 		 * Only run on (preview|previewandaccept|continue|accept|submit|return)
 		 * However, stop running if on the "No more HITs available" page
+		 * 
+		 * Reload on No Hits: Set to 1000 up to Oct 7 2017.
+		 * 		Now setting to 2200. Maybe this is the rate limiter issue.
+		 * 		"Recent issue"...
+		 * 		That is, maybe the "VSR" issue (where a job is "done" while
+		 * 		it is still up) is happening across other jobs as well.
+		 * 		Causing rate limit issue when RONO set to 1000. 
 		 */
 		var l = document.location.href;
 			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
@@ -198,22 +205,22 @@ function mturk_load()
 				)
 			//|| check_right_page
 			)
-		{	console.log('x1');
+		{
 			if (// Note: This was (indexOf) == true!! and submitting in
 				// all cases! Rather than (indexOf) == -1
 				document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1 ||
 				document.body.innerHTML.toLowerCase().indexOf('there are no hits in this group available to you at the moment.') != -1
-			   ) {console.log('x2');
-				AMT__Global_Vars.initializeNextTabPassBy();console.log('x3');
-				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {console.log('x5');
-					doSubmit(false, false, function(timeToSkip){console.log('x6');
+			   ) {
+				AMT__Global_Vars.initializeNextTabPassBy();
+				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {
+					doSubmit(false, false, function(timeToSkip){
 							window.setTimeout(function() {
 								window.location.reload(true);
 							}
 							, timeToSkip);
 						},
-						1000
-					);console.log('x7');
+						2200
+					);
 				}
 				console.log('Hit the "All HITs" page. Returning.');
 				return;
