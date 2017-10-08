@@ -875,7 +875,7 @@ function MT__RUN() {
 	}
 	// Jun Li
 	// Airbnb User Classification
-	// 
+	// Note: NOT COMPLETED. This
 	s = '<p><span style="color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size: 12.8px;">Click the link below to review the Airbnb user information. Collect the following information about the user based on name and/or photo and other information displayed on the page</span>:</p>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -938,7 +938,7 @@ function MT__RUN() {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
 						d1.style.backgroundColor = '1px solid blue';
-						d1.body.appendChild('!200'.div());
+						d1.appendChild('!200'.div());
 						return false;
 					}
 					//
@@ -948,7 +948,7 @@ function MT__RUN() {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
 						d1.style.backgroundColor = '1px solid blue';
-						d1.body.appendChild('!200'.div());
+						d1.appendChild('!200'.div());
 						return;
 					}
 					// Sbm
@@ -961,6 +961,8 @@ function MT__RUN() {
 					var d = dom.getElementsByClassName('img-responsive');
 					if (d && d.length > 0) {
 						d1.appendChild(d[0]);
+						// Yes image???
+						o.q[4].value = 'Yes';
 					} else {
 						d1.appendChild('Image: --'.div());
 					}
