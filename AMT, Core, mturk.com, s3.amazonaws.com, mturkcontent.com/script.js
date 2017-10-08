@@ -880,33 +880,49 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');
 			var a = document.getElementsByTagName('a');
 			var o = {
 				a: a[0].href,
 				q: [
+					document.getElementById('link'),
+					document.getElementById('username'),
+					document.getElementById('gender'),
+					document.getElementById('race'),
+					document.getElementById('photo'),
+					document.getElementById('review'),
+					document.getElementById('posreview'),
+					document.getElementById('ishost'),
 				]
 			}
 			AMT___addUserDecision(
-				'ShaneKim,Oct2017',
-				function() { return o.a1+'|'+o.a2; },
+				'JunLi,Oct2017',
+				function() { return o.a; },
 				[
-					"Name(spectrum_address_match)[0]",
-					"Name(spectrum_pre_existing_acct)[0]",
-					"Id(spectrum_new_street_address)",
-					"Id(spectrum_new_zip)",
-					"Name(spectrum_service_available_primary)[0]",
-					"Name(spectrum_service_available_primary)[1]",
-					"Id(spectrum_min_speed)",
-					"Id(spectrum_plan_cost)",
+					"Id(link)",
+					"Id(username)",
+					"Id(gender)",
+					"Id(race)",
+					"Id(photo)",
+					"Id(review)",
+					"Id(posreview)",
+					"Id(ishost)",
 				]
 			);
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:0px;left:0%;width:10%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
 			/*End Items*/
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
 			// Turn off form submit.
 			//~ document.getElementById('mturk_form').onsubmit = function(e) {
 				//~ e.stopPropagation();
@@ -917,14 +933,12 @@ function MT__RUN() {
 			
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: 'https://buy.spectrum.com/api/serviceabilityaddresses/v1/serviceabilityaddress?'+
-					'line1='+encodeURIComponent(o.a1)+
-					'&line2=&postalCode='+encodeURIComponent(o.a2),
+				URL: o.a,
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						document.body.style.backgroundColor = '1px solid blue';
-						document.body.appendChild('--'.div());
+						d1.style.backgroundColor = '1px solid blue';
+						d1.body.appendChild('!200'.div());
 						return false;
 					}
 					//
@@ -933,9 +947,39 @@ function MT__RUN() {
 				success_callback: function(options) {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						document.body.appendChild('--'.div());
+						d1.style.backgroundColor = '1px solid blue';
+						d1.body.appendChild('!200'.div());
 						return;
 					}
+					// Sbm
+					var sbm = true;
+					// Dom
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// Link works.
+					o.q[0].value = 'Yes';
+					// Image
+					var d = dom.getElementsByClassName('img-responsive');
+					if (d && d.length > 0) {
+						d1.appendChild(d[0]);
+					} else {
+						d1.appendChild('Image: --'.div());
+					}
+					// Name
+					var x = /Hey, I’m ([^!]+)!/.exec(rs);
+					if (x) {
+						o.q[1].value = x[1];
+						d1.appendChild(('Name: '+x[1]).div());
+					} else {
+						sbm = false;
+					}
+					// Description.
+					var d = dom.getElementsByClassName('space-top-2');
+					if (d && d.length >= 3) {
+						d1.appendChild(('Bio: '+d[2].innerText.trim()).div());
+					} else {
+						d1.appendChild('Bio: --'.div());
+					}
+					//
 				}
 			});
 		}
