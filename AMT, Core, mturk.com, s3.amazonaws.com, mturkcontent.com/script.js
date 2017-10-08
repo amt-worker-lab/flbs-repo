@@ -873,6 +873,75 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	// Jun Li
+	// Airbnb User Classification
+	// 
+	s = '<p><span style="color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size: 12.8px;">Click the link below to review the Airbnb user information. Collect the following information about the user based on name and/or photo and other information displayed on the page</span>:</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				a: a[0].href,
+				q: [
+				]
+			}
+			AMT___addUserDecision(
+				'ShaneKim,Oct2017',
+				function() { return o.a1+'|'+o.a2; },
+				[
+					"Name(spectrum_address_match)[0]",
+					"Name(spectrum_pre_existing_acct)[0]",
+					"Id(spectrum_new_street_address)",
+					"Id(spectrum_new_zip)",
+					"Name(spectrum_service_available_primary)[0]",
+					"Name(spectrum_service_available_primary)[1]",
+					"Id(spectrum_min_speed)",
+					"Id(spectrum_plan_cost)",
+				]
+			);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:10%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
+			// Turn off form submit.
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				//~ return false;
+			//~ }
+			
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://buy.spectrum.com/api/serviceabilityaddresses/v1/serviceabilityaddress?'+
+					'line1='+encodeURIComponent(o.a1)+
+					'&line2=&postalCode='+encodeURIComponent(o.a2),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = '1px solid blue';
+						document.body.appendChild('--'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.appendChild('--'.div());
+						return;
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Shane Kim
 	// spectrum.com scrape.
 	// 
