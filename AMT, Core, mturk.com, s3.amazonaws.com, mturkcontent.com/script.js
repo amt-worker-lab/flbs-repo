@@ -664,7 +664,12 @@ function MT__RUN() {
 							// Sbm.
 							if (o.q[0].value.length > 8 &&
 								o.q[0].value.indexOf('undefined') == -1 &&
-								o.q[0].value.indexOf('null') == -1
+								o.q[0].value.indexOf('null') == -1 &&
+								o.q[0].value.trim() != 'Bronx' &&
+								o.q[0].value.trim() != 'Manhattan' &&
+								o.q[0].value.trim() != 'Queens' &&
+								o.q[0].value.trim() != 'Richmond' &&
+								o.q[0].value.trim() != 'Kings'
 								) {
 								AMT___recordAndSubmit();
 							}
