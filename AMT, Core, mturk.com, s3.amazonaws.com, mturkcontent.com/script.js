@@ -548,6 +548,183 @@ function MT__RUN() {
 		return;
 	}
 	
+	/**
+	 * New server_load_asynchronously2()
+	 * 
+	 * Shane Kim
+	 * Matt Emmert
+	 * 
+	 * 
+	 * 
+	 */
+	// Matt Emmert
+	// http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain
+	// 
+	s = '<p>1) Open this website:&nbsp;<a href="http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain">http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain</a></p>\n\n<p>2) Select the "Go" button next to "Parking / Camera Violations"</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				num: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('web_url')[0]
+				]
+			}
+			AMT___addUserDecision(
+				'MattEmmert,Oct2017',
+				function() { return o.num; },
+				[
+					"Name(web_url)[0]",
+				]
+			);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:100%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
+			// Turn off form submit.
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				//~ return false;
+			//~ }
+			
+			// Init.
+			load();
+			
+			function load() {
+				var tried = tried;
+				var opts = {
+					server_opts: {
+						url: 'https://www.xfinity.com/learn/api/neptune/localize',
+						//~ _PROXY_REDACTED__use_proxy: true,
+						cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+						headers_array: [
+							'Cookie: JSESSIONID=0000IV7EFHWY3-qIl4u6vV-UmsN:15fkks88v',
+							'Origin: http://nycserv.nyc.gov',
+							'Accept-Encoding: gzip, deflate',
+							'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+							'Upgrade-Insecure-Requests: 1',
+							'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+							'Content-Type: application/x-www-form-urlencoded',
+							'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+							'Cache-Control: max-age=0',
+							'Referer: http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
+							'Connection: keep-alive',
+						],
+						//~ do_not_save_to_file: true,
+						short_filename:
+							new AMT___requests_factory().md5(o.num)+
+							Math.random()+new Date().getTime()+'-me',
+						post_object_as_str: 
+							'searchticket='+encodeURIComponent(o.num)+	'&g-recaptcha-response=03AJzQf7P5NM5_6I2PQ-wKaAMtQqfHxK8BzF3sar6qb2VYZB9kY2SGa_cTmSnV6Ic4O18yKWb4yXKOPuwtjvmWDGVZAY15xTEVu0KvLF86RpBEUzPo4EPLeDBAVV4kYxdtUVziVITL3JbsXDu4Ac5nclTbADBI4qBfaexx4PdILS6dW2kFLPERU2GM6EwX_PSNMKqPNrDQn_s_Y0EL6jkk2z0yxFZGDWT5dYhxEKBULUGt3w35f7u3AvLIMEcpFRfREQke48J9kLz9dQM8MvznWWDuhnZh4-A9Hfm3KXiAOvLQgc-ZrEoELyoeO6kVKW_efRvx8Wwk2PLg5De8wbjGs6yogX5pOsxsFE0jj0ftX4Qy8saeK7Oh4fhT1PoChwCSG2rwLEqMyt8p05A8x61xWmMOdWI2AyTVfw&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FPVO&ServiceName=PVO_CHECK_VIOLATION_STATUS_DETAILS&MethodName=NONE&PageID=PVO_Violation_Search&ParamCount=0&PVO_VIOLATION_NUMBER=8479828365&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FPVO%7CServiceName%3DPVO_CHECK_VIOLATION_STATUS_DETAILS%7CMethodName%3DNONE%7CParamCount%3Dundefined%7Csearchticket%3D'+
+							encodeURIComponent(o.num)+							'%7Cg-recaptcha-response%3D03AJzQf7P5NM5_6I2PQ-wKaAMtQqfHxK8BzF3sar6qb2VYZB9kY2SGa_cTmSnV6Ic4O18yKWb4yXKOPuwtjvmWDGVZAY15xTEVu0KvLF86RpBEUzPo4EPLeDBAVV4kYxdtUVziVITL3JbsXDu4Ac5nclTbADBI4qBfaexx4PdILS6dW2kFLPERU2GM6EwX_PSNMKqPNrDQn_s_Y0EL6jkk2z0yxFZGDWT5dYhxEKBULUGt3w35f7u3AvLIMEcpFRfREQke48J9kLz9dQM8MvznWWDuhnZh4-A9Hfm3KXiAOvLQgc-ZrEoELyoeO6kVKW_efRvx8Wwk2PLg5De8wbjGs6yogX5pOsxsFE0jj0ftX4Qy8saeK7Oh4fhT1PoChwCSG2rwLEqMyt8p05A8x61xWmMOdWI2AyTVfw%7CPageID%3DPVO_Violation_Search%7CPVO_VIOLATION_NUMBER%3D'+
+							encodeURIComponent(o.num),
+						
+							//~ '{"Address":{"StreetAddress":'+JSON.stringify(o.a1)+','+
+							//~ '"UnitNumber":'+(o.unit != null ? JSON.stringify(o.unit) : '""')+','+
+							//~ '"ZipCode":'+JSON.stringify(o.a2)+'},'+
+							//~ '"OfferId":"","PageName":"shop|learn|offers","RedirectURL":"reload"}',
+					},
+					callback_function: function(response) {
+						var rs = response.response.responseText;
+						//~ if(response.status != 200) {
+							//~ alert('unsuccessful load');
+							//~ return;
+						//~ }
+						//~ rs = JSON.parse(rs);
+						console.log(rs);
+						console.log(rs.indexOf(o.num));
+						var sbm = false;
+						//
+					}
+				};
+				
+				// Init async load.
+				new AMT___requests_factory().server_load_asynchronously2(opts);
+			}
+			function get_market(id) {
+				var opts = {
+					server_opts: {
+						url: 'https://www.xfinity.com/learn/api/neptune/offers/deal-finder?sc_itemid=e32b1db6-4fb1-4071-82dd-104491ccd967',
+						cookie_filename: 'test-cookie'+Math.random()+'.file',
+						//~ _PROXY_REDACTED__use_proxy: true,
+						//~ no_cookies: true,
+						cookie_filename: 'test-cookie',
+						headers_array: [
+							'origin: https://www.xfinity.com',
+							'accept-encoding: gzip, deflate, br',
+							'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+							'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+							'content-type: application/json;charset=UTF-8',
+							'accept: application/json, text/plain, */*',
+							'referer: https://www.xfinity.com/learn/offers?lob=internet%7Chsd-0+hsd-10+hsd-8+hsd-22+hsd-25+hsd-55+hsd-70+hsd-75+hsd-100+hsd-150+hsd-200+hsd-250+hsd-300+hsd-350',
+							'authority: www.xfinity.com' ,
+							'set-cookie: PSC=RC.MKT='+encodeURIComponent(id)+'&CustomerStatus=New',
+						],
+						//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+						short_filename:
+							new AMT___requests_factory().md5(o.a1 + '-' +o.a2)+
+							Math.random()+new Date().getTime()+'-sk-xf-market',
+						//~ post_object_as_str: 
+							//~ '{"Address":{"StreetAddress":'+JSON.stringify(o.a1)+','+
+							//~ '"UnitNumber":"","ZipCode":'+JSON.stringify(o.a2)+'},'+
+							//~ '"OfferId":"","PageName":"shop|learn|offers","RedirectURL":"reload"}',
+					},
+					callback_function: function(response) {
+						var rs = response.response.responseText;
+						rs = JSON.parse(rs);
+						if (rs.Data == null) { // ?
+							d1.innerText = 'Market error?\n'+JSON.stringify(rs);
+							return;
+						}
+						var next = 1;
+						var sbm = true;
+						for (i in rs.Data.Results) {
+							if (next >= 11) break; // Only 11 fields on the page!
+							var u = rs.Data.Results[i];
+							if (u.InternetPackage != null && u.TvPackage == null && u.PhonePackage == null && u.HomePackage == null) {
+								console.log(u)
+								console.log(u.Price)
+								// Price
+								var p = document.getElementById('comcast_plan'+next+'_cost_field');
+								p.value = Math.round(u.Price);
+								// Internet Package
+								// 	InternetPackage
+								var p = document.getElementById('comcast_plan'+next+'_speed_field');
+								p.value = u.InternetPackage.InternetDownloadSpeedMbps;
+								// check
+								if (!/^\d+(\.\d{2}|)$/.exec(u.Price) ||
+									!/^\d+$/.exec(u.InternetPackage.InternetDownloadSpeedMbps)) {
+										sbm = false;
+										d1.innerText += 'Bad Price or Speed!\n';
+								}
+								d1.innerText += '$'+u.Price+' '+
+									u.InternetPackage.InternetDownloadSpeedMbps+'Mbps\n';
+								next++;
+							}
+						}
+						if (sbm &&
+							document.getElementById('comcast_plan1_cost_field').value != '' && 
+							document.getElementById('comcast_plan1_speed_field').value != ''
+							) {
+							doSubmit();
+						}
+					}
+				}
+				// Init async load.
+				new AMT___requests_factory().server_load_asynchronously2(opts);
+			}
+		}
+		new run().f();
+		return;
+	}
 	// Shane Kim
 	// xfinity scrape.
 	// 
