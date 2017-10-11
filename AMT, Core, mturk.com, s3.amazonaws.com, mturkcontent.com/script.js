@@ -700,11 +700,13 @@ function MT__RUN() {
 				a1: td[3].innerText,
 				a2: td[5].innerText,
 				unit: null,
+				cookie: null,
 				//~ updatedA1: td[3].innerText,
 				//~ updatedA2: td[5].innerText,
 				q: [
 				]
 			}
+			o.cookie = 'test-cookie'+new AMT___requests_factory().md5(o.a1 + '-' +o.a2)+Math.random()+new Date().getTime();
 			AMT___addUserDecision(
 				'ShaneKim-xf,Oct2017',
 				function() { return o.a1+'|'+o.a2; },
@@ -758,7 +760,8 @@ function MT__RUN() {
 					server_opts: {
 						url: 'https://www.xfinity.com/learn/api/neptune/localize',
 						//~ _PROXY_REDACTED__use_proxy: true,
-						cookie_filename: 'test-cookie'+Math.random()+'.file',
+						cookie_filename: o.cookie,
+						//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
 						headers_array: [
 							'origin: https://www.xfinity.com',
 							'accept-encoding: gzip, deflate, br',
@@ -899,36 +902,6 @@ function MT__RUN() {
 							console.log(d.ApiServiceResult.Result.MarketReference.MarketId)
 							return;
 						}
-						//~ if (rs.additionalOffers && 
-							//~ rs.additionalOffers.length) {
-							//~ for (var n in rs.additionalOffers) {
-								//~ var offer = rs.additionalOffers[n];
-								//~ if (offer.displayName == 'Internet') {
-									//~ var x = /Speeds up to (\d+) Mbps/.exec(offer.highlights);
-									//~ if (x) {
-										//~ document.getElementById('spectrum_min_speed').value = x[1];
-										//~ sbm = true;
-									//~ }
-									//~ if (offer.monthlyPrice && /^\d+\.\d{2}$/.exec(offer.monthlyPrice)) {
-										//~ document.getElementById('spectrum_plan_cost').value = Math.round(offer.monthlyPrice);
-										//~ if (sbm) {
-											//~ if (document.getElementById('spectrum_min_speed').value == 60 &&
-												//~ document.getElementById('spectrum_plan_cost').value == 45) {
-												//~ doSubmit();
-											//~ }
-										//~ }
-									//~ }
-									//~ break;
-								//~ }
-							//~ }
-						//~ } else if (!tried) {
-							//~ // Try restarting once.
-							//~ check_pricing(true);
-						//~ } else {
-							//~ // show error
-							//~ sbm = false;
-							//~ d1.innerText += '\nrs.additionalOffers={}';
-						//~ }
 					}
 				};
 				
@@ -936,13 +909,14 @@ function MT__RUN() {
 				new AMT___requests_factory().server_load_asynchronously2(opts);
 			}
 			function get_market(id) {
+				console.log('id:'+id);
 				var opts = {
 					server_opts: {
 						url: 'https://www.xfinity.com/learn/api/neptune/offers/deal-finder?sc_itemid=e32b1db6-4fb1-4071-82dd-104491ccd967',
-						cookie_filename: 'test-cookie'+Math.random()+'.file',
+						cookie_filename: o.cookie,
+						//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
 						//~ _PROXY_REDACTED__use_proxy: true,
 						//~ no_cookies: true,
-						cookie_filename: 'test-cookie',
 						headers_array: [
 							'origin: https://www.xfinity.com',
 							'accept-encoding: gzip, deflate, br',
@@ -1000,7 +974,8 @@ function MT__RUN() {
 							document.getElementById('comcast_plan1_cost_field').value != '' && 
 							document.getElementById('comcast_plan1_speed_field').value != ''
 							) {
-							doSubmit();
+							//~ doSubmit();
+							AMT___recordAndSubmit();
 						}
 					}
 				}
