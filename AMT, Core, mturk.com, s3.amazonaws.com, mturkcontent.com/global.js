@@ -8325,22 +8325,11 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	 * try_sbm
 	 */
 	function try_sbm() {
-		//~ console.log(d3.value);
-		//~ if (d3.value.trim() == '' || d3.value.length < 10)
-			//~ return false;
 		var x = options_object.output_field_el;
 		x.value = d3.value.trim();
 		if (x.value.trim() == '' || x.value < 10)
 			return false;
 		doSubmit();
-		//~ console.log(output_field_el.value);
-		//~ console.log(options_object.output_field.value);
-		// Go to next tab when not reviewing
-		// else stay here..
-		//~ if (xo.review_id == '')
-			//~ new AMT___core_factory().nextTab({focusOnPage: true});
-								
-		//~ write();
 	}
 	/**
 	 * window.onkeydown
@@ -17284,7 +17273,8 @@ var MT__DOSUBMIT__CALLBACK_FUNCTION;
 var MT__DOSUBMIT__TIME_TO_SUBMIT;
 //
 var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250; // Stable is 2250 Jan. 2013 to ... Oct. 2014 ... Sep. 2015...
-var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2400;
+var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2400; // Stable through October 2017.
+var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2600; // Bumping up October 2017.
 //~ var MT__DOSUBMIT__MIN_SUBMIT_TIME = 3000; // Sep 14 2015
 // give this a submit ID
 var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
