@@ -994,40 +994,40 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
 			var a = document.getElementsByTagName('b');
 			var o = {
 				a: a[1].innerText.trim(),
 				q: [
-					document.getElementsByName('Gender')[0],
-					document.getElementsByName('Gender')[1],
-					document.getElementsByName('Gender')[2],
-					document.getElementsByName('Gender')[3],
+					document.getElementsByName('Type')[0],
+					document.getElementsByName('Type')[1],
+					document.getElementsByName('Type')[2],
+					document.getElementsByName('Type')[3],
 				]
 			}
 			AMT___addUserDecision(
 				'KristinaLaugen,Oct2017',
 				function() { return o.a; },
 				[
-					"Name(Gender)[0]",
-					"Name(Gender)[1]",
-					"Name(Gender)[2]",
-					"Name(Gender)[3]",
+					"Name(Type)[0]",
+					"Name(Type)[1]",
+					"Name(Type)[2]",
+					"Name(Type)[3]",
 				]
 			);
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:0px;left:0%;width:100%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:0px;left:0%;width:100%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
 			/*End Items*/
-			new AMT___core_factory().el_innerHeight({
-				elements: [
-					d1
-				],
-				offset: 0 // offset top
-			});
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 0 // offset top
+			//~ });
 			// Turn off form submit.
 			//~ document.getElementById('mturk_form').onsubmit = function(e) {
 				//~ e.stopPropagation();
@@ -1064,12 +1064,14 @@ function MT__RUN() {
 					if (rs.indexOf('10003') == -1) {
 						sbm = false;
 					}
-					if (rs.indexOf('<div class="HandyCheckbox-subtitle" data-reactid="11"><!-- react-text: 12 -->Powered by handy.com') != -1) {
+					if (/<div class="HandyCheckbox-subtitle" data-reactid="\d+"><!-- react-text: \d+ -->Powered by handy\.com/.exec(rs)) {
 						o.q[0].checked = true;
 						AMT___recordAndSubmit();
+						return;
 					} else if (rs.indexOf('Powered by handy.com') != -1) {
 						sbm = false;
-						d1.innerText = 'Powered by handy.com on page!';
+						d1.innerText = 'Powered by handy.com on page but not correct??';
+						return;
 					}
 					
 					if (/<li class="ProductOverviewInformation-list-item" data-reactid="\d+">Assembly Required:\s+Yes<\/li>/.exec(rs)) {
@@ -1079,15 +1081,16 @@ function MT__RUN() {
 						o.q[2].checked = true;
 						AMT___recordAndSubmit();
 					} else if (rs.indexOf('assembly') == -1 && rs.indexOf('Assembly') == -1) { // No assembly info.
-						d1.innerText = 'No assembly'; // sbm
+						//~ d1.innerText = 'No assembly'; // sbm
+						o.q[3].checked = true;
+						AMT___recordAndSubmit();
 					} else {
 						// "Dropspot" div has it sometimes??
-						d1.innerText = 'Has assembly???';
+						d1.innerText = 'Check: Has assembly???';
 						if (/"title":"Assembly Required","value":"(Yes|No)/.exec(rs)) {
 							d1.innerText += '\n ... In the **JS**. \n "title":"Assembly Required","value":"(Yes|No)';
 						}
 					}
-					
 				}
 			});
 		}
