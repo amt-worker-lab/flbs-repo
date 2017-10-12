@@ -1072,14 +1072,20 @@ function MT__RUN() {
 						d1.innerText = 'Powered by handy.com on page!';
 					}
 					
-					if (rs.indexOf('<li class="ProductOverviewInformation-list-item" data-reactid="51">Assembly Required:  Yes</li>') != -1) {
+					if (/<li class="ProductOverviewInformation-list-item" data-reactid="\d+">Assembly Required:\s+Yes<\/li>/.exec(rs)) {
 						o.q[1].checked = true;
 						AMT___recordAndSubmit();
-					} else if (rs.indexOf('<li class="ProductOverviewInformation-list-item" data-reactid="51">Assembly Required:  No</li>') != -1) {
+					} else if (/<li class="ProductOverviewInformation-list-item" data-reactid="\d+">Assembly Required:\s+No<\/li>/.exec(rs)) {
 						o.q[2].checked = true;
 						AMT___recordAndSubmit();
 					} else if (rs.indexOf('assembly') == -1 && rs.indexOf('Assembly') == -1) { // No assembly info.
-						
+						d1.innerText = 'No assembly'; // sbm
+					} else {
+						// "Dropspot" div has it sometimes??
+						d1.innerText = 'Has assembly???';
+						if (/"title":"Assembly Required","value":"(Yes|No)/.exec(rs)) {
+							d1.innerText += '\n ... In the **JS**. \n "title":"Assembly Required","value":"(Yes|No)';
+						}
 					}
 					
 				}
