@@ -986,6 +986,108 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	// 
+	// 
+	// 
+	s = '<li><strong>Please go to the link given below and type "10003" as your "ship to" address</strong></li>\n	<li>Look directly above the "add to cart" button to see if there is a checkbox that says "Add assembly powered by Handy."</li>\n	<li>If that box is there, please select that option below</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');
+			var a = document.getElementsByTagName('b');
+			var o = {
+				a: a[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Gender')[0],
+					document.getElementsByName('Gender')[1],
+					document.getElementsByName('Gender')[2],
+					document.getElementsByName('Gender')[3],
+				]
+			}
+			AMT___addUserDecision(
+				'KristinaLaugen,Oct2017',
+				function() { return o.a; },
+				[
+					"Name(Gender)[0]",
+					"Name(Gender)[1]",
+					"Name(Gender)[2]",
+					"Name(Gender)[3]",
+				]
+			);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// Turn off form submit.
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				//~ return false;
+			//~ }
+			
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.a,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					// Sbm
+					var sbm = true;
+					// Dom
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					
+					if (rs.indexOf('10003') == -1) {
+						sbm = false;
+					}
+					if (rs.indexOf('<div class="HandyCheckbox-subtitle" data-reactid="11"><!-- react-text: 12 -->Powered by handy.com') != -1) {
+						o.q[0].checked = true;
+						AMT___recordAndSubmit();
+					} else if (rs.indexOf('Powered by handy.com') != -1) {
+						sbm = false;
+						d1.innerText = 'Powered by handy.com on page!';
+					}
+					
+					if (rs.indexOf('<li class="ProductOverviewInformation-list-item" data-reactid="51">Assembly Required:  Yes</li>') != -1) {
+						o.q[1].checked = true;
+						AMT___recordAndSubmit();
+					} else if (rs.indexOf('<li class="ProductOverviewInformation-list-item" data-reactid="51">Assembly Required:  No</li>') != -1) {
+						o.q[2].checked = true;
+						AMT___recordAndSubmit();
+					} else if (rs.indexOf('assembly') == -1 && rs.indexOf('Assembly') == -1) { // No assembly info.
+						
+					}
+					
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Jun Li
 	// Airbnb User Classification
 	// Note: NOT COMPLETED. This
