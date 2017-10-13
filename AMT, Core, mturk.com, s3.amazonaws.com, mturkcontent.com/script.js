@@ -199805,6 +199805,8 @@ function top_window(okay_to_run) {
 	// Find associated product information for a given barcode value
 	//
 	// Todo: Change button titles "su:" "lu:" etc. to be onmouseover:highlight mini-button.
+	// Done: Remove TM, R symbols.
+	// Todo: Make text in search results "annotate-able".
 	s = '<p class="overview title">Find associated product information for a given barcode value.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -200006,12 +200008,6 @@ function top_window(okay_to_run) {
 			window.addEventListener('keypress', A9_Snaptell_VSR__keypress_submit, false);
 			function A9_Snaptell_VSR__keypress_submit(e) {
 				console.log(e.keyCode);
-				//~ if (e.keyCode == 96 && String.fromCharCode(e.keyCode) == '`') {
-					//~ e.preventDefault();
-					//~ e.stopPropagation();
-					//~ document.getElementsByName('/submit')[0].click();
-					//~ return false;
-				//~ }
 				// na button
 				if (AMT__Global_Vars.scriptVars['tilde-na-button'] == '1' && String.fromCharCode(e.keyCode) == '`') {
 					document.getElementsByClassName('question selection')[0].click();
@@ -200095,8 +200091,11 @@ function top_window(okay_to_run) {
 				console.log(v);
 				// 
 				if (v.key == 'A9_Snaptell_VSR__iframe_complete' && v.text_range != '') {
-					// IS CONTROL KEY PRESSED?
+					// Remove copyright symbols.
+					v.text_range = v.text_range.replace(/[®™©]/g, '');
+					// Remove extra spaces and non-space whitespace.
 					v.text_range = v.text_range.replace(/[\r\n\t\s]+/g, ' ');
+					// IS CONTROL KEY PRESSED?
 					if (v.control_key_is_active) {
 						o.q[0].value += ' ' + v.text_range;
 					} else {
@@ -200228,6 +200227,8 @@ function top_window(okay_to_run) {
 				btn.meta = result_obj;
 				btn.className = 'exe-result-btn';
 				btn.onclick = function() {
+					// Remove R, TM, C
+					this.final_value = this.final_value.replace(/[®™©]/g, '');
 					this.style.backgroundColor = 'LightGreen';
 					o.q[0].value = this.final_value;
 					o.q[1].value = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);
