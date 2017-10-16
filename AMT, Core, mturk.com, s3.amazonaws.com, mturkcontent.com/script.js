@@ -653,7 +653,11 @@ function MT__RUN() {
 								return;
 							}
 							//
-							d1.style.backgroundColor = 'blue';
+							d1.style.backgroundColor = 'aqua';
+							// Error message?
+							if (rs.indexOf('Your session has timed out or expired.  Please follow the link to the home page.') != -1) {
+								d1.innerText = 'NYC site session expired!';
+							}
 							return;
 						}
 						// Search for result.
