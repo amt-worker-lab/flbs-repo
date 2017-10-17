@@ -566,11 +566,15 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;}');
-			new AMT___core_factory().createScriptVar('MattEmmert-Session', '');
+			new AMT___core_factory().createScriptVar('MattEmmert-FormData',
+				'searchticket=8485012847&g-recaptcha-response=03AJzQf7MBjcBnrAiKutvD4UOxYBmanSLbiGzaJtTsTmYvBwb4R43M3-8ak4bSWbh3ZR2vh2oo7sfIuC_EQbdhZlCi_CXymN5Y7Q8fVXG0j1yCsxdwFfZ9vAjtYdom8ePSyLbFZ4q1DcwJ33DL2ic-stiyGNN_xwfkE2mzR9AO7UL65x3x_T9Ob-vivjb269VLVZCzpu1GCl_kZk9FLkkpel763ao5vTbdffNs6at8FIesvqy-BCaU_YZaPyhyLdvQ88pT0k9jf68pGjA3ZBzMeJDie0ZoHql9nz5MvGwL1gpJkUXig8M_7pFzR4W0Bl4CGqrgBJ2gLNv05UuONVd6UFcMYBiYEXOI5xVv4v1kgGoQb5j7NlTNFb8v4AcAWpj5-e08Y44wwQ3EmfEDDWUDfRgViYMo55uHAdjZ4afMJl1Y5r0eWP8Kovc_AFmDVvD_05Xrnep0q5rJcZYmwkkhBLLVwLAPJM4cnnaqhCdnNNTstPXSq6HAoz0&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FPVO&ServiceName=PVO_CHECK_VIOLATION_STATUS_DETAILS&MethodName=NONE&PageID=PVO_Violation_Search&ParamCount=0&PVO_VIOLATION_NUMBER=8485012847&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FPVO%7CServiceName%3DPVO_CHECK_VIOLATION_STATUS_DETAILS%7CMethodName%3DNONE%7CParamCount%3Dundefined%7Csearchticket%3D8485012847%7Cg-recaptcha-response%3D03AJzQf7MBjcBnrAiKutvD4UOxYBmanSLbiGzaJtTsTmYvBwb4R43M3-8ak4bSWbh3ZR2vh2oo7sfIuC_EQbdhZlCi_CXymN5Y7Q8fVXG0j1yCsxdwFfZ9vAjtYdom8ePSyLbFZ4q1DcwJ33DL2ic-stiyGNN_xwfkE2mzR9AO7UL65x3x_T9Ob-vivjb269VLVZCzpu1GCl_kZk9FLkkpel763ao5vTbdffNs6at8FIesvqy-BCaU_YZaPyhyLdvQ88pT0k9jf68pGjA3ZBzMeJDie0ZoHql9nz5MvGwL1gpJkUXig8M_7pFzR4W0Bl4CGqrgBJ2gLNv05UuONVd6UFcMYBiYEXOI5xVv4v1kgGoQb5j7NlTNFb8v4AcAWpj5-e08Y44wwQ3EmfEDDWUDfRgViYMo55uHAdjZ4afMJl1Y5r0eWP8Kovc_AFmDVvD_05Xrnep0q5rJcZYmwkkhBLLVwLAPJM4cnnaqhCdnNNTstPXSq6HAoz0%7CPageID%3DPVO_Violation_Search%7CPVO_VIOLATION_NUMBER%3D8485012847');
+			new AMT___core_factory().createScriptVar('MattEmmert-Cookie', '');
 			var td = document.getElementsByTagName('td');
 			var o = {
 				num: td[1].innerText.trim(),
-				session_str: AMT__Global_Vars.scriptVars['MattEmmert-Session'],
+				session_formdata:	AMT__Global_Vars.scriptVars['MattEmmert-FormData'].trim(),
+				session_cookie:		AMT__Global_Vars.scriptVars['MattEmmert-Cookie'].trim(),
+				instructions: 'For one profile (Ben, Emily, etc.) do the following SEVEN steps. When done with SEVEN, copy the FINAL CODE into the other profile:\n1) Open in a new window (http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain). (When done with all steps below, leave this window open in the background for later just in case.)\n2) Click "Go" beside "Parking/Camera Violations.\n3) Click the link "Check Parking Ticket Status".\n4) Press F12 to see "the console". Go to console tab titled "Network".\n5) Enter a violation number, e.g. "8485012847", click "Not a Robot" and hit "Search".\n6) In "Network" click the first item titled "NYCSERVMain". This opens a panel with the tab "Headers" selected. In the third section titled "Request Headers" there is an entry titled "Cookie". Copy the value of this item (something like "JSESSIONID=0000if2z3iB44UDfOV:15qse".\n7) Click the bird. At the very bottom there is a field titled "MattEmmert-Cookie". Paste the text into this and "blur". \n\n 99) Unnecessary: After clicking "NYCSERVMain" in Network tab, scroll to the very bottom of panel to the last item "Form Data". Beside this is a link: "view source". Click this. Then copy this whole block of text, starting with "searchticket=...", and paste into the bird variable titled "MattEmmert-FormData".',
 				q: [
 					document.getElementsByName('web_url')[0]
 				]
@@ -595,10 +599,17 @@ function MT__RUN() {
 			document.body.appendChild(d1);
 			/*End Items*/
 			// Warn if necessary.
-			if (AMT__Global_Vars.scriptVars['MattEmmert-Session'] == '') {
-				d1.innerText = 'For one profile (Ben, Emily, etc.) do the following SEVEN steps. When done with SEVEN, copy the FINAL CODE into the other profile:\n1) Open in a new window (http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain). (When done with all steps below, leave this window open in the background for later just in case.)\n2) Click "Go" beside "Parking/Camera Violations.\n3) Click the link "Check Parking Ticket Status".\n4) Press F12 to see "the console". Go to console tab titled "Network".\n5) Enter a violation number, e.g. "8485012847", click "Not a Robot" and hit "Search".\n6) In "Network" click the first item titled "NYCSERVMain". This opens a panel with the tab "Headers" selected. Scroll to the very bottom of panel to the last item "Form Data". Beside this is a link: "view source". Click this. Then copy this whole block of text, starting with "searchticket=..." (CTRL+C).\n7) Click the bird. At the very bottom there is a field titled "MattEmmert-Session". Paste the text into this and "blur".' ;
+			if (AMT__Global_Vars.scriptVars['MattEmmert-Cookie'] == '') {
+				d1.innerText = o.instructions;
 				return;
 			}
+			// Replace
+			o.session_formdata = o.session_formdata
+				.replace(/searchticket=\d+/,			'searchticket='+encodeURIComponent(o.num))
+				.replace(/PVO_VIOLATION_NUMBER=\d+/,	'PVO_VIOLATION_NUMBER='+encodeURIComponent(o.num))
+				.replace(/searchticket%3D\d+/,			'searchticket%3D'+encodeURIComponent(o.num))
+				.replace(/PVO_VIOLATION_NUMBER%3D\d+/,	'PVO_VIOLATION_NUMBER%3D'+encodeURIComponent(o.num));
+			console.log(o);
 			// Turn off form submit.
 			//~ document.getElementById('mturk_form').onsubmit = function(e) {
 				//~ e.stopPropagation();
@@ -618,7 +629,7 @@ function MT__RUN() {
 						//~ _PROXY_REDACTED__use_proxy: true,
 						cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
 						headers_array: [
-							'Cookie: JSESSIONID=0000IV7EFHWY3-qIl4u6vV-UmsN:15fkks88v',
+							'Cookie: '+o.session_cookie,
 							'Origin: http://nycserv.nyc.gov',
 							'Accept-Encoding: gzip, deflate',
 							'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
@@ -634,12 +645,7 @@ function MT__RUN() {
 						short_filename:
 							new AMT___requests_factory().md5(o.num)+
 							Math.random()+new Date().getTime()+'-me',
-						post_object_as_str: 
-							o.session_str
-								.replace(/searchticket=\d+/,			encodeURIComponent(o.num))
-								.replace(/PVO_VIOLATION_NUMBER=\d+/,	encodeURIComponent(o.num))
-								.replace(/searchticket%3D\d+/,			encodeURIComponent(o.num))
-								.replace(/PVO_VIOLATION_NUMBER%3D\d+/,	encodeURIComponent(o.num))
+						post_object_as_str: o.session_formdata
 							//~ 'searchticket='+encodeURIComponent(o.num)+	'&g-recaptcha-response=03AJzQf7P5NM5_6I2PQ-wKaAMtQqfHxK8BzF3sar6qb2VYZB9kY2SGa_cTmSnV6Ic4O18yKWb4yXKOPuwtjvmWDGVZAY15xTEVu0KvLF86RpBEUzPo4EPLeDBAVV4kYxdtUVziVITL3JbsXDu4Ac5nclTbADBI4qBfaexx4PdILS6dW2kFLPERU2GM6EwX_PSNMKqPNrDQn_s_Y0EL6jkk2z0yxFZGDWT5dYhxEKBULUGt3w35f7u3AvLIMEcpFRfREQke48J9kLz9dQM8MvznWWDuhnZh4-A9Hfm3KXiAOvLQgc-ZrEoELyoeO6kVKW_efRvx8Wwk2PLg5De8wbjGs6yogX5pOsxsFE0jj0ftX4Qy8saeK7Oh4fhT1PoChwCSG2rwLEqMyt8p05A8x61xWmMOdWI2AyTVfw&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FPVO&ServiceName=PVO_CHECK_VIOLATION_STATUS_DETAILS&MethodName=NONE&PageID=PVO_Violation_Search&ParamCount=0&PVO_VIOLATION_NUMBER=8479828365&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FPVO%7CServiceName%3DPVO_CHECK_VIOLATION_STATUS_DETAILS%7CMethodName%3DNONE%7CParamCount%3Dundefined%7Csearchticket%3D'+
 							//~ encodeURIComponent(o.num)+							'%7Cg-recaptcha-response%3D03AJzQf7P5NM5_6I2PQ-wKaAMtQqfHxK8BzF3sar6qb2VYZB9kY2SGa_cTmSnV6Ic4O18yKWb4yXKOPuwtjvmWDGVZAY15xTEVu0KvLF86RpBEUzPo4EPLeDBAVV4kYxdtUVziVITL3JbsXDu4Ac5nclTbADBI4qBfaexx4PdILS6dW2kFLPERU2GM6EwX_PSNMKqPNrDQn_s_Y0EL6jkk2z0yxFZGDWT5dYhxEKBULUGt3w35f7u3AvLIMEcpFRfREQke48J9kLz9dQM8MvznWWDuhnZh4-A9Hfm3KXiAOvLQgc-ZrEoELyoeO6kVKW_efRvx8Wwk2PLg5De8wbjGs6yogX5pOsxsFE0jj0ftX4Qy8saeK7Oh4fhT1PoChwCSG2rwLEqMyt8p05A8x61xWmMOdWI2AyTVfw%7CPageID%3DPVO_Violation_Search%7CPVO_VIOLATION_NUMBER%3D'+
 							//~ encodeURIComponent(o.num),
@@ -673,7 +679,7 @@ function MT__RUN() {
 							d1.style.backgroundColor = 'aqua';
 							// Error message?
 							if (rs.indexOf('Your session has timed out or expired.  Please follow the link to the home page.') != -1) {
-								d1.innerText = 'NYC site session expired!';
+								d1.innerText = 'NYC site session expired!!\n' + o.instructions;
 							}
 							return;
 						}
