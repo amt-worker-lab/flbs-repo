@@ -622,6 +622,8 @@ function MT__RUN() {
 			load();
 			
 			function load() {
+				// TODO: Idea: scrape http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain
+				//		to get a set-cookie header. Ie, the value "Cookie: JSESS..."
 				var tried = tried;
 				var opts = {
 					server_opts: {
@@ -671,7 +673,7 @@ function MT__RUN() {
 						if (rel == -1) {
 							// ...
 							if (rs.indexOf('The violation or plate number entered has been blocked from processing through this system.') != -1) {
-								o.q[0].value = 'N/A';
+								o.q[0].value = 'violation unavailable';
 								AMT___recordAndSubmit();
 								return;
 							}
