@@ -91448,19 +91448,26 @@ Laurens Hammond, Chicago, Ill.**/
 		var run = function() {}
 		run.prototype.f = function() {
 			console.log('');
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
 			GM_addStyle('#submitButton {width:10%;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('em {font-weight:bold;zoom:2;}');
 			GM_addStyle('#mturk_form {zoom:0.6;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:1000px !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			// Updated td values
+			// td 3 name
+			// td 5 phone
+			// td 7 address
+			// td 9 city
+			// td 11 state abbr
+			// td 13 country
 			//
 			var td = document.getElementsByTagName('td');
 			var o = { // 
 				comp: td[3].innerText.trim().replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
-				addr: td[5].innerText.trim() + ',' + td[7].innerText.trim(),
-				state_abbr: td[9].innerText.trim(),
+				addr: td[7].innerText.trim() + ',' + td[9].innerText.trim(),
+				state_abbr: td[11].innerText.trim(),
 				//~ q: document.getElementById('open_date'),
 				
 				bold_addr: [],
