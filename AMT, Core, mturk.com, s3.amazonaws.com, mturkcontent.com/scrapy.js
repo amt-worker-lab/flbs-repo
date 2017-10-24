@@ -14,6 +14,7 @@
  * Note: If running on David's computer then run scrapyd-deploy a second
  * time because it fails the first time.
  * 
+ * Note: EnableTabsQ=1. No need for ShowNextTab.
  */
 function init__scrapy() {
 	/**
