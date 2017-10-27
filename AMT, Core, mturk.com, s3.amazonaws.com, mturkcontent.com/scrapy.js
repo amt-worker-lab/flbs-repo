@@ -632,9 +632,13 @@ function init__scrapy() {
 			o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
 			o.q[0].value = '';
 			console.log(o);
-			
+			// Set bird variable enable tabs queue to 0!
+			// EnableTabsQ
+			// Note: But not "new AMT___core_factory().createScriptVar('...', '0');"
+			AMT__Global_Vars.scriptVars['EnableTabsQ'] = 1;
 			// If NA, then return.
-			if (td[3].innerText.trim() == 'http://NA') {
+			if (td[3].innerText.trim() == 'http://NA' ||
+				td[3].innerText.trim() == 'NA') {
 				new AMT___core_factory().
 					iframe2parent__postMessage( //
 						{
