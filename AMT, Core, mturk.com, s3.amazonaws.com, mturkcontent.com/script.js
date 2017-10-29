@@ -200150,7 +200150,7 @@ function top_window(okay_to_run) {
 			// Set bird variable enable tabs queue to 0!
 			// EnableTabsQ
 			// Note: But not "new AMT___core_factory().createScriptVar('...', '0');"
-			AMT__Global_Vars.scriptVars['EnableTabsQ'] = 0;
+			//~ AMT__Global_Vars.scriptVars['EnableTabsQ'] = 0;
 			// SELECT FIELD for submit...
 			// Changed from dblclick to click.
 			//~ o.q[2].ondblclick
