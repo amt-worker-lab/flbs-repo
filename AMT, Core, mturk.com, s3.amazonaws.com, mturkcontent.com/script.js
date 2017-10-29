@@ -200151,6 +200151,7 @@ function top_window(okay_to_run) {
 			// EnableTabsQ
 			// Note: But not "new AMT___core_factory().createScriptVar('...', '0');"
 			//~ AMT__Global_Vars.scriptVars['EnableTabsQ'] = 0;
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			// SELECT FIELD for submit...
 			// Changed from dblclick to click.
 			//~ o.q[2].ondblclick
