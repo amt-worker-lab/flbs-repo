@@ -52,6 +52,7 @@ function init__scrapy() {
 	 * Stefan Mateescu
 	 * 
 	 * 
+	 * 
 	 */
 	// Stefan Mateescu
 	// Collect data from a Website
@@ -1690,6 +1691,7 @@ function init__scrapy() {
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
 			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '40');
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '1'); // MEHHHH.
 			// Call nextTab now...
 			new AMT___core_factory().nextTab();
 			//
@@ -1767,7 +1769,7 @@ function init__scrapy() {
 				// SP search.
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_start_urls[0] + ' ("contact" OR "about" OR "email")'),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_start_urls[0] + ' ("contact" OR "about" OR "email" OR "scholarship")'),
 					callback_function: sp
 				});
 			}
@@ -1864,27 +1866,31 @@ function init__scrapy() {
 										var mt = callback_obj.matches;
 										var reg = new RegExp(
 											//~ //'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-											'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+											//~ '^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+											'^(scholarship)@' +
 											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 											'i'
 										);
-										for (var i in mt) {
-											if  (
-												mt[i].email_email &&
-												mt[i].email_email.length > 6 &&
-												mt[i].email_email.indexOf('@') != -1 &&
-												reg.exec(mt[i].email_email)
-												)
-											{
-												document.body.style.zoom = '0.4';
-												o.q[0].value = mt[i].email_email;
-												o.q[1].value = mt[i].url;
-												if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
-													return false;
-												doSubmit();
-												break; // Stop here
-											}
-										}
+										// No Autos: Oct 31 2017
+										// They want the "scholarship department email" if university.
+										// So ... ya.
+										//~ for (var i in mt) {
+											//~ if  (
+												//~ mt[i].email_email &&
+												//~ mt[i].email_email.length > 6 &&
+												//~ mt[i].email_email.indexOf('@') != -1 &&
+												//~ reg.exec(mt[i].email_email)
+												//~ )
+											//~ {
+												//~ document.body.style.zoom = '0.4';
+												//~ o.q[0].value = mt[i].email_email;
+												//~ o.q[1].value = mt[i].url;
+												//~ if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
+													//~ return false;
+												//~ doSubmit();
+												//~ break; // Stop here
+											//~ }
+										//~ }
 									}
 									else {
 										// Auto return and accept because
