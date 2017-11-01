@@ -1867,7 +1867,7 @@ function init__scrapy() {
 										var reg = new RegExp(
 											//~ //'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
 											//~ '^(info|information|contact|contactus|inquiry|support|help|communication)@' +
-											'^(scholarship)@' +
+											'^(scholarship|finaid|financialaid|scholarships)@' +
 											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 											'i'
 										);
