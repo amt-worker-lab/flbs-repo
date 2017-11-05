@@ -200385,12 +200385,13 @@ function top_window(okay_to_run) {
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, //
 				amazon:			null, //
+				buycott:		null,
 				ebayReferenceID: false,
 				ebayISBN: false,
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','am','eb1','eb2','eb3','eb4','g'],
+				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','am','bt','eb1','eb2','eb3','eb4','g'],
 				first_url: null, // This is the first URL for iframe d1.src.
 
 				// Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
@@ -200446,15 +200447,16 @@ function top_window(okay_to_run) {
 					);
 					A9_Snaptell_VSR__searchUPC_com();
 					A9_Snaptell_VSR__shopsavvy();
-					//~ A9_Snaptell_VSR__smoopa_com();
 					A9_Snaptell_VSR__upcindex_com();
 					A9_Snaptell_VSR__upcitemdb_com();
 					A9_Snaptell_VSR__upcdatabase_com();
 					A9_Snaptell_VSR__yoopsie_com();
 					A9_Snaptell_VSR__outpan_com();
+					upcs__buycott();
 					upcs__amazon();
 					upcs__lookupisbn();
 					
+					//~ A9_Snaptell_VSR__smoopa_com();
 					//~ A9_Snaptell_VSR__shopsavvy();
 				},
 				callback_err: function() {},
@@ -200666,6 +200668,7 @@ function top_window(okay_to_run) {
 					result.yoopsie == false &&
 					result.lookupisbn == false &&
 					result.amazon == false &&
+					result.buycott == false &&
 					o.goog_has_run == false
 					// && o.ebaySuccess == false
 					// && result.yahoo == false
@@ -200709,18 +200712,7 @@ function top_window(okay_to_run) {
 									return; // Stop here...
 							}
 							d2c.innerText = '0';
-							//~ console.log(o);
 							console.log(result);
-							//~ console.log('Auto NA results:');
-							//~ console.log(result.digital_eyes == false)
-							//~ console.log(	(result.startpage == false || result.startpage == null))
-							//~ console.log(result.searchupc == false)
-							//~ console.log(	result.shopsavvy == false)
-							//~ console.log(	result.upcindex == false)
-							//~ console.log(	result.upcitemdb == false)
-							//~ console.log(	result.upcdatabase == false)
-							//~ console.log(	result.yoopsie == false)
-							//~ console.log(	o.ebaySuccess == false)
 							// AUTO?
 							// XX Keep this off by default.
 							if  (
@@ -200733,6 +200725,7 @@ function top_window(okay_to_run) {
 								result.upcdatabase == false &&
 								result.yoopsie == false &&
 								result.lookupisbn == false &&
+								result.buycott == false &&
 								o.ebaySuccess == false
 								//~ result.yahoo == false &&
 								)
@@ -200753,14 +200746,6 @@ function top_window(okay_to_run) {
 					A9_Snaptell_VSR__next();
 					return;
 				}
-				//~ d3i.onclick = function() {
-					//~ this.forcedSearch = true;
-					//~ this.style.backgroundColor = 'LightGreen';
-					//~ A9_Snaptell_ebay_find_product('ReferenceID');
-					//~ A9_Snaptell_ebay_find_product('ISBN');
-					//~ A9_Snaptell_ebay_find_product('UPC');
-					//~ A9_Snaptell_ebay_find_product('EAN');
-				//~ }
 				if (result.array_all.length == 0) {
 					A9_Snaptell_VSR__next();
 					return;
@@ -200999,6 +200984,72 @@ function top_window(okay_to_run) {
 						if (!found) {
 							d4a.result_buttons.am.value += '✘';
 							result.amazon = false;
+						}
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
+			// Buycott
+			// upcs__buycott
+			// bt
+			function upcs__buycott() {
+				console.log('Running through upcs__buycott');
+				var u = 'https://www.buycott.com/upc/'+encodeURIComponent(upc);
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					xhr_timeout: 10000, // 10 second timeout
+					xhr_no_success: function() {
+						// CALL NEXT
+						d4a.result_buttons.bt.value += '✘';
+						result.buycott = false;
+						A9_Snaptell_VSR__next();
+						return false;
+					},
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200 ||
+							rs.indexOf('The web server reported a gateway time-out error.') != -1
+						) {
+							// CALL NEXT
+							d4a.result_buttons.bt.value += '✘';
+							result.buycott = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d4a.result_buttons.bt.value += '✘';
+							result.buycott = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						
+						
+						
+						if (dom &&
+							dom.getElementsByClassName('push-left').length &&
+							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a').length &&
+							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim() != 'Home'
+							) {
+							
+							
+							// Add a result button here.
+							add_result_button({ // Title, Product URL, Iframe URL
+								title: dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim(),
+								product_url: u,
+								//~ iframe_url: urls[0],
+								site_code: 'lu',
+							});
+							
+							
+						} else {
+							d4a.result_buttons.bt.value += '✘';
+							result.buycott = false;
 						}
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
