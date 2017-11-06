@@ -201039,6 +201039,9 @@ function top_window(okay_to_run) {
 										site_code: 'bc',
 									});
 									result.barcodable = true;
+								} else {
+									d4a.result_buttons.bc.value += '✘';
+									result.barcodable = false;
 								}
 							}
 						} catch (Exception) {
@@ -201407,35 +201410,39 @@ function top_window(okay_to_run) {
 			// d3
 			function A9_Snaptell_VSR__searchUPC_com() {
 				console.log('Running through A9_Snaptell_VSR__searchUPC_com');
-				GM_xmlhttpRequest({
-					method: "GET",
-					//~ asynchronous: false, // TURN THIS OFF! CAUSING NO LOAD JAN.11, 2016!
-					url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
-					ontimeout: function(response) {
-						d4a.result_buttons.su.value += '✘';
-						result.searchupc = false;
-						A9_Snaptell_VSR__next();
-					},
-					onerror: function(response) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
+					xhr_timeout: 10000, // 10 second timeout
+					xhr_no_success: function() {
 						// CALL NEXT
 						d4a.result_buttons.su.value += '✘';
 						result.searchupc = false;
 						A9_Snaptell_VSR__next();
+						return false;
 					},
-					onload: function(response) {
-						var rs = response.responseText;
-						if (response.status != 200) {
-							//~ console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
 							// CALL NEXT
 							d4a.result_buttons.su.value += '✘';
 							result.searchupc = false;
 							A9_Snaptell_VSR__next();
-							return;
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d4a.result_buttons.su.value += '✘';
+							result.searchupc = false;
+							A9_Snaptell_VSR__next();
+							return false;
 						}
 						var r;
 						r = /<td align="left" style="border-style:None;"><a[^>]*>([^<]*)<\/a><\/td>/.exec(rs);
 						if (r) {
-							//Ashton & Ross HD-922 Professional Home Theatre System
+							// Item title.
 							r = __js_clean_html_str(r[1]).trim();
 							// Add a result button here.
 							add_result_button({ // Title, Product URL, Iframe URL
