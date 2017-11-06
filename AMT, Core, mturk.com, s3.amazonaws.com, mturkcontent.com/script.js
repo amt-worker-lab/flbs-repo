@@ -200386,12 +200386,13 @@ function top_window(okay_to_run) {
 				upcitemdb:		null, //
 				amazon:			null, //
 				buycott:		null,
+				target:			null,
 				ebayReferenceID: false,
 				ebayISBN: false,
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','am','bt','eb1','eb2','eb3','eb4','g'],
+				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','am','bt','tg','eb1','eb2','eb3','eb4','g'],
 				first_url: null, // This is the first URL for iframe d1.src.
 
 				// Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
@@ -200452,6 +200453,7 @@ function top_window(okay_to_run) {
 					A9_Snaptell_VSR__upcdatabase_com();
 					A9_Snaptell_VSR__yoopsie_com();
 					A9_Snaptell_VSR__outpan_com();
+					upcs__target();
 					upcs__buycott();
 					upcs__amazon();
 					upcs__lookupisbn();
@@ -200481,7 +200483,7 @@ function top_window(okay_to_run) {
 				//					iframe_url: urls[0],
 				//					site_code: 'ss',
 				//				});
-				//~ console.log(result_obj);
+
 				// Add a result button
 				var btn = document.createElement('input');
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
@@ -200650,6 +200652,8 @@ function top_window(okay_to_run) {
 				if (result.yoopsie == false) num_false++;
 				if (result.lookupisbn == false) num_false++;
 				if (result.amazon == false) num_false++;
+				if (result.buycott == false) num_false++;
+				if (result.target == false) num_false++;
 				// Try ebay.
 				if (o.ebay_has_run == false && num_false >= 6) {
 					o.ebay_has_run = true;
@@ -200669,6 +200673,7 @@ function top_window(okay_to_run) {
 					result.lookupisbn == false &&
 					result.amazon == false &&
 					result.buycott == false &&
+					result.target == false &&
 					o.goog_has_run == false
 					// && o.ebaySuccess == false
 					// && result.yahoo == false
@@ -200726,6 +200731,7 @@ function top_window(okay_to_run) {
 								result.yoopsie == false &&
 								result.lookupisbn == false &&
 								result.buycott == false &&
+								result.target == false &&
 								o.ebaySuccess == false
 								//~ result.yahoo == false &&
 								)
@@ -200990,6 +200996,79 @@ function top_window(okay_to_run) {
 					}
 				});
 			}
+			// Target
+			// upcs__target
+			// tg
+			function upcs__buycott() {
+				console.log('Running through upcs__target');
+				// Limit results to 4 (default=24) because in any case
+				// only the first case which has matching upc
+				// is relevant. And all ought to match upc regardless.
+				// Do not include "&visitorId=...".
+				var u = 'https://redsky.target.com/v1/plp/search?keyword='+encodeURIComponent(upc)+'&count=4&offset=0&channel=web&pageId=/s/';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					xhr_timeout: 10000, // 10 second timeout
+					xhr_no_success: function() {
+						// CALL NEXT
+						d4a.result_buttons.tg.value += '✘';
+						result.target = false;
+						A9_Snaptell_VSR__next();
+						return false;
+					},
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200 ||
+							rs.indexOf('The web server reported a gateway time-out error.') != -1
+						) {
+							// CALL NEXT
+							d4a.result_buttons.tg.value += '✘';
+							result.target = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d4a.result_buttons.tg.value += '✘';
+							result.target = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						
+						// Try catch?
+						try {
+							rs = JSON.parse(rs);
+							// Could loop here looking for a matching
+							// upc. But it is likely that if first
+							// results is not matching upc, then
+							// subsequent results would also not have
+							// matching upc.
+							var itm = rs.search_response.items.Item[0];
+							var txt = itm.title;
+							var url = 'https://www.target.com'+itm.url;
+							if (itm.upc != upc) {
+								d4a.result_buttons.tg.value += '✘';
+								result.target = false;
+							} else {
+								// Add a result button here.
+								add_result_button({ // Title, Product URL
+									title: txt,
+									product_url: u,
+									site_code: 'tg',
+								});
+								result.target = true;
+							}
+						} catch Exception {
+							result.target = false;
+						}
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
 			// Buycott
 			// upcs__buycott
 			// bt
@@ -201029,24 +201108,23 @@ function top_window(okay_to_run) {
 						}
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						
-						
-						
+						var ch = false;
+						var h2 = false;
+						var txt = '';
 						if (dom &&
-							dom.getElementsByClassName('push-left').length &&
-							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a').length &&
-							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim() != 'Home'
+							ch = dom.getElementById('container_header') && 
+							h2 = ch.getElementsByTagName('h2') &&
+							h2.length &&
+							txt = h2[0].innerText.trim() &&
+							txt != ''
 							) {
-							
-							
 							// Add a result button here.
-							add_result_button({ // Title, Product URL, Iframe URL
-								title: dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim(),
+							add_result_button({ // Title, Product URL
+								title: txt,
 								product_url: u,
-								//~ iframe_url: urls[0],
-								site_code: 'lu',
+								site_code: 'bt',
 							});
-							
-							
+							result.buycott = true;
 						} else {
 							d4a.result_buttons.bt.value += '✘';
 							result.buycott = false;
@@ -201106,6 +201184,7 @@ function top_window(okay_to_run) {
 								//~ iframe_url: urls[0],
 								site_code: 'lu',
 							});
+							result.lookupisbn = true;
 						} else {
 							d4a.result_buttons.lu.value += '✘';
 							result.lookupisbn = false;
@@ -201175,7 +201254,6 @@ function top_window(okay_to_run) {
 						add_result_button({ // Title, Product URL, Iframe URL
 							title: r.name,
 							product_url: r.outpan_url,
-							//~ iframe_url: urls[0],
 							site_code: 'op',
 						});
 						// CALL NEXT
@@ -201364,19 +201442,8 @@ function top_window(okay_to_run) {
 							add_result_button({ // Title, Product URL, Iframe URL
 								title: r,
 								product_url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
-								//~ iframe_url: urls[0],
 								site_code: 'su',
 							});
-							//~ d3.value = r;
-							//~ d3.style.border = '4px solid blue';
-							//~ d3.onclick = function() {
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ o.q[0].value = this.value;
-								//~ o.q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
-								//~ o.q[0].focus();
-								//~ o.q[0].blur();
-								//~ o.q[0].focus();
-							//~ }
 							result.searchupc = true;
 						} else {
 							d4a.result_buttons.su.value += '✘';
@@ -201402,9 +201469,6 @@ function top_window(okay_to_run) {
 						A9_Snaptell_VSR__next();
 					},
 					onerror: function(response) {
-						//~ d3f.value = '... upcitemdb ...';
-						//~ console.log('error');
-						//~ console.log(response);
 						// CALL NEXT
 						d4a.result_buttons.db.value += '✘';
 						result.upcitemdb = false;
@@ -201433,16 +201497,6 @@ function top_window(okay_to_run) {
 								//~ iframe_url: urls[0],
 								site_code: 'db',
 							});
-							//~ d3f.value = r;
-							//~ d3f.style.border = '4px solid blue';
-							//~ d3f.onclick = function() {
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ o.q[0].value = this.value;
-								//~ o.q[1].value = 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc);
-								//~ o.q[0].focus();
-								//~ o.q[0].blur();
-								//~ o.q[0].focus();
-							//~ }
 							result.upcitemdb = true;
 						} else {
 							d4a.result_buttons.db.value += '✘';
