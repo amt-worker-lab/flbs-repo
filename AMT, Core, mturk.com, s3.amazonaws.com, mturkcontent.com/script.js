@@ -200999,7 +200999,7 @@ function top_window(okay_to_run) {
 			// Target
 			// upcs__target
 			// tg
-			function upcs__buycott() {
+			function upcs__target() {
 				console.log('Running through upcs__target');
 				// Limit results to 4 (default=24) because in any case
 				// only the first case which has matching upc
@@ -201061,7 +201061,8 @@ function top_window(okay_to_run) {
 								});
 								result.target = true;
 							}
-						} catch Exception {
+						} catch (Exception) {
+							d4a.result_buttons.tg.value += '✘';
 							result.target = false;
 						}
 						// CALL NEXT
@@ -201108,24 +201109,20 @@ function top_window(okay_to_run) {
 						}
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						
-						var ch = false;
-						var h2 = false;
-						var txt = '';
-						if (dom &&
-							ch = dom.getElementById('container_header') && 
-							h2 = ch.getElementsByTagName('h2') &&
-							h2.length &&
-							txt = h2[0].innerText.trim() &&
-							txt != ''
-							) {
-							// Add a result button here.
-							add_result_button({ // Title, Product URL
-								title: txt,
-								product_url: u,
-								site_code: 'bt',
-							});
-							result.buycott = true;
-						} else {
+						try {
+							var ch = dom.getElementById('container_header');
+							var h2 = ch.getElementsByTagName('h2');
+							var txt = h2[0].innerText.trim()
+							if (txt != '') {
+								// Add a result button here.
+								add_result_button({ // Title, Product URL
+									title: txt,
+									product_url: u,
+									site_code: 'bt',
+								});
+								result.buycott = true;
+							}
+						} catch (Exception) {
 							d4a.result_buttons.bt.value += '✘';
 							result.buycott = false;
 						}
@@ -201139,7 +201136,8 @@ function top_window(okay_to_run) {
 			// lu
 			function upcs__lookupisbn() {
 				console.log('Running through upcs__lookupisbn');
-				var u = 'http://www.lookupisbn.com/search/isbn/'+encodeURIComponent(upc);
+				//~ var u = 'http://www.lookupisbn.com/search/isbn/'+encodeURIComponent(upc);
+				var u = 'https://www.lookupisbn.com/details/'+encodeURIComponent(upc);
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					xhr_timeout: 10000, // 10 second timeout
@@ -201172,23 +201170,34 @@ function top_window(okay_to_run) {
 							return false;
 						}
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						if (dom &&
-							dom.getElementsByClassName('push-left').length &&
-							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a').length &&
-							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim() != 'Home'
-							) {
+						try {
+							var txt = dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim();
 							// Add a result button here.
 							add_result_button({ // Title, Product URL, Iframe URL
-								title: dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim(),
+								title: txt,
 								product_url: u,
-								//~ iframe_url: urls[0],
 								site_code: 'lu',
 							});
 							result.lookupisbn = true;
-						} else {
+						} catch (Exception) {
 							d4a.result_buttons.lu.value += '✘';
 							result.lookupisbn = false;
 						}
+						//~ if (dom &&
+							//~ dom.getElementsByClassName('push-left').length &&
+							//~ dom.getElementsByClassName('push-left')[0].getElementsByTagName('a').length &&
+							//~ dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim() != 'Home'
+							//~ ) {
+							//~ // Add a result button here.
+							//~ add_result_button({ // Title, Product URL, Iframe URL
+								//~ title: dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim(),
+								//~ product_url: u,
+								//~ site_code: 'lu',
+							//~ });
+							//~ result.lookupisbn = true;
+						//~ } else {
+							
+						//~ }
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
 					}
