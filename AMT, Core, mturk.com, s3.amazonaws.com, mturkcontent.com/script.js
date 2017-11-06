@@ -200387,12 +200387,13 @@ function top_window(okay_to_run) {
 				amazon:			null, //
 				buycott:		null,
 				target:			null,
+				barcodable:		null,
 				ebayReferenceID: false,
 				ebayISBN: false,
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','am','bt','tg','eb1','eb2','eb3','eb4','g'],
+				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','am','bt','bc','tg','eb1','eb2','eb3','eb4','g'],
 				first_url: null, // This is the first URL for iframe d1.src.
 
 				// Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
@@ -200453,6 +200454,7 @@ function top_window(okay_to_run) {
 					A9_Snaptell_VSR__upcdatabase_com();
 					A9_Snaptell_VSR__yoopsie_com();
 					A9_Snaptell_VSR__outpan_com();
+					upcs__barcodable();
 					upcs__target();
 					upcs__buycott();
 					upcs__amazon();
@@ -200654,6 +200656,7 @@ function top_window(okay_to_run) {
 				if (result.amazon == false) num_false++;
 				if (result.buycott == false) num_false++;
 				if (result.target == false) num_false++;
+				if (result.barcodable == false) num_false++;
 				// Try ebay.
 				if (o.ebay_has_run == false && num_false >= 6) {
 					o.ebay_has_run = true;
@@ -200674,6 +200677,7 @@ function top_window(okay_to_run) {
 					result.amazon == false &&
 					result.buycott == false &&
 					result.target == false &&
+					result.barcodable == false &&
 					o.goog_has_run == false
 					// && o.ebaySuccess == false
 					// && result.yahoo == false
@@ -200732,6 +200736,7 @@ function top_window(okay_to_run) {
 								result.lookupisbn == false &&
 								result.buycott == false &&
 								result.target == false &&
+								result.barcodable == false &&
 								o.ebaySuccess == false
 								//~ result.yahoo == false &&
 								)
@@ -200760,16 +200765,16 @@ function top_window(okay_to_run) {
 					var next = result.array_all.shift();
 					switch(next) {
 						case 'eb2':
-								type = 'ReferenceID'
+								type = 'ReferenceID';
 							break;
 						case 'eb3':
-								type = 'ISBN'
+								type = 'ISBN';
 							break;
 						case 'eb4':
-								type = 'UPC'
+								type = 'UPC';
 							break;
 						default:
-								type = 'EAN'
+								type = 'EAN';
 							break;
 					}
 				}
@@ -200778,60 +200783,6 @@ function top_window(okay_to_run) {
 				var tmp = Math.floor(Math.random() * 1)
 				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
 				
-				//~ if(!type) {
-					//~ var canRunEbay = 	(result.searchupc == false &&
-										//~ result.shopsavvy == false &&
-										//~ result.upcindex == false &&
-										//~ result.upcitemdb == false &&
-										//~ result.upcdatabase == false &&
-										//~ result.yoopsie == false &&
-										//~ result.lookupisbn == false
-										//~ ) || d3i.forcedSearch
-					//~ if(!canRunEbay && result.array_all[0] == 'eb2') {
-						//~ while(
-							//~ result.array_all[0] == 'eb2' ||
-							//~ result.array_all[0] == 'eb3' ||
-							//~ result.array_all[0] == 'eb4') {
-							//~ //d3i.value = '...Ebay...'
-							//~ next = result.array_all.shift();
-						//~ }
-						//~ o.ebaySuccess = false;
-						//~ A9_Snaptell_VSR__next()
-					
-						//~ d3i.onclick = function() {
-							//~ this.forcedSearch = true;
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ A9_Snaptell_ebay_find_product('ReferenceID');
-							//~ A9_Snaptell_ebay_find_product('ISBN');
-							//~ A9_Snaptell_ebay_find_product('UPC');
-							//~ A9_Snaptell_ebay_find_product('EAN');
-						//~ }
-						//~ return;
-					//~ }
-				//~ }
-				//~ console.log('Running through A9_Snaptell_ebay_find_product');
-				//~ var tmp = Math.floor(Math.random() * 1)
-				//~ securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
-				//~ if(!type) {
-					//~ switch(result.array_all[0]) {
-						//~ case 'eb2':
-								//~ type = 'ReferenceID'
-							//~ break;
-						//~ case 'eb3':
-								//~ type = 'ISBN'
-							//~ break;
-						//~ case 'eb4':
-								//~ type = 'UPC'
-							//~ break;
-						//~ default:
-								//~ type = 'EAN'
-							//~ break;
-					//~ }
-				//~ }
-				//~ else {
-					//~ if(o.ebaySuccess)
-						//~ return;
-				//~ }
 				
 				//upc = '9780525478812'
 				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct'+
@@ -200845,6 +200796,8 @@ function top_window(okay_to_run) {
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//console.log(JSON.parse(options.response.responseText));
 						if(options.response.status != 200) {
+							d4a.result_buttons[ next ].value += '✘';
+							A9_Snaptell_ebay_find_product();
 							return false;
 						}
 						return true;
@@ -200852,61 +200805,30 @@ function top_window(okay_to_run) {
 					success_callback: function(options) {
 						var rs = JSON.parse(options.response.responseText);
 						console.log(rs);
-						if(rs.findItemsByProductResponse &&
-							rs.findItemsByProductResponse.length == 1 &&
-							!rs.findItemsByProductResponse[0].errorMessage &&
-							rs.findItemsByProductResponse[0].searchResult &&
-							rs.findItemsByProductResponse[0].searchResult[0] &&
-							rs.findItemsByProductResponse[0].searchResult[0].item &&
-							rs.findItemsByProductResponse[0].searchResult[0].item[0] &&
-							rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL &&
-							rs.findItemsByProductResponse[0].searchResult[0].item[0].title) {
-							// Success
+						
+						try {
+							// Update Nov 5 2017: Was missing [0] for title and viewItemURL: "title[0]" "viewItemUrl[0]".
+							add_result_button({ // Title, Product URL, Iframe URL
+								title: rs.findItemsByProductResponse[0].searchResult[0].item[0].title[0].replace(/\s+/g, ' '), // Replace many spaces...
+								product_url: rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL[0],
+								site_code: next,
+							});
 							o.ebaySuccess = true;
 							// Show "x" for all other ebay
 							for (var i in result.array_all) {
-								if (i != next && d4a.result_buttons[ i ].value.indexOf('✘') == -1) {
-									d4a.result_buttons[ i ].value += '✘';
-								}
+								console.log('xxxxxxxxxxxxxxxxxxxxx');
+								console.log(i);
+								d4a.result_buttons[ i ].value += '✘';
+								//~ if (d4a.result_buttons[ i ].value .indexOf('✘') == -1) {
+									//~ d4a.result_buttons[ i ].value += '✘';
+								//~ }
 							}
 							result.array_all = []; // Clear this........
-							// Add a result button here.
-							add_result_button({ // Title, Product URL, Iframe URL
-								title: rs.findItemsByProductResponse[0].searchResult[0].item[0].title.replace(/\s+/g, ' '), // Replace many spaces...
-								product_url: rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL,
-								//~ iframe_url: urls[0],
-								site_code: next,
-							});
 							A9_Snaptell_VSR__next(); // Go next.....
-							//~ d3i.value = rs.findItemsByProductResponse[0].searchResult[0].item[0].title;
-							//~ d3i.viewItemUrl = rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL;
-							//~ d3i.style.border = '4px solid blue';
-							//~ d3i.onclick = function() {
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ o.q[0].value = this.value;
-								//~ o.q[1].value = this.viewItemUrl;
-								//~ o.q[0].focus();
-								//~ o.q[0].blur();
-								//~ o.q[0].focus();							
-							//~ }
-							//~ while(result.array_all[0] == 'eb1' ||
-								  //~ result.array_all[0] == 'eb2' ||
-								  //~ result.array_all[0] == 'eb3' ||
-								  //~ result.array_all[0] == 'eb4' 
-								  //~ ) {
-								//~ result.array_all.shift();
-							//~ }
-						} else {
+						} catch (Exception) {
 							d4a.result_buttons[ next ].value += '✘';
-							A9_Snaptell_ebay_find_product(); // Try again........
+							A9_Snaptell_ebay_find_product(); // Try again. Takes from result.array_all via shift().
 						}
-						//~ // d4a.result_buttons.op.value += '✘';
-						//~ if(result.array_all[0] == 'g' || !result.array_all[0]) {
-							//~ if(o.ebaySuccess == false) {
-								//~ d3i.value = '... Ebay ...';
-							//~ }
-						//~ }
-						//~ A9_Snaptell_VSR__next();
 					}
 				});
 			}
@@ -200979,8 +200901,7 @@ function top_window(okay_to_run) {
 									// Add a result button here.
 									add_result_button({ // Title, Product URL, Iframe URL
 										title: title[0].innerText.trim(),
-										product_url: a[0].href,
-										//~ iframe_url: urls[0],
+										product_url: a[0].href.replace(/ref=[^\?]+\?ie=[^&]+&qid=[^&]+&sr=[^&]+&keywords=[^&]+/i, ''),
 										site_code: 'am',
 									});
 									found = true;
@@ -201056,7 +200977,7 @@ function top_window(okay_to_run) {
 								// Add a result button here.
 								add_result_button({ // Title, Product URL
 									title: txt,
-									product_url: u,
+									product_url: url,
 									site_code: 'tg',
 								});
 								result.target = true;
@@ -201064,6 +200985,70 @@ function top_window(okay_to_run) {
 						} catch (Exception) {
 							d4a.result_buttons.tg.value += '✘';
 							result.target = false;
+						}
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
+			// Barcodable
+			// upcs__barcodable
+			// bt
+			function upcs__barcodable() {
+				console.log('Running through upcs__barcodable');
+				var u = 'https://www.barcodable.com/upc/'+encodeURIComponent(upc);
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					xhr_timeout: 10000, // 10 second timeout
+					xhr_no_success: function() {
+						// CALL NEXT
+						d4a.result_buttons.bc.value += '✘';
+						result.barcodable = false;
+						A9_Snaptell_VSR__next();
+						return false;
+					},
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200 ||
+							rs.indexOf('The web server reported a gateway time-out error.') != -1
+						) {
+							// CALL NEXT
+							d4a.result_buttons.bc.value += '✘';
+							result.barcodable = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d4a.result_buttons.bc.value += '✘';
+							result.barcodable = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						try {
+							var txt = dom.getElementsByTagName('title')[0].innerText;
+							txt = txt.replace(/^[^\-]+- /i, '').trim();
+							if (txt.indexOf('Item not found') != -1) {
+								d4a.result_buttons.bc.value += '✘';
+								result.barcodable = false;
+							} else {
+								if (txt != '') {
+									// Add a result button here.
+									add_result_button({ // Title, Product URL
+										title: txt,
+										product_url: u,
+										site_code: 'bc',
+									});
+									result.barcodable = true;
+								}
+							}
+						} catch (Exception) {
+							d4a.result_buttons.bc.value += '✘';
+							result.barcodable = false;
 						}
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
@@ -201108,7 +201093,6 @@ function top_window(okay_to_run) {
 							return false;
 						}
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						
 						try {
 							var ch = dom.getElementById('container_header');
 							var h2 = ch.getElementsByTagName('h2');
