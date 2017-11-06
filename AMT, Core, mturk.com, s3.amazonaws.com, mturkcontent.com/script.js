@@ -200816,12 +200816,7 @@ function top_window(okay_to_run) {
 							o.ebaySuccess = true;
 							// Show "x" for all other ebay
 							for (var i in result.array_all) {
-								console.log('xxxxxxxxxxxxxxxxxxxxx');
-								console.log(i);
-								d4a.result_buttons[ i ].value += '✘';
-								//~ if (d4a.result_buttons[ i ].value .indexOf('✘') == -1) {
-									//~ d4a.result_buttons[ i ].value += '✘';
-								//~ }
+								d4a.result_buttons[ result.array_all[i] ].value += '✘';
 							}
 							result.array_all = []; // Clear this........
 							A9_Snaptell_VSR__next(); // Go next.....
