@@ -200385,9 +200385,9 @@ function top_window(okay_to_run) {
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, //
 				amazon:			null, //
-				buycott:		null,
+				buycott:		null, // bt
 				target:			null,
-				barcodable:		null,
+				barcodable:		null, // bc
 				ebayReferenceID: false,
 				ebayISBN: false,
 				ebayEAN: false,
@@ -200988,7 +200988,7 @@ function top_window(okay_to_run) {
 			}
 			// Barcodable
 			// upcs__barcodable
-			// bt
+			// bc
 			function upcs__barcodable() {
 				console.log('Running through upcs__barcodable');
 				var u = 'https://www.barcodable.com/upc/'+encodeURIComponent(upc);
@@ -201089,9 +201089,13 @@ function top_window(okay_to_run) {
 						}
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						try {
+							
 							var ch = dom.getElementById('container_header');
+							
 							var h2 = ch.getElementsByTagName('h2');
-							var txt = h2[0].innerText.trim()
+							
+							var txt = h2[0].innerText.trim();
+							
 							if (txt != '') {
 								// Add a result button here.
 								add_result_button({ // Title, Product URL
@@ -201101,9 +201105,16 @@ function top_window(okay_to_run) {
 								});
 								result.buycott = true;
 							}
+							if (!ch || !h2 || txt == '') {
+								d4a.result_buttons.bt.value += '✘';
+								result.buycott = false;
+							}
 						} catch (Exception) {
+							
 							d4a.result_buttons.bt.value += '✘';
+							
 							result.buycott = false;
+							
 						}
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
