@@ -128406,7 +128406,7 @@ qatar,80
 	 * Kari Hartnett
 	 * Jason Blackbriar
 	 * Jason Blackbriar #2
-	 * 
+	 * Damon
 	 * 
 	 * 
 	 * 
@@ -128536,6 +128536,169 @@ qatar,80
 					} else {
 						document.body.style.backgroundColor = randomColor();
 					}
+				}
+			};
+			new AMT___items_factory().create_dashboard_find_address(opts);
+		}
+		new run().f();
+		return;
+	}
+	// Damon
+	// Using any online resources (google, yellowpages facebook, yelp etc), append the address and phone number given a business name
+	// 
+	// 
+	s = '	<li>Using any means legal and necessary, use the given business name&nbsp;find the address and phone number&nbsp;closest&nbsp;to the given zip code.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			//~ GM_addStyle('body {width:18%;margin-top:160px !important;}');
+			//~ GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			GM_addStyle('p {width;}');// Inputs
+			GM_addStyle('p>input {height:auto !important;padding:0 !important;width:400px !important;}');// Inputs
+			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
+			GM_addStyle('#workContent {width:700px !important;}'); // Wider
+			GM_addStyle('.form-control {display:inline !important;height:auto !important;width:auto !important;}');
+			//~ GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
+			//~ GM_addStyle('table {position:absolute;top:0px;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#mturk_form {margin-top:1000px !important;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#full_address {position:absolute !important;top:-130px;left:0px;width:600px !important;}'); // MOVE STATE UP // -130?
+			
+			var t = document.getElementsByTagName('td');
+			var o = {
+				comp: t[1].innerText.trim(),
+				//city: t[3].innerText.trim(),
+				//~ state: t[3].innerText.trim().stateAbbrToFull(),
+				zip: t[3].innerText.trim(),
+				q: [
+					document.getElementById('Street Address'),
+					document.getElementById('City'),
+					document.getElementById('State'),
+					document.getElementById('Zip'),
+					document.getElementById('Phone'),
+				]
+			}
+			// Make zip 5 if 9
+			o.zip = o.zip.replace(/^(\d{5})\d*$/, '$1');
+			//~ // Remove placeholder
+			//~ for (var i in o.q) {
+				//~ o.q[i].placeholder = '';
+			//~ }
+			/*BEGIN ITEMS*/
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('input');
+			dx2.setAttribute('style','position:absolute;top:180px;left:0%;width:99%;height:20px;font-size:1.4em;');
+			document.body.appendChild(dx2);
+			dx2.value = o.comp + ', ' + o.zip;
+			var dx3 = document.createElement('div'); // info div
+			dx3.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:100px;border:1px solid blue;background-color:#eee;font-size:1.6em !important;');
+			document.body.appendChild(dx3);
+			// tmp placeholder for states
+			var dx4 = document.createElement('input');
+			/*END ITEMS*/
+			dx3.innerText = o.zip;
+			var ef = new AMT___events_factory();
+			dx2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: dx2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			//~ showPastReturns('ChrisLintz' + o.comp, function(e) {
+				//~ if (e) {
+					//~ document.body.style.backgroundColor = 'pink';
+					//~ document.body.style.zoom = '0.8';
+				//~ }
+			//~ });
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					dx1
+				],
+				offset: 200 // offset top
+			});
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') return false;
+					if (o.q[i].value.length < 2) return false;
+					//~ if (o.q[i].value == 'http://') return false;
+				}
+				doSubmit(); // Still here? Submit.
+				return false;
+			}
+			// Opts
+			// TODO#1: RUN ONLY GOOGLE, OR SET UP FACEBOOK AND RUN ONLY GOOGLE/FB.
+			// TODO#2: Preview mode skip when COUNTRY!=USA.
+			// #3:On Google, show by line, e.g.: Street Address:698. From:
+			// adr_address: "<span class="street-address">698</span> <span class="extended-address">Azu</span>, <span class="locality">Hanno</span>, <span class="region">Saitama Prefecture</span> <span class="postal-code">357-0046</span>, <span class="country-name">Japan</span>"
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					phone: o.q[4],
+					street: o.q[0],
+					city: o.q[1],
+					state: o.q[2],//dx4,//o.q[2],
+					zip: o.q[3],
+				},
+				onclick_callback: function(opts) { // (opts)
+					console.log(opts);
+					//~ // State to abbr
+					//.state_full_to_abbr()
+					//~ o.q[2].value = o.q[2].value.state_full_to_abbr();
+					//~ // Change URL to include http
+					//~ o.q[0].value = (!/^http/i.exec(o.q[0].value) && o.q[0].value != '') ? 'http://' + o.q[0].value : o.q[0].value;
+					//~ o.q[0].value = o.q[0].value.replace(/(\w)\/$/, '$1'); // Remove trailing slash! (Must come after a \w character.)
+					//~ if (o.q[0].value == '' || o.q[0].value == 'http://') {
+						//~ if (opts.profile_url)
+							//~ o.q[0].value = opts.profile_url;
+					//~ }
+					//~ o.q[2].value = dx4.value.state_full_to_abbr();
+					var x = o.q[4].value.replace(/[\D]/g, '');
+					if (x.length != 10) {	// Phone check 1
+						o.q[4].style.border = '4px solid blue';
+						return;
+					} else { 				// Phone check 2 + formatting
+						var x = /^(\d{3})(\d{3})(\d{4})$/.exec(x);
+						o.q[4].value = x[1]+'-'+x[2]+'-'+x[3];
+					}
+					//~ if (o.q[2].value != o.state.state_full_to_abbr()) {
+						//~ // Check if either: state_abbr or state_full
+						//~ o.q[2].style.border = '4px solid blue';
+						//~ return;
+					//~ }
+					// Auto
+					// Street>=6
+					// City>2
+					// State==2
+					// Zip == 5 or 5-4
+					if (
+						o.q[0].value.length >= 6 && // street
+						o.q[1].value.length > 2 && // city
+						o.q[2].value.length == 2 && // state abbr
+						/^\d{5}(-\d{4}|)$/.exec(o.q[3].value // zip
+						)
+						// Assuming phone has been integrity checked here...
+						) {
+						doSubmit();
+					}
+						
 				}
 			};
 			new AMT___items_factory().create_dashboard_find_address(opts);
