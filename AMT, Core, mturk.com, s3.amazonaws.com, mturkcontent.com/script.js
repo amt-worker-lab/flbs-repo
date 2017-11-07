@@ -128559,8 +128559,9 @@ qatar,80
 			GM_addStyle('p {width;}');// Inputs
 			GM_addStyle('p>input {height:auto !important;padding:0 !important;width:400px !important;}');// Inputs
 			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
-			GM_addStyle('#workContent {width:700px !important;}'); // Wider
+			GM_addStyle('#workContent {width:1000px !important;}'); // Wider
 			GM_addStyle('.form-control {display:inline !important;height:auto !important;width:auto !important;}');
+			GM_addStyle('.col-sm-8 col-sm-offset-2 {width:100% !important;}');
 			//~ GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 			//~ GM_addStyle('table {position:absolute;top:0px;}'); // MOVE THIS DOWN
 			//~ GM_addStyle('#mturk_form {margin-top:1000px !important;}'); // MOVE THIS DOWN
@@ -128583,7 +128584,7 @@ qatar,80
 				]
 			}
 			// Make zip 5 if 9
-			o.zip = o.zip.replace(/^(\d{5})\d*$/, '$1');
+			o.zip = o.zip.replace(/^(\d{5})-?\d*$/, '$1');
 			//~ // Remove placeholder
 			//~ for (var i in o.q) {
 				//~ o.q[i].placeholder = '';
@@ -128593,7 +128594,7 @@ qatar,80
 			dx1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('input');
-			dx2.setAttribute('style','position:absolute;top:180px;left:0%;width:99%;height:20px;font-size:1.4em;');
+			dx2.setAttribute('style','position:absolute;top:160px;left:0%;width:99%;height:40px;font-size:1.4em !important;');
 			document.body.appendChild(dx2);
 			dx2.value = o.comp + ', ' + o.zip;
 			var dx3 = document.createElement('div'); // info div
