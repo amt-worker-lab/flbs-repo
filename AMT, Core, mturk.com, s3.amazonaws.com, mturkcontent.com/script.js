@@ -29320,7 +29320,6 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 		return;
 	}
-	// 
 	// Andrew McCalister
 	// Fill in name of business founder
 	//
