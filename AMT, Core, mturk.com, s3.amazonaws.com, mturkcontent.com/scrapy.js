@@ -105,13 +105,13 @@ function init__scrapy() {
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
-				'position:absolute;top:0px;left:0%;width:50%;height:40px;overflow:auto;background-color:#eee;border:1px solid blue;font-size:1.2em !important;'
+				'position:absolute;top:0px;left:0%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1b);
 			d1b.innerText = o.sd_start_urls[0].replace(/https?:\/\//i, '');
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
-				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.2em !important;'
+				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1c);
 			d1c.innerText = o.name;
