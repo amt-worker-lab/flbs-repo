@@ -75,7 +75,7 @@ function init__scrapy() {
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
 			// Call nextTab now...
 			new AMT___core_factory().nextTab();
-			new AMT___core_factory().createScriptVar('EnableTabsQ', '1');
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '1'); //meh
 			//
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -175,7 +175,7 @@ function init__scrapy() {
 				var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(ssite + ' ("contact" OR "about" OR "email")') + opts,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(ssite + ' ("contact" OR "about" OR "email" OR '+o.name+')') + opts,
 					callback_function: sp,
 					host: MT___host
 				});
@@ -267,26 +267,28 @@ function init__scrapy() {
 									 *  url: "https://www.facebook.com/VaultCrossfit/info
 									 * }
 									 */
-									if (callback_obj.matches && callback_obj.matches.length && o.try_autos) {
-										var mt = callback_obj.matches;
-										var reg = new RegExp(
-											//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-											'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
-											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
-											'i'
-										);
-										for (var i in mt) {
-											if  (
-												mt[i].email_email &&
-												mt[i].email_email.length > 6 &&
-												mt[i].email_email.indexOf('@') != -1 &&
-												reg.exec(mt[i].email_email)
-												)
-											{
-												document.body.style.zoom = '0.4';
-												o.q[0].value = mt[i].email_email;
-												doSubmit();
-												break; // Stop here
+									if (callback_obj.matches && callback_obj.matches.length) {
+										if (!o.try_autos) { // Only when autos.
+											var mt = callback_obj.matches;
+											var reg = new RegExp(
+												//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
+												'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+												__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+												'i'
+											);
+											for (var i in mt) {
+												if  (
+													mt[i].email_email &&
+													mt[i].email_email.length > 6 &&
+													mt[i].email_email.indexOf('@') != -1 &&
+													reg.exec(mt[i].email_email)
+													)
+												{
+													document.body.style.zoom = '0.4';
+													o.q[0].value = mt[i].email_email;
+													doSubmit();
+													break; // Stop here
+												}
 											}
 										}
 									} else {
