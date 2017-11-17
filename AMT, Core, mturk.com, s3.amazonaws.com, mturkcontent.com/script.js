@@ -574,7 +574,7 @@ function MT__RUN() {
 				num: td[1].innerText.trim(),
 				session_formdata:	AMT__Global_Vars.scriptVars['MattEmmert-FormData'].trim(),
 				session_cookie:		AMT__Global_Vars.scriptVars['MattEmmert-Cookie'].trim(),
-				instructions: 'For one profile (Ben, Emily, etc.) do the following SEVEN steps. When done with SEVEN, copy the FINAL CODE into the other profile:\n1) Open in a new window (http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain). (When done with all steps below, leave this window open in the background for later just in case.)\n2) Click "Go" beside "Parking/Camera Violations.\n3) Click the link "Check Parking Ticket Status".\n4) Press F12 to see "the console". Go to console tab titled "Network".\n5) Enter a violation number, e.g. "8485012847", click "Not a Robot" and hit "Search".\n6) In "Network" click the first item titled "NYCSERVMain". This opens a panel with the tab "Headers" selected. In the third section titled "Request Headers" there is an entry titled "Cookie". Copy the value of this item (something like "JSESSIONID=0000if2z3iB44UDfOV:15qse".\n7) Click the bird. At the very bottom there is a field titled "MattEmmert-Cookie". Paste the text into this and "blur". \n\n 99) Unnecessary: After clicking "NYCSERVMain" in Network tab, scroll to the very bottom of panel to the last item "Form Data". Beside this is a link: "view source". Click this. Then copy this whole block of text, starting with "searchticket=...", and paste into the bird variable titled "MattEmmert-FormData".',
+				instructions: 'For one profile (Ben, Emily, etc.) do the following SEVEN steps. When done with SEVEN, copy the FINAL CODE into the other profile:\n1) Open in a new window (http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain). (When done with all steps below, leave this window open in the background for later just in case.)\n2) Click "Go" beside "Parking/Camera Violations.\n3) Click the link "Check Parking Ticket Status".\n4) Press F12 to see "the console". Go to console tab titled "Network".\n5) Enter a violation number, e.g. "8485012847", click "Not a Robot" and hit "Search".\n6) In "Network" click the first item titled "NYCSERVMain". This opens a panel with the tab "Headers" selected. In the third section titled "Request Headers" there is an entry titled "Cookie". Copy the value of this item (something like "JSESSIONID=0000if2z3iB44UDfOV:15qse".\n7) Click the bird. At the very bottom there is a field titled "MattEmmert-Cookie". Paste the text into this and "blur". Then DOUBLE-CLICK the page to reload the frame to see if everything works! Good luck :) \n\n 99) Unnecessary: After clicking "NYCSERVMain" in Network tab, scroll to the very bottom of panel to the last item "Form Data". Beside this is a link: "view source". Click this. Then copy this whole block of text, starting with "searchticket=...", and paste into the bird variable titled "MattEmmert-FormData".',
 				q: [
 					document.getElementsByName('web_url')[0]
 				]
@@ -601,6 +601,7 @@ function MT__RUN() {
 			// Warn if necessary.
 			if (AMT__Global_Vars.scriptVars['MattEmmert-Cookie'] == '') {
 				d1.innerText = o.instructions;
+				
 				return;
 			}
 			// Replace
@@ -610,6 +611,10 @@ function MT__RUN() {
 				.replace(/searchticket%3D\d+/,			'searchticket%3D'+encodeURIComponent(o.num))
 				.replace(/PVO_VIOLATION_NUMBER%3D\d+/,	'PVO_VIOLATION_NUMBER%3D'+encodeURIComponent(o.num));
 			console.log(o);
+			// Dbl
+			document.body.addEventListener('dblclick', function() {
+				document.location.reload();
+			}, false);
 			// Turn off form submit.
 			//~ document.getElementById('mturk_form').onsubmit = function(e) {
 				//~ e.stopPropagation();
@@ -701,6 +706,13 @@ function MT__RUN() {
 								o.q[0].value.trim() != 'Kings'
 								) {
 								AMT___recordAndSubmit();
+							}
+							// Try again with previous td.
+							// But if successful then just leave this 
+							// for user verification.
+							var x = /<td width="250"  class="detailStatus">([^<]+)<\/td>/.exec(rs);
+							if (x) {
+								o.q[0].value = __js_clean_html_str(x[1]);
 							}
 							return;
 						}
