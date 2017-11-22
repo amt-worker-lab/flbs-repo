@@ -201202,7 +201202,7 @@ function top_window(okay_to_run) {
 						try {
 							var txt = dom.getElementsByTagName('title')[0].innerText;
 							txt = txt.replace(/^[^\-]+- /i, '').trim();
-							if (txt.indexOf('Item not found') != -1) {
+							if (txt.indexOf('Item not found') != -1 || /^Barcodable\.com \| (ean|upc) \d+$/i.exec(txt)) {
 								d4a.result_buttons.bc.value += '✘';
 								result.barcodable = false;
 							} else {
