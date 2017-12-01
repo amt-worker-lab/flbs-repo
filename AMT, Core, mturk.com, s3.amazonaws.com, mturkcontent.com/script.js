@@ -128687,10 +128687,10 @@ qatar,80
 			//~ }
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
-			dx1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			dx1.setAttribute('style','position:absolute;top:240px;left:0%;width:99%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('input');
-			dx2.setAttribute('style','position:absolute;top:160px;left:0%;width:99%;height:40px;font-size:1.4em !important;');
+			dx2.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:40px;font-size:1.4em !important;');
 			document.body.appendChild(dx2);
 			dx2.value = o.comp + ', ' + o.zip;
 			var dx3 = document.createElement('div'); // info div
@@ -128723,7 +128723,7 @@ qatar,80
 				elements: [
 					dx1
 				],
-				offset: 200 // offset top
+				offset: 240 // offset top
 			});
 			
 			// submitButton
