@@ -138094,14 +138094,14 @@ qatar,80
 	 * Rabbit Crowdsourcing
 	 * Tom
 	 * ET
-	 * 
+	 * taylor l grisham
 	 * 
 	 * 
 	 * 
 	 */
 	// 	taylor l grisham
 	// 
-	var s = '<li>Enter the website address for the <strong>official website </strong>of the restaurant.</li>\n	<li>Include the full address, e.g. <span style="color: rgb(0, 102, 33); font-family: Roboto, arial, sans-serif; font-size: 14px; white-space: nowrap;">https://www.windriver.com/</span>.</li>';
+	var s = '<li><strong>Do not </strong>include URLs to company aggregators such as Manta.com, Hoovers.com, yp.com/yellowpages.com. We ONLY want the official website</li>\n	<li>If no website can be found, please enter <strong>notavailalbe.com</strong></li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
