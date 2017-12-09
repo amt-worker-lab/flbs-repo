@@ -200501,7 +200501,7 @@ function top_window(okay_to_run) {
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 			o.q[2].multiple = true;
 			o.q[2].size = 3; // Changed from 2 to 3, June 5.
-			o.q[2].setAttribute('style','width:60%;zoom:1.8;'); // Add blue bgc
+			o.q[2].setAttribute('style','width:90%;zoom:1.8;'); // Add blue bgc
 			// Clear bold
 			var b = document.getElementsByTagName('b');
 			for (var i in b) {
