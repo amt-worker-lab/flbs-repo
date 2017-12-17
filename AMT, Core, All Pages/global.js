@@ -13017,7 +13017,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	//
 	//
 	var s = location.href;
-	var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
+	var u = /^https:\/\/worker\.mturk\.com\/$/;
+	//~ var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
 	if (!u.exec(s)) return;
 	var ignore_requesters__ids, ignore_requesters;
 	// Hosts

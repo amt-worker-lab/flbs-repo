@@ -3867,23 +3867,7 @@ function MT__RUN() {
 				try_auto();
 				return false;
 			}
-			//~ // keypress...
-			//~ window.addEventListener('keypress', function(e) {
-				//~ var c = e.keyCode;
-				//~ if (c == 13) {
-					//~ for (var i in o.q) {
-						//~ if (i == 'length') break;
-						//~ o.q[i].value = o.q[i].value.trim();
-					//~ }
-					//~ document.getElementById('submitButton').style.backgroundColor = 'black';
-					//~ document.getElementById('submitButton').style.zoom = '1.4';
-					//~ //AMT___recordAndSubmit();
-					//~ doSubmit();
-				//~ }
-			//~ }, false);
 			// Scriptvar
-			//~ new AMT___core_factory().createScriptVar('S.Hass Use Proxy', '1');
-			//~ o.use_proxy = (AMT__Global_Vars.scriptVars['S.Hass Use Proxy'] == '1') ? true : false;
 			var firstRun = true;
 			var num_tries = 0;
 			function doNA() {

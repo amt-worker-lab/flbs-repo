@@ -18269,11 +18269,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	var s = location.href;
 	//~ var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
 	var u = /^https:\/\/worker\.mturk\.com\/?$/;
-	console.log('here');
 	if (!u.exec(s)) return;
-	console.log('here');
 	// Create script var
-	new AMT___core_factory().createScriptVar('AMT Front Page Threshold (0+)', '10');
+	new AMT___core_factory().createScriptVar('AMT Front Page Threshold (0+)', '100');
 	// Globals...
 	var ignore_requesters__ids, ignore_requesters;
 	// Hosts
@@ -18884,7 +18882,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.innerText = __js_clean_html_str(row.title);
+				td.innerText = row.title;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
@@ -18922,24 +18920,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// TD
 				var td = document.createElement('td');
 				td.innerText = '';
-				td.hide_show = __js_clean_html_str(row.requester_name);
+				td.hide_show = row.requester_name;
 				tr.appendChild(td);
 				// TD (groupId + hash_id)
 				var td = document.createElement('td');
 				td.innerText = '';
-				//~ td.hide_show = row.groupId;// + '\n' + row.hash_id;
 				td.hide_show = row.groupId + '\n' + row.hash_id;
 				tr.appendChild(td);
-				//~ // TD
-				//~ var td = document.createElement('td');
-				//~ td.innerText = '';
-				//~ td.hide_show = row.hash_id;
-				//~ tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style', 'white-space: nowrap;');
-				//~ td.hide_show = row.distinct_dates.replace(/,/g, '\n');
-				//~ td.innerText = '';
 				td.hide_show2 = true;
 				var dv = document.createElement('div');
 				dv.setAttribute('style',
@@ -18949,7 +18939,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				dates = dates.split(','); // Split by comma
 				dates.reverse(); // ! Reverse the order of the dates (latest first), from db is 2013 before 2014. So, e.g. 2014 before 2013.
 				dates = dates.join('\n'); // Join by new line
-				//~ dates = dates.replace(/,/g, '\n');
 				dv.innerText = dates;
 				td.div = dv;
 				td.appendChild(dv);
@@ -19141,9 +19130,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
 			a_gid.setAttribute('class','cont_link');
 			a_gid.target	= '_blank';
-			a_gid.innerText = '▶' + __js_clean_html_str(row.title); // "Black right-pointing triangle"
+			a_gid.innerText = '▶' + row.title; // "Black right-pointing triangle" // __js_clean_html_str
 		} else
-			a_gid			= document.createTextNode(__js_clean_html_str(row.title));
+			a_gid			= document.createTextNode(row.title); // __js_clean_html_str
 		td.appendChild(a_gid);
 		/**
 		// TODO
@@ -19184,9 +19173,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+row.requester_id;
 			a_rid.setAttribute('class','cont_link');
 			a_rid.target	= '_blank';
-			a_rid.innerText = __js_clean_html_str(row.requester_name);
+			a_rid.innerText = row.requester_name; // __js_clean_html_str
 		} else
-			var a_rid		= document.createTextNode(__js_clean_html_str(row.requester_name));
+			var a_rid		= document.createTextNode(row.requester_name); // __js_clean_html_str
 		td.appendChild(a_rid);
 		
 		// Available
@@ -19945,13 +19934,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.exe-hover:active {opacity:0.3;}');//background-color:aqua;
 		GM_addStyle('.ro-extended-tb td {border:1px solid #a4a4a4;}'); // Requester Overview Table
 		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
-		//~ GM_addStyle('.ro-extended-tb>tbody>tr:hover {background-color:white;}');
 		GM_addStyle('.ro-extended-tb-tr:hover {background-color: #e9daa9;cursor: pointer;}');
-		//~ GM_addStyle('.ro-extended-tb-hide {visibility: hidden;word-wrap: break-word;max-width: 20px;cursor: pointer;}');
-		//~ GM_addStyle('.ro-extended-tb-show {visibility: visible;word-wrap: break-word;max-width: 20px;background-color: aqua;}');
-		
-		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
-		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
 	}
 	/**
 	 * set_ignored_vars
