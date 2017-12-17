@@ -18268,8 +18268,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	//
 	var s = location.href;
 	//~ var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
-	var u = /^https:\/\/worker\.mturk\.com\/projects\?*[\d\D]*$/;
+	var u = /^https:\/\/worker\.mturk\.com\/?$/;
+	console.log('here');
 	if (!u.exec(s)) return;
+	console.log('here');
 	// Create script var
 	new AMT___core_factory().createScriptVar('AMT Front Page Threshold (0+)', '10');
 	// Globals...
