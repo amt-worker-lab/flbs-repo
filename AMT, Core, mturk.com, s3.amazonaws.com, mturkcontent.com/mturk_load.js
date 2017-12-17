@@ -31,7 +31,8 @@ function mturk_load()
 		console.log('setinterval');
 		setInterval(function() {
 			console.log('interval');
-			window.location = 'https://www.mturk.com/mturk/findhits?match=true'; // true?
+			window.location = 'https://worker.mturk.com/projects'; // true?
+			//~ window.location = 'https://www.mturk.com/mturk/findhits?match=true'; // true?
 		}, 60000);
 	}	
 	
@@ -55,7 +56,8 @@ function mturk_load()
 				1 == 1 &&
 				AMT__Global_Vars.scriptVars['JohnRobertsCheckHistory'] &&
 				AMT__Global_Vars.scriptVars['JohnRobertsCheckHistory'] != 0 &&
-				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
+				document.location.href.indexOf('https://worker.mturk.com/projects') == -1 // init page
+				//~ document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
 			var run = function() {};
