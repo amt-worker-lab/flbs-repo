@@ -19950,6 +19950,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'A2GGMBBJ00PKKX':true, //AdultNetHITs
 			'A222T6DOEXIL8L':true, //zTask by zCrowd.com
 			'A3RRY7BIF8JDCS':true, //ScoutIt
+			'A2SP2PSX99L7Q9':true, //str11223344
+			'A1CKEISKSOZ5HD':true, //CopyText Inc.
+			'AATZ5SWOQ932L':true,  //Shopping Receipts US
 		};
 		ignore_requesters = {
 			'Mark Yatskar':true,
