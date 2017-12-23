@@ -132,28 +132,43 @@ var getReturnButton2 = function() {
 	return a;
 }
 
-AMT__Global_Vars.setAcceptedFavicon = function() {
-	 var link = document.createElement('link');
-	 var links = document.getElementsByTagName('link');
-	 for(var i =0 ; i < links.length; i++) {
-		if(links[i].href = 'https://www.mturk.com/media/favicon.ico') {
-			oldLink = links[i];
+AMT__Global_Vars.setAcceptedFavicon = function() {//return;
+	//~ var link = document.createElement('link');
+	//~ var links = document.getElementsByTagName('link');
+	//~ for (var i=0; i<links.length; i++) {
+		//~ if (links[i].href = 'https://www.mturk.com/media/favicon.ico') {
+			//~ oldLink = links[i];
 			//alert('oldlink');
-			break;
-			
-		}
-		 
-	 }
-	 link.id = 'dynamic-favicon';
-	 link.rel = 'shortcut icon';
-	 //link.href = 'http://www.favicon.cc/favicon/35/811/favicon.png';
-	 
-	 if (oldLink) {
-	  document.head.removeChild(oldLink);
-	 }
-	 //document.head.appendChild(link);
-	 (function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAALklEQVQ4y2NkYGBg6D7s9Z+BDFBqu42RkVzNMMBEieZRA0YNGDUAARgZGCjLzgCKxAq1UuyhoQAAAABJRU5ErkJggg==';document.getElementsByTagName('head')[0].appendChild(link);})();
-				
+			//~ break;
+		//~ }
+	//~ }
+	//~ link.id = 'dynamic-favicon';
+	//~ link.rel = 'shortcut icon';
+	//link.href = 'http://www.favicon.cc/favicon/35/811/favicon.png';
+
+	//~ if (oldLink) {
+		//document.head.removeChild(oldLink);
+	//~ }
+	//~ (function() {
+	//~ var link = document.createElement('link');
+	//~ link.type = 'image/x-icon';
+	//~ link.rel = 'icon';
+	//~ link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAALklEQVQ4y2NkYGBg6D7s9Z+BDFBqu42RkVzNMMBEieZRA0YNGDUAARgZGCjLzgCKxAq1UuyhoQAAAABJRU5ErkJggg==';
+	//~ document.getElementsByTagName('head')[0].appendChild(link);
+	//~ })();
+	
+	var link = document.createElement('link');
+	link.type = 'image/x-icon';
+	link.rel = 'icon';
+	// More complex fbiz.
+	link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwXExcBdRZJiQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABFElEQVRIx2MMspjLQCJ4JoghxMPA4LEIq2ImKpiOF7CQp414wMRAY0BzC1iwC/PQ2oIvhPThTjbDNQ6k3lM5+dPdB0M4o7HQLgfgsOAL1JoNjG1oMgH/q5i5ZkDYJnbMmGadZGDHFGSEFNfoccDDIPUYypwmh7ApmFMIl0tN7JixWsCCSwOyuTSJ5KxHVXCSBmURzAdwf0BsEsdQ9lJ9BlE+kHqPih4T6wPxmxlE+QAzxNGMhihAi2SCplOU0SCmExtENDIdXySTYbo5w08qWIDL9DOH/lIhiIgPGXIsgKQrkkwnIYjgqRZ/0sS0nvFFmDJJFhAEaHYQ5YNgTiEGEkOGhDjAU0QTAxgt5tpjimJN0eQBABhQVbwTN9ioAAAAAElFTkSuQmCC';
+	// More complex fbiz.
+	//~ link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwXExQZTVeCHAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABHklEQVRIx2MMspjLQCJ4JoghxMPA4LEIq2ImKpiOF7CQp414wMRAY0BzC1iwC/PQ2oIvhPThTjbDNQ6k3lM5+dPdB0M4o7HQLgfgsOALzBpbDLWHGZi5ZkCYJnbMmGadZGAnOqMxMEgtg6WfKJiQxy+GQ1DmmUN/0dRjtRKfBQhzaRTJEB/A/UHtsgjmA7g/pJYxMDCwMTBkoCl7qT6DKB9IvUdFj4n1gfjNDOIyWhTOSEYo4P7FfGgeSaZTlNEgphMbRDQyHV8kk2G6OcNPKliAy3TMrEdOEBEfMuRYIDWbjVTTSQgieKrFnzQxrWe0mERE25T7F8T5xAA0O1iIMZ350LyX6mSXRdy/8KtAy71kFHYrMEVRUjSOgp5IAADMQ1MIvEIvNgAAAABJRU5ErkJggg==';
+	// Simple fbiz.
+	//~ link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwXExAv5oHSgQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAApElEQVRIx2MMspjLQCJ4lrqIeMVMNDWdgYGBhTxtNPTBqAWjFuBKplKz46ib/Onug9GMNvBxgAng6YrC6GGherokNoggPiCYPyj1AdwfuGwi6FF8OflZ6iKp2XH4jSCoAGdGQ7MSqynEBCD5yRRiOsEgYqKp6WRaQLzp5FhAkukkW0Cq6aRZQIbp+DIarhSJP2liWs9oMdeeJAtIbVsSa8EIrnAAofdEU5DOQ58AAAAASUVORK5CYII=';
+	// Plain green.
+	//~ link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAALklEQVQ4y2NkYGBg6D7s9Z+BDFBqu42RkVzNMMBEieZRA0YNGDUAARgZGCjLzgCKxAq1UuyhoQAAAABJRU5ErkJggg==';
+	document.getElementsByTagName('head')[0].appendChild(link);
 }
 
 AMT__Global_Vars.initialize_num_amt_tabs = function() {
@@ -202,7 +217,6 @@ AMT__Global_Vars.initializeReturnButton = function () {
 			hasReturnButton = true;
 		}
 	}
-	//console.log('ran inside initializeReturnButton');
 	if(AMT__Global_Vars.isTopWindow && hasReturnButton) {
 		console.log('ran inside initializeReturnButton');
 		var returnButton = document.createElement('input');

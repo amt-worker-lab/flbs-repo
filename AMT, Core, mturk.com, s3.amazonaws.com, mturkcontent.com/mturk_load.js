@@ -37,7 +37,7 @@ function mturk_load()
 	if 	(
 		window.top == window.self &&
 			(
-			/^https?:\/\/(www\.|worker\.|)mturk\.com\/?$/.exec(document.location.href) ||
+			/^https?:\/\/(www\.|worker\.|)mturk\.com\//.exec(document.location.href) ||
 			/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(document.location.href) ||
 			/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(document.location.href)
 			)
@@ -199,33 +199,35 @@ function mturk_load()
 				/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
 				/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
 				/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(l)
-				)
-			//|| check_right_page
-			)
-		{
-			if (// Note: This was (indexOf) == true!! and submitting in
-				// all cases! Rather than (indexOf) == -1
+				) &&
+				(
 				document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1 ||
 				document.body.innerHTML.toLowerCase().indexOf('there are no hits in this group available to you at the moment.') != -1
-			   ) {
-				AMT__Global_Vars.initializeNextTabPassBy();
-				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {
-					doSubmit(false, false, function(timeToSkip){
-							window.setTimeout(function() {
-								window.location.reload(true);
-							}
-							, timeToSkip);
-						},
-						2200
-					);
-				}
-				console.log('Hit the "All HITs" page. Returning.');
-				return;
+				)
+			)
+		{
+			AMT__Global_Vars.initializeNextTabPassBy(); // Initialize nextTabPassBy.
+			if (AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') { // If Reload on No Hits is turned on...
+				doSubmit(false, false, function(timeToSkip){
+						window.setTimeout(function() {
+							window.location.reload(true);
+						}
+						, timeToSkip);
+					},
+					2200
+				);
 			}
+			console.log('Hit the "All HITs" page. Returning.');
+			return;
 		}
+		
+		/**
+		 * Set some parameters.
+		 */
 		AMT__Global_Vars.isTopWindow = true;
 		AMT__Global_Vars.initializeGroupId();
 		AMT__Global_Vars.initializeHitId();
+		
 		// Check the captcha status
 		// Set var -> GM_setValue('mt_captcha','1'). No captcha == "0".
 		// Plus -> some interesting captcha behavior.
@@ -237,6 +239,7 @@ function mturk_load()
 		// Thomas Murphy/David Weber
 		// James M. Ratcliffe
 		AMT___oldTopWindowFloatStuff();
+		
 		/**
 		 * End Script Here
 		 * And do float/skip if desired
@@ -512,11 +515,11 @@ function mturk_load()
 					alert('Caution: More than one floater activated');
 			}
 			
-			
-			// return
+			// Return
 			return;
 		}
-				
+			
+		
 		/**
 		 * Scripts execute here if window.top == window.self && href == mturk.com
 		 * Returns afterwards.
@@ -531,7 +534,7 @@ function mturk_load()
 		AMT__Global_Vars.initializeReturnButton();
 		AMT__Global_Vars.setAcceptedFavicon();
 		AMT__Global_Vars.initializeRightClickRA();
-
+		
 		//If nextTabIframeFocus is on, then focus on the iframe if its name is  (if we happen to have one)
 		if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
 			var ifr = document.getElementsByName('ExternalQuestionIFrame');
@@ -557,12 +560,6 @@ function mturk_load()
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
 		
-		//var duration = new Date().getTime() - beginRunTime;
-		//~ alert('Runtime took: ' + duration);
-		//~ AMT__Global_Vars.isTopWindow = true;
-		//AMT__Global_Vars.initializeGroupId();
-		//~ AMT__Global_Vars.initializeHitId();
-		
 		// Run jobs in top window
 		top_window();
 		
@@ -577,7 +574,7 @@ function mturk_load()
 	
 	// Still here?
 	// Return if on mturk.com
-	if (/^https?:\/\/(www\.|)mturk\.com\//.exec(document.location.href))
+	if (/^https?:\/\/(www\.|worker\.|)mturk\.com\//.exec(document.location.href))
 		return;
 	
 	// Set some global vars
