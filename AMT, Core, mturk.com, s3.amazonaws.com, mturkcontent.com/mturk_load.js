@@ -538,7 +538,7 @@ function mturk_load()
 		AMT__Global_Vars.initializeRightClickRA();
 
 		//If nextTabIframeFocus is on, then focus on the iframe if its name is  (if we happen to have one)
-		if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {console.log('xxxxxxx');
+		if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
 			var ifr = document.getElementsByName('ExternalQuestionIFrame');
 			if(ifr)
 				ifr = ifr[0];
@@ -550,9 +550,6 @@ function mturk_load()
 			if(ifr) {
 				console.log('focusing on iframe. Comment me out when tested in max-speed scenario');
 				ifr.focus();
-				//~ window.setTimeout(function() { // No effect : May 31 2016
-					//~ ifr.focus();
-				//~ },2000);
 			}
 		}
 		

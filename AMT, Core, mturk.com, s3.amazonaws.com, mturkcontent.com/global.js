@@ -2684,8 +2684,8 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 			expirationDate: expirationDate,
 		}
 
-		console.log('script var');
-		console.log(scriptVar);
+		//console.log('script var');
+		//console.log(scriptVar);
 
 		scriptVarWriteQueue.push(scriptVar);
 
@@ -20594,10 +20594,6 @@ function AMT___checkCaptchaStatus() {
 	//====================================
 	//AMT__Global_Vars.core.captcha_string
 	//====================================
-	console.log(
-		'ih.indexOf(AMT__Global_Vars.core.captcha_string):' +
-		ih.indexOf(AMT__Global_Vars.core.captcha_string)// 9812 or -1
-	);
 	// If -1 then this is first
 	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
 		// Is it currently non-captcha?

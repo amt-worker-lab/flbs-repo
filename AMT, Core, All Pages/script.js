@@ -3954,7 +3954,6 @@ function load()
 			RUN_NPDLabs_Schools
 		)
 	{
-		console.log('');
 		//
 		//
 		// iframe
