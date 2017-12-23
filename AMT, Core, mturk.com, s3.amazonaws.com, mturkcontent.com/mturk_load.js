@@ -15,11 +15,6 @@ function mturk_load()
 		localStorage['mt_captcha'] = 0;
 	if (localStorage['mt_captcha'] != 0 && localStorage['mt_captcha'] != 1)
 		localStorage['mt_captcha'] = 0;
-	//~ if (GM_getValue('mt_captcha') == undefined)
-		//~ GM_setValue('mt_captcha', '0');
-	//~ if (GM_getValue('mt_captcha') != 0 && GM_getValue('mt_captcha') != 1)
-		//~ GM_setValue('mt_captcha', '0');
-	
 	
 	// John Roberts Set Interval Reload Page
 	new AMT___core_factory().createScriptVar('JR-ReloadPageEvery', 0);
@@ -42,7 +37,7 @@ function mturk_load()
 	if 	(
 		window.top == window.self &&
 			(
-			/^https?:\/\/(www\.|worker\.|)mturk\.com\//.exec(document.location.href) ||
+			/^https?:\/\/(www\.|worker\.|)mturk\.com\/?$/.exec(document.location.href) ||
 			/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(document.location.href) ||
 			/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(document.location.href)
 			)
