@@ -17345,12 +17345,17 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	 * 
 	 * Which form to submit
 	 */
-	if (!form)
-		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
-	else if (document.getElementById(form))
-		MT__DOSUBMIT__FORM = document.getElementById(form);
-	else if (document.getElementsByName(form)[0])
-		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
+	//~ if (!form) {
+		//~ //MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
+		//~ // Jan2018: Submit button to form.
+		//~ MT__DOSUBMIT__FORM = document.getElementsByClassName('btn btn-primary')[0];
+	//~ } else if (document.getElementById(form))
+		//~ MT__DOSUBMIT__FORM = document.getElementById(form);
+	//~ else if (document.getElementsByName(form)[0])
+		//~ MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
+	// Jan2018: Submit button to form.
+	MT__DOSUBMIT__FORM = document.getElementsByClassName('btn btn-primary')[0];
+		
 	// Debug
 	if (MT___TEST_DEBUG) {
 		var d = new Date();
@@ -17446,14 +17451,14 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 	
 	if (offsetTime == undefined)
 		offsetTime = 0;
-		////////////////
-		// Debug
-		////////////////
-		console.log(data);
-		console.log('offsetTime '+offsetTime);
-		////////////////
-		// End Debug
-		////////////////
+	//==============
+	// Debug
+	//==============
+	console.log(data);
+	console.log('offsetTime '+offsetTime);
+	//==============
+	// End Debug
+	//==============
 	var arr_all_submits = data;
 	MT__DOSUBMIT__TIME_TO_SUBMIT = 0;
 	//
@@ -17477,7 +17482,7 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 	else {
 		arr_all_submits = JSON.parse(arr_all_submits);
 		var i;
-		// remove err
+		// Remove erroneous submit entries
 		for (i = arr_all_submits.length-1; i >= 0; i--) {
 			if  (
 				!arr_all_submits[i].time_to_submit ||
@@ -17632,12 +17637,18 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	}
 	
 	// Which form to submit
-	if (!form)
-		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
-	else if (document.getElementById(form))
-		MT__DOSUBMIT__FORM = document.getElementById(form);
-	else if (document.getElementsByName(form)[0])
-		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
+	//~ if (!form) {
+		//~ //MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
+		//~ // Jan2018: Submit button to form.
+		//~ MT__DOSUBMIT__FORM = document.getElementsByClassName('btn btn-primary')[0];
+		//~ console.log( document.getElementsByClassName('btn btn-primary')[0])
+	//~ } else if (document.getElementById(form))
+		//~ MT__DOSUBMIT__FORM = document.getElementById(form);
+	//~ else if (document.getElementsByName(form)[0])
+		//~ MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
+	// Jan2018: Submit button to form.
+	MT__DOSUBMIT__FORM = document.getElementsByClassName('btn btn-primary')[0];
+		
 	//~ if (form && form.opts_obj) // This is an options object instead of form! // TESTING
 	//~ 
 	//~ else
@@ -17752,9 +17763,11 @@ function doSubmit_2() {
 		// Submit this form
 		// or send the window.location to a new location
 		// or do *nothing*
-		if (!MT__DOSUBMIT__LOCATION)
-			MT__DOSUBMIT__FORM.submit();
-		else if (MT__DOSUBMIT__LOCATION)
+		if (!MT__DOSUBMIT__LOCATION) {
+			//Jan2018: Change
+			MT__DOSUBMIT__FORM.click();
+			//~ MT__DOSUBMIT__FORM.submit();
+		} else if (MT__DOSUBMIT__LOCATION)
 			window.location = MT__DOSUBMIT__LOCATION;
 		else {
 			// do nothing

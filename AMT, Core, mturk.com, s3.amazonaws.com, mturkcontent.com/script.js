@@ -200428,7 +200428,9 @@ function top_window(okay_to_run) {
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 			GM_addStyle('#Answer_1_FreeText {width:90%;zoom:1.4}'); // ...
 			GM_addStyle('#Answer_3_FreeText {width:90%;}'); // ...
-			GM_addStyle('#Answer_4 {position:absolute;top:0;right:0%;z-index:1000;zoom:10;cursor:pointer;}'); // ... old=18
+			
+			// ?Checkbox
+			//GM_addStyle('#Answer_4 {position:absolute;top:0;right:0%;z-index:1000;zoom:10;cursor:pointer;}'); // ... old=18
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
@@ -200592,12 +200594,6 @@ function top_window(okay_to_run) {
 				style: 'width:39%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4c);
-			//~ // Ebay
-			//~ var d3i = document.createElement('input');
-			//~ d3i.setAttribute('style','float:left;width:49%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3i.type = 'button';
-			//~ d3i.value = 'Ebay';
-			//~ x.appendChild(d3i);
 			// The columns for the searches! Put these
 			// on after the buttons and the debug textarea.
 			// Div 1
@@ -200651,7 +200647,8 @@ function top_window(okay_to_run) {
 				doSubmit('hitForm');
 			}
 			// Onclick
-			document.getElementsByName('/submit')[0].onclick = function(e) {
+			document.getElementsByClassName('btn btn-primary')[0].onclick = function(e) {
+			//~ document.getElementsByName('/submit')[0].onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
 				try_sbm();
