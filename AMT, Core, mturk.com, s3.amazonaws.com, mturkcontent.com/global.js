@@ -17346,7 +17346,9 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	 * Which form to submit
 	 */
 	// Jan2018: Update form.
-	if (document.getElementById(form))
+	if (!form) // Default form is "#mturk_form".
+		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
+	else if (document.getElementById(form)) // eg VSR
 		MT__DOSUBMIT__FORM = document.getElementById(form);
 	else if (document.getElementsByName(form) && document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
@@ -17651,7 +17653,9 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		//~ MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
 	
 	// Jan2018: Update form.
-	if (document.getElementById(form))
+	if (!form) // Default form is "#mturk_form".
+		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
+	else if (document.getElementById(form)) // eg VSR
 		MT__DOSUBMIT__FORM = document.getElementById(form);
 	else if (document.getElementsByName(form) && document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
