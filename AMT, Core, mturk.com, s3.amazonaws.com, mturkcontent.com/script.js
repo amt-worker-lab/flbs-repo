@@ -200421,9 +200421,10 @@ function top_window(okay_to_run) {
 	{
 		var run = function() {}
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td,fieldset {margin:0;padding:0;font-size:14px;}');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td,fieldset {margin:0;padding:0;font-size:14px;}');
+			
 			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
-			GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:98% !important;max-width:100% !important;left:0 !important;margin:0 !important;}');
+			//~ GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:98% !important;max-width:100% !important;left:0 !important;margin:0 !important;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 			GM_addStyle('#Answer_1_FreeText {width:90%;zoom:1.4}'); // ...
 			GM_addStyle('#Answer_3_FreeText {width:90%;}'); // ...
