@@ -20418,25 +20418,37 @@ function AMT___ReturnAndAcceptKeyPress(event) {
 
 /**
  * Function AMT___returnAndAcceptButton
- * // Make return/accept button
+ * 
+ * Make return/accept button
+ * 
+ * Update Jan2018:
+ * 		New URL: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/accept_random?ref=w_pl_prvw
+ * 		Must be at URL:  https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/
+ * 						 38Z7YZ2SB3NUK5K2JFE8SFD9NL2IQU?assignment_id=3R0T90IZ1TXEGX1IEBJCCI6ZRYXGCV
+ * 
  */
 function AMT___returnAndAcceptButton() {
 	
+	// OLD R&A STRATEGY
 	// is this page continue or preview, then return
 	if  (
 		/^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href) ||
 		/^https?:\/\/(www\.)mturk.com\/mturk\/preview\?/i.exec(document.location.href)
 		)
 		return;
+
+	// Assuming one layout for URL.
+	if  (
+		!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks\/[^\/]+\?assignment_id=[^\/&]+$/i.exec(document.location.href)
+		)
+		return;
+		
 	// return and accept
 	// return link and group id
 	if  (
 			/<a href="\/mturk\/return\?/.exec(ih) &&
 			ih.indexOf('<input type="hidden" name="groupId" value="">') == -1 // Must have a group id
-			//~ (
-				//~ /<a href="\/mturk\/return\?groupId=/.exec(ih) ||
-				//~ /<a href="\/mturk\/return\?requesterId=/.exec(ih) // <a href="/mturk/return?requesterId=
-			//~ )
+			
 		)
 	{	
 		var u;
