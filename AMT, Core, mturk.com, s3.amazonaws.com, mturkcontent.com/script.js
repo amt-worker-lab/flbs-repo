@@ -200644,7 +200644,7 @@ function top_window(okay_to_run) {
 						o.q[3].checked
 					)
 					return false;
-				doSubmit('hitForm');
+				doSubmit();
 			}
 			// Onclick
 			document.getElementsByClassName('btn btn-primary')[0].onclick = function(e) {
