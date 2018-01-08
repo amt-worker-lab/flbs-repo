@@ -20439,8 +20439,10 @@ function AMT___returnAndAcceptButton() {
 	//~ return; // testing
 	
 	// Assuming one layout for URL.
+	// Another layout is:
+	// 		?assignment_id=3L0KT67Y8F1U95BE53VIYNHLIXJYSF&ref=w_pl_prvw
 	if  (
-		!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks\/[^\/]+\?assignment_id=[^\/&]+$/i.exec(document.location.href)
+		!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks\/[^\/]+\?assignment_id=[^\/&]+/i.exec(document.location.href)
 		)
 		return;
 	
@@ -20474,6 +20476,11 @@ function AMT___returnAndAcceptButton() {
 		// TEST!
 		// https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/37ZQELHEQ0JVDRX1O2KJGEPLZJ1NMU?assignment_id=3V0Z7YWSIZLK0CZB6DTS060N2MHV2Z&ref=w_wp_rtrn_top
 	}
+	
+	// Simply change the action on the form.
+	// Not working.
+	//~ MT__return_form.action = MT__newtask_url;//.replace(/\?ref=w_pl_prvw/, '');
+	//~ MT__return_form.method = 'GET';
 	
 	//~ u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
 	
@@ -20518,7 +20525,7 @@ function AMT___returnAndAcceptButton() {
 				AMT__Global_Vars.showPastReturnsContent,
 				[new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
 		}
-		this.style.backgroundColor='#9e9e9e';
+		this.style.backgroundColor = '#9e9e9e';
 		//Record what tab we're returning on
 		recordReturn();
 
@@ -20541,26 +20548,26 @@ function AMT___returnAndAcceptButton() {
 		
 		function MT__RETURN_AND_ACCEPT(time_to_submit) {
 			setTimeout(function() {
-				//~ MT__return_form.submit();
+				MT__return_form.submit();
 				
 				// OLD VERSION
-				GM_xmlhttpRequest({
-					method: 'POST',
-					url: MT__return_form_url, // url to return this HIT
-					data: '',
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded"
-					},
-					onload: function (response) {
-						// get new
-						//
+				//~ GM_xmlhttpRequest({
+					//~ method: 'POST',
+					//~ url: MT__return_form_url, // url to return this HIT
+					//~ data: '',
+					//~ headers: {
+						//~ "Content-Type": "application/x-www-form-urlencoded"
+					//~ },
+					//~ onload: function (response) {
+						//~ // get new
+						//~ //
 						//~ window.location = MT__newtask_url;
 						
-						// OLD VERSION
-							// window.location = 
-							// 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
-					}
-				});
+						//~ // OLD VERSION
+							//~ // window.location = 
+							//~ // 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
+					//~ }
+				//~ });
 			}, time_to_submit);
 		}
 		
@@ -20570,7 +20577,7 @@ function AMT___returnAndAcceptButton() {
 	
 	// serverSide
 	document.getElementById('MT__gm_returnaccept_non_serverSide').addEventListener('click', function() {
-		this.style.backgroundColor='#9e9e9e';
+		this.style.backgroundColor = '#9e9e9e';
 		if(AMT__Global_Vars.showPastReturnsContent) {
 			//console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
 			//AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
