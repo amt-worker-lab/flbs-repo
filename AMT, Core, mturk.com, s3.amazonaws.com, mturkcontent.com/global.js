@@ -20427,6 +20427,10 @@ function AMT___ReturnAndAcceptKeyPress(event) {
  * 						 38Z7YZ2SB3NUK5K2JFE8SFD9NL2IQU?assignment_id=3R0T90IZ1TXEGX1IEBJCCI6ZRYXGCV
  * 		Note: New z-index must be > 1000 and at least 10000.
  * 		What about a tasks/return link?
+ * 			https://mturk.com/mturk/return?requesterId=AU06FWQZTTRD1&amp;hitId=33PPUNGG39GOP2WBVVLN4CROCUZRZ4&amp;signature=w7gq5x81cqAtP4ftfXGkA7pFN%2BY%3D&amp;groupId=3XCMB0010QC1BC9LPZSYHFBV3LL3PB
+ 
+ * https://mturk.com/mturk/return?requesterId=AU06FWQZTTRD1&hitId=3W8CV64QJ3KQIVPQMXR3VSHS0DW9HV&signature=wHf5BUvPF3tkLKll2WsQDx3GIl1f+ciIFT1SqKXlhvM3edcoWxL/BLfzbZs5NNrqu6/v+frwIyb+i8xjUVSdLw==&groupId=3QKP95RWR043MEOAGE1G8XQDJG1X55
+ * * 
  * 		Not: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3WRBLBQ2GRTS0L98CTKQSX9BV4GG06?assignment_id=3DQQ64TANH6T780MYL90ILRUK5QPW5&ref=w_wp_rtrn_bttm&_method=delete&authenticity__API_KEY_REDACTED_/2PaTokLNL5eUfSSGcEA==
  * 
  * 		Curl return:
@@ -20454,6 +20458,7 @@ function AMT___ReturnAndAcceptKeyPress(event) {
  */
 function AMT___returnAndAcceptButton() {
 	console.log('llllllllllllllllllllllll');
+	console.log(document.cookie);
 	//~ console.log();
 	//~ return; // testing
 	
@@ -20511,12 +20516,12 @@ function AMT___returnAndAcceptButton() {
 	
 	//~ MT__return_form.action = MT__newtask_url;//.replace(/\?ref=w_pl_prvw/, '');
 	//~ MT__return_form.method = 'GET';
-	var x = MT__return_form.getElementsByTagName('input');
-	for (var i=0; i<x.length; i++) {
-		if (x[i].name)
-			MT__return_form_url += '&'+encodeURIComponent(x[i].name)
-				+'='+encodeURIComponent(x[i].value);
-	}
+	//~ var x = MT__return_form.getElementsByTagName('input');
+	//~ for (var i=0; i<x.length; i++) {
+		//~ if (x[i].name)
+			//~ MT__return_form_url += '&'+encodeURIComponent(x[i].name)
+				//~ +'='+encodeURIComponent(x[i].value);
+	//~ }
 	
 	//~ u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
 	
@@ -20583,6 +20588,37 @@ function AMT___returnAndAcceptButton() {
 		}
 		
 		function MT__RETURN_AND_ACCEPT(time_to_submit) {
+			// do a post, then a get. 
+			GM_xmlhttpRequest({
+				method: 'POST',
+				url: MT__return_form_url, // url to return this HIT
+				data: '',
+				headers: {
+					'Origin': 'https://worker.mturk.com',
+					'Accept-Encoding': 'gzip, deflate, br',
+					'Accept-Language': 'en-US,en;q=0.9',
+					'Upgrade-Insecure-Requests': '1',
+					'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+					'Cache-Control': 'max-age=0',
+					'Referer': 'https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/34R0BODSP1KTBEZI340E9PKQZWCE58?assignment_id=3WJEQKOXA9NTJ3EHCE2IZ0C5P6KA1E&auto_accept=true',
+					'Connection': 'keep-alive',
+					'Cookie': document.cookie
+				},
+				onload: function (response) {
+					// get: 2 identical of these?
+					//http://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks
+					//~ GM_xmlhttpRequest({
+						//~ method: 'GET',
+						//~ url: 'http://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks', // url to return this HIT
+						//~ onload: function (response) {
+							
+						//~ }
+					//~ });
+				}
+			});
+			
 			setTimeout(function() {
 				//~ MT__return_form.submit();
 				
@@ -20595,23 +20631,23 @@ function AMT___returnAndAcceptButton() {
 						//~ "Content-Type": "application/x-www-form-urlencoded"
 					//~ },
 				
-				GM_xmlhttpRequest({
-					method: 'POST',
-					url: MT__return_form_url, // url to return this HIT
-					data: '',
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded"
-					},
-					onload: function (response) {
-						// get new
-						//
+				//~ GM_xmlhttpRequest({
+					//~ method: 'POST',
+					//~ url: MT__return_form_url, // url to return this HIT
+					//~ data: '',
+					//~ headers: {
+						//~ "Content-Type": "application/x-www-form-urlencoded"
+					//~ },
+					//~ onload: function (response) {
+						//~ // get new
+						//~ //
 						//~ window.location = MT__newtask_url;
 						
-						// OLD VERSION
-							// window.location = 
-							// 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
-					}
-				});
+						//~ // OLD VERSION
+							//~ // window.location = 
+							//~ // 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
+					//~ }
+				//~ });
 			}, time_to_submit);
 		}
 		
