@@ -20488,6 +20488,7 @@ function AMT___returnAndAcceptButton() {
 	//		Eg
 	//			https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3UUIU9GZC5QV0XHFTZP98BKR26Y5TO?assignment_id=3NPI0JQDAPQ1FRWS3G4PV1KVGBWPT3&ref=w_wp_rtrn_top&utf8=%E2%9C%93&_method=delete&authenticity__API_KEY_REDACTED_%2FY69j3aTYpkPrVKHZzFoQs5l7Yky5IsbUcvpzknapocd0Xdq0PqvPaqkuSmMh%2FaJOtT2VQ%3D%3D
 	
+	// To try: Try send a request to old url + hitid ???
 	
 	//~ MT__return_form.action = MT__newtask_url;//.replace(/\?ref=w_pl_prvw/, '');
 	//~ MT__return_form.method = 'GET';
