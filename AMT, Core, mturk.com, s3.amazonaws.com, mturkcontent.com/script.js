@@ -1038,7 +1038,7 @@ function MT__RUN() {
 	console.log(ih.indexOf(s));
 	console.log(ih.indexOf(s2));
 	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1) {
-		return;// !
+		//~ return;// !
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
@@ -1063,7 +1063,27 @@ function MT__RUN() {
 			//~ );
 			// First, loop through all divs to see which task
 			// this is.
+			var n = document.getElementById('disableifneeded');
+			var x = n.getElementsByTagName('div');
+			var numDisplayed = 0;
+			var activeDiv = null;
+			for (var i=0; i<x.length; i++) {
+				if (x[i].style.display != 'none') {
+					numDisplayed++;
+					activeDiv = x[i];
+				}
+			}
+			if (numDisplayed == 1) {
+				console.log(activeDiv);
+			} else {
+				console.log(numDisplayed);
+				return;
+			}
 			
+			
+			
+			
+			return;
 			/*BEGIN ITEMS*/
 			//~ var d1 = ''.div({
 				//~ style:
