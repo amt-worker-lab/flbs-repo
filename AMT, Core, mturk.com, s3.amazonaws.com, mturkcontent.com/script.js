@@ -1030,12 +1030,19 @@ function MT__RUN() {
 	// SD Science
 	// xhr task
 	// Identify the requested information in the page provided
-	s = '<p>2. Look for the DATE of the most recently released podcast episode in MM/DD/YYYY format. Here\'s where you\'ll find it (this is an example only; you need to get the actual date from the page):</p>';
-	if (ih.indexOf(s) != -1) {
+	// The input field on this task changes repeatedly.
+	// There are about 30 items to scrape, but it must depend on which
+	// input field the page displays.
+	s = 'Please copy &amp; paste the product name from the link given below';
+	var s2 =  'I have pasted the requested data';
+	console.log(ih.indexOf(s));
+	console.log(ih.indexOf(s2));
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1) {
+		return;// !
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
 			var a = document.getElementsByTagName('a');
 			var o = {
 				a: a[0].href.trim(),
@@ -1055,11 +1062,11 @@ function MT__RUN() {
 				]
 			);
 			/*BEGIN ITEMS*/
-			var d1 = ''.div({
-				style:
-				'position:absolute;top:0px;left:0%;width:100%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
-			});
-			document.body.appendChild(d1);
+			//~ var d1 = ''.div({
+				//~ style:
+				//~ 'position:absolute;top:0px;left:0%;width:100%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			//~ });
+			//~ document.body.appendChild(d1);
 			/*End Items*/
 			//~ new AMT___core_factory().el_innerHeight({
 				//~ elements: [
@@ -1097,19 +1104,42 @@ function MT__RUN() {
 					}
 					// Sbm
 					var sbm = true;
+					// <h2 class="category-title"><a href="c/32/travel/">Travel</a></h2>
 					// Dom
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					// tb
-					var t = dom.getElementsByTagName('table')[0];
-					if (t) {
-						t = t.getElementsByClassName('release-date')[1];
-						if (t) {
-							o.q[0].value = t.innerText.trim();
-							if (/^\d+\/\d+\/\d+$/.exec(o.q[0].value)) {
-								AMT___recordAndSubmit();
-							}
-						}
+					var x = dom.getElementsByClassName('breadcrumb-trail');
+					if (x.length != 1) {
+						document.body.style.backgroundColor = 'pink';
+						return;
 					}
+					x = x[0];
+					console.log(x);
+					var x = x.getElementsByTagName('a')[0];
+					console.log(x);
+					//~ if (x.length != 1) {
+						//~ document.body.style.backgroundColor = 'pink';
+						//~ return;
+					//~ }
+					//~ x = x[0].getElementsByTagName('a')[0];
+					o.q[0].value = x.innerText.trim();
+					if (o.q[0].value.length > 4 && o.q[0].value.length < 200 && o.q[0].value != 'undefined') {
+						document.getElementById('radio7').click();
+						document.getElementById('radio7').checked = true;
+						doSubmit();
+					}
+					
+					
+					//~ // tb
+					//~ var t = dom.getElementsByTagName('table')[0];
+					//~ if (t) {
+						//~ t = t.getElementsByClassName('release-date')[1];
+						//~ if (t) {
+							//~ o.q[0].value = t.innerText.trim();
+							//~ if (/^\d+\/\d+\/\d+$/.exec(o.q[0].value)) {
+								//~ AMT___recordAndSubmit();
+							//~ }
+						//~ }
+					//~ }
 				}
 			});
 		}

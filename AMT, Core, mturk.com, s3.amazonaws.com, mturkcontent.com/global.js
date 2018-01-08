@@ -20485,7 +20485,7 @@ function AMT___returnAndAcceptButton() {
 		//~ )
 	//~ {
 		
-	var u = /^(https:\/\/worker\.mturk\.com\/projects\/3QKP95RWR043MEOAGE1G8XQDJG1X55\/tasks\/)/
+	var u = /^(https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks\/)/
 		.exec(document.location.href);
 	var MT__newtask_url = u[1] + 'accept_random?ref=w_pl_prvw';
 	var MT__return_form = document.getElementsByTagName('form')[0];
