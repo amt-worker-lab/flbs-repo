@@ -1027,6 +1027,95 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	// SD Science
+	// xhr task
+	// Identify the requested information in the page provided
+	s = '<p>2. Look for the DATE of the most recently released podcast episode in MM/DD/YYYY format. Here\'s where you\'ll find it (this is an example only; you need to get the actual date from the page):</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				a: a[0].href.trim(),
+				q: [
+					document.getElementById('T3'),
+				]
+			}
+			if (a[0].outerText != "Click here to open the product page") {
+				alert('x');
+				return;
+			}
+			AMT___addUserDecision(
+				'SDScience',
+				function() { return o.a; },
+				[
+					"Id(T3)",
+				]
+			);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:100%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 0 // offset top
+			//~ });
+			// Turn off form submit.
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				//~ return false;
+			//~ }
+			
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.a,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					// Sbm
+					var sbm = true;
+					// Dom
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// tb
+					var t = dom.getElementsByTagName('table')[0];
+					if (t) {
+						t = t.getElementsByClassName('release-date')[1];
+						if (t) {
+							o.q[0].value = t.innerText.trim();
+							if (/^\d+\/\d+\/\d+$/.exec(o.q[0].value)) {
+								AMT___recordAndSubmit();
+							}
+						}
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Andrew Allemann	
 	// xhr task
 	// Collect data from a Webpage - fast and easy!
