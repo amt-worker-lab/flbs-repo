@@ -20588,27 +20588,70 @@ function AMT___returnAndAcceptButton() {
 		}
 		
 		function MT__RETURN_AND_ACCEPT(time_to_submit) {
-			// do a post, then a get. 
-			GM_xmlhttpRequest({
-				method: 'POST',
-				url: MT__return_form_url, // url to return this HIT
-				data: '',
-				headers: {
-					'Origin': 'https://worker.mturk.com',
-					'Accept-Encoding': 'gzip, deflate, br',
-					'Accept-Language': 'en-US,en;q=0.9',
-					'Upgrade-Insecure-Requests': '1',
-					'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-					'Cache-Control': 'max-age=0',
-					'Referer': 'https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/34R0BODSP1KTBEZI340E9PKQZWCE58?assignment_id=3WJEQKOXA9NTJ3EHCE2IZ0C5P6KA1E&auto_accept=true',
-					'Connection': 'keep-alive',
-					'Cookie': document.cookie
+			// do a post, then a get.
+			/**
+			 * GM XHR does not like:
+global.js:17177 Refused to set unsafe header "Origin"
+global.js:17177 Refused to set unsafe header "Accept-Encoding"
+global.js:17177 Refused to set unsafe header "User-Agent"
+global.js:17177 Refused to set unsafe header "Referer"
+global.js:17177 Refused to set unsafe header "Connection"
+global.js:17177 Refused to set unsafe header "Cookie"
+			 */
+			var opts = {
+				server_opts: {
+					url: 'MT__return_form_url',
+					//~ _PROXY_REDACTED__use_proxy: true,
+					cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+					headers_array: [
+						'Origin: https://worker.mturk.com',
+						'Accept-Encoding: gzip, deflate, br',
+						'Accept-Language: en-US,en;q=0.9',
+						'Upgrade-Insecure-Requests: 1',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
+						'Content-Type: application/x-www-form-urlencoded',
+						'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+						'Cache-Control: max-age=0',
+						'Referer: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3V7ICJJAZA1D8SJYF8FE3P8RW35B41?assignment_id=3XXU1SWE8NGTCETZGVYILVTVKEF0A2&auto_accept=true',
+						'Connection: keep-alive',
+						'Cookie: '+document.cookie
+					],
+					//~ do_not_save_to_file: true,
+					short_filename:
+						new AMT___requests_factory().md5(o.num)+
+						Math.random()+new Date().getTime()+'-me',
+					post_object_as_str: ''
 				},
-				onload: function (response) {
-					// get: 2 identical of these?
-					//http://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks
+				callback_function: function(response) {
+					var rs = response.response.responseText;
+					console.log(rs);
+					console.log('================');
+				}
+			};
+			
+			// Init async load.
+			new AMT___requests_factory().server_load_asynchronously2(opts);
+			
+			//~ GM_xmlhttpRequest({
+				//~ method: 'POST',
+				//~ url: MT__return_form_url, // url to return this HIT
+				//~ data: '',
+				//~ headers: {
+					//~ 'Origin': 'https://worker.mturk.com',
+					//~ 'Accept-Encoding': 'gzip, deflate, br',
+					//~ 'Accept-Language': 'en-US,en;q=0.9',
+					//~ 'Upgrade-Insecure-Requests': '1',
+					//~ 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
+					//~ 'Content-Type': 'application/x-www-form-urlencoded',
+					//~ 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+					//~ 'Cache-Control': 'max-age=0',
+					//~ 'Referer': 'https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/34R0BODSP1KTBEZI340E9PKQZWCE58?assignment_id=3WJEQKOXA9NTJ3EHCE2IZ0C5P6KA1E&auto_accept=true',
+					//~ 'Connection': 'keep-alive',
+					//~ 'Cookie': document.cookie
+				//~ },
+				//~ onload: function (response) {
+					//~ // get: 2 identical of these?
+					//~ //http://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks
 					//~ GM_xmlhttpRequest({
 						//~ method: 'GET',
 						//~ url: 'http://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks', // url to return this HIT
@@ -20616,8 +20659,8 @@ function AMT___returnAndAcceptButton() {
 							
 						//~ }
 					//~ });
-				}
-			});
+				//~ }
+			//~ });
 			
 			setTimeout(function() {
 				//~ MT__return_form.submit();
