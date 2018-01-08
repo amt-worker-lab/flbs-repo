@@ -20426,6 +20426,25 @@ function AMT___ReturnAndAcceptKeyPress(event) {
  * 		Must be at URL:  https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/
  * 						 38Z7YZ2SB3NUK5K2JFE8SFD9NL2IQU?assignment_id=3R0T90IZ1TXEGX1IEBJCCI6ZRYXGCV
  * 		Note: New z-index must be > 1000 and at least 10000.
+ * 		What about a tasks/return link?
+ * 		Not: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3WRBLBQ2GRTS0L98CTKQSX9BV4GG06?assignment_id=3DQQ64TANH6T780MYL90ILRUK5QPW5&ref=w_wp_rtrn_bttm&_method=delete&authenticity__API_KEY_REDACTED_/2PaTokLNL5eUfSSGcEA==
+ * 
+ * 		Curl return:
+ * 			curl 'https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3WRBLBQ2GRTS0L98CTKQSX9BV4GG06?assignment_id=3DQQ64TANH6T780MYL90ILRUK5QPW5&ref=w_wp_rtrn_top' -X POST
+ 
+ 'Cookie: mtuid-wk=95d6e961d6e954d73fc0c6510aadf3; ws=f; csm-sid=499-3222723-5829026; session-id-mtw=139-0227189-2622208; session-id-time-mtw=2144444246l; ubid-main=176-3748315-3028514; session-token="vS5fmty+hwQgFmOt6XzK6iAhGWR67fECvA8SEFnZEvfmkVQ9q5tHPkwdcLMmsJ1iXS1bmoyq4OLVpBEigykJgyA9vHZza9xtvVHfoMP9W4YL/H8U4Qw8bhfhjmkjWsP4Ue8mXSHCtj2/l+xjko8js3M20FBc3FyRqx8/wLiibGFXy7E+8g7fIeIJkiEBpXQl33SHwIjLvj5Pfryp5YFbExAR4zg2GG2QsKWlXVIw4Q4="; x-main="B24grVjRyN?C0YngCeU?DfWaKHsCJXKw"; ubid-acbus-mtw=130-0981498-7372103; session-token-mtw="3Cf3ELxJWuF9TJ/pqxEztfoJyUgtoV+OrGlSnW7PEy/8fkXq/OUmZpowpuwpLaBN156vJq3lg4ES7YvcVyFF98LApYkk0nbGatYeqjaYC5+ME3TB/6Hoq3B2y7iYE6TPxq3fyjKvBTBFj4PpsPTlDNfV6rtTyNRhPksxxLj39mj/ls960hxLFsHV1xmv4qFNO/TKGpp3kXkZWhGjPrBf5k02WMCFMPFe6/93tY9x/0U="; x-acbus-mtw="0Bpapj6Fr@sS3jvdXndlyLNJDRU7SsFX"; at-acbus-mtw=Atza|IwEBIAPU3SVD57B1k0SWE42NFXBbpR6r91VPBbGSW5Nd2XPJO1kmwu4ZN0kW6zguhQWb07xiFsJ-4Cd7eKEfw61LMK5Hwmj78pU2unJrRLAlgCt55ZlMax1lcsLlY0PAlb-ss8t9htAyDFGGdKmnKAw21q88KWHypwYMgM09z4ikEux9FhQKDnOgWXegb4ocX7XybIaQwoGTwheC5zVIlCwZiIKA-SL0YlWJ6Ak9xW8jSQwUNOEpAzJDkAWrmbqwOyCpO69Box0S8ruCk0SHk0c0buqmGb4c_f1X13EMGVuqlOWWLPC2DgKqFqk9ZG1nb7gojoB3pVbii0iwuIAnvmez7Q1YrEFwPvTmu1l1pRqzIxEb877fh-d8PB_k2ca0qilRKxeZNLaViF3z7MGzBYbqMBUB; sess-at-acbus-mtw="CT4IFitBA/B21Fr5XHbycNh47KvnG4u4q1aGwtZ3QkE="; s_vnum=1517910300573%26vn%3D7; search_page_size=V1cvWUxFSy9uQ2pnTU9jNmFWZDZtdz09LS1MT08yVHZLNEdtRHB0MFcxUkcvTUN3PT0%3D--86d9e934bd414657080edcbc5dd813078a3583fb; _mturk_session=dEgzL3VEWTd2ejlGR1RKY3FoTm9lVk1rdlNMeXhocWUzcVhjK2FKb0NUUFdLMDB3WXV3UTNCK1VQTncyVWRxMUM3YTdFWUk2Nms3VzQ1MHA2MUpuNDY3OERiRUhoa0hNRGYrMVpKQVZxaEsrOVZQQWJpTHJzVW03a0RNL2xTbXFKeVZ2b2RMSGtVWmo1RCtPZ1VWNnFBRVY1enFWSzVLRUt6QXZvNVBJLy8xOXY3RGVLaW5ndXhkdlFjOVNZQTFVT3cwRjdGODlNQnRFb2E5WXMwNUNyZkRPalIrRkRONW9sRjJDdWttVGswY0QveEowaE0ybm1UUmprVnVHMUxaak4vMkRQcVdzS2s3T0Yrck8xeDBCWmNLaTdhMEYzSXJhZDE1cVNxTTRzd1lZOWhKTlhaSDV6RFYyQ2k0RUFVUWx6R1F6b3BRd3VUKzd1ZWZHVDFEOHVWN1p5VUNsYndRYlBESEQvSjhlbS8vQWhOdEUrcStheEkxWVJVa1A5Nk56TGtTSCtOdEJsSEhyVCtySGs0ZnY0NWdqK0VYRThhc3MxeVoyMGNveWlyZ3UrWlVtdURsSDFIZGZaYVk4emVkeXVTci9Ldy8rT250cEZPV2ljZlZhUHc9PS0tRCt4RjVyM2pWdkJPalZKd2xWbVZIdz09--45f4e3544ac5d6cd068976448d596ac7eca79665; s_cc=true; s_fid=53ABA7DD86901456-1889251EFE2001FB; s_nr=1515385478365-Repeat; s_invisit=true; s_sq=%5B%5BB%5D%5D'
+'Origin: https://worker.mturk.com'
+'Accept-Encoding: gzip, deflate, br'
+'Accept-Language: en-US,en;q=0.9'
+'Upgrade-Insecure-Requests: 1'
+'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36'
+'Content-Type: application/x-www-form-urlencoded'
+'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng;q=0.8'
+'Cache-Control: max-age=0'
+'Referer: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3WRBLBQ2GRTS0L98CTKQSX9BV4GG06?assignment_id=3DQQ64TANH6T780MYL90ILRUK5QPW5&ref=w_wp_rtrn_bttm&_method=delete&authenticity__API_KEY_REDACTED_/2PaTokLNL5eUfSSGcEA=='
+'Connection: keep-alive'
+'Content-Length: 161'
+ * 
  * 
  * Consider:
  * 		On return, if status!=200, is there any reason
