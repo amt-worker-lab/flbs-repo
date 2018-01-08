@@ -20512,6 +20512,19 @@ function AMT___returnAndAcceptButton() {
 	//		Eg
 	//			https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3UUIU9GZC5QV0XHFTZP98BKR26Y5TO?assignment_id=3NPI0JQDAPQ1FRWS3G4PV1KVGBWPT3&ref=w_wp_rtrn_top&utf8=%E2%9C%93&_method=delete&authenticity__API_KEY_REDACTED_%2FY69j3aTYpkPrVKHZzFoQs5l7Yky5IsbUcvpzknapocd0Xdq0PqvPaqkuSmMh%2FaJOtT2VQ%3D%3D
 	
+	// Try: Change target to iframe.
+	//		Opens in new window. But it is returned.
+	//~ document.getElementsByTagName('iframe')[0].name = 'abcde';
+	//~ MT__return_form.target = 'abcde';
+	
+	// Try: Append iframe to form, then submit to that iframe.
+	//		Works.
+	var x = document.createElement('iframe');
+	x.name = '01'+Math.random()+'01';
+	x.setAttribute('style', 'position:absolute;height:0;width:0;display:none;');
+	MT__return_form.appendChild(x);
+	MT__return_form.target = x.name;
+	
 	// To try: Try send a request to old url + hitid ???
 	
 	//~ MT__return_form.action = MT__newtask_url;//.replace(/\?ref=w_pl_prvw/, '');
@@ -20588,7 +20601,10 @@ function AMT___returnAndAcceptButton() {
 		}
 		
 		function MT__RETURN_AND_ACCEPT(time_to_submit) {
-			// do a post, then a get.
+			// Try Do a post, then a get.
+			//		No.
+			// Try XHR header change
+			//		No.
 			/**
 			 * GM XHR does not like:
 global.js:17177 Refused to set unsafe header "Origin"
@@ -20598,39 +20614,43 @@ global.js:17177 Refused to set unsafe header "Referer"
 global.js:17177 Refused to set unsafe header "Connection"
 global.js:17177 Refused to set unsafe header "Cookie"
 			 */
-			var opts = {
-				server_opts: {
-					url: 'MT__return_form_url',
-					//~ _PROXY_REDACTED__use_proxy: true,
-					cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
-					headers_array: [
-						'Origin: https://worker.mturk.com',
-						'Accept-Encoding: gzip, deflate, br',
-						'Accept-Language: en-US,en;q=0.9',
-						'Upgrade-Insecure-Requests: 1',
-						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
-						'Content-Type: application/x-www-form-urlencoded',
-						'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-						'Cache-Control: max-age=0',
-						'Referer: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3V7ICJJAZA1D8SJYF8FE3P8RW35B41?assignment_id=3XXU1SWE8NGTCETZGVYILVTVKEF0A2&auto_accept=true',
-						'Connection: keep-alive',
-						'Cookie: '+document.cookie
-					],
+			// Try PHP curl to check with exact curl.
+			// 		No.
+			// Try PHP curl to check with exact curl, plus cookie.
+			//		No.
+			// Try PHP curl to check with exact curl, plus cookie, plus changed date in cookie to one that is greater than date in cookie.
+			//		No.
+			//		Note: The value changed between returning in cookie is: s_nr=(\d+)-Repeat
+			
+			
+			//~ var opts = {
+				//~ server_opts: {
+					//~ url: 'MT__return_form_url',
+					//~ headers_array: [
+						//~ 'Origin: https://worker.mturk.com',
+						//~ 'Accept-Encoding: gzip, deflate, br',
+						//~ 'Accept-Language: en-US,en;q=0.9',
+						//~ 'Upgrade-Insecure-Requests: 1',
+						//~ 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
+						//~ 'Content-Type: application/x-www-form-urlencoded',
+						//~ 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+						//~ 'Cache-Control: max-age=0',
+						//~ 'Referer: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3V7ICJJAZA1D8SJYF8FE3P8RW35B41?assignment_id=3XXU1SWE8NGTCETZGVYILVTVKEF0A2&auto_accept=true',
+						//~ 'Connection: keep-alive',
+						//~ 'Cookie: '+document.cookie.replace(/s_nr=(\d+)-Repeat/, 's_nr='+newd+'-Repeat')
+					//~ ],
 					//~ do_not_save_to_file: true,
-					short_filename:
-						new AMT___requests_factory().md5(o.num)+
-						Math.random()+new Date().getTime()+'-me',
-					post_object_as_str: ''
-				},
-				callback_function: function(response) {
-					var rs = response.response.responseText;
-					console.log(rs);
-					console.log('================');
-				}
-			};
+					//~ post_obj: {}, // Is defined.
+				//~ },
+				//~ callback_function: function(response) {
+					//~ var rs = response.response.responseText;
+					//~ console.log(rs);
+					//~ console.log('================');
+				//~ }
+			//~ };
 			
 			// Init async load.
-			new AMT___requests_factory().server_load_asynchronously2(opts);
+			//~ new AMT___requests_factory().server_load_asynchronously2(opts);
 			
 			//~ GM_xmlhttpRequest({
 				//~ method: 'POST',
@@ -20662,9 +20682,13 @@ global.js:17177 Refused to set unsafe header "Cookie"
 				//~ }
 			//~ });
 			
+			// Strategy: Run the return immediately, then process timeout.
+			// 		This is an HTML submit so it may lag.
+			// 		Therefore, submit immediately!
+			//		Then, after timeout, load new task.
+			MT__return_form.submit();
 			setTimeout(function() {
-				//~ MT__return_form.submit();
-				
+				window.location = MT__newtask_url;
 				// OLD VERSION
 				//~ GM_xmlhttpRequest({
 					//~ method: 'POST',

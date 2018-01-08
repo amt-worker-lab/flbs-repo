@@ -1054,13 +1054,16 @@ function MT__RUN() {
 				alert('x');
 				return;
 			}
-			AMT___addUserDecision(
-				'SDScience',
-				function() { return o.a; },
-				[
-					"Id(T3)",
-				]
-			);
+			//~ AMT___addUserDecision(
+				//~ 'SDScience',
+				//~ function() { return o.a; },
+				//~ [
+					//~ "Id(T3)",
+				//~ ]
+			//~ );
+			// First, loop through all divs to see which task
+			// this is.
+			
 			/*BEGIN ITEMS*/
 			//~ var d1 = ''.div({
 				//~ style:
