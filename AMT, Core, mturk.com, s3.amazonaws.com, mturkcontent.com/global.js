@@ -20442,7 +20442,7 @@ function AMT___returnAndAcceptButton() {
 		!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks\/[^\/]+\?assignment_id=[^\/&]+$/i.exec(document.location.href)
 		)
 		return;
-		
+		 
 	// return and accept
 	// return link and group id
 	if  (
@@ -20451,54 +20451,57 @@ function AMT___returnAndAcceptButton() {
 			
 		)
 	{	
-		var u;
-		u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
+		var u = /^(https:\/\/worker\.mturk\.com\/projects\/3QKP95RWR043MEOAGE1G8XQDJG1X55\/tasks\/)/
+			.exec(document.location.href);
+		var MT__url_returnaccept = u[1] + 'accept_random?ref=w_pl_prvw';
 		
-		var MT__url_returnaccept;
-		MT__url_returnaccept = u;
-		MT__url_returnaccept = MT__url_returnaccept.replace('<a href="', 'https://www.mturk.com');
-		MT__url_returnaccept = __js_clean_html_str(MT__url_returnaccept);
+		//~ u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
+		
+		//~ var MT__url_returnaccept;
+		//~ MT__url_returnaccept = u;
+		//~ MT__url_returnaccept = MT__url_returnaccept.replace('<a href="', 'https://www.mturk.com');
+		//~ MT__url_returnaccept = __js_clean_html_str(MT__url_returnaccept);
 		//u = '';
 		
 		//<a href="/mturk/return?requesterId=AU06FWQZTTRD1&amp;hitId=33PPUNGG39GOP2WBVVLN4CROCUZRZ4&amp;signature=w7gq5x81cqAtP4ftfXGkA7pFN%2BY%3D&amp;groupId=3XCMB0010QC1BC9LPZSYHFBV3LL3PB&amp;canAccept=&amp;externalHit=true">
-		var MT__gm_groupId;
-		MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
-		MT__gm_groupId = __js_clean_html_str(MT__gm_groupId);
-		MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId);
-		if (MT__gm_groupId)
-			MT__gm_groupId = MT__gm_groupId[1];
-		else
-			return; // Quit here!
-			//~ MT__gm_groupId = /<a href="\/mturk\/return\?groupId=([^&]+)/.exec(ih)[1];
-		console.log('HERE');
-		var d = document.createElement('input');
-		d.setAttribute('id','MT__gm_returnaccept');
-		d.setAttribute('type','button');
-		d.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:1000;');
-		d.setAttribute('value','Return and Accept');
-		document.body.appendChild(d);
+		//~ var MT__gm_groupId;
+		//~ MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
+		//~ MT__gm_groupId = __js_clean_html_str(MT__gm_groupId);
+		//~ MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId);
+		//~ if (MT__gm_groupId)
+			//~ MT__gm_groupId = MT__gm_groupId[1];
+		//~ else
+			//~ return; // Quit here!
+			
+		//~ console.log('HERE');
 		
-		var d = document.createElement('input');
-		d.setAttribute('id','MT__gm_returnaccept_non_serverSide');
-		d.setAttribute('type','button');
-		d.setAttribute('style','position:fixed;top:0px;left:40%;height:24px;margin-left:240px;z-index:1000;padding-left:0;padding-right:0;');
-		d.setAttribute('value','Non-SV');
-		document.body.appendChild(d);
+		var d1 = document.createElement('input');
+		d1.setAttribute('id','MT__gm_returnaccept');
+		d1.setAttribute('type','button');
+		d1.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:1000;');
+		d1.setAttribute('value','Return and Accept');
+		document.body.appendChild(d1);
+		
+		var d2 = document.createElement('input');
+		d2.setAttribute('id','MT__gm_returnaccept_non_serverSide');
+		d2.setAttribute('type','button');
+		d2.setAttribute('style','position:fixed;top:0px;left:40%;height:24px;margin-left:240px;z-index:1000;padding-left:0;padding-right:0;');
+		d2.setAttribute('value','Non-SV');
+		document.body.appendChild(d2);
 		
 		// local
-		document.getElementById('MT__gm_returnaccept').addEventListener('click', function() {
+		d1.addEventListener('click', function() {
 			if(AMT__Global_Vars.showPastReturnsContent) {
 				console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
-				AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
+				AMT___addQuestionAnswer(
+					"ShowPastReturns",
+					AMT__Global_Vars.showPastReturnsContent,
+					[new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
 			}
-			
-			
-			//console.log(AMT__Global_Vars);
 			this.style.backgroundColor='#9e9e9e';
 			//Record what tab we're returning on
 			recordReturn();
 
-			
 			// HOOK GOES HERE> RETURN & ACCEPT + showNextTab, nextTab
 			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
 			//
@@ -20507,12 +20510,10 @@ function AMT___returnAndAcceptButton() {
 			}
 			// END HOOK nextTab()
 			
-
 			if(AMT__Global_Vars.scriptVars['R&A ShiftFarLeft']  != '0') {
 				new AMT___core_factory().shiftFarLeft();
 			}
 			
-		
 			if(AMT__Global_Vars['R&A ShowNextTab'] != '0') {
 				showNextTab({isTopWindow: true});
 				//showNextTab({isTopWindow: false});
@@ -20522,7 +20523,7 @@ function AMT___returnAndAcceptButton() {
 				setTimeout(function() {
 					GM_xmlhttpRequest({
 						method: 'GET',
-						url: MT__url_returnaccept, // url to return this HIT
+						url: u, // url to return this HIT
 						onload: function (response) {
 							
 							// get new
