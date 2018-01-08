@@ -20425,156 +20425,186 @@ function AMT___ReturnAndAcceptKeyPress(event) {
  * 		New URL: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/accept_random?ref=w_pl_prvw
  * 		Must be at URL:  https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/
  * 						 38Z7YZ2SB3NUK5K2JFE8SFD9NL2IQU?assignment_id=3R0T90IZ1TXEGX1IEBJCCI6ZRYXGCV
+ * 		Note: New z-index must be > 1000 and at least 10000.
+ * 
+ * Consider:
+ * 		On return, if status!=200, is there any reason
+ * 		why this would be useful to consider?
+ * 
  * 
  */
 function AMT___returnAndAcceptButton() {
+	console.log('llllllllllllllllllllllll');
+	//~ console.log();
+	//~ return; // testing
 	
-	// OLD R&A STRATEGY
-	// is this page continue or preview, then return
-	if  (
-		/^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href) ||
-		/^https?:\/\/(www\.)mturk.com\/mturk\/preview\?/i.exec(document.location.href)
-		)
-		return;
-
 	// Assuming one layout for URL.
 	if  (
 		!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks\/[^\/]+\?assignment_id=[^\/&]+$/i.exec(document.location.href)
 		)
 		return;
-		 
-	// return and accept
-	// return link and group id
-	if  (
-			/<a href="\/mturk\/return\?/.exec(ih) &&
-			ih.indexOf('<input type="hidden" name="groupId" value="">') == -1 // Must have a group id
-			
-		)
-	{	
-		var u = /^(https:\/\/worker\.mturk\.com\/projects\/3QKP95RWR043MEOAGE1G8XQDJG1X55\/tasks\/)/
-			.exec(document.location.href);
-		var MT__url_returnaccept = u[1] + 'accept_random?ref=w_pl_prvw';
+	
+	// OLD R&A STRATEGY
+	// is this page continue or preview, then return
+	//~ if  (
+		//~ /^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href) ||
+		//~ /^https?:\/\/(www\.)mturk.com\/mturk\/preview\?/i.exec(document.location.href)
+		//~ )
+		//~ return;
+	//~ // return and accept
+	//~ // return link and group id
+	//~ if  (
+			//~ /<a href="\/mturk\/return\?/.exec(ih) &&
+			//~ ih.indexOf('<input type="hidden" name="groupId" value="">') == -1 // Must have a group id
+		//~ )
+	//~ {
 		
-		//~ u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
-		
-		//~ var MT__url_returnaccept;
-		//~ MT__url_returnaccept = u;
-		//~ MT__url_returnaccept = MT__url_returnaccept.replace('<a href="', 'https://www.mturk.com');
-		//~ MT__url_returnaccept = __js_clean_html_str(MT__url_returnaccept);
-		//u = '';
-		
-		//<a href="/mturk/return?requesterId=AU06FWQZTTRD1&amp;hitId=33PPUNGG39GOP2WBVVLN4CROCUZRZ4&amp;signature=w7gq5x81cqAtP4ftfXGkA7pFN%2BY%3D&amp;groupId=3XCMB0010QC1BC9LPZSYHFBV3LL3PB&amp;canAccept=&amp;externalHit=true">
-		//~ var MT__gm_groupId;
-		//~ MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
-		//~ MT__gm_groupId = __js_clean_html_str(MT__gm_groupId);
-		//~ MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId);
-		//~ if (MT__gm_groupId)
-			//~ MT__gm_groupId = MT__gm_groupId[1];
-		//~ else
-			//~ return; // Quit here!
-			
-		//~ console.log('HERE');
-		
-		var d1 = document.createElement('input');
-		d1.setAttribute('id','MT__gm_returnaccept');
-		d1.setAttribute('type','button');
-		d1.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:1000;');
-		d1.setAttribute('value','Return and Accept');
-		document.body.appendChild(d1);
-		
-		var d2 = document.createElement('input');
-		d2.setAttribute('id','MT__gm_returnaccept_non_serverSide');
-		d2.setAttribute('type','button');
-		d2.setAttribute('style','position:fixed;top:0px;left:40%;height:24px;margin-left:240px;z-index:1000;padding-left:0;padding-right:0;');
-		d2.setAttribute('value','Non-SV');
-		document.body.appendChild(d2);
-		
-		// local
-		d1.addEventListener('click', function() {
-			if(AMT__Global_Vars.showPastReturnsContent) {
-				console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
-				AMT___addQuestionAnswer(
-					"ShowPastReturns",
-					AMT__Global_Vars.showPastReturnsContent,
-					[new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
-			}
-			this.style.backgroundColor='#9e9e9e';
-			//Record what tab we're returning on
-			recordReturn();
-
-			// HOOK GOES HERE> RETURN & ACCEPT + showNextTab, nextTab
-			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
-			//
-			if (AMT__Global_Vars.core.return_accept_run_nextTab) {
-				new AMT___core_factory().nextTab();
-			}
-			// END HOOK nextTab()
-			
-			if(AMT__Global_Vars.scriptVars['R&A ShiftFarLeft']  != '0') {
-				new AMT___core_factory().shiftFarLeft();
-			}
-			
-			if(AMT__Global_Vars['R&A ShowNextTab'] != '0') {
-				showNextTab({isTopWindow: true});
-				//showNextTab({isTopWindow: false});
-			}
-			
-			function MT__RETURN_AND_ACCEPT(time_to_submit) {
-				setTimeout(function() {
-					GM_xmlhttpRequest({
-						method: 'GET',
-						url: u, // url to return this HIT
-						onload: function (response) {
-							
-							// get new
-							//
-							//
-							window.location = 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
-						}
-					});
-				}, time_to_submit);
-			}
-			
-			// First doSubmit
-			doSubmit(false, false, MT__RETURN_AND_ACCEPT); // false,false,noSubmit
-		}, false);
-		
-		// serverSide
-		document.getElementById('MT__gm_returnaccept_non_serverSide').addEventListener('click', function() {
-			this.style.backgroundColor='#9e9e9e';
-			
-			
-			if(AMT__Global_Vars.showPastReturnsContent) {
-				//console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
-				//AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
-			}
-			
-			//Record what tab we're returning on
-			//For income recording purposes
-			recordReturn();
-			
-
-			
-			
-			function MT__RETURN_AND_ACCEPT_serverSide(time_to_submit) {
-				setTimeout(function() {
-					GM_xmlhttpRequest({
-						method: 'GET',
-						url: MT__url_returnaccept, // url to return this HIT
-						onload: function (response) {
-							// get new
-							window.location = 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
-							
-							// XXADD AGAIN TO DOSUBMIT!
-						}
-					});
-				}, time_to_submit);
-			}
-			
-			// First doSubmit
-			doSubmit__serverSide(false, false, MT__RETURN_AND_ACCEPT_serverSide); // false,false,noSubmit
-		}, false);
+	var u = /^(https:\/\/worker\.mturk\.com\/projects\/3QKP95RWR043MEOAGE1G8XQDJG1X55\/tasks\/)/
+		.exec(document.location.href);
+	var MT__newtask_url = u[1] + 'accept_random?ref=w_pl_prvw';
+	var MT__return_form = document.getElementsByTagName('form')[0];
+	if (MT__return_form.action.indexOf('ref=w_wp_rtrn_top') == -1) {
+		alert('Return and Except - Error: Return button form has changed!');
+		// QUIT TO DEBUG!
+		return;
+	} else {
+		MT__return_form_url = MT__return_form.action;
+		//~ alert(MT__return_form_url);
+		console.log('return url:'+MT__return_form_url);
+		// TEST!
+		// https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/37ZQELHEQ0JVDRX1O2KJGEPLZJ1NMU?assignment_id=3V0Z7YWSIZLK0CZB6DTS060N2MHV2Z&ref=w_wp_rtrn_top
 	}
+	
+	//~ u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
+	
+	//~ var MT__url_returnaccept;
+	//~ MT__url_returnaccept = u;
+	//~ MT__url_returnaccept = MT__url_returnaccept.replace('<a href="', 'https://www.mturk.com');
+	//~ MT__url_returnaccept = __js_clean_html_str(MT__url_returnaccept);
+	//u = '';
+	
+	//<a href="/mturk/return?requesterId=AU06FWQZTTRD1&amp;hitId=33PPUNGG39GOP2WBVVLN4CROCUZRZ4&amp;signature=w7gq5x81cqAtP4ftfXGkA7pFN%2BY%3D&amp;groupId=3XCMB0010QC1BC9LPZSYHFBV3LL3PB&amp;canAccept=&amp;externalHit=true">
+	//~ var MT__gm_groupId;
+	//~ MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
+	//~ MT__gm_groupId = __js_clean_html_str(MT__gm_groupId);
+	//~ MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId);
+	//~ if (MT__gm_groupId)
+		//~ MT__gm_groupId = MT__gm_groupId[1];
+	//~ else
+		//~ return; // Quit here!
+		
+	//~ console.log('HERE');
+	
+	var d1 = document.createElement('input');
+	d1.setAttribute('id','MT__gm_returnaccept');
+	d1.setAttribute('type','button');
+	d1.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:10000;');
+	d1.setAttribute('value','Return and Accept');
+	document.body.appendChild(d1);
+	
+	var d2 = document.createElement('input');
+	d2.setAttribute('id','MT__gm_returnaccept_non_serverSide');
+	d2.setAttribute('type','button');
+	d2.setAttribute('style','position:fixed;top:0px;left:40%;height:24px;margin-left:240px;z-index:10000;padding-left:0;padding-right:0;');
+	d2.setAttribute('value','Non-SV');
+	document.body.appendChild(d2);
+	
+	// local
+	d1.addEventListener('click', function() {
+		if(AMT__Global_Vars.showPastReturnsContent) {
+			console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
+			AMT___addQuestionAnswer(
+				"ShowPastReturns",
+				AMT__Global_Vars.showPastReturnsContent,
+				[new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
+		}
+		this.style.backgroundColor='#9e9e9e';
+		//Record what tab we're returning on
+		recordReturn();
+
+		// HOOK GOES HERE> RETURN & ACCEPT + showNextTab, nextTab
+		// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
+		//
+		if (AMT__Global_Vars.core.return_accept_run_nextTab) {
+			new AMT___core_factory().nextTab();
+		}
+		// END HOOK nextTab()
+		
+		if(AMT__Global_Vars.scriptVars['R&A ShiftFarLeft']  != '0') {
+			new AMT___core_factory().shiftFarLeft();
+		}
+		
+		if(AMT__Global_Vars['R&A ShowNextTab'] != '0') {
+			showNextTab({isTopWindow: true});
+			//showNextTab({isTopWindow: false});
+		}
+		
+		function MT__RETURN_AND_ACCEPT(time_to_submit) {
+			setTimeout(function() {
+				//~ MT__return_form.submit();
+				
+				// OLD VERSION
+				GM_xmlhttpRequest({
+					method: 'POST',
+					url: MT__return_form_url, // url to return this HIT
+					data: '',
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function (response) {
+						// get new
+						//
+						//~ window.location = MT__newtask_url;
+						
+						// OLD VERSION
+							// window.location = 
+							// 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
+					}
+				});
+			}, time_to_submit);
+		}
+		
+		// First doSubmit
+		doSubmit(false, false, MT__RETURN_AND_ACCEPT); // false,false,noSubmit
+	}, false);
+	
+	// serverSide
+	document.getElementById('MT__gm_returnaccept_non_serverSide').addEventListener('click', function() {
+		this.style.backgroundColor='#9e9e9e';
+		if(AMT__Global_Vars.showPastReturnsContent) {
+			//console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
+			//AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
+		}
+		
+		//Record what tab we're returning on
+		//For income recording purposes
+		recordReturn();
+		
+		function MT__RETURN_AND_ACCEPT_serverSide(time_to_submit) {
+			setTimeout(function() {
+				MT__return_form.submit();
+				
+				// OLD VERSION
+				//~ GM_xmlhttpRequest({
+					//~ method: 'GET',
+					//~ url: MT__return_form_url, // url to return this HIT
+					//~ onload: function (response) {
+						//~ // get new
+						//~ //
+						//~ window.location = MT__newtask_url;
+						
+						//~ // OLD VERSION
+							//~ // window.location =
+							//~ // 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
+					//~ }
+				//~ });
+			}, time_to_submit);
+		}
+		
+		// First doSubmit
+		doSubmit__serverSide(false, false, MT__RETURN_AND_ACCEPT_serverSide); // false,false,noSubmit
+	}, false);
+	
 }
 /*
  * END FUNCTION AMT___returnAndAcceptButton
