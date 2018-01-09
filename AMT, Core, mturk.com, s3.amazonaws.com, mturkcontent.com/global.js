@@ -16764,7 +16764,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	var o = {
 		local_URL_init: '',
 		local_URL_complete: '',
-		obj_vars: null
+		obj_vars: null,
+		duckDuckGoSecondStage: null,
 	}
 	
 	var local_URL;
@@ -16858,25 +16859,28 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// GET REQUEST
 	else
 	{
-		var encodedURI = encodeURIComponent(this.obj_vars.url);
-		
-		var header_array = (this.obj_vars.hasOwnProperty('headers_array')) ?
-			'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
+		generateLocalURL();
+	}
+	
+	// GenerateURL
+	function generateLocalURL() {
+		var encodedURI = encodeURIComponent(o.obj_vars.url);
+		var header_array = (o.obj_vars.hasOwnProperty('headers_array')) ?
+			'&get_header_array=' + encodeURIComponent( JSON.stringify(o.obj_vars.headers_array) ) :
 			'';
-		var catch_success = (this.obj_vars.hasOwnProperty('catch_success')) ?
-			'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
+		var catch_success = (o.obj_vars.hasOwnProperty('catch_success')) ?
+			'&catch_success=' + encodeURIComponent( o.obj_vars.catch_success ) :
 			'';
-		
-		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
+		if (o.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
 			o.local_URL_init =
 				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-				'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
+				'&catch_include_array='+encodeURIComponent( JSON.stringify(o.obj_vars.catch_include_array) )+
 				header_array+
 				catch_success;
 		} else {
 			o.local_URL_init =
 				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-				'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
+				'&catch_include='+encodeURIComponent(o.obj_vars.catch_include) + 
 				header_array+
 				catch_success;
 		}
@@ -16884,7 +16888,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		o.local_URL_complete = '/mturk/.scripts/google/get-page.php?v='
 			+ encodedURI;
 	}
-	
 	
 	// function array_startPage_results
 	// 
@@ -17006,6 +17009,28 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	}
 	this.array_yahoo_results = array_yahoo_results;
 	
+	// duckDuckGoId
+	// Scrapes out id for next request.
+	function duckDuckGoId(rs) {
+		var x = /vqd='(\d+)'/.exec(rs);
+		if (x) {
+			// From
+			// https://duckduckgo.com/?q=site%3Ahomeadvisor.com+J+%26+W+Heating+%26+Air+Cond&ia=web
+			// To 
+			// https://duckduckgo.com/d.js?q=site%3Ahomeadvisor.com%20J%20%26%20W%20Heating%20%26%20Air%20Cond&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us&vqd=16257625418438011941123358502275599272&yhs=1&sp=1
+			var y = /q=([^&]+)/.exec(o.obj_vars.url)[1];
+			o.obj_vars.url = 'https://duckduckgo.com/d.js'+
+				'?q='+y[1]+
+				'&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us'+
+				'&vqd='+x[1]+'&yhs=1&sp=1';
+			//~ return x[1];
+			return true;
+		} else {
+			alert('Dashboard err: DuckDuckGo id missing!');
+			return null;
+		}
+	}
+	
 	// function proxy_init
 	// INITIALIZE AMT___POPUP___PROXY_REDACTED_ BEFORE!
 	//~ this.proxy_init = function() {
@@ -17056,8 +17081,21 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					}
 					// duckDuckGo
 					else if(o.obj_vars.hasOwnProperty('duckDuckGo_array')) {
-						rs = array_duckDuckGo_results(rs);
-						return;
+						// First stage.
+						if (o.duckDuckGoSecondStage == null) {
+							o.duckDuckGoSecondStage = true;
+							var id = duckDuckGoId(rs);
+							if (id == null) return false;
+							else {
+								// Load second page, then quit.
+								generateLocalURL(); // Regenerate local url
+								proxy_init();
+								return;
+							}
+						} else {
+						// Second stage.
+							rs = array_duckDuckGo_results(rs);
+						}
 					}
 					// ...
 					if (o.obj_vars.return_init_object) {
