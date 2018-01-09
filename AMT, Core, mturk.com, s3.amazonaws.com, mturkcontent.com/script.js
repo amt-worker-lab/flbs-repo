@@ -138220,9 +138220,124 @@ qatar,80
 	 * ET
 	 * taylor l grisham
 	 * Fritz&Hammer Crowdsourcing
-	 * 
+	 * Jennifer Goldberger
 	 * 
 	 */
+	// Jennifer Goldberger
+	// xhr task
+	// Utilizes dashboard.onclick_success()
+	s = '<p>Click the link below to review the Website. Find the HomeAdvisor account associated with the website\'s company and the following information:</p>\n\n<ul>\n	<li>The HomeAdvisor URL</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			// Elements
+			//~ var td = document.getElementsByTagName('td');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				comp: a[2].innerText.trim(),	// comp
+				field2: a[1].innerText.trim().replace(/^https?:\/\/(www\.|)/i,''),	// url
+				//~ field3: td[7].innerText.trim().string_to_mixed_case(),
+				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
+				boldArray: [],
+				//~ boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('glassdoorURL'),
+					document.getElementById('glassdoorReviews'),
+					document.getElementById('glassdoorRatings'),
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array().concat(
+				o.field2.clean_string_to_array()
+			);
+			//~ o.boldArray2= o.field2.clean_string_to_array().concat(
+				//~ o.field3.clean_string_to_array()
+				//~ );
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			console.log(o);
+			//~ AMT___addUserDecision(
+				//~ 'taylorgrisham,2017', function() {
+					//~ return o.comp;
+				//~ }, ['Id(web_url)']
+			//~ )
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				search: {
+					str_add_to_searches_hidden: ' site:homeadvisor.com', //
+				},
+				searches:[ // comp, comp+location, comp+industry
+					o.comp,
+					o.comp +' '+o.field2,
+					o.spaced +' company',
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (!/\/title\/[^\/]+\/$/.exec(obj.url)) {
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					
+					//~ // NOTE: 
+					//~ // https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
+					//~ var id = /^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(this.value);
+					//~ if (!id || !id.length) return;
+					
+					//this.style.backgroundColor = 'Orange';
+					prof(this);
+					// Hide this P!
+					var d = this.parentNode;
+					d.result.body.style.display = 'none';
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Fritz&Hammer Crowdsourcing
 	// Find the website for a company
 	var s = '<p>As a convenience, we have provided a <a>Google web search</a> link. This will bring you to a list of search results, which you can click through to find the online presence for that company. If these results are not helpful, please perform your own search, perhaps adding terms to distinguish companies from other possible results. For example, if the company name is simply <em>Lemonade</em>, the initial search may include results for the beverage. You can make the term more precise by adding "company" or other terms to the search.</p>';
