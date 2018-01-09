@@ -138295,7 +138295,7 @@ qatar,80
 				],
 				search_results: {
 					//~ use_domain_only: true,
-					//~ use_full_urls: true,
+					use_full_urls: true,
 					bold: {
 						black: o.boldArray,
 						//~ blue: o.boldArray2,
@@ -138316,23 +138316,91 @@ qatar,80
 					//~ },
 				},
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					// url
+					o.q[0].value = this.full_url;
 					
+					// Scrape.
+					scrape_ha(this);
 					//~ // NOTE: 
 					//~ // https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
 					//~ var id = /^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(this.value);
 					//~ if (!id || !id.length) return;
 					
 					//this.style.backgroundColor = 'Orange';
-					prof(this);
-					// Hide this P!
-					var d = this.parentNode;
-					d.result.body.style.display = 'none';
+					//~ prof(this);
+					//~ // Hide this P!
+					//~ var d = this.parentNode;
+					//~ d.result.body.style.display = 'none';
 				},
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
 				//~ AmtRecordAndSubmit: true,
 				AutoReturnAcceptIfZero: true,
+			});
+		}
+		function scrape_ha(el) {
+			// el PROVIDES:// button.click // this.value, this.full_url,
+			// this.parent_p
+			
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: el.full_url,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						//~ d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						//~ d1.appendChild('!200'.div());
+						return;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var contdiv = dom.getElementById('sp-profile-main');
+					contdiv = contdiv.getElementsByClassName('col phone-twelvecol tabletls-fourcol stars-section');
+					if (contdiv.length != 2) {
+						console.log(contdiv);
+						alert('len');
+						return;
+					}
+					contdiv = contdiv[0];
+					// col phone-twelvecol tabletls-fourcol stars-section
+					var c = /^(\d+\.\d+)\s+\|\s+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
+					console.log(contdiv.innerText);
+					if (c) {
+						o.q[1].value = c[2]; // #reviews
+						o.q[2].value = c[1]; // rating
+					}
+					//~ var spans = contdiv.getElementsByTagName('span');
+					//~ for (var i=0; i<spans.length; i++) {
+						//~ console.log(spans[i].itemprop);
+						//~ console.log(spans[i].getAttribute('itemprop'));
+						//~ if (spans[i].getAttribute('itemprop') == 'ratingValue') {
+							//~ // rating
+							//~ o.q[2].value = spans[i].innerText.trim();
+						//~ } else if (spans[i].getAttribute('itemprop') == 'reviewCount') {
+							//~ // reviews
+							//~ o.q[1].value = spans[i].innerText.trim();
+						//~ }
+					//~ }
+					// Sbm
+					if (/^https?:\/\/(www\.|)homeadvisor\.com\//.exec(o.q[0].value) &&
+						/^\d\.\d+$/.exec(o.q[1].value) &&
+						/^\d+$/.exec(o.q[2].value)
+					) {
+						doSubmit();
+					}
+					
+					
+				}
 			});
 		}
 		new run().f();
