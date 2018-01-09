@@ -138297,9 +138297,13 @@ qatar,80
 			// Scrape the domain beforehand to try to determine a location
 			// for this company.
 			// Then display output as well.
-			estimate_location();
+			// Args: URL, callback
+			new AMT___geographic_functions().estimate_location({
+				url: a[1].innerText.trim(),
+				callback: db,
+			});
 			
-			function db() {
+			function db(best_state_name) {
 				// create_dashboard_find_url
 				AMT___items_factory.prototype.create_dashboard_find_url({
 					search: {
@@ -138308,8 +138312,8 @@ qatar,80
 					},
 					searches:[ // comp, comp+location, comp+industry
 						o.comp,
-						o.comp +' '+o.field2,
-						o.spaced +' company',
+						o.comp+' '+o.field2+(best_state_name!=null ? ' '+best_state_name : ''),
+						o.spaced+' '+(best_state_name!=null ? best_state_name : 'company'),
 					],
 					search_results: {
 						//~ use_domain_only: true,

@@ -5915,7 +5915,7 @@ AMT___gen_functions.prototype.levensht = function(a, b) {
  */
 function AMT___geographic_functions(obj_vars) {
 }
-/*
+/**
  * 
  * www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM
  * 
@@ -5923,7 +5923,7 @@ function AMT___geographic_functions(obj_vars) {
  * 				.easting
  * 				.northing
  * 				.zone
- * @returns		{.lat, .lng}
+ * @return		{.lat, .lng}
  */
 AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options) {
 	
@@ -6057,6 +6057,90 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options
 		//~ MakeDigraph();
 		//~ document.getElementById("UTMDgBox2").value = Digraph;
 	}//End UTM to Geog
+}
+
+/**
+ * AMT___geographic_functions.estimate_location(options)
+ * Scrapes a URL and returns the best estimate of location.
+ * 
+ * @param	options.url			URL to scrape.
+ * @param	options.callback	Function to call on success.
+ * 
+ * @return	Calls back callback function with param of full state name
+ * 			or null if no best estimate.
+ * 
+ */
+AMT___geographic_functions.prototype.estimate_location = function(options) {
+	var options__ = options;
+	new AMT___requests_factory().xhr_with_disk_cache({
+		URL: options.url,
+		check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+			var rs = options.response.responseText;
+			if (options.response.status != 200) {
+				return false;
+			}
+			//
+			return true;
+		},
+		success_callback: function(options) {
+			var rs = options.response.responseText;
+			if (options.response.status != 200) {
+				options__.callback(null);
+				return null; // Nothing?
+			}
+			// Remove periods. This may be useful to match D.C.
+			// with DC.
+			rs = rs.replace(/\./g, '');
+			// MT___states ==>	e.g. "AL": "Alabama",
+			//					e.g. "DC": "District Of Columbia",
+			var best_state = null;
+			var state_counts = {}; // To fill.
+			var num_best = 0;
+			var x;
+			for (var abbr in MT___states) {
+				var full = MT___states[abbr];
+				if (!state_counts.hasOwnProperty(abbr)) {
+					// Initialize count to 0.
+					state_counts[abbr] = 0;
+				}
+				// Note:
+				//		For abbr, it MUST to match case.
+				//		That is, "NE" is a match but "Ne" is not a match.
+				//		But also note that full state name is NOT case
+				//		sensitive!
+				// Note:
+				//		Value of abbr = #matches / 10. That is, 1/10.
+				//		Value of full state name = #matches * 10. That is, 10x.
+				//		Thus, full state name is 100x better than
+				//		abbreviated state name. This is because something
+				//		like "NE" could also be found in Street Addresses, etc.
+				//		E.g., 100 instances of NE on a page are worth
+				//		ONE instance of Nebraska on the page.
+				if (x = rs.match(new RegExp(abbr, 'g'))) {
+					state_counts[abbr] += x.length / 10;
+				}
+				if (x = rs.match(new RegExp(full, 'gi'))) {
+					state_counts[abbr] += x.length * 10;
+					// Add double for washington dc
+					if (abbr == 'WA') {
+						state_counts['DC'] += x.length * 10;
+					}
+				}
+			}
+			// Rather than keeping a running best match,
+			// find the best match after making all searches.
+			// This is because some states may be altered
+			// after being searched (i.e. DC is added to when WA is found).
+			for (var abbr in MT___states) {
+			if (state_counts[abbr] > num_best) {
+					num_best = state_counts[abbr];
+					best_state = full;
+				}
+			console.log('state counts:');
+			console.log(state_counts);
+			options__.callback(best_state);
+		}
+	});
 }
 
 /**
