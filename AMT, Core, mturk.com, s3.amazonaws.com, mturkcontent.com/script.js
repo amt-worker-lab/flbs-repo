@@ -138327,15 +138327,18 @@ qatar,80
 							//~ url = '@' + url;
 							//~ return url;
 						//~ },
-						//~ url_ignore_test: function(obj) {
-							//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
-							//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
-							//~ console.log(obj);
-							//~ if (!/\/title\/[^\/]+\/$/.exec(obj.url)) {
-								//~ return true;
-							//~ }
-							//~ return false;
-						//~ },
+						url_ignore_test: function(obj) {
+							// return true:  skip URL
+							// return false: keep URL
+							console.log(obj);
+							if (/^https?:\/\/(www\.|)homeadvisor\.com\/rated\.[^\/]+(\/$|$)/i.exec(obj.url)) {
+								// keep this
+								return false;
+							} else {
+								// else, ignore all others.
+								return true;
+							}
+						},
 					},
 					onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
 						// url
@@ -138384,33 +138387,50 @@ qatar,80
 					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					// Typical main section
-					var contdiv = dom.getElementsByClassName('col phone-twelvecol tabletls-fourcol stars-section');
-					// Secondary type of main section
-					var contdiv2= dom.getElementsByClassName('company-headline-information');
-					if (contdiv && contdiv.length) {
+					try {
+						var x = dom.getElementById('profile');
+						var contdiv = x.getElementsByClassName('col phone-twelvecol tabletls-fourcol stars-section');
 						contdiv = contdiv[0];
 						var c = /^(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
 						if (c) {
 							o.q[1].value = c[2]; // #reviews
 							o.q[2].value = c[1]; // rating
 						}
-					} else if (contdiv2 && contdiv2.length) {
-						contdiv2 = contdiv2[0];
-						var c = /(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv2.innerText.trim());
-						if (c) {
-							o.q[1].value = c[2]; // #reviews
-							o.q[2].value = c[1]; // rating
+					} catch(e) {
+						try {
+							var contdiv2 = dom.getElementsByClassName('company-headline-information');
+							contdiv2 = contdiv2[0];
+							var c = /(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv2.innerText.trim());
+							if (c) {
+								o.q[1].value = c[2]; // #reviews
+								o.q[2].value = c[1]; // rating
+							}
+						} catch(e) {
+							
 						}
 					}
 					
 					if (o.q[1].value == '' && o.q[2].value == '' &&
 						rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
-						// No ratings yet.
+						// No ratings yet?
 						o.q[1].value = 0; // #reviews
 						o.q[2].value = 0; // rating
+						
+						// Is this valid profile?
+						// Or is it something else?
+						
+						// Valid
+						if (rs.indexOf('Write a Review') != -1 && rs.indexOf('References Available') != -1 && rs.indexOf('HomeAdvisor allows Service Professionals to post information about themselves and their business on their profile. HomeAdvisor does not review or verify the information or representations set forth in those profiles, as they are self-reported by the Service Professional.') != -1) {
+							// Go
+						}
+						// Not valid.
+						else {
+							// What is this page!?
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
 					} else {
-						// ??
-						document.body.style.backgroundColor = 'orange';
+						
 					}
 					
 					//~ // col phone-twelvecol tabletls-fourcol stars-section
