@@ -138287,6 +138287,7 @@ qatar,80
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
 					str_add_to_searches_hidden: ' site:homeadvisor.com', //
+					use_duckduckgo_search_engine: true,
 				},
 				searches:[ // comp, comp+location, comp+industry
 					o.comp,
@@ -138360,7 +138361,9 @@ qatar,80
 						return;
 					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// Typical main section
 					var contdiv = dom.getElementsByClassName('col phone-twelvecol tabletls-fourcol stars-section');
+					// Secondary type of main section
 					var contdiv2= dom.getElementsByClassName('company-headline-information');
 					if (contdiv && contdiv.length) {
 						contdiv = contdiv[0];
@@ -138368,27 +138371,13 @@ qatar,80
 						if (c) {
 							o.q[1].value = c[2]; // #reviews
 							o.q[2].value = c[1]; // rating
-						} else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
-							// No ratings yet.
-							o.q[1].value = 0; // #reviews
-							o.q[2].value = 0; // rating
-						} else {
-							// ??
-							document.body.style.backgroundColor = 'blue';
 						}
 					} else if (contdiv2) {
-						contdiv = contdiv[0];
-						var c = /(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
+						contdiv2 = contdiv2[0];
+						var c = /(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv2.innerText.trim());
 						if (c) {
 							o.q[1].value = c[2]; // #reviews
 							o.q[2].value = c[1]; // rating
-						} else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
-							// No ratings yet.
-							o.q[1].value = 0; // #reviews
-							o.q[2].value = 0; // rating
-						} else {
-							// ??
-							document.body.style.backgroundColor = 'blue';
 						}
 					}
 					

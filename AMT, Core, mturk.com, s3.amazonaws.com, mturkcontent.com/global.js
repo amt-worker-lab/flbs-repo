@@ -11413,13 +11413,16 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	// Defaults
 	//
 	//
-	if (!options_object.hasOwnProperty('search')) {// search_results
+	if (!options_object.hasOwnProperty('search')) {
 		options_object.search = {}
 	}
-	if (!options_object.search.hasOwnProperty('str_add_to_searches_hidden')) {// search_results
+	if (!options_object.search.hasOwnProperty('use_duckduckgo_search_engine')) {
+		options_object.search.use_duckduckgo_search_engine = false; // Default = SP
+	}
+	if (!options_object.search.hasOwnProperty('str_add_to_searches_hidden')) {
 		options_object.search.str_add_to_searches_hidden = '';
 	}
-	if (!options_object.hasOwnProperty('search_results')) {// search_results
+	if (!options_object.hasOwnProperty('search_results')) { // search_results
 		options_object.search_results = {}
 	}
 	if (!options_object.search_results.hasOwnProperty('use_full_urls')) {// use_full_urls
@@ -11668,19 +11671,70 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			}
 		}
 		// Init
-		company_URL__SP_init();
+		// If SP
+		if (!options_object.search.use_duckduckgo_search_engine) {
+			company_URL__SP_init();
+		} else {
+			company_URL__DD_init();
+		}
 	}
 	// Init
 	//
 	company_URL__load_skips(false);
+	/**
+	 * company_URL__DD_init
+	 */
+	function company_URL__SP_init(el_div, el_inp) {
+		var req_proxy;
+		var add = options_object.search.str_add_to_searches_hidden;
+		// Single
+		if (el_inp && el_div) {
+			el_div.innerHTML = '';
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				duckDuckGo: true,
+				url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(el_inp.value + add),
+				seed: el_div,
+				callback_function: company_URL__processProxyResponseDD,
+				return_init_object: true
+			});
+			return;
+		}
+		
+		// Multi
+		d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+		// Do not search if blank!
+		//count_domains(); innerText = 'Blank!'
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			duckDuckGo: true,
+			url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3.value + add),
+			seed: d1,
+			callback_function: company_URL__processProxyResponseDD,
+			return_init_object: true
+		});
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			duckDuckGo: true,
+			url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3b.value + add),
+			seed: d1b,
+			callback_function: company_URL__processProxyResponseDD,
+			return_init_object: true
+		});
+		if (d3c.value == '') return;
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			duckDuckGo: true,
+			url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3c.value + add),
+			seed: d1c,
+			callback_function: company_URL__processProxyResponseDD,
+			return_init_object: true
+		});
+	}
 	/**
 	 * company_URL__SP_init
 	 */
 	function company_URL__SP_init(el_div, el_inp) {
 		var req_proxy;
 		var add = options_object.search.str_add_to_searches_hidden;
-		//
-		if (el_inp && el_div) { // single! (+dynamic!)
+		// Single
+		if (el_inp && el_div) {
 			el_div.innerHTML = '';
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				startPage: true,
@@ -11692,8 +11746,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			return;
 		}
 		
+		// Multi
 		d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
-		
 		// Do not search if blank!
 		//count_domains(); innerText = 'Blank!'
 		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
@@ -16725,8 +16779,9 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	if (!this.obj_vars.catch_include && !this.obj_vars.hasOwnProperty('catch_include_array')) // DEFAULT
 		this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
 	
+	// startPage == true
 	if (this.obj_vars.startPage) {
-		this.obj_vars.startPage_array = true;		
+		this.obj_vars.startPage_array = true;
 		//~ this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';		
 		this.obj_vars.catch_include_array = [
 			'We apologize for the inconvenience: to prevent possible abuse of the Startpage service',
@@ -16741,49 +16796,23 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		/*this.obj_vars.post_request = {
 			cmd: 'process_search',
 			language: 'english',
-			//~ enginecount: 1,
-			//~ pl: '',
-			//~ abp: -1,
-			//~ cdm: '',
-			//~ ff: '',
-			//~ theme: '',
-			//~ flag_ac: 0,
-			//~ cat: 'web',
-			//~ query: query//,
-			//~ enginecount: 1,
-			//~ pl: '',
 			abp: -1,
-			//~ cdm: '',
-			//~ ff: '',
-			//~ theme: '',
-			//~ flag_ac: 0,
 			cat: 'web',
 			query: query,
 			engine0:'v1all'
-			//~ x:0,
-			//~ y:0
-			//~ engine0:'v1all'
-			//~ cat=web&cmd=process_search&language=english&engine0=v1all&query=hi+im+yousdf&abp=-1&x=0&y=0
 		}*/
 		
 		this.obj_vars.headers_array = [
 			'Cookie:preferences=lang_homepageEEEs/air/eng/N1NsslEEE1N1Nfont_sizeEEEmediumN1Nrecent_results_filterEEE1N1Nlanguage_uiEEEenglishN1Ndisable_open_in_new_windowEEE1N1Ndisable_family_filterEEE1N1Nnum_of_resultsEEE10N1N'
-			//~ 'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-			//~ 'Accept-Encoding:gzip,deflate,sdch',
-			//~ 'Accept-Language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-			//~ 'Cache-Control:max-age=0',
-			//~ 'Connection:keep-alive',
-			//~ 'Content-Length:91',
-			//~ 'Content-Type:application/x-www-form-urlencoded',
-			//~ 'Host:startpage.com',
-			//~ 'Origin:https://startpage.com',
-			//~ 'Referer:https://startpage.com/',
-			//~ 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36',
-			//~ 'Expect:     ',
 		];
 		this.obj_vars.catch_success = '<!DOCTYPE HTML>';
 	}
 	
+	// duckDuckGo == true
+	if (this.obj_vars.duckDuckGo) {
+		this.obj_vars.duckDuckGo_array = true;
+		this.obj_vars.catch_success = '<!DOCTYPE html>';
+	}
 	
 	// POST REQUEST
 	if (this.obj_vars.post_request) {
@@ -16832,14 +16861,13 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		var encodedURI = encodeURIComponent(this.obj_vars.url);
 		
 		var header_array = (this.obj_vars.hasOwnProperty('headers_array')) ?
-				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
-				'';
+			'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
+			'';
 		var catch_success = (this.obj_vars.hasOwnProperty('catch_success')) ?
-				'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
-				'';
+			'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
+			'';
 		
 		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
-			
 			o.local_URL_init =
 				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
 				'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
@@ -16853,8 +16881,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				catch_success;
 		}
 		
-		o.local_URL_complete = 
-						'/mturk/.scripts/google/get-page.php?v='+encodedURI;
+		o.local_URL_complete = '/mturk/.scripts/google/get-page.php?v='
+			+ encodedURI;
 	}
 	
 	
@@ -16992,7 +17020,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					method: "GET",
 					url: o.local_URL_init,
 					onload: function(response) {
-						//var rs = response.responseText;
+						//
 					}
 				});
 			}
@@ -17018,13 +17046,18 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					} else
 						return;
 					
-					// yahoo? (yahoo_array: true)
+					// yahoo
 					if (o.obj_vars.hasOwnProperty('yahoo_array')) {
 						rs = array_yahoo_results(rs);
 					}
-					// startpage?
+					// startPage
 					else if(o.obj_vars.hasOwnProperty('startPage_array')) {
 						rs = array_startPage_results(rs);
+					}
+					// duckDuckGo
+					else if(o.obj_vars.hasOwnProperty('duckDuckGo_array')) {
+						rs = array_duckDuckGo_results(rs);
+						return;
 					}
 					// ...
 					if (o.obj_vars.return_init_object) {
