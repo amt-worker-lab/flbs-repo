@@ -20,6 +20,13 @@ function init__scrapy() {
 	/**
 	 * scrapy
 	 * 
+	 * TODO:
+	 * 		Consider:
+	 * 			"I'm feeling lucky" first result domain scrape.
+	 * 			Searches for "{ fill in the blank}" + "email".
+	 * 			Then with the first result, loads it into scrapy. =)
+	 * 			
+	 * 
 	 * Amazon Requester Inc.- EPS Marketing
 	 * garrett grohman
 	 * Rachel Scott

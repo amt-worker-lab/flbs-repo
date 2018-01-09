@@ -138294,53 +138294,60 @@ qatar,80
 				],
 				offset: 0 // offset top
 			});
-			// create_dashboard_find_url
-			AMT___items_factory.prototype.create_dashboard_find_url({
-				search: {
-					str_add_to_searches_hidden: ' site:homeadvisor.com', //
-					use_duckduckgo_search_engine: true,
-				},
-				searches:[ // comp, comp+location, comp+industry
-					o.comp,
-					o.comp +' '+o.field2,
-					o.spaced +' company',
-				],
-				search_results: {
-					//~ use_domain_only: true,
-					use_full_urls: true,
-					bold: {
-						black: o.boldArray,
-						//~ blue: o.boldArray2,
-						//~ brown: o.boldArray3,
+			// Scrape the domain beforehand to try to determine a location
+			// for this company.
+			// Then display output as well.
+			estimate_location();
+			
+			function db() {
+				// create_dashboard_find_url
+				AMT___items_factory.prototype.create_dashboard_find_url({
+					search: {
+						str_add_to_searches_hidden: ' site:homeadvisor.com', //
+						use_duckduckgo_search_engine: true,
 					},
-					//~ url_modifier_callback: function(url) { // Add @ symbol
-						//~ url = '@' + url;
-						//~ return url;
-					//~ },
-					//~ url_ignore_test: function(obj) {
-						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
-						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
-						//~ console.log(obj);
-						//~ if (!/\/title\/[^\/]+\/$/.exec(obj.url)) {
-							//~ return true;
-						//~ }
-						//~ return false;
-					//~ },
-				},
-				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
-					// url
-					o.q[0].value = this.full_url;
-					// Goto next tab
-					new AMT___core_factory().nextTab();
-					// Scrape.
-					scrape_ha(this, o);
-				},
-				out_element: o.q[0],
-				parent: d1,
-				offsetTop: 0,
-				//~ AmtRecordAndSubmit: true,
-				AutoReturnAcceptIfZero: true,
-			});
+					searches:[ // comp, comp+location, comp+industry
+						o.comp,
+						o.comp +' '+o.field2,
+						o.spaced +' company',
+					],
+					search_results: {
+						//~ use_domain_only: true,
+						use_full_urls: true,
+						bold: {
+							black: o.boldArray,
+							//~ blue: o.boldArray2,
+							//~ brown: o.boldArray3,
+						},
+						//~ url_modifier_callback: function(url) { // Add @ symbol
+							//~ url = '@' + url;
+							//~ return url;
+						//~ },
+						//~ url_ignore_test: function(obj) {
+							//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+							//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+							//~ console.log(obj);
+							//~ if (!/\/title\/[^\/]+\/$/.exec(obj.url)) {
+								//~ return true;
+							//~ }
+							//~ return false;
+						//~ },
+					},
+					onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						// url
+						o.q[0].value = this.full_url;
+						// Goto next tab
+						new AMT___core_factory().nextTab();
+						// Scrape.
+						scrape_ha(this, o);
+					},
+					out_element: o.q[0],
+					parent: d1,
+					offsetTop: 0,
+					//~ AmtRecordAndSubmit: true,
+					AutoReturnAcceptIfZero: true,
+				});
+			}
 		}
 		function scrape_ha(el, o) {
 			// Odd. Scope of o is lost here.
