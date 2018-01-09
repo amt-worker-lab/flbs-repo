@@ -138318,19 +138318,10 @@ qatar,80
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
 					// url
 					o.q[0].value = this.full_url;
-					
+					// Goto next tab
+					new AMT___core_factory().nextTab();
 					// Scrape.
-					scrape_ha(this);
-					//~ // NOTE: 
-					//~ // https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
-					//~ var id = /^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(this.value);
-					//~ if (!id || !id.length) return;
-					
-					//this.style.backgroundColor = 'Orange';
-					//~ prof(this);
-					//~ // Hide this P!
-					//~ var d = this.parentNode;
-					//~ d.result.body.style.display = 'none';
+					scrape_ha(this, o);
 				},
 				out_element: o.q[0],
 				parent: d1,
@@ -138339,7 +138330,12 @@ qatar,80
 				AutoReturnAcceptIfZero: true,
 			});
 		}
-		function scrape_ha(el) {
+		function scrape_ha(el, o) {
+			// Odd. Scope of o is lost here.
+			// It is probably because of an override of o
+			// in one of these functions, i.e. xhr_with_disk_cache or
+			// create_dashboard_find_url.
+			
 			// el PROVIDES:// button.click // this.value, this.full_url,
 			// this.parent_p
 			
@@ -138373,11 +138369,20 @@ qatar,80
 					}
 					contdiv = contdiv[0];
 					// col phone-twelvecol tabletls-fourcol stars-section
-					var c = /^(\d+\.\d+)\s+\|\s+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
+					var c = /^(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
 					console.log(contdiv.innerText);
+					console.log(o);
+					console.log(o.q);
 					if (c) {
 						o.q[1].value = c[2]; // #reviews
 						o.q[2].value = c[1]; // rating
+					} else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
+						// No ratings yet.
+						o.q[1].value = 0; // #reviews
+						o.q[2].value = 0; // rating
+					} else {
+						// ??
+						d1.style.backgroundColor = 'orange';
 					}
 					//~ var spans = contdiv.getElementsByTagName('span');
 					//~ for (var i=0; i<spans.length; i++) {
@@ -138393,8 +138398,8 @@ qatar,80
 					//~ }
 					// Sbm
 					if (/^https?:\/\/(www\.|)homeadvisor\.com\//.exec(o.q[0].value) &&
-						/^\d\.\d+$/.exec(o.q[1].value) &&
-						/^\d+$/.exec(o.q[2].value)
+						/^\d+$/.exec(o.q[1].value) &&
+						/^(\d\.\d+|0)$/.exec(o.q[2].value)
 					) {
 						doSubmit();
 					}
