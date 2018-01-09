@@ -138394,7 +138394,7 @@ qatar,80
 							o.q[1].value = c[2]; // #reviews
 							o.q[2].value = c[1]; // rating
 						}
-					} else if (contdiv2) {
+					} else if (contdiv2 && contdiv2.length) {
 						contdiv2 = contdiv2[0];
 						var c = /(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv2.innerText.trim());
 						if (c) {
