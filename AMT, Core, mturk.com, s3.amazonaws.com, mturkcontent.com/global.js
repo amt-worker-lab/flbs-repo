@@ -6093,9 +6093,7 @@ AMT___geographic_functions.prototype.estimate_location = function(options) {
 			rs = rs.replace(/\./g, '');
 			// MT___states ==>	e.g. "AL": "Alabama",
 			//					e.g. "DC": "District Of Columbia",
-			var best_state = null;
 			var state_counts = {}; // To fill.
-			var num_best = 0;
 			var x;
 			for (var abbr in MT___states) {
 				var full = MT___states[abbr];
@@ -6131,11 +6129,15 @@ AMT___geographic_functions.prototype.estimate_location = function(options) {
 			// find the best match after making all searches.
 			// This is because some states may be altered
 			// after being searched (i.e. DC is added to when WA is found).
+			var num_best = 0;
+			var best_state = null;
 			for (var abbr in MT___states) {
-			if (state_counts[abbr] > num_best) {
+				if (state_counts[abbr] > num_best) {
 					num_best = state_counts[abbr];
+					var full = MT___states[abbr];
 					best_state = full;
 				}
+			}
 			console.log('state counts:');
 			console.log(state_counts);
 			options__.callback(best_state);
