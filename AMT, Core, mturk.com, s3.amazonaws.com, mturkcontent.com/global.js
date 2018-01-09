@@ -11684,7 +11684,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	/**
 	 * company_URL__DD_init
 	 */
-	function company_URL__SP_init(el_div, el_inp) {
+	function company_URL__DD_init(el_div, el_inp) {
 		var req_proxy;
 		var add = options_object.search.str_add_to_searches_hidden;
 		// Single
@@ -11694,7 +11694,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				duckDuckGo: true,
 				url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(el_inp.value + add),
 				seed: el_div,
-				callback_function: company_URL__processProxyResponseDD,
+				callback_function: company_URL__processProxyResponse,
 				return_init_object: true
 			});
 			return;
@@ -11708,14 +11708,14 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			duckDuckGo: true,
 			url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3.value + add),
 			seed: d1,
-			callback_function: company_URL__processProxyResponseDD,
+			callback_function: company_URL__processProxyResponse,
 			return_init_object: true
 		});
 		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 			duckDuckGo: true,
 			url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3b.value + add),
 			seed: d1b,
-			callback_function: company_URL__processProxyResponseDD,
+			callback_function: company_URL__processProxyResponse,
 			return_init_object: true
 		});
 		if (d3c.value == '') return;
@@ -11723,7 +11723,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			duckDuckGo: true,
 			url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3c.value + add),
 			seed: d1c,
-			callback_function: company_URL__processProxyResponseDD,
+			callback_function: company_URL__processProxyResponse,
 			return_init_object: true
 		});
 	}
@@ -16777,8 +16777,16 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	//~ if (!this.obj_vars.url) // URL REQUIRED
 		//~ return;
 		
-	if (!this.obj_vars.catch_include && !this.obj_vars.hasOwnProperty('catch_include_array')) // DEFAULT
-		this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
+	if (!this.obj_vars.catch_include &&
+		!this.obj_vars.hasOwnProperty('catch_include_array')) {
+		if (this.obj_vars.hasOwnProperty('yahoo')) {
+			// DEFAULT yahoo
+			this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
+		} else {
+			this.obj_vars.catch_include = '';
+			this.obj_vars.catch_include_array = [];
+		}
+	}
 	
 	// startPage == true
 	if (this.obj_vars.startPage) {
@@ -16921,6 +16929,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			
 			var ol = rslts[0];
 			
+			// 1 = url
+			// 2 = body
 			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3[^>]*><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
 			var content;
 			var arr = [];
@@ -16939,19 +16949,17 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				
 				// URLs ?
 				if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+					// Works?
 					// http at start, to - -
 					content[2] = content[2].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
 					// www at start, to - -
 					content[2] = content[2].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-					//~ //XX http at end
-					//~ content[2] = content[2].replace(/https?:\/\/[^ ]+$/g, '');
 				}
 				
 				arr.push([
 					content[1], content[2]
 				]);
 			}
-			//~ console.log(arr);
 			return arr;
 		}
 	}
@@ -17009,6 +17017,45 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	}
 	this.array_yahoo_results = array_yahoo_results;
 	
+	/**
+	 * function array_duckDuckGo_results
+	 * Parse results and add to results_array as arr[ href, body ].
+	 * 
+	 * @param remove_urls_from_body
+	 * arr.push([
+			content[1], content[2]
+		]);
+	 */
+	function array_duckDuckGo_results(rs) {
+		var r = /if\s+\(nrn\)\s+nrn\('d',([^\r\n]+)/.exec(rs);
+		var arr = [];
+		if (!r) {
+			// No results?
+			return arr;
+		}
+		else {
+			// Remove );
+			r = r[1].trim().replace(/\);$/, '');
+			r = JSON.parse(r);
+			// Each element is a search result.
+			for (var i in r) {
+				var x = r[i];
+				if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+					// Works?
+					// http at start, to - -
+					x.a = x.a.replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+					// www at start, to - -
+					x.a = x.a.replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+				}
+				arr.push([ // Make body Title + br + Body.
+					x.c, x.t + '<br>' + x.a
+				]);
+			}
+			return arr;
+		}
+	}
+	this.array_duckDuckGo_results = array_duckDuckGo_results;
+	
 	// duckDuckGoId
 	// Scrapes out id for next request.
 	function duckDuckGoId(rs) {
@@ -17018,12 +17065,14 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			// https://duckduckgo.com/?q=site%3Ahomeadvisor.com+J+%26+W+Heating+%26+Air+Cond&ia=web
 			// To 
 			// https://duckduckgo.com/d.js?q=site%3Ahomeadvisor.com%20J%20%26%20W%20Heating%20%26%20Air%20Cond&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us&vqd=16257625418438011941123358502275599272&yhs=1&sp=1
-			var y = /q=([^&]+)/.exec(o.obj_vars.url)[1];
+			var y = /q=([^&]+)/.exec(o.obj_vars.url);
 			o.obj_vars.url = 'https://duckduckgo.com/d.js'+
 				'?q='+y[1]+
 				'&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us'+
 				'&vqd='+x[1]+'&yhs=1&sp=1';
-			//~ return x[1];
+			console.log('===========================');	
+			console.log(o.obj_vars.url);
+			// https://duckduckgo.com/d.js?q=%&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us&vqd=36057200348787870467786428861113700502&yhs=1&sp=1
 			return true;
 		} else {
 			alert('Dashboard err: DuckDuckGo id missing!');
@@ -17084,16 +17133,17 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 						// First stage.
 						if (o.duckDuckGoSecondStage == null) {
 							o.duckDuckGoSecondStage = true;
-							var id = duckDuckGoId(rs);
-							if (id == null) return false;
+							if (duckDuckGoId(rs) == null) return false;
 							else {
 								// Load second page, then quit.
 								generateLocalURL(); // Regenerate local url
 								proxy_init();
+								proxy_waitComplete(
+									o.obj_vars.callback_function
+								);
 								return;
 							}
-						} else {
-						// Second stage.
+						} else { // Second stage.
 							rs = array_duckDuckGo_results(rs);
 						}
 					}
@@ -17119,6 +17169,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// callback_function
 	// AND auto-run the sub-functions here rather
 	// than in script.js.
+	// Note: If there is no callback function, then the proxy_init
+	// 		is never called.
 	if (this.obj_vars.hasOwnProperty('callback_function')) {
 		proxy_init();
 		proxy_waitComplete(
