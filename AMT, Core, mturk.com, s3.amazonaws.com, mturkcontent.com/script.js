@@ -138360,30 +138360,64 @@ qatar,80
 						return;
 					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					var contdiv = dom.getElementById('sp-profile-main');
-					contdiv = contdiv.getElementsByClassName('col phone-twelvecol tabletls-fourcol stars-section');
-					if (contdiv.length != 2) {
-						console.log(contdiv);
-						alert('len');
-						return;
+					var contdiv = dom.getElementsByClassName('col phone-twelvecol tabletls-fourcol stars-section');
+					var contdiv2= dom.getElementsByClassName('company-headline-information');
+					if (contdiv && contdiv.length) {
+						contdiv = contdiv[0];
+						var c = /^(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
+						if (c) {
+							o.q[1].value = c[2]; // #reviews
+							o.q[2].value = c[1]; // rating
+						} else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
+							// No ratings yet.
+							o.q[1].value = 0; // #reviews
+							o.q[2].value = 0; // rating
+						} else {
+							// ??
+							document.body.style.backgroundColor = 'blue';
+						}
+					} else if (contdiv2) {
+						contdiv = contdiv[0];
+						var c = /(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
+						if (c) {
+							o.q[1].value = c[2]; // #reviews
+							o.q[2].value = c[1]; // rating
+						} else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
+							// No ratings yet.
+							o.q[1].value = 0; // #reviews
+							o.q[2].value = 0; // rating
+						} else {
+							// ??
+							document.body.style.backgroundColor = 'blue';
+						}
 					}
-					contdiv = contdiv[0];
-					// col phone-twelvecol tabletls-fourcol stars-section
-					var c = /^(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
-					console.log(contdiv.innerText);
-					console.log(o);
-					console.log(o.q);
-					if (c) {
-						o.q[1].value = c[2]; // #reviews
-						o.q[2].value = c[1]; // rating
-					} else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
+					
+					if (o.q[1].value == '' && o.q[2].value == '' &&
+						rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
 						// No ratings yet.
 						o.q[1].value = 0; // #reviews
 						o.q[2].value = 0; // rating
 					} else {
 						// ??
-						d1.style.backgroundColor = 'orange';
+						document.body.style.backgroundColor = 'orange';
 					}
+					
+					//~ // col phone-twelvecol tabletls-fourcol stars-section
+					//~ var c = /^(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
+					//~ console.log(contdiv.innerText);
+					//~ console.log(o);
+					//~ console.log(o.q);
+					//~ if (c) {
+						//~ o.q[1].value = c[2]; // #reviews
+						//~ o.q[2].value = c[1]; // rating
+					//~ } else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
+						//~ // No ratings yet.
+						//~ o.q[1].value = 0; // #reviews
+						//~ o.q[2].value = 0; // rating
+					//~ } else {
+						//~ // ??
+						//~ d1.style.backgroundColor = 'orange';
+					//~ }
 					//~ var spans = contdiv.getElementsByTagName('span');
 					//~ for (var i=0; i<spans.length; i++) {
 						//~ console.log(spans[i].itemprop);
