@@ -11863,6 +11863,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		else if(out_div == d1c)
 			col = 2;
 		for (var i in rs) {
+			//~ console.log(rs[i]);
 			var x = rs[i][0];
 			var link = rs[i][0];
 			var full = rs[i][1];
@@ -11924,8 +11925,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//
 			//
 			options_object.search_results.callback_link_and_body(link, full);
-			//~ // ..
-			//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 			// Return domain only (no WWW, no HTTP)
 			if (options_object.search_results.use_domain_only)
 				x = x.replace(/^https?:\/\/(www[\d]*\.|)/i, ''); // Remove http, https, www., www[0,1,...,n].,
@@ -11943,6 +11942,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//
 			//
 			div_result.url = x;
+			//~ console.log(x);
 			// DOMAIN
 			var domain = x.replace(/^https?:\/\//, ''); // beginning
 			// SKIP BUTTON CREATE
@@ -17038,8 +17038,18 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			r = r[1].trim().replace(/\);$/, '');
 			r = JSON.parse(r);
 			// Each element is a search result.
+			// There are typically 30 results.
+			// Then there is one final element of the array
+			// which is an object with only one key, the value of this
+			// key being a url reference to the search api.
 			for (var i in r) {
 				var x = r[i];
+				if (!x.hasOwnProperty('c') ||
+					!x.hasOwnProperty('t') ||
+					!x.hasOwnProperty('a')
+					) { // Skip the final element, a non-result.
+						continue;
+				}
 				if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
 					// Works?
 					// http at start, to - -
@@ -17058,6 +17068,12 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	
 	// duckDuckGoId
 	// Scrapes out id for next request.
+	// TODO:
+	//		Question:
+	//			Is the ID permanent? Or is it regenerated after a
+	//			certain period of time? Does it become invalid?
+	//			If so, it may be necessary to not cache part of the DDG
+	//			process.
 	function duckDuckGoId(rs) {
 		var x = /vqd='(\d+)'/.exec(rs);
 		if (x) {
@@ -17133,6 +17149,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 						// First stage.
 						if (o.duckDuckGoSecondStage == null) {
 							o.duckDuckGoSecondStage = true;
+							// update catch include string
+							o.obj_vars.catch_success = 'DDG'; // probably good enough
 							if (duckDuckGoId(rs) == null) return false;
 							else {
 								// Load second page, then quit.

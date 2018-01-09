@@ -138121,6 +138121,17 @@ qatar,80
 	 * AKA // Brittany Graham
 	 * create_dashboard_find_url
 	 * 
+	 * Future feature addition(s):
+	 * 		Add option to scrape a domain beforehand:
+	 *	 		If a domain is
+	 *			provided, in order to find the company's STATE.
+	 * 			Scrape page would scrape maybe 1-5 pages. Then go through
+	 * 			MT___states looking for and counting matches. Then the
+	 * 			state with the most matches on the pages would be considered
+	 * 			the company's location. Then this location may be passed
+	 * 			into the search in order to provide more accurate results.
+	 * 		
+	 * 
 	 * Three panels
 	 * 
 	 * Fiber Data Co.
