@@ -16907,7 +16907,11 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// duckDuckGo == true
 	if (this.obj_vars.duckDuckGo) {
 		this.obj_vars.duckDuckGo_array = true;
-		//~ this.obj_vars.catch_success = '<!DOCTYPE html>'; // ANY???
+		//~ this.obj_vars.catch_success = '<!DOCTYPE html>';
+			// NOTE THREE VARIANTS:
+			// 		<!DOCTYPE html> (most common)
+			//		<!DOCTYPE html PUBLIC "-//W3... (uncommon, results in HTML search page results rather than JSON???)
+			//		var q=window.location.href.indexOf... (uncommon, but means there are 0 results) 
 		this.obj_vars.catch_include_array = [
 			'We\'ve detected that you have connected over Tor. There appears to be an issue with the _PROXY_REDACTED_ Node you are currently using. Please recreate your _PROXY_REDACTED_ or restart your _PROXY_REDACTED_ in order to fix this.',
 		]
