@@ -49,7 +49,9 @@ chrome.extension.sendMessage({
 		//alert('herio');
 		//console.log(sessionStorage);
 		
-		if(sessionStorage['tab' + tabId + 'Details'] && sessionStorage['tab' + tabId + 'Details'] != '') {
+		var tabDetails = sessionStorage['tab' + tabId + 'Details'];
+		
+		if(tabDetails && tabDetails != '') {
 			
 			//Did we leave the site?
 			if(!loc.match(locReg) == -1 || (lastUrl.indexOf('mturk.com') == -1)) {
