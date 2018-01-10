@@ -153,7 +153,7 @@ function mturk_load()
 {	
 	
 	
-	if (window.top == window.self && /^https?:\/\/(www\.|)mturk\.com\//.exec(document.location.href)) {
+	if (window.top == window.self && /^https?:\/\/(www\.|worker\.|)mturk\.com\//.exec(document.location.href)) {
 		
 		// Only run on these pages!
 		/**
@@ -167,6 +167,16 @@ function mturk_load()
 			/<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
 			)
 		{
+			/* Accepted
+			 * https://worker.mturk.com/projects/3OR6S1RAB4IP61ORZHNCSF28OELGAW/tasks/3M93N4X8HKN2S01A6IKWZ936ZQEJSL?assignment_id=38F5OAUN5NCM5FKMKHO2HPNGF3A7HL
+			 * 
+			 * 
+			 * Preview
+			 * https://worker.mturk.com/projects/3OR6S1RAB4IP61ORZHNCSF28OELGAW/tasks/
+			 * https://worker.mturk.com/projects/3OR6S1RAB4IP61ORZHNCSF28OELGAW/tasks?ref=w_wp_skp_top
+			 * /
+			
+			
 			AMT__Global_Vars.isTopWindow = true;
 			AMT__Global_Vars.isPreview = true;
 			return;

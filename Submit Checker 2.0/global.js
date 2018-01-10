@@ -57,9 +57,6 @@ var AMT__Global_Vars =
 	groupId: '',
 	hitId: '',
 	isQProduct: false,
-	core: {
-		return_accept_run_nextTab: false
-	},
 	hitDetails: {},
 	isRefresh: false
 }
@@ -222,7 +219,7 @@ AMT__Global_Vars.initializeTabId = function() {
 		alert('error in initializeHitRecordDetails');
 	if(AMT__Global_Vars.isPreview)
 		alert('error in initializeHitRecordDetails');	
-	if (document.body.innerHTML.indexOf('<span id="alertboxHeader">\n    \n        There are currently no HITs assigned to you.\n    \n    </span>') != -1) {
+	if (document.body.innerHTML.indexOf('<span id="alertboxHeader">There are currently no HITs assigned to you.</span>') != -1) {
 		return;
 	}
 
@@ -232,6 +229,8 @@ AMT__Global_Vars.initializeTabId = function() {
 	  }, function(response) {
 		AMT__Global_Vars.computerId = response.computerId;
 		AMT__Global_Vars.userName = response.userName;
+		
+		console.log('trace in initializeHitRecordDetails');
 		
 		var rew = document.getElementsByClassName("reward")[1].innerText.trim();
 		rew = (rew.replace(/\$/, "")) * 1; //0.03
@@ -339,10 +338,11 @@ document.addEventListener("keydown", function(event) {
 
 //Assumption: we are the top window
 function AMT___initializeReturnRecording() {
-	var allAs = document.getElementsByTagName('a');
-	for(var i = 0; i < allAs.length; i++) {
-		if(allAs[i].href.indexOf('/mturk/return') != -1) {
-			allAs[i].onclick = function() {
+	
+	var buttons = document.querySelectorAll('form button[type="submit"][name="button"]')
+	for(var i = 0; i < buttons.length; i++) {
+		if(buttons[i].innerText == "Return") {
+			buttons[i].onclick = function() {
 				recordReturn();
 			}
 		}
@@ -407,25 +407,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		var v = event.data;
 		
 		switch(v.action) {
-			case 'return_button__showNextTab':
-				//~ console.log('Will showNextTab on return');
-				
-				var b = getReturnButton();
-				//console.log(b);
-				if (b) {
-					b.addEventListener('mouseup', function() {
-						//~ console.log('mouseup on return button');
-						
-						showNextTab();
-					}, false);
-					
-					//~ b.addEventListener('mouseup', v.callback_function, false);
-				}
-				break;
-			// AMT___returnAndAcceptButton()
-			case 'return_and_accept_button__nextTab':
-				AMT__Global_Vars.core.return_accept_run_nextTab = true;
-				break;
 			case 'refreshThePage' :
 				sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'refresh';
 				window.location.href = window.location.href;
@@ -433,26 +414,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		}
 	}
 	
-	/**
-	 * var getReturnButton
-	 */
-	var getReturnButton = function() {
-		
-		/*<a href="/mturk/return?groupId=394TEHR260Y0TAZL4P5WWJA29V265A&amp;requesterId=A1DPN0ELREA8BX&amp;hitId=337RC3OW06B1S9HP5GO231XZJR8LVQ&amp;signature=69fiOfplYPuNDOqYG2nIVj%2F1V0Y%3D&amp;externalHit=true&amp;canAccept="><img src="/images/return_hit.gif" alt="" border="0" width="82" height="22"></a>*/
-		
-		var a = document.getElementsByTagName('a');
-		for (var i in a) {
-			if (i == 'length') break;
-			//~ console.log(a[i].href);
-			if (a[i].href && a[i].href.indexOf('https://www.mturk.com/mturk/return?') == 0) {
-				return a[i];
-				break;
-			}
-		}
-		
-		// here?
-		return false;
-	}
 }
 
 
