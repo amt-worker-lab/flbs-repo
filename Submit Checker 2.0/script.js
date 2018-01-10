@@ -154,6 +154,8 @@ function mturk_load()
 	
 	
 	if (window.top == window.self && /^https?:\/\/(www\.|worker\.|)mturk\.com\//.exec(document.location.href)) {
+		AMT__Global_Vars.isTopWindow = true;
+
 		
 		// Only run on these pages!
 		/**
@@ -162,27 +164,24 @@ function mturk_load()
 		 */
 		var l = document.location.href;
 		if  (
-			!/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
-			
+			//OLD
+			//!/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
+		
+			!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks)/i.exec(l) //
+
+			//OLD
+			//TODO: Determine what page occurs when we arrive at the condition below
+			/*
+			 ||
+			  
 			/<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
+			*/
 			)
 		{
-			/* Accepted
-			 * https://worker.mturk.com/projects/3OR6S1RAB4IP61ORZHNCSF28OELGAW/tasks/3M93N4X8HKN2S01A6IKWZ936ZQEJSL?assignment_id=38F5OAUN5NCM5FKMKHO2HPNGF3A7HL
-			 * 
-			 * 
-			 * Preview
-			 * https://worker.mturk.com/projects/3OR6S1RAB4IP61ORZHNCSF28OELGAW/tasks/
-			 * https://worker.mturk.com/projects/3OR6S1RAB4IP61ORZHNCSF28OELGAW/tasks?ref=w_wp_skp_top
-			 * /
-			
-			
-			AMT__Global_Vars.isTopWindow = true;
 			AMT__Global_Vars.isPreview = true;
 			return;
 		}
 		
-		AMT__Global_Vars.isTopWindow = true;
 
 		var s,t,u,w;
 		s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
