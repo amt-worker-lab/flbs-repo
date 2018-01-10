@@ -1,5 +1,8 @@
 
-var locReg = /(https?:\/\/[w]*.mturk.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
+//OLD
+//var locReg = /(https?:\/\/[w]*.mturk.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
+
+var locReg = /(https?:\/\/[w]*\.?mturk\.com|https?:\/\/worker\.mturk\.com|https?:\/\/s\d\.amazonaws\.com|https?:\/\/[w]*\.?mturkcontent\.com\/dynamic\/hit)/i;
 if(document.location.href.match(locReg)) {
 
 
@@ -348,6 +351,8 @@ function AMT___initializeReturnRecording() {
 
 //Send info about this HIT to the database
 window.onbeforeunload = function() {
+	
+	
 	//console.log(AMT__Global_Vars);
 	if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview) {
 		if(sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] == 'refresh') {
