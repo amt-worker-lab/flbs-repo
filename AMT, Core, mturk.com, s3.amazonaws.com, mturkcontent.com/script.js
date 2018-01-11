@@ -138232,8 +138232,106 @@ qatar,80
 	 * taylor l grisham
 	 * Fritz&Hammer Crowdsourcing
 	 * Jennifer Goldberger
+	 * KoMarketing Associates
 	 * 
 	 */
+	// KoMarketing Associates
+	// Use Google to search and find a home page for a specific company name
+	var s = 'Click "Google Search"</p>\n	</li>\n	<li>\n	<p>Enter the web address of the first non-paid result you find in Google search results.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			// Elements
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim().string_to_mixed_case(),	// comp
+				//~ field2: h5.innerText.trim().string_to_mixed_case(),	// industry
+				//~ field3: td[7].innerText.trim().string_to_mixed_case()+', '+
+						//~ td[8].innerText.trim().string_to_mixed_case(),	// city+country
+				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
+				boldArray: [],
+				//~ boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('da')
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			//~ o.boldArray2= o.field2.clean_string_to_array().concat(
+				//~ o.field3.clean_string_to_array()
+				//~ );
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			console.log(o);
+			//~ AMT___addUserDecision(
+				//~ 'taylorgrisham,2017', function() {
+					//~ return o.comp;
+				//~ }, ['Id(web_url)']
+			//~ )
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ search: {
+					//~ str_add_to_searches_hidden: ' site:imdb.com/title/', //
+				//~ },
+				searches:[ // comp, comp+location, comp+industry
+					o.comp,
+					'"' + o.comp +'"',
+					o.spaced +' company',
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (!/\/title\/[^\/]+\/$/.exec(obj.url)) {
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Jennifer Goldberger
 	// xhr task
 	// Utilizes dashboard.onclick_success()
@@ -138432,35 +138530,6 @@ qatar,80
 					} else {
 						
 					}
-					
-					//~ // col phone-twelvecol tabletls-fourcol stars-section
-					//~ var c = /^(\d+\.\d+)[\r\n\t\s]+\|[\r\n\t\s]+(\d+) Verified Ratings/.exec(contdiv.innerText.trim());
-					//~ console.log(contdiv.innerText);
-					//~ console.log(o);
-					//~ console.log(o.q);
-					//~ if (c) {
-						//~ o.q[1].value = c[2]; // #reviews
-						//~ o.q[2].value = c[1]; // rating
-					//~ } else if (rs.indexOf('Verified Ratings') == -1 && rs.indexOf('stars-section') == -1) {
-						//~ // No ratings yet.
-						//~ o.q[1].value = 0; // #reviews
-						//~ o.q[2].value = 0; // rating
-					//~ } else {
-						//~ // ??
-						//~ d1.style.backgroundColor = 'orange';
-					//~ }
-					//~ var spans = contdiv.getElementsByTagName('span');
-					//~ for (var i=0; i<spans.length; i++) {
-						//~ console.log(spans[i].itemprop);
-						//~ console.log(spans[i].getAttribute('itemprop'));
-						//~ if (spans[i].getAttribute('itemprop') == 'ratingValue') {
-							//~ // rating
-							//~ o.q[2].value = spans[i].innerText.trim();
-						//~ } else if (spans[i].getAttribute('itemprop') == 'reviewCount') {
-							//~ // reviews
-							//~ o.q[1].value = spans[i].innerText.trim();
-						//~ }
-					//~ }
 					// Sbm
 					if (/^https?:\/\/(www\.|)homeadvisor\.com\//.exec(o.q[0].value) &&
 						/^\d+$/.exec(o.q[1].value) &&
