@@ -1971,16 +1971,21 @@ String.prototype.getNameSynonyms = function() {
  *  .innerHTML	Default=false;
  *  .ce			Default='div'; createElement. E.g. 'br'.
  *  .a			AppendTo: Default=false; An HTML element. If provided then it appends DIV to this item.
+ * 	.class
  */
 String.prototype.div = function(opts) {
 	var s = this.toString();
 	var div;
 	if (opts && opts.hasOwnProperty('ce')) {
 		div = document.createElement(opts.ce); // e.g. createElement('br');
-	} else 
+	} else {
 		div = document.createElement('div');
+	}
 	if (opts && opts.hasOwnProperty('style')) {
 		div.setAttribute('style', opts.style);
+	}
+	if (opts && opts.hasOwnProperty('className')) {
+		div.setAttribute('className', opts.className);
 	}
 	if (opts && opts.hasOwnProperty('innerHTML') && opts.innerHTML) {
 		div.innerHTML = s;

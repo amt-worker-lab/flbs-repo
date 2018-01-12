@@ -46,15 +46,18 @@ function MT__RUN() {
 			
 			// Change height of previewer
 			GM_addStyle('.select2-container--default .select2-results>.select2-results__options {max-height:600px!important;}');
+			GM_addStyle('.exe:hover {background-color:orange;}');
 			// Elements
 			var h1 = document.getElementsByTagName('h1');
 			var o = {
 				u: h1[0].innerText.trim(),
 				ulwr: h1[0].innerText.trim().replace(/[\s+'"]/g, '').toLowerCase(),
+				uarr: null,
 				q: [
 					document.getElementsByName('Q2Answer')[0]
 				],
 			}
+			o.uarr = o.u.clean_string_to_array();
 			console.log(o);
 			AMT___addUserDecision(
 				'J.Curtis,2018', function() {
@@ -67,6 +70,13 @@ function MT__RUN() {
 				'position:absolute;top:0px;left:60%;width:39%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:10%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			d2.value = 'correct';
+			d2.type = 'button';
+			document.body.appendChild(d2);
 			/* END ITEMS */
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -78,6 +88,15 @@ function MT__RUN() {
 				],
 				offset: 0 // offset top
 			});
+			//d2
+			d2.onclick = function() {
+				document.getElementById('alternative').value = 'correct';
+				doSubmit();
+			}
+			//sbm
+			document.getElementById('submitButton').onclick = function() {
+				new AMT___requests_factory().nextTab();
+			}
 			// Load stores.
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -109,36 +128,42 @@ function MT__RUN() {
 						if (short == o.ulwr) {
 							// auto;
 							o.q[0].value = rs[i].id;
-							if (o.q[0].value == rs[i].text) {
+							if (o.q[0].options[o.q[0].selectedIndex].innerText == rs[i].text) {
 								//sbm
-								break;
+								doSubmit();
+								return;
 							}
 						}
-						var lv = gf.levensht(short, o.ulwr);
-						scoresArr[rs[i].text] = lv;
+						var lv1 = MT__bold(rs[i].text, o.uarr, {percent_matched:true});
+						var lv2 = gf.levensht(short, o.ulwr);
+						scoresArr1[rs[i].text] = lv1.pm.percent_matched;
+						scoresArr2[rs[i].text] = lv2;
 						allScores[rs[i].text] = {
 							text: rs[i].text,
+							bold_string: lv1.bold_string,
 							id: rs[i].id,
-							score: lv
+							score: Math.round(lv1.pm.percent_matched*1000)/10
 						}
 					}
 					keysSorted = Object.keys(scoresArr)
-						.sort(function(a,b){return scoresArr[a]-scoresArr[b]});
+						.sort(function(a,b){return scoresArr[b]-scoresArr[a]});
 					console.log(keysSorted);
 					for (var key in keysSorted) {
 						var value = keysSorted[key];
 						var entry = allScores[value];
 						// buttons
-						var b = (MT__bold(entry.text) + '(' + entry.id + ') ('+entry.score+')').div({'innerHTML':true});
+						var b = (entry.bold_string + '(' + entry.id + ') ('+entry.score+'%)')
+							.div({
+								'innerHTML':true,
+								'style':'border-bottom:1px solid teal;cursor:pointer;font-size:1.2em;',
+								'className':'exe'});
 						d1.appendChild(b);
 						b.entry = entry;
 						b.onclick = function() {
 							this.style.backgroundColor = 'lightgreen';
-							//new AMT___requests_factory().nextTab();
 							o.q[0].value = this.entry.id;
-							if (o.q[0].value == rs[i].text) {
-								//sbm
-								break;
+							if (o.q[0].options[o.q[0].selectedIndex].innerText == this.entry.text) {
+								doSubmit();
 							}
 						}
 					}
