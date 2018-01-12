@@ -201205,6 +201205,10 @@ function top_window(okay_to_run) {
 	// Todo: Change button titles "su:" "lu:" etc. to be onmouseover:highlight mini-button.
 	// Done: Remove TM, R symbols.
 	// Todo: Make text in search results "annotate-able".
+	// 
+	// new submit:
+	//		Hm...
+	// 		action="/projects/3IXQCB6XI8K83NCT57XLLJQ9PLUITJ/tasks/3PUOXASB573A9YTDOZ6FKW55LDIZ9M/submit_qap"
 	s = '<p class="overview title">Find associated product information for a given barcode value.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -201226,18 +201230,22 @@ function top_window(okay_to_run) {
 			GM_addStyle('#theTime {position:absolute;top:0px;left:100px;background-color:white;}'); // ...
 			GM_addStyle('.exe-result-btn:hover {text-decoration:underline;}'); // ...
 			GM_addStyle('.reporting-and-why {z-index:-1000 !important;}'); // Jan.11 2016, Fixes AMT overlay glitch
+			
 			// Script vars
 			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
 			// MOVE "THETIME"
 			// OLD METHOD......
 			//~ document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
+			
 			// Item not found text
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
+			
 			// UPC
 			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
 			if (!upc) return;
 			console.log('UPC:'+upc);
 			//upc ='630509346776'
+			
 			// Remove the barcode from page
 			// so that when doing CTRL+F it
 			// won't be a false positive.
@@ -201248,8 +201256,10 @@ function top_window(okay_to_run) {
 				h3[1].parentNode.removeChild(h3[1]);
 			else if (h3[2] && h3[2].innerText.indexOf('Product barcode value: ') != -1)
 				h3[2].parentNode.removeChild(h3[2]);
+			
 			// copyInp
 			AMT__Global_Vars.copyInp = upc;
+			
 			// x1 - x4
 			var x1, x2, x3, x4;
 			x1 = document.getElementById('Answer_1_FreeText');
@@ -201261,6 +201271,7 @@ function top_window(okay_to_run) {
 				this.value = d1.output_url; //.output_url
 				x1.focus();
 			}
+			
 			// o
 			var o = {
 				select_container: document.getElementsByClassName('question-wrapper')[1],
@@ -201300,16 +201311,6 @@ function top_window(okay_to_run) {
 			//~ o.q[2].ondblclick
 			o.q[2].onclick = function() {
 				try_sbm();
-				// OLD SUBMIT METHOD.....
-				// Changed: Jan 12 2016
-				//~ if  (
-						//~ (
-						//~ x1.value.trim() == '' || x2.value.trim() == ''
-						//~ ) &&
-						//~ !o.q[3].checked
-					//~ )
-					//~ return false;	
-				//~ document.getElementsByName('/submit')[0].click();
 			}
 			/* BEGIN ITEMS */
 			// Wrapper for top
@@ -201433,7 +201434,15 @@ function top_window(okay_to_run) {
 						o.q[3].checked
 					)
 					return false;
-				doSubmit();
+				// Update Jan2018
+				// Let's use document.getElementsByTagName('form')[1]
+				// in doSubmit by changing its id to "tmp_sbm_jan2018".
+				var f = document.getElementsByTagName('form')[1];
+				if (f.id != '') {
+					return false;
+				}
+				f.id = 'tmp_sbm_jan2018'
+				doSubmit('tmp_sbm_jan2018');
 			}
 			// Onclick
 			document.getElementsByClassName('btn btn-primary')[0].onclick = function(e) {
