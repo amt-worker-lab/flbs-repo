@@ -27,6 +27,86 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// John Curtis
+	// Help fix spelling of store names
+	//
+	// 
+	var s = '<p>Below you will see a store name spelled by a human during data collection. It should resemble a store name. We have a select box with all of the store names this could/should be. Please pick the store from our selecct box that best matches what you think the person was typing even if it was perfect! we want to try and match cause this will give us an ID match. Below are some examples - if you cant figure out a match, please type in what you think they meant by this taking a best guess at what is given or if there is no match but was spelled correctly then just write "correct" in the input box.</p>';
+	if (ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');// Move content to bottom...
+			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');// Move content to bottom...
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Elements
+			var h1 = document.getElementsByTagName('h1');
+			var o = {
+				u: h1[0].innerText,
+				q: [
+					document.getElementById('field1')
+				],
+			}
+			console.log(o);
+			AMT___addUserDecision(
+				'J.Curtis,2018', function() {
+					return o.u;
+				}, ['Id(field1)']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:60%;width:39%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// Load stores.
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://raw.githubusercontent.com/gitspider/forchoi/master/company.json?_=1515714866914',
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					rs = JSON.parse(rs);
+					for (var i in rs) {
+						if (rs[i] == 'Store Name') continue; // First result.
+						
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Emily Zong
 	// Enter up to five data point from a PDF
 	//
