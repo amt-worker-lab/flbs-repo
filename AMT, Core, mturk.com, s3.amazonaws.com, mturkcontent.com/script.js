@@ -201439,6 +201439,7 @@ function top_window(okay_to_run) {
 				// in doSubmit by changing its id to "tmp_sbm_jan2018".
 				var f = document.getElementsByTagName('form')[1];
 				if (f.id != '') {
+					alert('Core script.js: Form id has changed!');
 					return false;
 				}
 				f.id = 'tmp_sbm_jan2018'
