@@ -67,24 +67,36 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;left:60%;width:39%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:50%;width:25%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:0px;left:75%;width:24%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1b);
 			var d2 = document.createElement('input');
 			d2.setAttribute('style',
-				'position:absolute;top:0px;left:0%;width:10%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:0%;width:10%;height:600px;overflow:auto;'
 			);
 			d2.value = 'correct';
 			d2.type = 'button';
 			document.body.appendChild(d2);
-			/* END ITEMS */
+			var d2b = document.createElement('input'); // case btn
+			d2b.setAttribute('style',
+				'position:absolute;top:0px;left:10%;width:10%;height:600px;overflow:auto;'
+			);
+			d2b.value = 'case';
+			d2b.type = 'button';
+			document.body.appendChild(d2b);
+						/* END ITEMS */
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1
+					d1,d1b
 				],
 				offset: 0 // offset top
 			});
@@ -93,9 +105,17 @@ function MT__RUN() {
 				document.getElementById('alternative').value = 'correct';
 				doSubmit();
 			}
+			//d2b
+			d2b.onclick = function() {
+				document.getElementById('alternative').value = o.u.string_to_mixed_case();
+				//~ doSubmit();
+			}
 			//sbm
-			document.getElementById('submitButton').onclick = function() {
-				new AMT___requests_factory().nextTab();
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return;
 			}
 			// Load stores.
 			// xhr
@@ -120,7 +140,8 @@ function MT__RUN() {
 					}
 					rs = JSON.parse(rs);
 					allScores = {};
-					scoresArr = [];
+					scoresArr1 = [];
+					scoresArr2 = [];
 					var gf = new AMT___gen_functions();
 					for (var i in rs) {
 						if (rs[i].text == 'Store Name') continue; // First result.
@@ -142,28 +163,85 @@ function MT__RUN() {
 							text: rs[i].text,
 							bold_string: lv1.bold_string,
 							id: rs[i].id,
-							score: Math.round(lv1.pm.percent_matched*1000)/10
+							score1: Math.round(lv1.pm.percent_matched*1000)/10,
+							score2: lv2
 						}
 					}
-					keysSorted = Object.keys(scoresArr)
-						.sort(function(a,b){return scoresArr[b]-scoresArr[a]});
-					console.log(keysSorted);
+					// 1
+					keysSorted = Object.keys(scoresArr1)
+						.sort(function(a,b){return scoresArr1[b]-scoresArr1[a]});
 					for (var key in keysSorted) {
 						var value = keysSorted[key];
 						var entry = allScores[value];
 						// buttons
-						var b = (entry.bold_string + '(' + entry.id + ') ('+entry.score+'%)')
+						var b = (entry.bold_string + '(' + entry.id + ') ('+entry.score1+'%)')
 							.div({
 								'innerHTML':true,
-								'style':'border-bottom:1px solid teal;cursor:pointer;font-size:1.2em;',
+								'style':'border-bottom:1px solid teal;cursor:pointer;font-size:1.3em;',
 								'className':'exe'});
 						d1.appendChild(b);
 						b.entry = entry;
+						b.selected = false;
 						b.onclick = function() {
+							this.selected = true;
 							this.style.backgroundColor = 'lightgreen';
 							o.q[0].value = this.entry.id;
 							if (o.q[0].options[o.q[0].selectedIndex].innerText == this.entry.text) {
 								doSubmit();
+							}
+						}
+						// dynamic rollover
+						b.onmouseover = 
+						b.onmousemove = 
+						function() {
+							if (this.selected == true) return;
+							this.style.backgroundColor = 'lightgreen';
+							var x = document.getElementsByClassName('exe');
+							for (i=0; i<x.length; i++) {
+								if (x[i].selected) continue;
+								if (x[i].entry.id == this.entry.id)
+									x[i].style.backgroundColor = 'lightgreen';
+								else
+									x[i].style.backgroundColor = '';
+							}
+						}
+					}
+					// 2
+					keysSorted = Object.keys(scoresArr2)
+						.sort(function(a,b){return scoresArr2[a]-scoresArr2[b]});
+					for (var key in keysSorted) {
+						var value = keysSorted[key];
+						var entry = allScores[value];
+						// buttons
+						var b = (entry.bold_string + '(' + entry.id + ') ('+entry.score2+')')
+							.div({
+								'innerHTML':true,
+								'style':'border-bottom:1px solid teal;cursor:pointer;font-size:1.4em;',
+								'className':'exe'});
+						d1b.appendChild(b);
+						b.entry = entry;
+						b.selected = false;
+						b.onclick = function() {
+							this.selected = true;
+							this.style.backgroundColor = 'lightgreen';
+							o.q[0].value = this.entry.id;
+							if (o.q[0].options[o.q[0].selectedIndex].innerText == this.entry.text) {
+								doSubmit();
+							}
+						}
+						// dynamic rollover
+						b.onmouseover = 
+						b.onmousemove = 
+						function() {
+							if (this.selected == true) return;
+							this.style.backgroundColor = 'lightgreen';
+							var x = document.getElementsByClassName('exe');
+							for (i=0; i<x.length; i++) {
+								if (x[i].selected) continue;
+								if (x[i].entry.id == this.entry.id)
+									x[i].style.backgroundColor = 'lightgreen';
+								else
+									x[i].style.backgroundColor = '';
 							}
 						}
 					}

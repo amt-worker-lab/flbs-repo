@@ -1985,7 +1985,7 @@ String.prototype.div = function(opts) {
 		div.setAttribute('style', opts.style);
 	}
 	if (opts && opts.hasOwnProperty('className')) {
-		div.setAttribute('className', opts.className);
+		div.setAttribute('class', opts.className);
 	}
 	if (opts && opts.hasOwnProperty('innerHTML') && opts.innerHTML) {
 		div.innerHTML = s;
