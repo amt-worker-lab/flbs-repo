@@ -275,7 +275,7 @@ function init__scrapy() {
 									 * }
 									 */
 									if (callback_obj.matches && callback_obj.matches.length) {
-										if (!o.try_autos) { // Only when autos.
+										if (o.try_autos) { // Only when autos.
 											var mt = callback_obj.matches;
 											var reg = new RegExp(
 												//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
