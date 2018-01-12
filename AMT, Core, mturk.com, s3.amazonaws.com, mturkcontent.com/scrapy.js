@@ -225,8 +225,8 @@ function init__scrapy() {
 					settings: [
 						//'DEPTH_LIMIT=4',
 						//'SCHEDULER_ORDER=BFO',
-						//~ 'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
-						'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
 						'CONCURRENT_ITEMS=200', //DEFAUL = 100
 						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
 						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
