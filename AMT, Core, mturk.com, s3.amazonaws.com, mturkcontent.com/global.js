@@ -5862,7 +5862,7 @@ function AMT___gen_functions(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /*
- * 
+ * Levenshtein
  */
 AMT___gen_functions.prototype.levensht = function(a, b) {
 	
