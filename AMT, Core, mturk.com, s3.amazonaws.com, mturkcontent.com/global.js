@@ -2353,6 +2353,11 @@ function AMT___core_factory() {
 }
 //Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
+// TODO:
+//		If nextTab was called as part of a Right-Click-R&A,
+//		then it must be considered whether Right-Click-R&A-nextTab is 0 or 1.
+//		If 0, then cancel nextTab if it is coming from the doSubmit()
+//		function (doSubmitNextTab)!
 AMT___core_factory.prototype.nextTab = function(options) {
 	//~ console.log(options);
 	if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
