@@ -47,7 +47,7 @@ function MT__RUN() {
 			// Other gm
 			//~ GM_addStyle('.select2-container--default .select2-results>.select2-results__options {max-height:600px!important;}');
 			//~ GM_addStyle('.exe:hover {background-color:orange;}');
-			GM_addStyle('#submitButton {width:100%}');// Move content to bottom...
+			GM_addStyle('#submitButton {width:100%;height:200px;margin-top:-160px;}');// Move content to bottom...
 			// Elements
 			var f = document.getElementsByTagName('font');
 			var o = {
@@ -59,6 +59,7 @@ function MT__RUN() {
 					document.getElementsByName('keyword')[0]
 				],
 			}
+			f[0].style.fontSize = '0.2em';
 			o.uarr = o.u.clean_string_to_array();
 			console.log(o);
 			AMT___addUserDecision(
@@ -108,6 +109,8 @@ function MT__RUN() {
 			//		Need: "in house", not "in the house",
 			//			but there are two fields. So appendToField
 			//			does not work!
+			// Feature to add:
+			//		Add: Mouseover color
 			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
 				textToAnnotate: o.u,
 				output_fields: o.q,
