@@ -18687,6 +18687,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'top:40px;'+
 			'width:99%;'+
 			'background-color:none;'+
+			'z-index:10000;'+ //Jan2018
 			'margin:0 0.5% 0 0;'
 		);
 		document.body.appendChild(tasks_obj.div_container);
