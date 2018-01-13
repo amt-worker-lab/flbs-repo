@@ -1393,6 +1393,99 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	// Jamie Opalchuk
+	// xhr task
+	// Find the content management system (CMS) for this website
+	s = '<li>Click the website address below - which will open the website in your browser.</li>\n	<li>Open a new tab in your browser and go to http://www.builtwith.com&nbsp;</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				a: a[0].innerText.trim(),
+				q: [
+					document.getElementsByName('select CMS')[0],
+				]
+			}
+			AMT___addUserDecision(
+				'Jamie Opalchuk',
+				function() { return o.a; },
+				[
+					"Name(select CMS)[0]",
+				]
+			);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:100%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 0 // offset top
+			//~ });
+			// Turn off form submit.
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				//~ return false;
+			//~ }
+			
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://builtwith.com/?q='+encodeURIComponent(o.a),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					// Sbm
+					var sbm = true;
+					// Dom
+					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//~ var div = dom.getElementsByTagName('div');
+					//~ for (var i=0;i<div.length;i++) {
+						//~ if (div[i].innerText == 'Content Management Systems') {
+						//~ }
+					//~ }
+					
+					//
+					var r = /<a href="\/\/trends\.builtwith\.com\/cms\/([^"]+)">[^<]+<\/a>/.exec(rs);
+					if (r) {
+						//r = __js_clean_html_str(r[1]); // unnecessary
+						r = r[1].toLowerCase().trim();
+						o.q[0].value = r;
+						if (o.q[0].options[o.q[0].selectedIndex].innerText == r &&
+							o.q[0].options[o.q[0].selectedIndex].value == r &&
+							o.q[0].value == r
+						) {
+							AMT___recordAndSubmit();
+						}
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// SD Science
 	// xhr task
 	// Identify the requested information in the page provided
