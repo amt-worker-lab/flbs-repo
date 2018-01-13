@@ -117,6 +117,12 @@ function MT__RUN() {
 				callback_mouseup: function(addField) {
 					// Remove any non-digit, non-word!
 					addField.value = addField.value.replace(/ *[^\d\w]* *$/, '');
+					// Remove "the"/"a" from 2nd field.
+					if (addField == o.q[1]) {
+						addField.value = addField.value.replace(/ (a|the|an) /gi, ' ');
+						// clean whitespace
+						addField.value = addField.value.replace(/\s+/, ' ');
+					}
 					//~ // Remove trailing commas (and periods!)
 					//~ addField.value = addField.value.replace(/ *[,;\.]*$/, '');
 					//~ // Remove starting commas
