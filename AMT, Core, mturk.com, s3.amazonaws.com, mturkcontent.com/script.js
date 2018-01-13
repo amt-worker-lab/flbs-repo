@@ -41,7 +41,7 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
-			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');// Move content to bottom...
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:100px !important;}');// Move content to bottom...
 			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');// Move content to bottom...
 			
 			// Other gm
@@ -69,58 +69,97 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;left:50%;width:25%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:5%;width:90%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
-			var d1b = document.createElement('div');
-			d1b.setAttribute('style',
-				'position:absolute;top:0px;left:75%;width:24%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
-			);
-			document.body.appendChild(d1b);
-			var d2 = document.createElement('input');
-			d2.setAttribute('style',
-				'position:absolute;top:0px;left:0%;width:10%;height:600px;overflow:auto;'
-			);
-			d2.value = 'correct';
-			d2.type = 'button';
-			document.body.appendChild(d2);
-			var d2b = document.createElement('input'); // case btn
-			d2b.setAttribute('style',
-				'position:absolute;top:0px;left:10%;width:10%;height:600px;overflow:auto;'
-			);
-			d2b.value = 'case';
-			d2b.type = 'button';
-			document.body.appendChild(d2b);
-						/* END ITEMS */
+			//~ var d1b = document.createElement('div');
+			//~ d1b.setAttribute('style',
+				//~ 'position:absolute;top:0px;left:75%;width:24%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			//~ );
+			//~ document.body.appendChild(d1b);
+			//~ var d2 = document.createElement('input');
+			//~ d2.setAttribute('style',
+				//~ 'position:absolute;top:0px;left:0%;width:10%;height:600px;overflow:auto;'
+			//~ );
+			//~ d2.value = 'correct';
+			//~ d2.type = 'button';
+			//~ document.body.appendChild(d2);
+			//~ var d2b = document.createElement('input'); // case btn
+			//~ d2b.setAttribute('style',
+				//~ 'position:absolute;top:0px;left:10%;width:10%;height:600px;overflow:auto;'
+			//~ );
+			//~ d2b.value = 'case';
+			//~ d2b.type = 'button';
+			//~ document.body.appendChild(d2b);
+			/* END ITEMS */
 			// innerHeight
-			new AMT___core_factory().el_innerHeight({
-				// This set the elements d1,d1b, and d1c
-				// to fill up the whole window, minus their
-				// distance from page top (top:XX pixels;).
-				elements: [
-					d1,d1b
-				],
-				offset: 0 // offset top
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 0 // offset top
+			//~ });
+			
+			// annotate
+			// Feature to add:
+			//		Need: "in house", not "in the house",
+			//			but there are two fields. So appendToField
+			//			does not work!
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: o.u,
+				output_fields: o.q,
+				callback_mouseup: function(addField) {
+					// Remove any non-digit, non-word!
+					addField.value = addField.value.replace(/ *[^\d\w]* *$/, '');
+					//~ // Remove trailing commas (and periods!)
+					//~ addField.value = addField.value.replace(/ *[,;\.]*$/, '');
+					//~ // Remove starting commas
+					//~ addField.value = addField.value.replace(/^ *[,;\.]* */, '');
+					//~ if (addField == o.q[2]) { // State. Try going full to abbreviation.
+						//~ addField.value = addField.value.state_full_to_abbr();
+					//~ }
+				},
+				//~ appendToField: true,
+				//~ appendToField_glue: ', ',
+				//~ delimeter: '',
+				focusToField: false,
+				style: 'border-radius:2px;border:1;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:2;', //background-color:#feccef;
 			});
+			d1.appendChild(buttons);
+			
+			// ondblclick, remove word from input
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [o.q[0],o.q[1]],
+				blur_element: false,
+				remove_whitespace: true,
+			});
+			
 			//d2
-			d2.onclick = function() {
-				document.getElementById('alternative').value = 'correct';
-				doSubmit();
-			}
-			//d2b
-			d2b.onclick = function() {
-				document.getElementById('alternative').value = o.u.string_to_mixed_case();
+			//~ d2.onclick = function() {
+				//~ document.getElementById('alternative').value = 'correct';
 				//~ doSubmit();
-			}
+			//~ }
+			//~ //d2b
+			//~ d2b.onclick = function() {
+				//~ document.getElementById('alternative').value = o.u.string_to_mixed_case();
+				//~ doSubmit();
+			//~ }
 			//sbm
 			document.getElementById('submitButton').onclick = function(e) {
+				o.q[0].value = o.q[0].value.trim().replace(/\s+/, ' ');
+				o.q[1].value = o.q[1].value.trim().replace(/\s+/, ' ');
 				e.stopPropagation();
 				e.preventDefault();
 				doSubmit();
 				return;
 			}
 		}
-	});
+		new run().f();
+	};
 	// John Curtis
 	// Help fix spelling of store names
 	//

@@ -2891,8 +2891,9 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 /**
  * mouseup__delete_range
  * 
- * @param element		html object
- * @param elements		array, array of html objects
+ * @param element				html object
+ * @param elements				array, array of html objects
+ * @param remove_whitespace		boolean		
  * 
  * @TODO PAGE.addEventListener. Then watch for the target, or something similar (?), and blur this element.
  * Problem: onmouseup is only registered for el.onmouseup but not for page.onmouseup.
@@ -2923,6 +2924,11 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 			var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
 			this.value = new_text.trim();	// DEFAULT IS TRIM!
 											// Add something like options_object.hasOwnProperty('DO_NOT_TRIM') to not trim.
+			if (options_object.hasOwnProperty('remove_whitespace') &&
+				options_object.remove_whitespace
+			) {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+			}
 			
 			if (options_object.hasOwnProperty('callback')) {
 				options_object.callback(options_object);
@@ -15398,9 +15404,6 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			output_fields[0].value += s;
 			output_fields[0].value = output_fields[0].value.trim();
 			
-			//~ output_fields[0].select();
-			//~ output_fields[0].focus();
-			
 			// CALLBACK
 			if (options_object.callback_mouseup) {
 				options_object.callback_mouseup(s);						// THIS SENDS BACK THE STRING ADDED
@@ -15414,8 +15417,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				found = true;
 				output_fields[i].value = s;
 				output_fields[i].focus();
-				output_fields[i].select();
-				output_fields[i].select();
+				//~ output_fields[i].select(); // TURN OFF SELECT! JAN2018
+				//~ output_fields[i].select();
 				// CALLBACK
 				if (options_object.callback_mouseup) {
 					options_object.callback_mouseup(output_fields[i]);	// THIS SENDS THE FIELD BACK
@@ -15427,7 +15430,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			var of = output_fields[ output_fields.length-1 ];
 			of.value = s;
 			of.focus();
-			of.select();
+			//~ of.select(); // TURN OFF SELECT! JAN2018
 			// CALLBACK
 			if (options_object.callback_mouseup) {
 				options_object.callback_mouseup( of );	// THIS SENDS THE FIELD BACK
