@@ -27,6 +27,100 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Marketing Research ""
+	// Categorize Products And Key Phrases
+	//
+	// 
+	var s = '<h4><span style="color:#000000;">1. Read the Product Question</span></h4>\n\n<h4><span style="color:#000000;">2. Find the full name of the product and copy/paste exactly as it appears into the Product Name box.&nbsp;</span></h4>';
+	if (ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');// Move content to bottom...
+			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');// Move content to bottom...
+			
+			// Other gm
+			//~ GM_addStyle('.select2-container--default .select2-results>.select2-results__options {max-height:600px!important;}');
+			//~ GM_addStyle('.exe:hover {background-color:orange;}');
+			GM_addStyle('#submitButton {width:100%}');// Move content to bottom...
+			// Elements
+			var f = document.getElementsByTagName('font');
+			var o = {
+				u: f[0].innerText.trim(),
+				//~ ulwr: h1[0].innerText.trim().replace(/[\s+'"]/g, '').toLowerCase(),
+				//~ uarr: null,
+				q: [
+					document.getElementsByName('product_name')[0],
+					document.getElementsByName('keyword')[0]
+				],
+			}
+			o.uarr = o.u.clean_string_to_array();
+			console.log(o);
+			AMT___addUserDecision(
+				'J.Curtis,2018', function() {
+					return o.u;
+				}, ['Name(product_name)[0]', 'Name(keyword)[0]']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:50%;width:25%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:0px;left:75%;width:24%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1b);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:10%;height:600px;overflow:auto;'
+			);
+			d2.value = 'correct';
+			d2.type = 'button';
+			document.body.appendChild(d2);
+			var d2b = document.createElement('input'); // case btn
+			d2b.setAttribute('style',
+				'position:absolute;top:0px;left:10%;width:10%;height:600px;overflow:auto;'
+			);
+			d2b.value = 'case';
+			d2b.type = 'button';
+			document.body.appendChild(d2b);
+						/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1,d1b
+				],
+				offset: 0 // offset top
+			});
+			//d2
+			d2.onclick = function() {
+				document.getElementById('alternative').value = 'correct';
+				doSubmit();
+			}
+			//d2b
+			d2b.onclick = function() {
+				document.getElementById('alternative').value = o.u.string_to_mixed_case();
+				//~ doSubmit();
+			}
+			//sbm
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return;
+			}
+		}
+	});
 	// John Curtis
 	// Help fix spelling of store names
 	//
