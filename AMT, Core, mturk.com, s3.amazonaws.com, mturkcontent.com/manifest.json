@@ -43,7 +43,8 @@
 		"tabs",
 		"contextMenus",
 		"management",
-		"clipboardWrite"
+		"clipboardWrite",
+		"webNavigation"
    ],
    "browser_action": {
 		"default_icon": {

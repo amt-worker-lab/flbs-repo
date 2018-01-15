@@ -85,7 +85,8 @@ var AMT__Global_Vars = //function()
 		// AMT__Global_Vars.core.captcha_string
 		captcha_string: 'In order to accept your next HIT, please type this word into the text box below',
 		getR_Button_NextTab: false,
-		is_running_on_local_dev: false // This is boolean for e.g. http://localhost/mturk/.dev/HITs/CHIOS%20TESTING.html
+		is_running_on_local_dev: false, // This is boolean for e.g. http://localhost/mturk/.dev/HITs/CHIOS%20TESTING.html
+		tabURL: null, // To be loaded in mturk_load(). Useful for e.g. ReloadOnNoHits.
 	},
 	
 	num_amt_tabs: null,
@@ -102,6 +103,14 @@ for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
 	AMT__Global_Vars.associativeArrayofDPSV[AMT__Global_Vars.defaultPersistantScriptVars[i].name] = AMT__Global_Vars.defaultPersistantScriptVars[i];
 }
 
+/**
+ * Record the present URL in sessionStorage.
+ */
+function setPresentURL() {
+	sessionStorage['tab' + AMT__Global_Vars.tabId + 'URL'] = document.location.href;
+}
+// Record the present URL in sessionStorage.
+setPresentURL();
 /**
  * var getReturnButton
  */
@@ -879,10 +888,6 @@ function addUtilityTab(utilityTab, globalTabOptions, utilityPanelOptions,runInPr
  * 
  **/
 
-
-
-
-
 //Record Returning
 /**
  * 
@@ -1003,18 +1008,18 @@ function showNextTab(options) {
 //This is the Constructer Function
 //Call new on this function and pass in the options to initialize the floater's variables!
 var AMT___Floater = function (options) {
-		AMT___Floater.acceptCondition = options.acceptCondition ? options.acceptCondition : null;							//done
-		AMT___Floater.runMT_Run = options.runMT_Run;										//done
-		AMT___Floater.runTop_Window = options.runTop_Window;								//done
-		AMT___Floater.forceTopCondition = options.forceTopCondition;
-		AMT___Floater.runOnMouseOver = options.runOnMouseOver;					
-		AMT___Floater.maxSkipsBeforeAccept = options.maxSkipsBeforeAccept;			
-		AMT___Floater.maxFloatTimeBeforeAccept = options.maxFloatTimeBeforeAccept;		
-		AMT___Floater.groupId = AMT__Global_Vars.groupId;									//done
+	AMT___Floater.acceptCondition = options.acceptCondition ? options.acceptCondition : null;							//done
+	AMT___Floater.runMT_Run = options.runMT_Run;										//done
+	AMT___Floater.runTop_Window = options.runTop_Window;								//done
+	AMT___Floater.forceTopCondition = options.forceTopCondition;
+	AMT___Floater.runOnMouseOver = options.runOnMouseOver;					
+	AMT___Floater.maxSkipsBeforeAccept = options.maxSkipsBeforeAccept;			
+	AMT___Floater.maxFloatTimeBeforeAccept = options.maxFloatTimeBeforeAccept;		
+	AMT___Floater.groupId = AMT__Global_Vars.groupId;									//done
 
-		AMT___Floater.skipSpeed = options.skipSpeed ? options.skipSpeed : 15000;			//done
-		AMT___Floater.skipWithSubmitQueue = options.skipWithSubmitQueue;
-		AMT___Floater.skipOnReturnedHits = options.skipOnReturnedHits;
+	AMT___Floater.skipSpeed = options.skipSpeed ? options.skipSpeed : 15000;			//done
+	AMT___Floater.skipWithSubmitQueue = options.skipWithSubmitQueue;
+	AMT___Floater.skipOnReturnedHits = options.skipOnReturnedHits;
 }
 
 

@@ -10,6 +10,23 @@ function mturk_load()
 {	
 	startPerformanceTime = new Date();
 	
+	// Log the tab URL in order to utilize "Reload On No Hits".
+	// 		That is, keep track of last URL for each tab.
+	//		Because when hitting No Hits Available, the new site
+	//		as of Jan2018 forwards to https://worker.mturk.com/projects,
+	//		which is, apparently, not useful. Doing window.reload()
+	//		in these circumstances does not get a new job (as it did
+	//		previously) but instead just reloads the projects page.
+	//		For more info on this, see:
+	//			https://stackoverflow.com/questions/33770825/get-previous-url-from-chrome-tabs-onupdated#33771228
+	//~ function obn_cb_tmpfunction(object){
+		//~ chrome.tabs.get(object.tabId, function(tab){
+			//~ AMT__Global_Vars.core.tabURL = tab.url;
+		//~ });
+	//~ }
+	//~ console.log(chrome.webNavigation);
+	//~ chrome.webNavigation.onBeforeNavigate.addListener(obn_cb_tmpfunction);
+	
 	// ENSURE THAN MT_CAPTCHA IS SET!
 	if (localStorage['mt_captcha'] == undefined)
 		localStorage['mt_captcha'] = 0;
@@ -204,7 +221,7 @@ function mturk_load()
 				// Old one, now is https://worker.mturk.com/projects.
 				//~ /^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
 				
-				document.location.href = 'https://worker.mturk.com/projects' ||
+				document.location.href == 'https://worker.mturk.com/projects' ||
 				/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
 				/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(l)
 			) &&
@@ -219,8 +236,19 @@ function mturk_load()
 			if (AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') { // If Reload on No Hits is turned on...
 				doSubmit(false, false, function(timeToSkip){
 						window.setTimeout(function() {
-							alert('testing reload');
-							window.location.reload(true);
+							console.log(AMT__Global_Vars.core.tabURL);
+							// e.g. https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3I6NF2WGIG14A5ALNIBGT5POH6EG5K?assignment_id=3FTOP5WARGTITKCFOKV8X7HXA3IJ0M&auto_accept=true
+							// Get new random
+							var x = /^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]\/tasks\/)/.exec(AMT__Global_Vars.core.tabURL);
+							if (x) {
+								// Similar to return and accept behavior.
+								// e.g. tasks/accept_random?ref=w_pl_prvw
+								var newURL = x[1] + 'accept_random?ref=w_pl_prvw';
+								alert('testing reload');
+								document.location.href = newURL;
+							}
+							//~ alert('testing reload');
+							//~ window.location.reload(true);
 						}
 						, timeToSkip);
 					},
@@ -228,6 +256,23 @@ function mturk_load()
 				);
 			}
 			console.log('Hit the "All HITs" page. Returning.');
+			
+			//~ var previousUrl = "";
+			//~ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
+			  //~ //Your code here
+			//~ });
+
+			return;
+		}
+		
+		// Only run on these pages!
+		//
+		//
+		/**
+		 * Only continue on from here if on a job page.
+		 * https://worker.mturk.com/projects/.../tasks...
+		 */
+		if (!/^https?:\/\/(worker\.|)mturk\.com\/projects\/[A-Z0-9]+\/tasks/i.exec(l)) {
 			return;
 		}
 		

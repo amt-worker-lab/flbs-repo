@@ -1,4 +1,3 @@
-//console.log('test2');
 /**
  * Problem:
  * Solution:
@@ -46,7 +45,19 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		nextTab(request,sender,sendResponse);
 	}
 });
-	
+
+
+
+//~ function obn_cb_tmpfunction(object){
+	//~ chrome.tabs.get(object.tabId, function(tab){
+		//~ AMT__Global_Vars.core.tabURL = tab.url;
+		//~ alert('testing'+tab.url);
+	//~ });
+//~ }
+//~ console.log(chrome.webNavigation);
+//~ chrome.webNavigation.onBeforeNavigate.addListener(obn_cb_tmpfunction);
+
+
 /**
  * chrome.extension.onRequest.addListener
  * Listen for messages from core-mturk scripts
