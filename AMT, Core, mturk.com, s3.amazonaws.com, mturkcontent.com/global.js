@@ -86,7 +86,7 @@ var AMT__Global_Vars = //function()
 		captcha_string: 'In order to accept your next HIT, please type this word into the text box below',
 		getR_Button_NextTab: false,
 		is_running_on_local_dev: false, // This is boolean for e.g. http://localhost/mturk/.dev/HITs/CHIOS%20TESTING.html
-		tabURL: null, // To be loaded in mturk_load(). Useful for e.g. ReloadOnNoHits.
+		//~ tabURL: null, // To be loaded in mturk_load(). Useful for e.g. ReloadOnNoHits.
 	},
 	
 	num_amt_tabs: null,
@@ -105,9 +105,23 @@ for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
 
 /**
  * Record the present URL in sessionStorage.
+ * 
+ * Only do this when it is a Task Page!
+ *		For example, before leaving a task page, save the tab URL.
+ *		Then, if arriving at AMT's Front Page, the previous task
+ *		URL is known. Then, ReloadOnNoHits may run. If there is a new
+ * 		task, then it will work. Otherwise, it would end up on
+ * 		the Front Page again. In which case, let's REMEMBER the tasks
+ * 		page URL rather than the Front Page URL!
  */
 function setPresentURL() {
-	sessionStorage['tab' + AMT__Global_Vars.tabId + 'URL'] = document.location.href;
+	if (/^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(document.location.href)) {
+		window.addEventListener('beforeunload', function (event) {
+			alert('setting bu');
+			//event.preventDefault();
+			sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'] = document.location.href;
+		});
+	}
 }
 // Record the present URL in sessionStorage.
 setPresentURL();

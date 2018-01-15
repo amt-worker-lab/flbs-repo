@@ -43,8 +43,8 @@
 		"tabs",
 		"contextMenus",
 		"management",
-		"clipboardWrite",
-		"webNavigation"
+		"clipboardWrite"
+		//"webNavigation" // Does not work! (webNavigation.onBeforeNavigation)
    ],
    "browser_action": {
 		"default_icon": {
