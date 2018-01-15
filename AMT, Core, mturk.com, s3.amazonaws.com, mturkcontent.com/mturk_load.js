@@ -216,7 +216,11 @@ function mturk_load()
 		var l = document.location.href;
 			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
 		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
-		if  ( true && // Why was this false?
+		console.log('checking href:'+document.location.href);
+		console.log('projects page?:'+(document.location.href == 'https://worker.mturk.com/projects'));
+		console.log(document.body.innerHTML.indexOf('There are no more of these HITs available') != -1);
+		console.log(document.body.innerHTML.indexOf('This HIT is no longer available') != -1);
+		if  (
 			(
 				// Running on any of the following:
 				
@@ -241,25 +245,34 @@ function mturk_load()
 			AMT__Global_Vars.initializeNextTabPassBy(); // Initialize nextTabPassBy.
 			if (AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') { // If Reload on No Hits is turned on...
 				
-				//change to immediate.
-				//https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3NQUW096N6D3XKQY1ZLDIDZYZJYL91?assignment_id=3OXV7EAXLFV2MHW5NOJ2Q1AZRAZ63H
-				//https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3E24UO25QZVOLMRXGKYTQKCQ4NWO6B?assignment_id=32ZKVD547GS8STD0JF0A1HWR5BF3B4&auto_accept=true
-				//There are no more of these HITs available
+				// Change to immediate (200ms).
+				// Use DS so that nextTab is called.
 				var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
-				//~ alert(sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
 				console.log('LastURL:'+sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
 				if (lu && lu != 'undefined') {
-					// Get new random
-					// e.g. https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3I6NF2WGIG14A5ALNIBGT5POH6EG5K?assignment_id=3FTOP5WARGTITKCFOKV8X7HXA3IJ0M&auto_accept=true
-					var x = /^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(lu);
-					if (x) {
-						// Similar to return and accept behavior.
-						// e.g. tasks/accept_random?ref=w_pl_prvw
-						var newURL = x[1] + 'accept_random?ref=w_pl_prvw';
-						document.location.href = newURL;
-					}
+					doSubmit(false, false, function(timeToSkip){
+							window.setTimeout(function() {
+								var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
+								console.log('LastURL:'+sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
+								if (lu && lu != 'undefined') {
+									// Get new random
+									// e.g. https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3I6NF2WGIG14A5ALNIBGT5POH6EG5K?assignment_id=3FTOP5WARGTITKCFOKV8X7HXA3IJ0M&auto_accept=true
+									var x = /^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(lu);
+									if (x) {
+										// Similar to return and accept behavior.
+										// e.g. tasks/accept_random?ref=w_pl_prvw
+										var newURL = x[1] + 'accept_random?ref=w_pl_prvw';
+										document.location.href = newURL;
+									}
+								}
+								// OLD RELOADER! JAN2018
+								// window.location.reload(true);
+							}, timeToSkip);
+						},
+						50 // not 2200
+					);
 				}
-				
+					
 				//~ doSubmit(false, false, function(timeToSkip){
 						//~ window.setTimeout(function() {
 							//~ var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
@@ -285,12 +298,6 @@ function mturk_load()
 				//~ );
 			}
 			console.log('Hit the "All HITs" page. Returning.');
-			
-			//~ var previousUrl = "";
-			//~ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
-			  //~ //Your code here
-			//~ });
-
 			return;
 		}
 		

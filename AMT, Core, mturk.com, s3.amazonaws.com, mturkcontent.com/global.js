@@ -113,13 +113,21 @@ for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
  * 		task, then it will work. Otherwise, it would end up on
  * 		the Front Page again. In which case, let's REMEMBER the tasks
  * 		page URL rather than the Front Page URL!
+ * 
+ * Note: Important! Notice that return true MUST BE SPECIFIED
+ * 		in the eventListener for beforeunload! Otherwise
+ * 		an error occurs and the function is blocked / destroyed.
+ * 		For more info see: https://stackoverflow.com/questions/7560532/what-can-i-put-in-beforeunload
  */
 function setPresentURL() {
 	if (/^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(document.location.href)) {
+		console.log('setting bu listener');
 		window.addEventListener('beforeunload', function (event) {
-			alert('setting bu');
+			//~ alert('setting bu');
 			//event.preventDefault();
 			sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'] = document.location.href;
+			console.log('bu listener is now:'+ sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'] );
+			return true; // MUST RETURN!
 		});
 	}
 }
