@@ -20241,6 +20241,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'A2SP2PSX99L7Q9':true, //str11223344
 			'A1CKEISKSOZ5HD':true, //CopyText Inc.
 			'AATZ5SWOQ932L':true,  //Shopping Receipts US
+			'AB2WW1DFMYT5F':true,  //The req. known as "Shopping" (doing receipts)
 		};
 		ignore_requesters = {
 			'Amazon Requester Inc. - Newer Versions':true,
