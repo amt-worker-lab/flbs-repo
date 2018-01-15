@@ -226,7 +226,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			return false;
 		}
 		
-		
 		var senderId = sender.tab.id;
 		if(UtilityAMTPairs[senderId] &&
 		   UtilityAMTPairs[senderId].utilities &&
@@ -247,14 +246,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				
 				console.log('REMOVE');
 				console.log(tabIdsToRemove);
-				//try {
-					if(tabIdsToRemove.length && allTabs.length > 1) {
-						chrome.tabs.remove(tabIdsToRemove);
-					}
-				//}
-				//catch(e) {
-					//console.log('err');
-				//}
+				if(tabIdsToRemove.length && allTabs.length > 1) {
+					chrome.tabs.remove(tabIdsToRemove);
+				}
 		})};
 		
 		
@@ -264,14 +258,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				utilities: request.setUtilityTabs.utilities
 			}
 		);
-		//UtilityAMTPairs.options = request.setUtilityTabs.options;
-		//~ console.log(UtilityAMTPairs);
-		//console.log(a.b.c);
-			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
-					//~ //Get the latest index of what's here
-				//~ 
-				//~ });
-			
+		
+		console.log(UtilityAMTPairs);
+		
 		for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
 			//Create a tab for each utilityTab in utilities
 			currentUtility = UtilityAMTPairs[senderId].utilities[i];
@@ -281,19 +270,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				//~ currentUtility.url = 'includes/blankUtilityTab.html';
 			}
 			currentUtility.url += tabIdentifier;
-			chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
-																			active: (currentUtility.active != null ? currentUtility.active : 
-																													 (sender.tab.active && i == 0 ? true :false))}, 
+			chrome.tabs.create({
+					windowId: localStorage['UTILITY_WINDOW']*1,
+					url: currentUtility.url,
+					active: (currentUtility.active != null ? currentUtility.active : (sender.tab.active && i == 0 ? true :false))
+				}, 
 				function(newTab) {
-					//~ console.log('New Tab Created with url:' +newTab.url);
+					console.log('New Tab Created with url:' +newTab.url);
+					console.log(newTab);
 					var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
-					//~ console.log('ownerTabId:' + ownerTabId);
+					console.log('ownerTabId:' + ownerTabId);
 					var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
-					//~ console.log('utTabPos:' + utTabPos);
+					console.log('utTabPos:' + utTabPos);
 					UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
-					//~ console.log(UtilityAMTPairs);
-					
-
+					console.log(UtilityAMTPairs);
 				});
 		}
 		
@@ -307,13 +297,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					for(var i = 0; i < allTabs.length; i++) {
 						found = false;
 						//Now we're looping through the array of all tabs, lets loop through all utility tabs
-						//~ console.log('UtilityAMTPairs[j]:');
-						//~ console.log(UtilityAMTPairs[j]);
-						//~ alert('wuh');
 						for(var j in UtilityAMTPairs) {
 							if(UtilityAMTPairs[j] && UtilityAMTPairs[j].utilities && UtilityAMTPairs[j].utilities.length) {
-								//~ console.log('UtilityAMTPairs[j]:');
-								//~ console.log(UtilityAMTPairs[j]);
 								for(var k = 0; k < UtilityAMTPairs[j].utilities.length; k++) {
 									console.log(UtilityAMTPairs[j].utilities[k].tabId + ' == ' + allTabs[i].id);
 									if(UtilityAMTPairs[j].utilities[k].tabId == allTabs[i].id) {
@@ -327,7 +312,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 								break;
 						}
 						if(!found) {
-							chrome.tabs.remove(allTabs[i].id);
+							//~ chrome.tabs.remove(allTabs[i].id);
 						}
 					}
 				}

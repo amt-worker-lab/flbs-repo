@@ -27,6 +27,68 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Amazon Requester Inc. - Tax Engine
+	// In what form are these items consumed?
+	//
+	// 
+	var s = '<div class="well"><span style="background-color: rgb(255, 255, 255);">Pick the correct category for the item from link. See the </span><strong style="background-color: rgb(255, 255, 255);">Selection Criteria</strong><span style="background-color: rgb(255, 255, 255);"> above for more details.</span></div>';
+	if (ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:100px !important;}');// Move content to bottom...
+			//~ GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');// Move content to bottom...
+			
+			// Other gm
+			//~ GM_addStyle('.select2-container--default .select2-results>.select2-results__options {max-height:600px!important;}');
+			//~ GM_addStyle('.exe:hover {background-color:orange;}');
+			//~ GM_addStyle('#submitButton {width:100%;height:200px;margin-top:-160px;}');// Move content to bottom...
+			// Elements
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[0].href.trim(),
+				q: [
+					//~ document.getElementsByName('product_name')[0],
+					//~ document.getElementsByName('keyword')[0]
+				],
+			}
+			var n = document.getElementsByName('categories');
+			for (var i in n) { // input[type=radio]
+				n[i].onclick = function(e) {
+					this.checked = true;
+					if (this.checked) {
+						doSubmit();
+					}
+				}
+			}
+			// Load util tabs
+			AMT__setUtilityTabs([{
+				url: o.u,
+			}]);
+			
+			//~ AMT___addUserDecision(
+				//~ 'J.Curtis,2018', function() {
+					//~ return o.u;
+				//~ }, ['Name(product_name)[0]', 'Name(keyword)[0]']
+			//~ )
+			
+			//~ //sbm
+			//~ document.getElementById('submitButton').onclick = function(e) {
+				//~ o.q[0].value = o.q[0].value.trim().replace(/\s+/, ' ');
+				//~ o.q[1].value = o.q[1].value.trim().replace(/\s+/, ' ');
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ doSubmit();
+				//~ return;
+			//~ }
+		}
+		new run().f();
+	};
 	// Marketing Research ""
 	// Categorize Products And Key Phrases
 	//
