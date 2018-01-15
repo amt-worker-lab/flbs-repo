@@ -226,6 +226,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			return false;
 		}
 		
+		//Remove all of the old utility tabs
 		var senderId = sender.tab.id;
 		if(UtilityAMTPairs[senderId] &&
 		   UtilityAMTPairs[senderId].utilities &&
@@ -259,7 +260,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			}
 		);
 		
-		console.log(UtilityAMTPairs);
+		//~ console.log(UtilityAMTPairs);
+		//~ console.log(request.setUtilityTabs);
 		
 		for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
 			//Create a tab for each utilityTab in utilities
@@ -277,13 +279,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				}, 
 				function(newTab) {
 					console.log('New Tab Created with url:' +newTab.url);
-					console.log(newTab);
+					//~ console.log(newTab);
 					var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
-					console.log('ownerTabId:' + ownerTabId);
+					//~ console.log('ownerTabId:' + ownerTabId);
 					var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
-					console.log('utTabPos:' + utTabPos);
+					//~ console.log('utTabPos:' + utTabPos);
 					UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
-					console.log(UtilityAMTPairs);
+					//~ console.log(UtilityAMTPairs);
 				});
 		}
 		
@@ -312,7 +314,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 								break;
 						}
 						if(!found) {
-							//~ chrome.tabs.remove(allTabs[i].id);
+							chrome.tabs.remove(allTabs[i].id); // XXXXXXXXXXXXXXXCOMMENT OUT FOR TESTING JAN2018
 						}
 					}
 				}
