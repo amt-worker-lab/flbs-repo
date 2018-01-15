@@ -20224,8 +20224,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	/**
 	 * set_ignored_vars
-	 * 
 	 * Set the vars for ignored Requesters.
+	 * 
+	 * Another name for this, for anyone searching for this section,
+	 * would be something like "ignored_requesters".
 	 */
 	function set_ignored_vars() {
 		
@@ -20241,6 +20243,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'AATZ5SWOQ932L':true,  //Shopping Receipts US
 		};
 		ignore_requesters = {
+			'Amazon Requester Inc. - Newer Versions':true,
 			'Mark Yatskar':true,
 			'OCMP67':true,
 			'OCMP66':true,
