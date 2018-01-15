@@ -216,10 +216,6 @@ function mturk_load()
 		var l = document.location.href;
 			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
 		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
-		console.log('checking href:'+document.location.href);
-		console.log('projects page?:'+(document.location.href == 'https://worker.mturk.com/projects'));
-		console.log(document.body.innerHTML.indexOf('There are no more of these HITs available') != -1);
-		console.log(document.body.innerHTML.indexOf('This HIT is no longer available') != -1);
 		if  (
 			(
 				// Running on any of the following:
