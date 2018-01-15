@@ -190,26 +190,36 @@ function mturk_load()
 		 * 		That is, maybe the "VSR" issue (where a job is "done" while
 		 * 		it is still up) is happening across other jobs as well.
 		 * 		Causing rate limit issue when RONO set to 1000. 
+		 * 
+		 * New no hits page (JAN2018):
+		 * 		There are no more of these HITs available. See other HITs available to you below.
 		 */
 		var l = document.location.href;
 			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
 		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
 		if  ( true && // Why was this false?
-				( // Running on any of the following:
-				/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
+			(
+				// Running on any of the following:
+				
+				// Old one, now is https://worker.mturk.com/projects.
+				//~ /^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
+				
+				document.location.href = 'https://worker.mturk.com/projects' ||
 				/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
 				/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(l)
-				) &&
-				(
-				document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1 ||
-				document.body.innerHTML.toLowerCase().indexOf('there are no hits in this group available to you at the moment.') != -1
-				)
+			) &&
+			(
+				document.body.innerHTML.indexOf('There are no more of these HITs available. See other HITs available to you below.') != -1
+				//~ document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1 ||
+				//~ document.body.innerHTML.toLowerCase().indexOf('there are no hits in this group available to you at the moment.') != -1
+			)
 			)
 		{
 			AMT__Global_Vars.initializeNextTabPassBy(); // Initialize nextTabPassBy.
 			if (AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') { // If Reload on No Hits is turned on...
 				doSubmit(false, false, function(timeToSkip){
 						window.setTimeout(function() {
+							alert('testing reload');
 							window.location.reload(true);
 						}
 						, timeToSkip);

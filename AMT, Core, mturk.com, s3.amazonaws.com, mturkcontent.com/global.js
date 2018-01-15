@@ -634,17 +634,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		}
 		else if(AMT__Global_Vars.isTopWindow) {
 			if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
-				//~ console.log('focusing');
-				//~ console.log(document.getElementsByTagName('iframe')[0]);
+				//TODO
+				// Getting this:
+				// 		Error in event handler for runtime.onMessage: TypeError: Cannot read property 'focus' of undefined
+				// At the page:
+				//		https://worker.mturk.com/projects
+				//		After submitting a HIT and there are no more left in group.
 				document.getElementsByTagName('iframe')[0].focus();
 			}
 		} else {
-			//console.log('other case: Attempt to focus regardless if possible');
-			//~ if(document.getElementsByTagName('iframe') && document.getElementsByTagName('iframe')[0]) {
-				//~ document.getElementsByTagName('iframe')[0].focus();
-			
-			//~ }
-			//				console.log(document.getElementsByTagName('iframe')[0]);
+			//console.log('other case: Attempt to focus regardless if possible'); //???
 		}
 		
 	}
