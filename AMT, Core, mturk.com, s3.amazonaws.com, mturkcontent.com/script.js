@@ -1453,11 +1453,12 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:12px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:240px !important;}');
 			GM_addStyle('b {font-size:1.6em;font-family:monospace;}');
 			// gm
 			// font-family: Verdana, Geneva, sans-serif !important;
 			GM_addStyle('#email {position:absolute;top:0px;left:40%;}');
+			GM_addStyle('#submitButton {position:absolute;top:200px;left:40%;width:40%;height:40px;}');
 			var d = document.getElementsByClassName('col-xs-12 col-md-8 col-md-offset-2 image');
 			var o = {
 				a: d[0].innerText.replace(/^Instagram Account name: /i, '').trim(),
@@ -1607,7 +1608,6 @@ function MT__RUN() {
 				rs.user.email		= (rs.user.email) ? rs.user.email : '';
 				rs.user.public_email= (rs.user.public_email) ? rs.user.public_email : '';
 				rs.user.status		= (rs.user.status) ? rs.user.status : '';
-
 				d1.innerHTML =	'username: ' + MT__bold(rs.user.username, h) + '<br>' +
 								'full_name: ' + MT__bold(rs.user.full_name, h) + '<br>' + 
 								'biography: ' + MT__bold(rs.user.biography, h) + '<br>' + 
@@ -1615,7 +1615,14 @@ function MT__RUN() {
 								'category: ' + MT__bold(rs.user.category, h) + '<br>' + 
 								'em: ' + MT__bold(rs.user.email, h) + '<br>' + 
 								'public_em: ' + MT__bold(rs.user.public_email, h) + '<br>' + 
-								'status: ' + MT__bold(rs.status, h)
+								'status: ' + MT__bold(rs.status, h);
+				// try checking for auto email in bio section.
+				r = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}\[at\][ ]{0,}|&#064;)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/i
+					.exec(rs.user.biography);
+				if (r) {
+					o.q[0].value = r[1];
+					o.q[0].style.border = '8px double blue';
+				}
 			}
 		}
 		new run().f();
