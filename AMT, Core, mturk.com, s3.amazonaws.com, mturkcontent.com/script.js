@@ -1454,6 +1454,7 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;}');
+			GM_addStyle('b {font-size:1.6em;font-family:monospace;}');
 			// gm
 			// font-family: Verdana, Geneva, sans-serif !important;
 			GM_addStyle('#email {position:absolute;top:0px;left:40%;}');
@@ -1490,12 +1491,12 @@ function MT__RUN() {
 				//~ offset: 0 // offset top
 			//~ });
 			// Turn off form submit.
-			//~ document.getElementById('mturk_form').onsubmit = function(e) {
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ AMT___recordAndSubmit(); // Do it here.
-				//~ return false;
-			//~ }
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				AMT___recordAndSubmit(); // Do it here.
+				return false;
+			}
 			d2.onclick = function() {
 				this.style.backgroundColor = 'lightgreen';
 				o.q[0].value = 'personal@noaddress.com';
@@ -1503,7 +1504,7 @@ function MT__RUN() {
 			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: 'http://localhost/mturk/.dev/insta/vendor/test.php?username='+encodeURIComponent(o.a),
+				URL: 'http://192.168.1.2/mturk/.dev/insta/vendor/test.php?username='+encodeURIComponent(o.a),
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
@@ -1524,9 +1525,28 @@ function MT__RUN() {
 					if (rs.indexOf('@') != -1) {
 						d1.style.backgroundColor = 'pink';
 					}
+					// user not found error message
+					console.log(rs);
+					if (rs.indexOf('UserInfoResponse: User not found') != -1 &&
+						rs.indexOf('Fatal error') != -1
+						) {
+						d1.style.backgroundColor = 'blue';
+						o.q[0].value = 'personal@noaddress.com';
+						AMT___recordAndSubmit();
+						return;
+					}
+					// try
 					try {
 						rs = JSON.parse(rs);
 						console.log(rs);
+						
+						// full bio != bio?
+						if (rs.fullResponse.user.biography != rs.user.biography) {
+							alert('rs.fullResponse.user.biography!');
+							console.log(rs.fullResponse.user.biography);
+							console.log(rs.user.biography);
+							return;
+						}
 						
 						if (rs.user.email != null) {
 							o.q[0].value = rs.user.email;
@@ -1574,14 +1594,14 @@ function MT__RUN() {
 				rs.user.public_email= (rs.user.public_email) ? rs.user.public_email : '';
 				rs.user.status		= (rs.user.status) ? rs.user.status : '';
 
-				d1.innerHTML = 'username:' + MT__bold(rs.user.username, h) + '<br>' +
-								'full_name:' + MT__bold(rs.user.full_name, h) + '<br>' + 
-								'biography:' + MT__bold(rs.user.biography, h) + '<br>' + 
-								'external_url:' + MT__bold(rs.user.external_url, h) + '<br>' + 
-								'category:' + MT__bold(rs.user.category, h) + '<br>' + 
-								'em:' + MT__bold(rs.user.email, h) + '<br>' + 
-								'public_em:' + MT__bold(rs.user.public_email, h) + '<br>' + 
-								'status:' + MT__bold(rs.status, h)
+				d1.innerHTML =	'username: ' + MT__bold(rs.user.username, h) + '<br>' +
+								'full_name: ' + MT__bold(rs.user.full_name, h) + '<br>' + 
+								'biography: ' + MT__bold(rs.user.biography, h) + '<br>' + 
+								'external_url: ' + MT__bold(rs.user.external_url, h) + '<br>' + 
+								'category: ' + MT__bold(rs.user.category, h) + '<br>' + 
+								'em: ' + MT__bold(rs.user.email, h) + '<br>' + 
+								'public_em: ' + MT__bold(rs.user.public_email, h) + '<br>' + 
+								'status: ' + MT__bold(rs.status, h)
 			}
 		}
 		new run().f();
