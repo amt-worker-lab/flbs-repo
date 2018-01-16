@@ -1533,7 +1533,7 @@ function MT__RUN() {
 						d1.appendChild('!200'.div());
 						return;
 					}
-					if (rs.indexOf('@') != -1) {
+					if (/@/i.exec(rs)) {
 						d1.style.backgroundColor = 'pink';
 					}
 					// throttled (no new pages are saved when throttled,
@@ -1602,7 +1602,7 @@ function MT__RUN() {
 				}
 			});
 			function err(rs) {
-				var h = ['email','@','mail','contact']; // Things to highlight.
+				var h = ['email','@','mail','contact',' at ']; // Things to highlight.
 				rs.user.username	= (rs.user.username) ? rs.user.username : '';
 				rs.user.full_name	= (rs.user.full_name) ? rs.user.full_name : '';
 				rs.user.biography	= (rs.user.biography) ? rs.user.biography : '';
@@ -1625,6 +1625,9 @@ function MT__RUN() {
 				if (r) {
 					o.q[0].value = r[1];
 					o.q[0].style.border = '8px solid blue';
+				} else if (!/(@|\[at\]| at )/i.exec(JSON.stringify(rs))) {
+					d1.style.border = '2px solid orange';
+					d2.click();
 				}
 			}
 		}
