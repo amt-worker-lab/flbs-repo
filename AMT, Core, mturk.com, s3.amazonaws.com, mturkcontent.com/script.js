@@ -1499,8 +1499,10 @@ function MT__RUN() {
 			}
 			d2.onclick = function() {
 				this.style.backgroundColor = 'lightgreen';
-				o.q[0].value = 'personal@noaddress.com';
-				AMT___recordAndSubmit();
+				if (o.q[0].value == '') {
+					o.q[0].value = 'personal@noaddress.com';
+					AMT___recordAndSubmit();
+				}
 			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -1510,6 +1512,11 @@ function MT__RUN() {
 					if (options.response.status != 200) {
 						d1.style.backgroundColor = '1px solid blue';
 						d1.appendChild('!200'.div());
+						return false;
+					}
+					if (rs.indexOf('Throttled by Instagram because of too many API requests') != -1) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('throttle'.div());
 						return false;
 					}
 					//
@@ -1524,6 +1531,13 @@ function MT__RUN() {
 					}
 					if (rs.indexOf('@') != -1) {
 						d1.style.backgroundColor = 'pink';
+					}
+					// throttled (no new pages are saved when throttled,
+					// but there may be a few cached ones hanging around).
+					if (rs.indexOf('Throttled by Instagram because of too many API requests') != -1) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('throttle'.div());
+						return false;
 					}
 					// user not found error message
 					console.log(rs);
