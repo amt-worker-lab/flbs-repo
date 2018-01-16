@@ -1495,6 +1495,9 @@ function MT__RUN() {
 			document.getElementById('mturk_form').onsubmit = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
+				if (o.q[0].value.length<4) {
+					return false;
+				}
 				AMT___recordAndSubmit(); // Do it here.
 				return false;
 			}
@@ -1621,7 +1624,7 @@ function MT__RUN() {
 					.exec(rs.user.biography);
 				if (r) {
 					o.q[0].value = r[1];
-					o.q[0].style.border = '8px double blue';
+					o.q[0].style.border = '8px solid blue';
 				}
 			}
 		}
