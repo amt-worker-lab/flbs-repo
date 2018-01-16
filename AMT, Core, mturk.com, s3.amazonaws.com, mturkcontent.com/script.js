@@ -1442,6 +1442,125 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	// Jake Phillips
+	// Localhost xhr task, w/Instragram api
+	// 
+	// https://github.com/mgp25/Instagram-API/
+	// Collect Emails from Instagram Accounts
+	//
+	s = '<p dir="ltr" style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;"><span id="docs-internal-guid-0d3ed8f0-370d-697f-59b9-ceeb6e5576be"><span style="font-size: 10pt; background-color: transparent; vertical-align: baseline; white-space: pre-wrap;">If the user has a business account an "email" button will display. Click that button and record the email address.</span></span></p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
+			var d = document.getElementsByClassName('col-xs-12 col-md-8 col-md-offset-2 image');
+			var o = {
+				a: d[0].innerText.replace(/^Instagram Account name: /i, '').trim(),
+				q: [
+					document.getElementById('email'),
+				]
+			}
+			AMT___addUserDecision(
+				'JakePhillips',
+				function() { return o.a; },
+				[
+					"Id(email)",
+				]
+			);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:100%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*End Items*/
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 0 // offset top
+			//~ });
+			// Turn off form submit.
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit(); // Do it here.
+				//~ return false;
+			//~ }
+			
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'http://localhost/mturk/.dev/insta/vendor/test.php?username='+encodeURIComponent(o.a),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					rs = JSON.parse(rs);
+					console.log(rs);
+					
+					try {
+						if (rs.user.email != null) {
+							o.q[0].value = rs.user.email;
+							// ^[two or more non-@]@[two or more anything]$
+							if (/^[^@]{2,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
+								AMT___recordAndSubmit();
+							} else {
+								d1.innerText = rs.user.email;
+							}
+						} else if (rs.user.public_email != null) {
+							o.q[0].value = rs.user.public_email;
+							// ^[two or more non-@]@[two or more anything]$
+							if (/^[^@]{2,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
+								AMT___recordAndSubmit();
+							} else {
+								d1.innerText = rs.user.public_email;
+							}
+						} else {
+							d1.style.backgroundColor = '#eeffbb';
+							d1.innerText = 'username:' + rs.user.username + '\n' +
+								'full_name:' + rs.user.full_name + '\n' + 
+								'biography:' + rs.user.biography + '\n' + 
+								'external_url:' + rs.user.external_url + '\n' + 
+								'category:' + rs.user.category + '\n' + 
+								'email:' + rs.user.email + '\n' + 
+								'public_email:' + rs.user.public_email + '\n' + 
+								'status:' + rs.status
+								;
+						}
+					} catch(e) {
+						d1.innerText = e;
+					}
+					//~ // Sbm
+					//~ var sbm = true;
+					// Dom
+					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//~ var div = dom.getElementsByTagName('div');
+					//~ for (var i=0;i<div.length;i++) {
+						//~ if (div[i].innerText == 'Content Management Systems') {
+						//~ }
+					//~ }
+					
+					//AMT___recordAndSubmit();
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Jamie Opalchuk
 	// xhr task
 	// Find the content management system (CMS) for this website
