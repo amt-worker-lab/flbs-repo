@@ -1452,8 +1452,11 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;}');
+			// gm
+			// font-family: Verdana, Geneva, sans-serif !important;
+			GM_addStyle('#email {position:absolute;top:0px;left:40%;}');
 			var d = document.getElementsByClassName('col-xs-12 col-md-8 col-md-offset-2 image');
 			var o = {
 				a: d[0].innerText.replace(/^Instagram Account name: /i, '').trim(),
@@ -1471,9 +1474,14 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:0px;left:0%;width:100%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:0px;left:0%;width:100%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.type = 'button';
+			d2.value = 'personal@noaddress.com';
+			d2.setAttribute('style','position:absolute;top:200px;left:0%;width:40%;height:40px;');
+			document.body.appendChild(d2);
 			/*End Items*/
 			//~ new AMT___core_factory().el_innerHeight({
 				//~ elements: [
@@ -1488,7 +1496,11 @@ function MT__RUN() {
 				//~ AMT___recordAndSubmit(); // Do it here.
 				//~ return false;
 			//~ }
-			
+			d2.onclick = function() {
+				this.style.backgroundColor = 'lightgreen';
+				o.q[0].value = 'personal@noaddress.com';
+				AMT___recordAndSubmit();
+			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: 'http://localhost/mturk/.dev/insta/vendor/test.php?username='+encodeURIComponent(o.a),
@@ -1509,40 +1521,34 @@ function MT__RUN() {
 						d1.appendChild('!200'.div());
 						return;
 					}
-					rs = JSON.parse(rs);
-					console.log(rs);
-					
+					if (rs.indexOf('@') != -1) {
+						d1.style.backgroundColor = 'pink';
+					}
 					try {
+						rs = JSON.parse(rs);
+						console.log(rs);
+						
 						if (rs.user.email != null) {
 							o.q[0].value = rs.user.email;
 							// ^[two or more non-@]@[two or more anything]$
-							if (/^[^@]{2,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
+							if (/^[^@]{1,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
 								AMT___recordAndSubmit();
 							} else {
-								d1.innerText = rs.user.email;
+								err(rs);
 							}
 						} else if (rs.user.public_email != null) {
 							o.q[0].value = rs.user.public_email;
 							// ^[two or more non-@]@[two or more anything]$
-							if (/^[^@]{2,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
+							if (/^[^@]{1,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
 								AMT___recordAndSubmit();
 							} else {
-								d1.innerText = rs.user.public_email;
+								err(rs);
 							}
 						} else {
-							d1.style.backgroundColor = '#eeffbb';
-							d1.innerText = 'username:' + rs.user.username + '\n' +
-								'full_name:' + rs.user.full_name + '\n' + 
-								'biography:' + rs.user.biography + '\n' + 
-								'external_url:' + rs.user.external_url + '\n' + 
-								'category:' + rs.user.category + '\n' + 
-								'email:' + rs.user.email + '\n' + 
-								'public_email:' + rs.user.public_email + '\n' + 
-								'status:' + rs.status
-								;
+							err(rs);
 						}
 					} catch(e) {
-						d1.innerText = e;
+						d1.innerText = e.name + e.message;
 					}
 					//~ // Sbm
 					//~ var sbm = true;
@@ -1557,6 +1563,26 @@ function MT__RUN() {
 					//AMT___recordAndSubmit();
 				}
 			});
+			function err(rs) {
+				var h = ['email','@','mail','contact']; // Things to highlight.
+				rs.user.username	= (rs.user.username) ? rs.user.username : '';
+				rs.user.full_name	= (rs.user.full_name) ? rs.user.full_name : '';
+				rs.user.biography	= (rs.user.biography) ? rs.user.biography : '';
+				rs.user.external_url= (rs.user.external_url) ? rs.user.external_url : '';
+				rs.user.category	= (rs.user.category) ? rs.user.category : '';
+				rs.user.email		= (rs.user.email) ? rs.user.email : '';
+				rs.user.public_email= (rs.user.public_email) ? rs.user.public_email : '';
+				rs.user.status		= (rs.user.status) ? rs.user.status : '';
+
+				d1.innerHTML = 'username:' + MT__bold(rs.user.username, h) + '<br>' +
+								'full_name:' + MT__bold(rs.user.full_name, h) + '<br>' + 
+								'biography:' + MT__bold(rs.user.biography, h) + '<br>' + 
+								'external_url:' + MT__bold(rs.user.external_url, h) + '<br>' + 
+								'category:' + MT__bold(rs.user.category, h) + '<br>' + 
+								'em:' + MT__bold(rs.user.email, h) + '<br>' + 
+								'public_em:' + MT__bold(rs.user.public_email, h) + '<br>' + 
+								'status:' + MT__bold(rs.status, h)
+			}
 		}
 		new run().f();
 		return;
