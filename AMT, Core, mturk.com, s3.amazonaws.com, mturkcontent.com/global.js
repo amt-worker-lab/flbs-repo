@@ -3022,6 +3022,10 @@ function AMT___requests_factory(obj_vars) {
  * options				Object.
  * options.url			Required. String.
  * options.callback		Function. Callback for completed.
+ * options.goodchars_file
+ * 						Options. String.
+ * 						Uses /usr/share/tesseract/tessdata/configs/goodchars
+ * 						by default.
  * 
  * @return				JSON stringified object.
  * 						{'error': "string of message"}
@@ -3033,6 +3037,10 @@ AMT___requests_factory.prototype.pdfocr = function(options) {
 	var sent_callback_boolean = false;
 	// Set filename
 	options.filename = new AMT___requests_factory().md5(options.url);
+	// Set goodchars (default=goodchars)
+	if (!options.hasOwnProperty('goodchars_file')) {
+		options.goodchars_file = 'goodchars';
+	}
 	// Init
 	GM_xmlhttpRequest({
 		method: "GET",
