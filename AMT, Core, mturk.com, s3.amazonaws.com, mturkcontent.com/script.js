@@ -5565,16 +5565,35 @@ function MT__RUN() {
 				//		Create an ignore file which auto-ignores these.
 				//		That way, just the "well name" is left here.
 				//		Then just put in remaining text as well name.
+				
+				// Idea:
+				//		Canvas plus hocr
+				//~ var img = document.createElement('canvas');
+				var ni = new Image();
+				ni.src = 'http://localhost/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
+				ni.style.display = 'none';
+				document.body.appendChild(ni);
+				
+				// Now re-create using this?
+				var img2 = document.createElement('canvas');
+				document.body.appendChild(img2);
+				img2.style.width = 100;
+				img2.style.height = 20;
+				// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+				img2.getContext('2d').drawImage(ni, 0, 0, 1000, 2000, 0, 0, 100, 20);
+				return;
+				
+				// Page
 				var t = rs.page[0];
 				// This is a dom.
 				var dom = new DOMParser().parseFromString(rs, 'text/html');
-				
-				t = t.split("\n");
+				var lines = dom.getElementsByClassName('ocr_line');
+					//~ t = t.split("\n");
 				var num = 1;
 				var fill_in = false;
-				for (var i in t) {
+				for (var i=0;i<lines.length;i++) {
+					var line = lines[i].innerText.replace(/\s+/g, ' ').trim();
 					console.log('x' + i);
-					var line = t[i].trim();
 					console.log(line);
 					if (/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO)/.exec(line) && //|RUNS
 						!fill_in) {
