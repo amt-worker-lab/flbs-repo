@@ -5494,6 +5494,78 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	
+	/**
+	 * pdfocr
+	 * 
+	 * Viren Kapadia
+	 */
+	
+	// Viren Kapadia
+	// Copy a table of data (20 rows x 6 columns) from an image
+	//
+	// 
+	var s = '<p>Please copy each row of data from the image below to the table underneath it.&nbsp;ONLY copy data from columns: &nbsp;"WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" &amp; "RUNS".</p>';
+	//~ var s = 'Please copy each row of data from the image below to the table underneath it.&nbsp;ONLY copy data from columns: &nbsp;"WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".';
+	//~ var s = 'Please copy each row of data from the image below to the table underneath it. ONLY copy data from columns:  "WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//~ GM_addStyle('#mturk_form {margin-top:1000px;}');
+			//~ GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
+			//~ GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
+			//~ GM_addStyle('.panel-primary {position:absolute !important;top:1400px !important;}');
+			
+			var x = document.getElementsByTagName('img');
+			var o = {
+				p: x[0].src.trim(),
+				//~ u: null,
+				//~ df: null, // A factory object for disk file
+				//~ submits: {}, // to be filled in from disk!
+				//~ submits_sorted: [], // to be filled in from disk!
+				q: [
+					//document.getElementById('web_url')
+				],
+			}
+			for (var i=1; i<=20; i++) {
+				o.q[i] = {
+					'wellName':		document.getElementById('row-'+i+'-wellName'),
+					'otcLeaseNo':	document.getElementById('row-'+i+'-otcLeaseNo'),
+					'mergeNbr':		document.getElementById('row-'+i+'-mergeNbr'),
+					'custNo':		document.getElementById('row-'+i+'-custNo'),
+					'yrMo':			document.getElementById('row-'+i+'-yrMo'),
+					'runs':			document.getElementById('row-'+i+'-runs'),
+				}
+			}
+			var n = new AMT___requests_factory().pdfocr({
+				url: o.p,
+				callback: success,
+			});
+			function success(options) {
+				// returns options (input) plus options.rs (json response)
+				if (options.error) {
+					console.log(options);
+					document.body.style.backgroundColor = 'pink';
+					return;
+				}
+				// only one page!
+				if (options.page.length != 1) {
+					console.log(options);
+					alert('wrong # pages?');
+					return;
+				}
+				// txt
+				var txt = options.page[0];
+				// scrape.
+				console.log(txt);
+			}
+		}
+		new run().f();
+	}
+	
 	// david rigby
 	// Find the location for patents on website
 	//

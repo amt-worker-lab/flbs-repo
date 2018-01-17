@@ -3017,6 +3017,80 @@ function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
+ * function pdfocr
+ * 
+ * options				Object.
+ * options.url			Required. String.
+ * options.callback		Function. Callback for completed.
+ * 
+ * @return				JSON stringified object.
+ * 						{'error': "string of message"}
+ * 						or
+ * 						{'page':[ 0=>"text of pg 1", 1=>"text of pg 2", ... n=>"text of pg n" ]}
+ */
+AMT___requests_factory.prototype.pdfocr = function(options) {
+	// Sent callback.
+	var sent_callback_boolean = false;
+	// Set filename
+	options.filename = new AMT___requests_factory().md5(options.url);
+	// Init
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: MT___host + '/mturk/util.php?AMT__pdfocr='+
+			encodeURIComponent(JSON.stringify(options)),
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				alert('@1.AMT___requests_factory.prototype.pdfocr');
+			}
+		}
+	});
+	// Set interval watch.....
+	var xint = setInterval(watch, 2000);
+	// watch
+	// On complete, the file ".complete" will contain the number of 
+	// pages that were thumbnailed.
+	function watch() {
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: MT___host + '/mturk/.cached/'+options.filename+'.complete',
+			onload: function(response) {
+				var rs = response.responseText.trim();
+				if (response.status != 200 || rs == '') {
+					return;
+				}
+				// Made it.
+				clearInterval(xint);
+				if (sent_callback_boolean) return; // Already completed once!
+				sent_callback_boolean = true;
+				try {
+					rs = JSON.parse(rs);
+				} catch(e) {
+					alert('Invalid JSON response!');
+					console.log(rs);
+					return;
+				}
+				//~ if (rs.hasOwnProperty('error')) {
+					//return;
+				//~ }
+				//~ // Check.
+				//~ if (!/^\d+$/.exec(response.responseText)) {
+					//~ alert('@2.AMT___requests_factory.prototype.pdfimages');
+					//~ if (response.responseText == 'Error: No files converted!') {
+						//~ // Callback.
+						//~ options.responseText = response.responseText; // Set options.response.
+						//~ options.callback(options);
+					//~ }
+					//~ return;
+				//~ }
+				// Callback.
+				options.rs = rs; // Set options.response.
+				options.callback(options);
+			}
+		});
+	}
+}
+/**
  * function pdfimages
  * 
  * options				Object.
