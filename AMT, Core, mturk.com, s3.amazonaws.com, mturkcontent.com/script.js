@@ -5519,6 +5519,9 @@ function MT__RUN() {
 			//~ GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
 			//~ GM_addStyle('.panel-primary {position:absolute !important;top:1400px !important;}');
 			
+			// gm
+			GM_addStyle('.wellName {width:100%;text-align:right;}');
+			
 			var x = document.getElementsByTagName('img');
 			var o = {
 				p: x[0].src.trim(),
@@ -5539,6 +5542,7 @@ function MT__RUN() {
 					'yrMo':			document.getElementById('row-'+i+'-yrMo'),
 					'runs':			document.getElementById('row-'+i+'-runs'),
 				}
+				o.q[i].wellName.className = 'wellName'; // Provide a class name for sizing purposes.
 			}
 			var n = new AMT___requests_factory().pdfocr({
 				url: o.p,
@@ -5571,7 +5575,7 @@ function MT__RUN() {
 				//~ var img = document.createElement('canvas');
 				var ni = new Image();
 				ni.src = 'http://localhost/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
-				//~ ni.style.display = 'none';
+				ni.style.display = 'none';
 				document.body.appendChild(ni);
 				ni.rs = rs;
 				ni.onload = function() {
@@ -5602,6 +5606,7 @@ function MT__RUN() {
 				console.log(lines);
 				var num = 1;
 				var fill_in = false;
+				var leftmost = 9999; // Goes down over time, it is the leftmost word (of importance) on the page.
 				for (var i=0;i<lines.length;i++) {
 					var line = lines[i].innerText.replace(/\s+/g, ' ').trim();
 					console.log('x' + i);
@@ -5631,54 +5636,104 @@ function MT__RUN() {
 							var w = lines[i].getElementsByClassName('ocrx_word');
 							var sf = false;
 							var els = ['otcLeaseNo','mergeNbr','custNo','yrMo','runs',];
+							var leftovers = [];
 							for (var j=0; j<w.length; j++) {
 								if (w[j].innerText.trim() == x[1]) {
 									var sf = true; // start fill
 									var el = els.shift(); // get first
+								} else if (!sf) {
+									// This is part of the business name
+									// and well name.
+									// Btw, Note that biz name is not
+									// being asked for.
+									leftovers.push(w[j]);
+									// Keep track of the leftmost
+									// starting point of these!
+									// This will be useful when
+									// making the images for the "word-section" (comp / well name)
+									// of this line.
+									var tmp_coords = /bbox (\d+) (\d+) (\d+) (\d+)/
+										.exec(w[j].getAttribute('title'));
+									tmp_coords = parseInt(tmp_coords[1]);
+									if (tmp_coords < leftmost) {
+										leftmost = tmp_coords;
+									}
 								}
 								if (sf && w[j].innerText.trim() == o.q[num][el].value.trim()) {
-									//~ o.q[num].otcLeaseNo.parentNode.appendChild('<br>');
 									// coords
 									// ex: bbox 60 1478 146 1502; x_wconf 76
 									var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
 										.exec(w[j].getAttribute('title'));
 									var im = document.createElement('canvas');
-									//document.body.appendChild(img2);
 									// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
 									coords[1] = parseInt(coords[1]);
 									coords[2] = parseInt(coords[2]);
 									coords[3] = parseInt(coords[3]);
 									coords[4] = parseInt(coords[4]);
+									im.width = coords[3] - coords[1];
+									im.height = coords[4] - coords[2];
 									im.getContext('2d').drawImage(
-										//~ ni,
-										document.getElementsByTagName('img')[1],
+										ni,
 										coords[1],
 										coords[2],
 										coords[3] - coords[1],
 										coords[4] - coords[2],
-										//0, 0,
-										//coords[3] - coords[1],
-										//coords[4] - coords[2],
+										0, 0,
+										coords[3] - coords[1],
+										coords[4] - coords[2],
 									);
-									im.width = coords[3] - coords[1];
-									im.height = coords[4] - coords[2];
 									o.q[num][el].parentNode.appendChild(document.createElement('br'));
 									o.q[num][el].parentNode.appendChild(im);
+									// zoom
+									im.setAttribute('style', 'zoom:0.5');
 									// Update el to next one in line.
 									el = els.shift(); // get first
 								}
 							}
+							
+							// Now with the leftovers, the first
+							// el will be the left-most.
+							// The last el will be the right-most.
+							var coords1 = /bbox (\d+) (\d+) (\d+) (\d+)/
+										.exec(leftovers[0].getAttribute('title'));
+							var coords2 = /bbox (\d+) (\d+) (\d+) (\d+)/
+										.exec(leftovers[leftovers.length - 1].getAttribute('title'));
+							var im = document.createElement('canvas');
+							// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+							var coords = [];
+							coords[1] = leftmost; //parseInt(coords1[1]);
+							coords[2] = parseInt(coords1[2]);
+							coords[3] = parseInt(coords2[3]);
+							coords[4] = parseInt(coords2[4]);
+							console.log(coords);
+							im.width = coords2[3] - leftmost; //coords1[1];
+							im.height = coords2[4] - coords[2];
+							im.getContext('2d').drawImage(
+								ni,
+								coords[1],
+								coords[2],
+								coords[3] - coords[1],
+								coords[4] - coords[2],
+								0, 0,
+								coords[3] - coords[1],
+								coords[4] - coords[2],
+							);
+							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
+							o.q[num].wellName.parentNode.appendChild(im);
+							// zoom
+							im.setAttribute('style', 'zoom:0.5');
 						} else {
 							//o.q[num].wellName.style.border = '4px solid blue';
 						}
 						
-						// Split by space.
-						//~ var words = line.split(' ');
-						//~ for (var word in words) {
-						//~ }
-						
 						// start incrementing inputs
 						num++;
+						
+						// Old version.
+							// Split by space.
+							//~ var words = line.split(' ');
+							//~ for (var word in words) {
+							//~ }
 					}
 				}
 			}
