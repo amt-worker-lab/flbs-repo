@@ -5571,24 +5571,35 @@ function MT__RUN() {
 				//~ var img = document.createElement('canvas');
 				var ni = new Image();
 				ni.src = 'http://localhost/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
-				ni.style.display = 'none';
+				//~ ni.style.display = 'none';
 				document.body.appendChild(ni);
-				
+				ni.rs = rs;
+				ni.onload = function() {
+					// Allow the image to load before scraping.
+					// Text of course is immediately available.
+					// But adding images with text must wait for this
+					// image to load.
+					scrape(this);
+				}
+			}
+			function scrape(ni) {
+				var rs = ni.rs;
 				// Now re-create using this?
-				var img2 = document.createElement('canvas');
-				document.body.appendChild(img2);
-				img2.style.width = 100;
-				img2.style.height = 20;
-				// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-				img2.getContext('2d').drawImage(ni, 0, 0, 1000, 2000, 0, 0, 100, 20);
-				return;
+				//~ var img2 = document.createElement('canvas');
+				//~ document.body.appendChild(img2);
+				//~ img2.style.width = 100;
+				//~ img2.style.height = 20;
+				//~ img2.getContext('2d').drawImage(ni, 0, 0, 1000, 2000, 0, 0, 100, 20);
+				//~ return;
 				
 				// Page
-				var t = rs.page[0];
-				// This is a dom.
-				var dom = new DOMParser().parseFromString(rs, 'text/html');
-				var lines = dom.getElementsByClassName('ocr_line');
+					// Old one.
+					//~ var t = rs.page[0];
 					//~ t = t.split("\n");
+				// This is a dom.
+				var dom = new DOMParser().parseFromString(rs.page[0], 'text/html');
+				var lines = dom.getElementsByClassName('ocr_line');
+				console.log(lines);
 				var num = 1;
 				var fill_in = false;
 				for (var i=0;i<lines.length;i++) {
@@ -5605,7 +5616,7 @@ function MT__RUN() {
 					if (fill_in) {
 						// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
 						// try easiest
-						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) - - ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
+						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+)[ -]+([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
 						if (x) {
 							line = line.replace(x[0], '').trim();
 							// Just the names now.
@@ -5616,8 +5627,49 @@ function MT__RUN() {
 							o.q[num].custNo.value		= x[3];
 							o.q[num].yrMo.value			= x[4];
 							o.q[num].runs.value			= x[5];
+							//ocrx_word
+							var w = lines[i].getElementsByClassName('ocrx_word');
+							var sf = false;
+							var els = ['otcLeaseNo','mergeNbr','custNo','yrMo','runs',];
+							for (var j=0; j<w.length; j++) {
+								if (w[j].innerText.trim() == x[1]) {
+									var sf = true; // start fill
+									var el = els.shift(); // get first
+								}
+								if (sf && w[j].innerText.trim() == o.q[num][el].value.trim()) {
+									//~ o.q[num].otcLeaseNo.parentNode.appendChild('<br>');
+									// coords
+									// ex: bbox 60 1478 146 1502; x_wconf 76
+									var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
+										.exec(w[j].getAttribute('title'));
+									var im = document.createElement('canvas');
+									//document.body.appendChild(img2);
+									// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+									coords[1] = parseInt(coords[1]);
+									coords[2] = parseInt(coords[2]);
+									coords[3] = parseInt(coords[3]);
+									coords[4] = parseInt(coords[4]);
+									im.getContext('2d').drawImage(
+										//~ ni,
+										document.getElementsByTagName('img')[1],
+										coords[1],
+										coords[2],
+										coords[3] - coords[1],
+										coords[4] - coords[2],
+										//0, 0,
+										//coords[3] - coords[1],
+										//coords[4] - coords[2],
+									);
+									im.width = coords[3] - coords[1];
+									im.height = coords[4] - coords[2];
+									o.q[num][el].parentNode.appendChild(document.createElement('br'));
+									o.q[num][el].parentNode.appendChild(im);
+									// Update el to next one in line.
+									el = els.shift(); // get first
+								}
+							}
 						} else {
-							o.q[num].wellName.style.border = '4px solid blue';
+							//o.q[num].wellName.style.border = '4px solid blue';
 						}
 						
 						// Split by space.
@@ -5629,8 +5681,6 @@ function MT__RUN() {
 						num++;
 					}
 				}
-				//~ // scrape.
-				//~ console.log(txt);
 			}
 		}
 		new run().f();
