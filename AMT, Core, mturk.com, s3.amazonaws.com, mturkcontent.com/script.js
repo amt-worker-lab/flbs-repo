@@ -5547,42 +5547,71 @@ function MT__RUN() {
 				psm: 6//11//5,
 			});
 			function success(options) {
+				var rs = options.rs;
+				console.log(options);
 				// returns options (input) plus options.rs (json response)
-				if (options.error) {
-					console.log(options);
+				if (rs.error) {
 					document.body.style.backgroundColor = 'pink';
 					return;
 				}
 				// only one page!
-				if (options.page.length != 1) {
-					console.log(options);
+				if (rs.page.length != 1) {
 					alert('wrong # pages?');
 					return;
 				}
 				// txt
-				var t = options.page[0];
+				// Idea:
+				//		Operator name is going to be over and over.
+				//		Create an ignore file which auto-ignores these.
+				//		That way, just the "well name" is left here.
+				//		Then just put in remaining text as well name.
+				var t = rs.page[0];
+				// This is a dom.
+				var dom = new DOMParser().parseFromString(rs, 'text/html');
+				
 				t = t.split("\n");
 				var num = 1;
 				var fill_in = false;
-				for (var line in t) {
-					if (/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO|RUNS)/.exec(line) &&
+				for (var i in t) {
+					console.log('x' + i);
+					var line = t[i].trim();
+					console.log(line);
+					if (/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO)/.exec(line) && //|RUNS
 						!fill_in) {
 						// Start filling in from here on.
 						fill_in = true;
+						console.log('start filling in...');
 						continue;
 					}
 					if (fill_in) {
+						// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
 						// try easiest
+						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) - - ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
+						if (x) {
+							line = line.replace(x[0], '').trim();
+							// Just the names now.
+							o.q[num].wellName.value		= line;
+							// others
+							o.q[num].otcLeaseNo.value	= x[1];
+							o.q[num].mergeNbr.value		= x[2];
+							o.q[num].custNo.value		= x[3];
+							o.q[num].yrMo.value			= x[4];
+							o.q[num].runs.value			= x[5];
+						} else {
+							o.q[num].wellName.style.border = '4px solid blue';
+						}
 						
 						// Split by space.
-						var words = line.split(' ');
-						for (var word in words) {
-							
-						}
+						//~ var words = line.split(' ');
+						//~ for (var word in words) {
+						//~ }
+						
+						// start incrementing inputs
+						num++;
 					}
 				}
-				// scrape.
-				console.log(txt);
+				//~ // scrape.
+				//~ console.log(txt);
 			}
 		}
 		new run().f();
