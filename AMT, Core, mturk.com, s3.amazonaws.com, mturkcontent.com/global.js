@@ -3022,8 +3022,10 @@ function AMT___requests_factory(obj_vars) {
  * options				Object.
  * options.url			Required. String.
  * options.callback		Function. Callback for completed.
+ * options.psm			Optional. Int. See "$ tesseract -h" for details.
+ * 						Default=6.
  * options.goodchars_file
- * 						Options. String.
+ * 						Optional. String.
  * 						Uses /usr/share/tesseract/tessdata/configs/goodchars
  * 						by default.
  * 
@@ -3037,6 +3039,10 @@ AMT___requests_factory.prototype.pdfocr = function(options) {
 	var sent_callback_boolean = false;
 	// Set filename
 	options.filename = new AMT___requests_factory().md5(options.url);
+	// Set psm (default=6)
+	if (!options.hasOwnProperty('psm')) {
+		options.psm = 6;
+	}
 	// Set goodchars (default=goodchars)
 	if (!options.hasOwnProperty('goodchars_file')) {
 		options.goodchars_file = 'goodchars';

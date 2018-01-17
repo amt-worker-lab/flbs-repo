@@ -5543,6 +5543,8 @@ function MT__RUN() {
 			var n = new AMT___requests_factory().pdfocr({
 				url: o.p,
 				callback: success,
+				goodchars_file: 'goodchars_VKapadia',
+				psm: 6//11//5,
 			});
 			function success(options) {
 				// returns options (input) plus options.rs (json response)
@@ -5558,7 +5560,27 @@ function MT__RUN() {
 					return;
 				}
 				// txt
-				var txt = options.page[0];
+				var t = options.page[0];
+				t = t.split("\n");
+				var num = 1;
+				var fill_in = false;
+				for (var line in t) {
+					if (/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO|RUNS)/.exec(line) &&
+						!fill_in) {
+						// Start filling in from here on.
+						fill_in = true;
+						continue;
+					}
+					if (fill_in) {
+						// try easiest
+						
+						// Split by space.
+						var words = line.split(' ');
+						for (var word in words) {
+							
+						}
+					}
+				}
 				// scrape.
 				console.log(txt);
 			}
