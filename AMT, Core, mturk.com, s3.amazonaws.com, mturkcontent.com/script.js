@@ -5511,7 +5511,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:12px;}');
-			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('body {background-color:#eeffee;}');
 			//~ GM_addStyle('#mturk_form {margin-top:1000px;}');
 			//~ GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
 			//~ GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
@@ -5525,8 +5525,9 @@ function MT__RUN() {
 			var x = document.getElementsByTagName('img');
 			var o = {
 				p: x[0].src.trim(),
-				min_x: null, //to be set
-				main_image: null, //to be set, contains main image that is used in canvas to make other mini-images
+				min_x: null, // to be set
+				main_image: null, // to be set, contains main image that is used in canvas to make other mini-images
+				df: null, // to be set, the disk file api for word matching
 				q: [
 					//document.getElementById('web_url')
 				],
@@ -5629,7 +5630,24 @@ function MT__RUN() {
 					}
 					// Now text-align td to the right.
 					o.q[i].wellName.parentNode.style.textAlign = 'right';
+					// Set initial disk words array.
+					// Well name is in its "final form" before user begins
+					// editing.
+					o.q[i].wellName.disk_words = o.q[i].wellName.value.split(' ');
 				}
+				// Load words from file
+				// Now that all inputs are setup, load words
+				// from file to check for auto-changes.
+				// This will alter any inputs.
+				// Then, onsubmit, this will be called to write
+				// any changes to file.
+				o.df = new AMT___requests_factory().disk_file({
+					folder: '.miscellaneous',
+					callback_init_read: f_load,
+					callback_init_write: f_load_and_update,
+					callback_write_complete: f_write_complete,
+					filename: 'VirenKapadia.json',
+				});
 			}
 			var n = new AMT___requests_factory().pdfocr({
 				url: o.p,
@@ -5637,17 +5655,86 @@ function MT__RUN() {
 				goodchars_file: 'goodchars_VKapadia',
 				psm: 6//11//5,
 			});
-			// saved words
-			o.df = new AMT___requests_factory().disk_file({
-				folder: '.miscellaneous',
-				callback_init_read: f_load,
-				callback_init_write: f_load_and_update,
-				callback_write_complete: f_write_complete,
-				filename: 'VirenKapadia.json',
-			});
-			function f_load() {
+			function f_load(obj) {
 				// Loop through all wellName text boxes.
-				
+				// obj is empty on first run.
+				for (var i=1; i<=20; i++) {
+					var x = o.q[i].wellName.value.split(' ');
+					var new_words = [];
+					for (var j in x) {
+						var word = x[j];
+						if (obj.hasOwnProperty(word)) { // At least twice changed
+							// The word exists, has been previously changed.
+							// Top word, versus total changes.
+							// At least two prior changes.
+							// At least 60% of changes in this way.
+							if (obj[word].best_match) {
+								new_words.push(obj[word].best_match);
+								// Mark the input field to show a change.
+								o.q[i].wellName.style.backgroundColor = 'yellow';
+								continue;
+							}
+						}
+						// Still here. So there is no best match.
+						// Use the existing word.
+						new_words.push(word);
+					}
+					o.q[i].wellName.value = new_words.join(' ');
+				}
+			}
+			function f_load_and_update(obj) {
+				// Obj is being loaded off disk.
+				// So that it is the most recent version.
+				// Check all fields to see if they are changed.
+				for (var i=1; i<=20; i++) {
+					var x = o.q[i].wellName.value.split(' ');
+					if (x.length == o.q[i].wellName.disk_words.length) {
+						var dw = o.q[i].wellName.disk_words;
+						for (var j in dw) {
+							if (dw[j] != x[j]) {
+								// A change.
+								var new_word = x[j];
+								var old_word = dw[j];
+								try {
+									// This try will succeed if the
+									// word has been changed at least
+									// one time.
+									if (obj[old_word].choices.hasOwnProperty(new_word)) {
+										// Has matched previously
+										obj[old_word].choices[new_word]++;
+									} else {
+										// First time matched
+										obj[old_word].choices[new_word] = 1;
+									}
+									obj[old_word].num_changed++;
+									// Now check if there is a consensus.
+									obj[old_word].best_match = null; // Reset temporarily
+									for (var word in obj[old_word].choices) {
+										var num = obj[old_word].choices[word];
+										var pct = num / obj[old_word].num_changed;
+										if (pct >= 0.66) {
+											// At least 2/3 consensus.
+											obj[old_word].best_match = word;
+											break;
+										}
+									}
+								} catch(e) {
+									// First time old_word has been changed.
+									obj[old_word] = {
+										best_match: null,
+										choices: {new_word: 1},
+										num_changed: 1,
+									}
+								}
+							}
+						}
+					}
+				}
+				// Object has possibly been altered.
+				// It is now written to disk.
+			}
+			function f_write_complete(obj) {
+				doSubmit();
 			}
 			// sbm
 			document.getElementById('mturk_form').onsubmit = function(e) {
@@ -5656,10 +5743,10 @@ function MT__RUN() {
 				// Write to file any different ones.
 				// But first go next tab.
 				new AMT___core_factory().nextTab();
-				
-				
-				// Sbm
-				doSubmit();
+				// Call load and update.
+				// This will eventually end in calling doSubmit().
+				o.df.load_and_update();
+				//~ doSubmit();
 				return false;
 			}
 			function success(options) {
@@ -5743,7 +5830,7 @@ function MT__RUN() {
 							line = line.replace(x[0], '').trim();
 							// Just the names now.
 							// Replace "II\d+II" with '"\d+"'.
-							o.q[num].wellName.value		= line.replace(/ II(\d+)II /g, ' "$1" ');
+							o.q[num].wellName.value		= line.replace(/ II*(\d+)II* /g, ' "$1" '); // At one or more Is.
 							// others
 							o.q[num].otcLeaseNo.value	= x[1];
 							o.q[num].mergeNbr.value		= x[2];
