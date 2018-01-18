@@ -5519,7 +5519,7 @@ function MT__RUN() {
 			
 			// gm
 			GM_addStyle('.wellName {width:96%;text-align:right;}');
-			GM_addStyle('#submitButton {width:100%;height:60px;}');
+			GM_addStyle('#submitButton {width:100%;height:600px;cursor:pointer;}');
 			//~ GM_addStyle('body {height:2000px;}');
 			
 			var x = document.getElementsByTagName('img');
@@ -5866,10 +5866,12 @@ function MT__RUN() {
 								coords[3] - coords[1],
 								coords[4] - coords[2],
 							);
-							o.q[num].wellName.parentNode.parentNode.appendChild(document.createElement('br'));
-							o.q[num].wellName.parentNode.parentNode.appendChild(im);
+							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
+							o.q[num].wellName.parentNode.appendChild(im);
 							// zoom
-							im.setAttribute('style', 'zoom:0.4');
+							im.setAttribute('style', 'zoom:0.4;position:absolute;');
+							// resize td
+							o.q[num].wellName.parentNode.style.height = '40px';
 						}
 						
 						// start incrementing inputs
