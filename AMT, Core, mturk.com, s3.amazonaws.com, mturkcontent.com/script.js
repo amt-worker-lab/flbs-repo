@@ -5608,6 +5608,8 @@ function MT__RUN() {
 							).trim(); // Remove first instance.
 						}
 					}
+					// Now text-align td to the right.
+					o.q[i].wellName.parentNode.style.textAlign = 'right';
 				}
 			}
 			var n = new AMT___requests_factory().pdfocr({
@@ -5709,7 +5711,8 @@ function MT__RUN() {
 						if (x) {
 							line = line.replace(x[0], '').trim();
 							// Just the names now.
-							o.q[num].wellName.value		= line;
+							// Replace "II\d+II" with '"\d+"'.
+							o.q[num].wellName.value		= line.replace(/ II(\d+)II /g, ' "$1" ');
 							// others
 							o.q[num].otcLeaseNo.value	= x[1];
 							o.q[num].mergeNbr.value		= x[2];
