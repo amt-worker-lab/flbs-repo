@@ -5637,9 +5637,28 @@ function MT__RUN() {
 				goodchars_file: 'goodchars_VKapadia',
 				psm: 6//11//5,
 			});
+			// saved words
+			o.df = new AMT___requests_factory().disk_file({
+				folder: '.miscellaneous',
+				callback_init_read: f_load,
+				callback_init_write: f_load_and_update,
+				callback_write_complete: f_write_complete,
+				filename: 'VirenKapadia.json',
+			});
+			function f_load() {
+				// Loop through all wellName text boxes.
+				
+			}
+			// sbm
 			document.getElementById('mturk_form').onsubmit = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
+				// Write to file any different ones.
+				// But first go next tab.
+				new AMT___core_factory().nextTab();
+				
+				
+				// Sbm
 				doSubmit();
 				return false;
 			}

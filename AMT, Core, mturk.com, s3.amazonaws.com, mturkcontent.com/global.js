@@ -5622,7 +5622,7 @@ AMT___requests_factory.prototype.io__AMT__displayPostStrAsHTML = function(str, i
 }
 /**
  * Returns the following methods:
- * 		.load
+ * 		.read_init
  * 		.load_and_update
  * 
  **/
@@ -5635,7 +5635,6 @@ AMT___requests_factory.prototype.disk_file = function(opts_object) //
 	}
 	// Check exists
 	var rf = new AMT___requests_factory();
-	//~ .io__file_exists('', cb, {folder: opts_object.folder});
 	// Init read.
 	read_init();
 	function read_init() {
@@ -5680,9 +5679,9 @@ AMT___requests_factory.prototype.disk_file = function(opts_object) //
 	}
 	function write(json) {
 		rf.io__write_to_file({
-				data:		'AMT__serverSide_write__value='	+encodeURIComponent(json)+
-							'&AMT__serverSide_write__folder=.miscellaneous'+
-							'&AMT__serverSide_write__file='	+ encodeURIComponent(opts_object.filename),
+				data:	'AMT__serverSide_write__value='	+encodeURIComponent(json)+
+						'&AMT__serverSide_write__folder=.miscellaneous'+
+						'&AMT__serverSide_write__file='	+ encodeURIComponent(opts_object.filename),
 				//~ rs:			json,
 			},
 			write_complete
