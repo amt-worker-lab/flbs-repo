@@ -5548,6 +5548,9 @@ function MT__RUN() {
 					'yrMo':			document.getElementById('row-'+i+'-yrMo'),
 					'runs':			document.getElementById('row-'+i+'-runs'),
 				}
+				// move lease no to the right.
+				//~ o.q[i].otcLeaseNo.parentNode.setAttribute('style', 'margin-left:28px;');
+				// wellname click
 				o.q[i].wellName.className = 'wellName'; // Provide a class name for sizing purposes.
 				o.q[i].wellName.first_click = false;
 				o.q[i].wellName.ondblclick = function(e) {
@@ -5646,7 +5649,9 @@ function MT__RUN() {
 					var line = lines[i].innerText.replace(/\s+/g, ' ').trim();
 					console.log('x' + i);
 					console.log(line);
-					if (/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO)/.exec(line) && //|RUNS
+					if (
+						/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO|1ERAT0R NAME|HELL NAME|LEASE N0)/
+							.exec(line) && //|RUNS
 						!fill_in) {
 						// Start filling in from here on.
 						fill_in = true;
@@ -5656,7 +5661,7 @@ function MT__RUN() {
 					if (fill_in) {
 						// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
 						// try easiest
-						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d]( [-,\d]|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
+						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d&]( [-,\d&]|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
 						if (x) {
 							line = line.replace(x[0], '').trim();
 							// Just the names now.
@@ -5676,7 +5681,6 @@ function MT__RUN() {
 								if (w[j].innerText.trim() == x[1]) {
 									var sf = true; // start fill
 									var el = els.shift(); // get first
-									el.setAttribute('style', 'margin-left:28px;');
 								} else if (!sf) {
 									// This is part of the business name
 									// and well name.
@@ -5757,7 +5761,8 @@ function MT__RUN() {
 							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
 							o.q[num].wellName.parentNode.appendChild(im);
 							// zoom
-							im.setAttribute('style', 'zoom:0.4;margin-right:-66px;');
+							im.setAttribute('style', 'zoom:0.4;'); //margin-right:-66px;
+							im.parentNode.setAttribute('style', 'padding-right:10px;'); //margin-right:-66px;
 						} else {
 							o.q[num].wellName.style.border = '4px solid blue';
 						}
