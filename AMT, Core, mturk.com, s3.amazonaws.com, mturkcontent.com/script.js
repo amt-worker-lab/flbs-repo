@@ -5587,6 +5587,11 @@ function MT__RUN() {
 				}
 			}
 			function scrape(ni) {
+				// TODO
+				// 		Add "remove everything left of x-coordinate"
+				//		where x-coordinate is specified by mouse
+				//		x-pos for [comp/wellname image].onclick.
+				
 				var rs = ni.rs;
 				// Now re-create using this?
 				//~ var img2 = document.createElement('canvas');
@@ -5621,7 +5626,7 @@ function MT__RUN() {
 					if (fill_in) {
 						// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
 						// try easiest
-						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+)[ -]+([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
+						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d]( [-,\d]|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
 						if (x) {
 							line = line.replace(x[0], '').trim();
 							// Just the names now.
@@ -5629,9 +5634,9 @@ function MT__RUN() {
 							// others
 							o.q[num].otcLeaseNo.value	= x[1];
 							o.q[num].mergeNbr.value		= x[2];
-							o.q[num].custNo.value		= x[3];
-							o.q[num].yrMo.value			= x[4];
-							o.q[num].runs.value			= x[5];
+							o.q[num].custNo.value		= x[4];
+							o.q[num].yrMo.value			= x[5];
+							o.q[num].runs.value			= x[6];
 							//ocrx_word
 							var w = lines[i].getElementsByClassName('ocrx_word');
 							var sf = false;
@@ -5685,7 +5690,7 @@ function MT__RUN() {
 									o.q[num][el].parentNode.appendChild(document.createElement('br'));
 									o.q[num][el].parentNode.appendChild(im);
 									// zoom
-									im.setAttribute('style', 'zoom:0.5');
+									im.setAttribute('style', 'zoom:0.4');
 									// Update el to next one in line.
 									el = els.shift(); // get first
 								}
@@ -5721,9 +5726,9 @@ function MT__RUN() {
 							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
 							o.q[num].wellName.parentNode.appendChild(im);
 							// zoom
-							im.setAttribute('style', 'zoom:0.5');
+							im.setAttribute('style', 'zoom:0.4');
 						} else {
-							//o.q[num].wellName.style.border = '4px solid blue';
+							o.q[num].wellName.style.border = '4px solid blue';
 						}
 						
 						// start incrementing inputs
