@@ -5545,11 +5545,28 @@ function MT__RUN() {
 			}
 			var d2 = document.createElement('input');
 			d2.type = 'text';
-			d2.setAttribute('style', 'position:absolute;top:0px;left:60px;width:100px;height:10px;');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:60px;width:100px;height:20px;');
 			document.body.appendChild(d2);
 			var d3 = document.createElement('textarea');
-			d3.setAttribute('style', 'position:absolute;top:0px;left:160px;width:20px;height:10px;');
+			d3.setAttribute('style', 'position:absolute;top:0px;left:160px;width:20px;height:20px;');
 			document.body.appendChild(d3);
+			var d4 = document.createElement('input');
+			d4.type = 'button'
+			d4.setAttribute('style', 'position:absolute;top:0px;left:180px;width:100px;height:20px;');
+			document.body.appendChild(d4);
+			if (sessionStorage['virenda-el'] == undefined) { // default = bottom
+				sessionStorage['virenda-el'] = 'bottom';	
+			}
+			d4.value = sessionStorage['virenda-el'];
+			d4.onclick = function() {
+				if (this.value == 'bottom') {
+					this.value = 'top';
+					sessionStorage['virenda-el'] = 'top';
+				} else {
+					this.value = 'bottom';
+					sessionStorage['virenda-el'] = 'bottom';
+				}
+			}
 			/*END ITEMS*/
 			// open the pdf for debugging
 			x[0].onclick = function() {
@@ -5790,6 +5807,22 @@ function MT__RUN() {
 					scrape();
 				}
 			}
+			function add_el(el, im) {
+				// Add elements to top or bottom, based on user variable.
+				//
+				// Sample call: add_el(o.q[num][el], im);
+				if (sessionStorage['virenda-el'] == 'bottom') {
+					el.parentNode.appendChild(document.createElement('br'));
+					el.parentNode.appendChild(im);
+				} else {
+					// prepend br
+					el.parentNode.insertBefore(
+						document.createElement('br'),
+						el.parentNode.firstChild);
+					// prepend image
+					el.parentNode.insertBefore(im, el.parentNode.firstChild);
+				}
+			}
 			function scrape() {
 				// TODO
 				// 		Add "remove everything left of x-coordinate"
@@ -5893,8 +5926,9 @@ function MT__RUN() {
 										coords[3] - coords[1],
 										coords[4] - coords[2],
 									);
-									o.q[num][el].parentNode.appendChild(document.createElement('br'));
-									o.q[num][el].parentNode.appendChild(im);
+									add_el(o.q[num][el], im);
+									//~ o.q[num][el].parentNode.appendChild(document.createElement('br'));
+									//~ o.q[num][el].parentNode.appendChild(im);
 									// zoom
 									im.setAttribute('style', 'zoom:0.4');
 									// Update el to next one in line.
@@ -5941,8 +5975,9 @@ function MT__RUN() {
 								coords[3] - coords[1],
 								coords[4] - coords[2],
 							);
-							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
-							o.q[num].wellName.parentNode.appendChild(im);
+							add_el(o.q[num].wellName, im);
+							//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
+							//~ o.q[num].wellName.parentNode.appendChild(im);
 							// set the word x-values, so that .onclick,
 							// if first click, then delete all well-names.
 							o.q[num].wellName.words = [];
@@ -5986,8 +6021,9 @@ function MT__RUN() {
 								coords[3] - coords[1],
 								coords[4] - coords[2],
 							);
-							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
-							o.q[num].wellName.parentNode.appendChild(im);
+							add_el(o.q[num].wellName, im);
+							//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
+							//~ o.q[num].wellName.parentNode.appendChild(im);
 							// zoom
 							im.setAttribute('style', 'zoom:0.4;position:absolute;');
 							// resize td
