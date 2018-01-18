@@ -5521,7 +5521,8 @@ function MT__RUN() {
 			
 			// gm
 			GM_addStyle('.wellName {width:96%;text-align:right;}');
-			GM_addStyle('body {height:2000px;}');
+			GM_addStyle('#submitButton {width:100%;height:60px;}');
+			//~ GM_addStyle('body {height:2000px;}');
 			
 			var x = document.getElementsByTagName('img');
 			var o = {
@@ -5533,6 +5534,10 @@ function MT__RUN() {
 				q: [
 					//document.getElementById('web_url')
 				],
+			}
+			// open for debug
+			x[0].onclick = function() {
+				window.open(x[0].src);
 			}
 			for (var i=1; i<=20; i++) {
 				o.q[i] = {
@@ -5569,6 +5574,12 @@ function MT__RUN() {
 				goodchars_file: 'goodchars_VKapadia',
 				psm: 6//11//5,
 			});
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
 			function success(options) {
 				var rs = options.rs;
 				console.log(options);
@@ -5665,6 +5676,7 @@ function MT__RUN() {
 								if (w[j].innerText.trim() == x[1]) {
 									var sf = true; // start fill
 									var el = els.shift(); // get first
+									el.setAttribute('style', 'margin-left:28px;');
 								} else if (!sf) {
 									// This is part of the business name
 									// and well name.
@@ -5745,7 +5757,7 @@ function MT__RUN() {
 							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
 							o.q[num].wellName.parentNode.appendChild(im);
 							// zoom
-							im.setAttribute('style', 'zoom:0.4');
+							im.setAttribute('style', 'zoom:0.4;margin-right:-66px;');
 						} else {
 							o.q[num].wellName.style.border = '4px solid blue';
 						}
