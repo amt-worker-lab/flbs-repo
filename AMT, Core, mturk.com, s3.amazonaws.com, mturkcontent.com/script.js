@@ -5520,7 +5520,8 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute !important;top:1400px !important;}');
 			
 			// gm
-			GM_addStyle('.wellName {width:100%;text-align:right;}');
+			GM_addStyle('.wellName {width:96%;text-align:right;}');
+			GM_addStyle('body {height:2000px;}');
 			
 			var x = document.getElementsByTagName('img');
 			var o = {
@@ -5543,6 +5544,24 @@ function MT__RUN() {
 					'runs':			document.getElementById('row-'+i+'-runs'),
 				}
 				o.q[i].wellName.className = 'wellName'; // Provide a class name for sizing purposes.
+				o.q[i].wellName.first_click = false;
+				o.q[i].wellName.ondblclick = function(e) {
+					if (this.old_text) {
+						this.value = this.old_text;
+						this.first_click = false; // reset this.
+					}
+				}
+				o.q[i].wellName.onclick = function(e) {
+					// Click on a word, removes everything to the left
+					// of this word.
+					if (!this.first_click) {
+						this.first_click = true;
+						this.old_text = this.value;
+						var new_text = this.value.substr(0, this.selectionStart);
+						new_text = new_text.replace(/[^ ]+$/, ''); // Remove non-spaces at end
+						this.value = this.value.replace(new_text, '');
+					}
+				}
 			}
 			var n = new AMT___requests_factory().pdfocr({
 				url: o.p,
