@@ -5526,6 +5526,7 @@ function MT__RUN() {
 			var o = {
 				p: x[0].src.trim(),
 				min_x: null, //to be set
+				main_image: null, //to be set, contains main image that is used in canvas to make other mini-images
 				q: [
 					//document.getElementById('web_url')
 				],
@@ -5535,17 +5536,31 @@ function MT__RUN() {
 			// Instead, just reload the page.
 			var d1 = document.createElement('input');
 			d1.type = 'button';
-			d1.setAttribute('style', 'position:absolute;top:0px;left:0px;');
+			d1.setAttribute('style', 'position:absolute;top:0px;left:0px;width:60px;');
 			d1.value = 'reset page';
 			document.body.appendChild(d1);
 			d1.onclick = function() {
 				document.location.href = document.location.href;
 			}
+			var d2 = document.createElement('input');
+			d2.type = 'text';
+			d2.setAttribute('style', 'position:absolute;top:0px;left:60px;width:100px;height:10px;');
+			document.body.appendChild(d2);
+			var d3 = document.createElement('textarea');
+			d3.setAttribute('style', 'position:absolute;top:0px;left:160px;width:20px;height:10px;');
+			document.body.appendChild(d3);
 			/*END ITEMS*/
-			// open for debug
+			// open the pdf for debugging
 			x[0].onclick = function() {
 				window.open(x[0].src);
 			}
+			// textarea onblur
+			// Run a manual scrape.
+			// User has set d2 to the 
+			d2.onblur = function() {
+				scrape();
+			}
+			//...
 			for (var i=1; i<=20; i++) {
 				o.q[i] = {
 					'wellName':		document.getElementById('row-'+i+'-wellName'),
@@ -5650,58 +5665,51 @@ function MT__RUN() {
 				
 				// Idea:
 				//		Canvas plus hocr
-				//~ var img = document.createElement('canvas');
-				var ni = new Image();
-				ni.src = MT___host+'/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
-				//~ ni.src = 'http://localhost/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
-				ni.style.display = 'none';
-				document.body.appendChild(ni);
-				ni.rs = rs;
-				ni.onload = function() {
+				o.main_image = new Image();
+				o.main_image.src = MT___host+'/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
+				o.main_image.style.display = 'none';
+				document.body.appendChild(o.main_image);
+				o.main_image.rs = rs.page[0];
+				o.main_image.onload = function() {
 					// Allow the image to load before scraping.
 					// Text of course is immediately available.
 					// But adding images with text must wait for this
 					// image to load.
-					scrape(this);
+					scrape();
 				}
 			}
-			function scrape(ni) {
+			function scrape() {
 				// TODO
 				// 		Add "remove everything left of x-coordinate"
 				//		where x-coordinate is specified by mouse
 				//		x-pos for [comp/wellname image].onclick.
 				
-				var rs = ni.rs;
-				// Now re-create using this?
-				//~ var img2 = document.createElement('canvas');
-				//~ document.body.appendChild(img2);
-				//~ img2.style.width = 100;
-				//~ img2.style.height = 20;
-				//~ img2.getContext('2d').drawImage(ni, 0, 0, 1000, 2000, 0, 0, 100, 20);
-				//~ return;
+				var rs = o.main_image.rs;
 				
-				// Page
-					// Old one.
-					//~ var t = rs.page[0];
-					//~ t = t.split("\n");
+				// Reset d3.value
+				d3.value = '';
 				// This is a dom.
-				var dom = new DOMParser().parseFromString(rs.page[0], 'text/html');
+				var dom = new DOMParser().parseFromString(rs, 'text/html');
 				var lines = dom.getElementsByClassName('ocr_line');
 				console.log(lines);
 				var num = 1;
 				var fill_in = false;
 				var leftmost = 9999; // Goes down over time, it is the leftmost word (of importance) on the page.
-				for (var i=0;i<lines.length;i++) {
+				for (var i=0; i<lines.length; i++) {
 					var line = lines[i].innerText.replace(/\s+/g, ' ').trim();
 					console.log('x' + i);
 					console.log(line);
+					d3.value += line + '\n';
 					// If there are more lines than there are number
 					// of inputs on the page, then it's time to quit.
 					if (num > 20) break;
 					// Matching the line on which the data starts.
 					if (
+						(
 						/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO|1ERAT0R NAME|HELL NAME|LEASE N0)/
-							.exec(line) && //|RUNS
+							.exec(line) ||
+						line == d2.value.trim() // This is a manual run.
+						) && //|RUNS
 						!fill_in) {
 						// Start filling in from here on.
 						fill_in = true;
@@ -5764,7 +5772,7 @@ function MT__RUN() {
 									im.width = coords[3] - coords[1];
 									im.height = coords[4] - coords[2];
 									im.getContext('2d').drawImage(
-										ni,
+										o.main_image,
 										coords[1],
 										coords[2],
 										coords[3] - coords[1],
@@ -5812,7 +5820,7 @@ function MT__RUN() {
 							im.width = coords2[3] - leftmost; //"leftmost" used to be coords1[1];
 							im.height = coords2[4] - coords[2];
 							im.getContext('2d').drawImage(
-								ni,
+								o.main_image,
 								coords[1],
 								coords[2],
 								coords[3] - coords[1],
@@ -5857,7 +5865,7 @@ function MT__RUN() {
 							im.width = coords[3] - coords[1];
 							im.height = coords[4] - coords[2];
 							im.getContext('2d').drawImage(
-								ni,
+								o.main_image,
 								coords[1],
 								coords[2],
 								coords[3] - coords[1],
@@ -5876,12 +5884,6 @@ function MT__RUN() {
 						
 						// start incrementing inputs
 						num++;
-						
-						// Old version.
-							// Split by space.
-							//~ var words = line.split(' ');
-							//~ for (var word in words) {
-							//~ }
 					}
 				}
 			}
