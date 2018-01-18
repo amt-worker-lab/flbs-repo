@@ -5561,15 +5561,19 @@ function MT__RUN() {
 				o.q[i].wellName.className = 'wellName'; // Provide a class name for sizing purposes.
 				o.q[i].wellName.first_click = false;
 				o.q[i].wellName.ondblclick = function(e) {
-					if (this.old_text) {
-						this.value = this.old_text;
-						this.first_click = false; // reset this.
-					}
+					// Not used anymore. 
+					//~ if (this.old_text) {
+						//~ this.value = this.old_text;
+						//~ this.first_click = false; // reset this.
+					//~ }
 				}
 				o.q[i].wellName.onclick = function(e) {
 					// Click on a word, removes everything to the left
 					// of this word.
-					if (!this.first_click) {
+					//~ if (!this.first_click) {
+					// Only run on the first instance.
+					// After that, all clicks are "normal"!
+					if (o.min_x == null) {
 						this.first_click = true;
 						this.old_text = this.value;
 						var new_text = this.value.substr(0, this.selectionStart);
@@ -5707,7 +5711,7 @@ function MT__RUN() {
 					if (fill_in) {
 						// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
 						// try easiest
-						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d&]( [-,\d&]|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
+						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d&A-Z]+( [-,\d&A-Z]+|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
 						if (x) {
 							line = line.replace(x[0], '').trim();
 							// Just the names now.
