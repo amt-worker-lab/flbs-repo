@@ -5633,6 +5633,11 @@ function MT__RUN() {
 					// Set initial disk words array.
 					// Well name is in its "final form" before user begins
 					// editing.
+					// Do this before checking for auto-changes.
+					// This way, if a word is changed, then the user will
+					// be validating its change by keeping it.
+					// Unless of course it is wrong, then they would change
+					// the word to something else.
 					o.q[i].wellName.disk_words = o.q[i].wellName.value.split(' ');
 				}
 				// Load words from file
