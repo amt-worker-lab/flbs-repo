@@ -5506,8 +5506,6 @@ function MT__RUN() {
 	//
 	// 
 	var s = '<p>Please copy each row of data from the image below to the table underneath it.&nbsp;ONLY copy data from columns: &nbsp;"WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" &amp; "RUNS".</p>';
-	//~ var s = 'Please copy each row of data from the image below to the table underneath it.&nbsp;ONLY copy data from columns: &nbsp;"WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".';
-	//~ var s = 'Please copy each row of data from the image below to the table underneath it. ONLY copy data from columns:  "WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
@@ -5532,6 +5530,18 @@ function MT__RUN() {
 					//document.getElementById('web_url')
 				],
 			}
+			/*BEGIN ITEMS*/
+			// Button to reset well names and min_x.
+			// Instead, just reload the page.
+			var d1 = document.createElement('input');
+			d1.type = 'button';
+			d1.setAttribute('style', 'position:absolute;top:0px;left:0px;');
+			d1.value = 'reset page';
+			document.body.appendChild(d1);
+			d1.onclick = function() {
+				document.location.href = document.location.href;
+			}
+			/*END ITEMS*/
 			// open for debug
 			x[0].onclick = function() {
 				window.open(x[0].src);
@@ -5636,7 +5646,8 @@ function MT__RUN() {
 				//		Canvas plus hocr
 				//~ var img = document.createElement('canvas');
 				var ni = new Image();
-				ni.src = 'http://localhost/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
+				ni.src = MT___host+'/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
+				//~ ni.src = 'http://localhost/mturk/.cached/'+options.filename+'full.png'; //canvas.toDataURL("image/png");
 				ni.style.display = 'none';
 				document.body.appendChild(ni);
 				ni.rs = rs;
@@ -5678,6 +5689,10 @@ function MT__RUN() {
 					var line = lines[i].innerText.replace(/\s+/g, ' ').trim();
 					console.log('x' + i);
 					console.log(line);
+					// If there are more lines than there are number
+					// of inputs on the page, then it's time to quit.
+					if (num > 20) break;
+					// Matching the line on which the data starts.
 					if (
 						/(OPERATOR\s*NAME|WELL\s*NAME|OTC\s*LEASE|API\s*NO|CUST\s*NO|YRMO|1ERAT0R NAME|HELL NAME|LEASE N0)/
 							.exec(line) && //|RUNS
