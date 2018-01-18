@@ -5659,16 +5659,15 @@ function MT__RUN() {
 				// Loop through all wellName text boxes.
 				// obj is empty on first run.
 				for (var i=1; i<=20; i++) {
-					var x = o.q[i].wellName.value.split(' ');
+					var words = o.q[i].wellName.value.split(' ');
 					var new_words = [];
-					for (var j in x) {
-						var word = x[j];
-						if (obj.hasOwnProperty(word)) { // At least twice changed
-							// The word exists, has been previously changed.
-							// Top word, versus total changes.
-							// At least two prior changes.
-							// At least 60% of changes in this way.
-							if (obj[word].best_match) {
+					for (var j in words) {
+						var word = words[j];
+						if (obj.hasOwnProperty(word)) {
+							// The word exists.
+							// Now check if it differs from what is here.
+							// Most times it will not.
+							if (obj[word].best_match && obj[word].best_match != word) {
 								new_words.push(obj[word].best_match);
 								// Mark the input field to show a change.
 								o.q[i].wellName.style.backgroundColor = 'yellow';
@@ -5691,42 +5690,44 @@ function MT__RUN() {
 					if (x.length == o.q[i].wellName.disk_words.length) {
 						var dw = o.q[i].wellName.disk_words;
 						for (var j in dw) {
-							if (dw[j] != x[j]) {
-								// A change.
-								var new_word = x[j];
-								var old_word = dw[j];
-								try {
-									// This try will succeed if the
-									// word has been changed at least
-									// one time.
-									if (obj[old_word].choices.hasOwnProperty(new_word)) {
-										// Has matched previously
-										obj[old_word].choices[new_word]++;
-									} else {
-										// First time matched
-										obj[old_word].choices[new_word] = 1;
-									}
-									obj[old_word].num_changed++;
-									// Now check if there is a consensus.
-									obj[old_word].best_match = null; // Reset temporarily
-									for (var word in obj[old_word].choices) {
-										var num = obj[old_word].choices[word];
-										var pct = num / obj[old_word].num_changed;
-										if (pct >= 0.66) {
-											// At least 2/3 consensus.
-											obj[old_word].best_match = word;
-											break;
-										}
-									}
-								} catch(e) {
-									// First time old_word has been changed.
-									obj[old_word] = {
-										best_match: null,
-										choices: {new_word: 1},
-										num_changed: 1,
+							//if (dw[j] != x[j]) {
+							// Always write to file.
+							var new_word = x[j];
+							var old_word = dw[j];
+							try {
+								// This try will succeed if the
+								// word has been changed at least
+								// one time.
+								if (obj[old_word].choices.hasOwnProperty(new_word)) {
+									// Has matched previously
+									obj[old_word].choices[new_word]++;
+								} else {
+									// First time matched
+									obj[old_word].choices[new_word] = 1;
+								}
+								obj[old_word].num_changed++;
+								// Now check if there is a consensus.
+								obj[old_word].best_match = null; // Reset temporarily
+								for (var word in obj[old_word].choices) {
+									var num = obj[old_word].choices[word];
+									var pct = num / obj[old_word].num_changed;
+									if (pct >= 0.66) {
+										// At least 2/3 consensus.
+										obj[old_word].best_match = word;
+										break;
 									}
 								}
+							} catch(e) {
+								// First time old_word has been written.
+								obj[old_word] = {
+									best_match: null,
+									choices: {},
+									num_changed: 1,
+								}
+								// Set first change.
+								obj[old_word].choices[new_word] = 1;
 							}
+							//}
 						}
 					}
 				}
