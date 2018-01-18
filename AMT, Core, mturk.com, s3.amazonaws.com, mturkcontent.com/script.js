@@ -5840,6 +5840,36 @@ function MT__RUN() {
 							im.parentNode.setAttribute('style', 'padding-right:10px;'); //margin-right:-66px;
 						} else {
 							o.q[num].wellName.style.border = '4px solid blue';
+							// show line text
+							o.q[num].wellName.value = line;
+							// add image of entire line!
+							//title="bbox 109 472 1089 501; baseline 0.004 -4; x_size 43.75; x_descenders 8.5; x_ascenders 11.75"
+							
+							// Make image.
+							var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
+								.exec(lines[i].getAttribute('title'));
+							var im = document.createElement('canvas');
+							// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+							coords[1] = parseInt(coords[1]);
+							coords[2] = parseInt(coords[2]);
+							coords[3] = parseInt(coords[3]);
+							coords[4] = parseInt(coords[4]);
+							im.width = coords[3] - coords[1];
+							im.height = coords[4] - coords[2];
+							im.getContext('2d').drawImage(
+								ni,
+								coords[1],
+								coords[2],
+								coords[3] - coords[1],
+								coords[4] - coords[2],
+								0, 0,
+								coords[3] - coords[1],
+								coords[4] - coords[2],
+							);
+							o.q[num].wellName.parentNode.parentNode.appendChild(document.createElement('br'));
+							o.q[num].wellName.parentNode.parentNode.appendChild(im);
+							// zoom
+							im.setAttribute('style', 'zoom:0.4');
 						}
 						
 						// start incrementing inputs
