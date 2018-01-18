@@ -5527,10 +5527,7 @@ function MT__RUN() {
 			var x = document.getElementsByTagName('img');
 			var o = {
 				p: x[0].src.trim(),
-				//~ u: null,
-				//~ df: null, // A factory object for disk file
-				//~ submits: {}, // to be filled in from disk!
-				//~ submits_sorted: [], // to be filled in from disk!
+				min_x: null, //to be set
 				q: [
 					//document.getElementById('web_url')
 				],
@@ -5567,7 +5564,39 @@ function MT__RUN() {
 						this.old_text = this.value;
 						var new_text = this.value.substr(0, this.selectionStart);
 						new_text = new_text.replace(/[^ ]+$/, ''); // Remove non-spaces at end
-						this.value = this.value.replace(new_text, '');
+						this.value = this.value.replace(new_text, '').trim();
+						
+						// Also, remove all other wellNames.
+						//word.min_x_value = coords[1];
+						//		o.q[num].wellName.words.push(
+						//			word
+						//		);
+						var new_words = this.value.split(' ');
+						var most_left = new_words[0];
+						for (var w in this.words) {
+							var word = this.words[w];
+							if (word.innerText.trim() == most_left.trim()) {
+								// Now clean other well names.
+								// But only on the first time this happens.
+								if (o.min_x == null) {
+									o.min_x = word.min_x_value;
+									clean_wn();
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+			function clean_wn() {
+				for (var i=1; i<=20; i++) {
+					for (var w in o.q[i].wellName.words) {
+						var word = o.q[i].wellName.words[w];
+						if (word.min_x_value < o.min_x - 20) { // At least 20px to the left of min x.
+							o.q[i].wellName.value = o.q[i].wellName.value.replace(
+								word.innerText.trim(), ''
+							).trim(); // Remove first instance.
+						}
 					}
 				}
 			}
@@ -5738,15 +5767,27 @@ function MT__RUN() {
 										.exec(leftovers[0].getAttribute('title'));
 							var coords2 = /bbox (\d+) (\d+) (\d+) (\d+)/
 										.exec(leftovers[leftovers.length - 1].getAttribute('title'));
+							// Also consider:
+							//		When clicking on the first word
+							//		inside of the "wellName" field,
+							//		it is setting the max "left"
+							//		of the well names. So it is
+							//		removing the comp. names. In fact,
+							//		it is defining the leftmost x-value
+							//		for the well name. That is, anything
+							//		left of this x-value will not be part
+							//		of the well name.
+							
+							// Make image.
 							var im = document.createElement('canvas');
 							// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
 							var coords = [];
-							coords[1] = leftmost; //parseInt(coords1[1]);
+							coords[1] = leftmost; //This used to be: parseInt(coords1[1]);
 							coords[2] = parseInt(coords1[2]);
 							coords[3] = parseInt(coords2[3]);
 							coords[4] = parseInt(coords2[4]);
 							console.log(coords);
-							im.width = coords2[3] - leftmost; //coords1[1];
+							im.width = coords2[3] - leftmost; //"leftmost" used to be coords1[1];
 							im.height = coords2[4] - coords[2];
 							im.getContext('2d').drawImage(
 								ni,
@@ -5760,6 +5801,18 @@ function MT__RUN() {
 							);
 							o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
 							o.q[num].wellName.parentNode.appendChild(im);
+							// set the word x-values, so that .onclick,
+							// if first click, then delete all well-names.
+							o.q[num].wellName.words = [];
+							for (var w in leftovers) {
+								var word = leftovers[w];
+								var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
+										.exec(word.getAttribute('title'));
+								word.min_x_value = coords[1];
+								o.q[num].wellName.words.push(
+									word
+								);
+							}
 							// zoom
 							im.setAttribute('style', 'zoom:0.4;'); //margin-right:-66px;
 							im.parentNode.setAttribute('style', 'padding-right:10px;'); //margin-right:-66px;
