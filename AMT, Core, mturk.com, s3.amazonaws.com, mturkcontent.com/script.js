@@ -5666,7 +5666,7 @@ function MT__RUN() {
 						if (obj.hasOwnProperty(word)) {
 							// The word exists.
 							// Now check if it differs from what is here.
-							// Most times it will not.
+							// Most times it will not differ.
 							if (obj[word].best_match && obj[word].best_match != word) {
 								new_words.push(obj[word].best_match);
 								// Mark the input field to show a change.
