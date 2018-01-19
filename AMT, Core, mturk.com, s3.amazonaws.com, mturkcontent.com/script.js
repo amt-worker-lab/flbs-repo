@@ -5593,12 +5593,16 @@ function MT__RUN() {
 				// wellname click
 				o.q[i].wellName.className = 'wellName'; // Provide a class name for sizing purposes.
 				o.q[i].wellName.first_click = false;
+				o.q[i].wellName.num_el = i;
 				o.q[i].wellName.ondblclick = function(e) {
 					// Not used anymore. 
 					//~ if (this.old_text) {
 						//~ this.value = this.old_text;
 						//~ this.first_click = false; // reset this.
 					//~ }
+					
+					// Try a scrape over.
+					fill_in_fields(this.value, this.num_el);
 				}
 				o.q[i].wellName.onclick = function(e) {
 					// Click on a word, removes everything to the left
@@ -5862,151 +5866,80 @@ function MT__RUN() {
 						continue;
 					}
 					if (fill_in) {
-						// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
-						// try easiest
-						var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d&A-Z]+( [-,\d&A-Z]+|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
-						if (x) {
-							line = line.replace(x[0], '').trim();
-							// Just the names now.
-							// Replace "II\d+II" with '"\d+"'.
-							var wn_text = line;
-							wn_text = wn_text.replace(/ II*(\d+)II* /g, ' "$1" '); // At one or more Is.
-							wn_text = wn_text.replace(/-1O([A-Z]) /g, '-10$1 '); // Fix number ten, it is not "1(capital letter o)"
-							wn_text = wn_text.replace(/ (\d{2})-(\d{2})[A-Z]-(\d{2})[A-Z] /g, ' $1-$2N-$3W '); // Always N/W lat lng
-							o.q[num].wellName.value		= wn_text;
-							// others
-							o.q[num].otcLeaseNo.value	= x[1];
-							o.q[num].mergeNbr.value		= x[2];
-							o.q[num].custNo.value		= x[4];
-							o.q[num].yrMo.value			= x[5];
-							o.q[num].runs.value			= x[6];
-							//ocrx_word
-							var w = lines[i].getElementsByClassName('ocrx_word');
-							var sf = false;
-							var els = ['otcLeaseNo','mergeNbr','custNo','yrMo','runs',];
-							var leftovers = [];
-							for (var j=0; j<w.length; j++) {
-								if (w[j].innerText.trim() == x[1]) {
-									var sf = true; // start fill
-									var el = els.shift(); // get first
-								} else if (!sf) {
-									// This is part of the business name
-									// and well name.
-									// Btw, Note that biz name is not
-									// being asked for.
-									leftovers.push(w[j]);
-									// Keep track of the leftmost
-									// starting point of these!
-									// This will be useful when
-									// making the images for the "word-section" (comp / well name)
-									// of this line.
-									var tmp_coords = /bbox (\d+) (\d+) (\d+) (\d+)/
-										.exec(w[j].getAttribute('title'));
-									tmp_coords = parseInt(tmp_coords[1]);
-									if (tmp_coords < leftmost) {
-										leftmost = tmp_coords;
-									}
-								}
-								if (sf && w[j].innerText.trim() == o.q[num][el].value.trim()) {
-									// coords
-									// ex: bbox 60 1478 146 1502; x_wconf 76
-									var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
-										.exec(w[j].getAttribute('title'));
-									var im = document.createElement('canvas');
-									// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-									coords[1] = parseInt(coords[1]);
-									coords[2] = parseInt(coords[2]);
-									coords[3] = parseInt(coords[3]);
-									coords[4] = parseInt(coords[4]);
-									im.width = coords[3] - coords[1];
-									im.height = coords[4] - coords[2];
-									im.getContext('2d').drawImage(
-										o.main_image,
-										coords[1],
-										coords[2],
-										coords[3] - coords[1],
-										coords[4] - coords[2],
-										0, 0,
-										coords[3] - coords[1],
-										coords[4] - coords[2]
-									);
-									add_el(o.q[num][el], im);
-									//~ o.q[num][el].parentNode.appendChild(document.createElement('br'));
-									//~ o.q[num][el].parentNode.appendChild(im);
-									// zoom
-									im.setAttribute('style', 'zoom:0.4');
-									// Update el to next one in line.
-									el = els.shift(); // get first
-								}
+						
+						// Refactor this section to a function.
+						fill_in_fields(line, num)
+						
+						// start incrementing inputs
+						num++;
+					}
+				}
+			}
+			function fill_in_fields(line, num) {
+				//~ // num is optional
+				//~ if (words_el) {
+					//~ var words_el = words_el
+				//~ } else {
+					
+				//~ }
+				
+				// If false then it does not matter at this point.
+				// Just define it to avoid error.
+				if (!leftmost) {
+					var leftmost = 9999;
+				}
+				
+				// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
+				// try easiest
+				var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d&A-Z]+( [-,\d&A-Z]+|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
+				if (x) {
+					line = line.replace(x[0], '').trim();
+					// Just the names now.
+					// Replace "II\d+II" with '"\d+"'.
+					var wn_text = line;
+					wn_text = wn_text.replace(/ II*(\d+)II* /g, ' "$1" '); // At one or more Is.
+					wn_text = wn_text.replace(/-1O([A-Z]) /g, '-10$1 '); // Fix number ten, it is not "1(capital letter o)"
+					wn_text = wn_text.replace(/ (\d{1,2})-(\d{2})[A-Z]-(\d{2})[A-Z]* /g, ' $1-$2N-$3W '); // Always N/W lat lng
+					wn_text = wn_text.replace(/ZH$/g, '2H'); // Always 2H, Usually never ZH
+					o.q[num].wellName.value		= wn_text;
+					// others
+					o.q[num].otcLeaseNo.value	= x[1];
+					o.q[num].mergeNbr.value		= x[2];
+					o.q[num].custNo.value		= x[4];
+					o.q[num].yrMo.value			= x[5];
+					o.q[num].runs.value			= x[6];
+					//ocrx_word
+					var w = lines[i].getElementsByClassName('ocrx_word');
+					var sf = false;
+					var els = ['otcLeaseNo','mergeNbr','custNo','yrMo','runs',];
+					var leftovers = [];
+					for (var j=0; j<w.length; j++) {
+						if (w[j].innerText.trim() == x[1]) {
+							var sf = true; // start fill
+							var el = els.shift(); // get first
+						} else if (!sf) {
+							// This is part of the business name
+							// and well name.
+							// Btw, Note that biz name is not
+							// being asked for.
+							leftovers.push(w[j]);
+							// Keep track of the leftmost
+							// starting point of these!
+							// This will be useful when
+							// making the images for the "word-section" (comp / well name)
+							// of this line.
+							var tmp_coords = /bbox (\d+) (\d+) (\d+) (\d+)/
+								.exec(w[j].getAttribute('title'));
+							tmp_coords = parseInt(tmp_coords[1]);
+							if (tmp_coords < leftmost) {
+								leftmost = tmp_coords;
 							}
-							
-							// Now with the leftovers, the first
-							// el will be the left-most.
-							// The last el will be the right-most.
-							var coords1 = /bbox (\d+) (\d+) (\d+) (\d+)/
-										.exec(leftovers[0].getAttribute('title'));
-							var coords2 = /bbox (\d+) (\d+) (\d+) (\d+)/
-										.exec(leftovers[leftovers.length - 1].getAttribute('title'));
-							// Also consider:
-							//		When clicking on the first word
-							//		inside of the "wellName" field,
-							//		it is setting the max "left"
-							//		of the well names. So it is
-							//		removing the comp. names. In fact,
-							//		it is defining the leftmost x-value
-							//		for the well name. That is, anything
-							//		left of this x-value will not be part
-							//		of the well name.
-							
-							// Make image.
-							var im = document.createElement('canvas');
-							// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-							var coords = [];
-							coords[1] = leftmost; //This used to be: parseInt(coords1[1]);
-							coords[2] = parseInt(coords1[2]);
-							coords[3] = parseInt(coords2[3]);
-							coords[4] = parseInt(coords2[4]);
-							console.log(coords);
-							im.width = coords2[3] - leftmost; //"leftmost" used to be coords1[1];
-							im.height = coords2[4] - coords[2];
-							im.getContext('2d').drawImage(
-								o.main_image,
-								coords[1],
-								coords[2],
-								coords[3] - coords[1],
-								coords[4] - coords[2],
-								0, 0,
-								coords[3] - coords[1],
-								coords[4] - coords[2]
-							);
-							add_el(o.q[num].wellName, im);
-							//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
-							//~ o.q[num].wellName.parentNode.appendChild(im);
-							// set the word x-values, so that .onclick,
-							// if first click, then delete all well-names.
-							o.q[num].wellName.words = [];
-							for (var w in leftovers) {
-								var word = leftovers[w];
-								var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
-										.exec(word.getAttribute('title'));
-								word.min_x_value = coords[1];
-								o.q[num].wellName.words.push(
-									word
-								);
-							}
-							// zoom
-							im.setAttribute('style', 'zoom:0.4;'); //margin-right:-66px;
-							im.parentNode.setAttribute('style', 'padding-right:10px;'); //margin-right:-66px;
-						} else {
-							o.q[num].wellName.style.border = '4px solid blue';
-							// show line text
-							o.q[num].wellName.value = line;
-							// add image of entire line!
-							//title="bbox 109 472 1089 501; baseline 0.004 -4; x_size 43.75; x_descenders 8.5; x_ascenders 11.75"
-							
-							// Make image.
+						}
+						if (sf && w[j].innerText.trim() == o.q[num][el].value.trim()) {
+							// coords
+							// ex: bbox 60 1478 146 1502; x_wconf 76
 							var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
-								.exec(lines[i].getAttribute('title'));
+								.exec(w[j].getAttribute('title'));
 							var im = document.createElement('canvas');
 							// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
 							coords[1] = parseInt(coords[1]);
@@ -6025,18 +5958,106 @@ function MT__RUN() {
 								coords[3] - coords[1],
 								coords[4] - coords[2]
 							);
-							add_el(o.q[num].wellName, im);
-							//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
-							//~ o.q[num].wellName.parentNode.appendChild(im);
+							add_el(o.q[num][el], im);
+							//~ o.q[num][el].parentNode.appendChild(document.createElement('br'));
+							//~ o.q[num][el].parentNode.appendChild(im);
 							// zoom
-							im.setAttribute('style', 'zoom:0.4;position:absolute;');
-							// resize td
-							o.q[num].wellName.parentNode.style.height = '40px';
+							im.setAttribute('style', 'zoom:0.4');
+							// Update el to next one in line.
+							el = els.shift(); // get first
 						}
-						
-						// start incrementing inputs
-						num++;
 					}
+					
+					// Now with the leftovers, the first
+					// el will be the left-most.
+					// The last el will be the right-most.
+					var coords1 = /bbox (\d+) (\d+) (\d+) (\d+)/
+								.exec(leftovers[0].getAttribute('title'));
+					var coords2 = /bbox (\d+) (\d+) (\d+) (\d+)/
+								.exec(leftovers[leftovers.length - 1].getAttribute('title'));
+					// Also consider:
+					//		When clicking on the first word
+					//		inside of the "wellName" field,
+					//		it is setting the max "left"
+					//		of the well names. So it is
+					//		removing the comp. names. In fact,
+					//		it is defining the leftmost x-value
+					//		for the well name. That is, anything
+					//		left of this x-value will not be part
+					//		of the well name.
+					
+					// Make image.
+					var im = document.createElement('canvas');
+					// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+					var coords = [];
+					coords[1] = leftmost; //This used to be: parseInt(coords1[1]);
+					coords[2] = parseInt(coords1[2]);
+					coords[3] = parseInt(coords2[3]);
+					coords[4] = parseInt(coords2[4]);
+					console.log(coords);
+					im.width = coords2[3] - leftmost; //"leftmost" used to be coords1[1];
+					im.height = coords2[4] - coords[2];
+					im.getContext('2d').drawImage(
+						o.main_image,
+						coords[1],
+						coords[2],
+						coords[3] - coords[1],
+						coords[4] - coords[2],
+						0, 0,
+						coords[3] - coords[1],
+						coords[4] - coords[2]
+					);
+					add_el(o.q[num].wellName, im);
+					//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
+					//~ o.q[num].wellName.parentNode.appendChild(im);
+					// set the word x-values, so that .onclick,
+					// if first click, then delete all well-names.
+					o.q[num].wellName.words = [];
+					for (var w in leftovers) {
+						var word = leftovers[w];
+						var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
+								.exec(word.getAttribute('title'));
+						word.min_x_value = coords[1];
+						o.q[num].wellName.words.push(
+							word
+						);
+					}
+					// zoom
+					im.setAttribute('style', 'zoom:0.4;'); //margin-right:-66px;
+					im.parentNode.setAttribute('style', 'padding-right:10px;'); //margin-right:-66px;
+				} else {
+					o.q[num].wellName.style.border = '4px solid blue';
+					// show line text
+					o.q[num].wellName.value = line;
+					// add image of entire line!
+					//title="bbox 109 472 1089 501; baseline 0.004 -4; x_size 43.75; x_descenders 8.5; x_ascenders 11.75"
+					
+					// Make image.
+					var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
+						.exec(lines[i].getAttribute('title'));
+					var im = document.createElement('canvas');
+					// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+					coords[1] = parseInt(coords[1]);
+					coords[2] = parseInt(coords[2]);
+					coords[3] = parseInt(coords[3]);
+					coords[4] = parseInt(coords[4]);
+					im.width = coords[3] - coords[1];
+					im.height = coords[4] - coords[2];
+					im.getContext('2d').drawImage(
+						o.main_image,
+						coords[1],
+						coords[2],
+						coords[3] - coords[1],
+						coords[4] - coords[2],
+						0, 0,
+						coords[3] - coords[1],
+						coords[4] - coords[2]
+					);
+					add_el(o.q[num].wellName, im);
+					// zoom
+					im.setAttribute('style', 'zoom:0.4;position:absolute;');
+					// resize td
+					o.q[num].wellName.parentNode.style.height = '40px';
 				}
 			}
 		}
