@@ -5869,7 +5869,11 @@ function MT__RUN() {
 							line = line.replace(x[0], '').trim();
 							// Just the names now.
 							// Replace "II\d+II" with '"\d+"'.
-							o.q[num].wellName.value		= line.replace(/ II*(\d+)II* /g, ' "$1" '); // At one or more Is.
+							var wn_text = line;
+							wn_text = wn_text.replace(/ II*(\d+)II* /g, ' "$1" '); // At one or more Is.
+							wn_text = wn_text.replace(/-1O([A-Z]) /g, '-10$1 '); // Fix number ten, it is not "1(capital letter o)"
+							wn_text = wn_text.replace(/ (\d{2})-(\d{2})[A-Z]-(\d{2})[A-Z] /g, ' $1-$2N-$3W '); // Always N/W lat lng
+							o.q[num].wellName.value		= wn_text;
 							// others
 							o.q[num].otcLeaseNo.value	= x[1];
 							o.q[num].mergeNbr.value		= x[2];
