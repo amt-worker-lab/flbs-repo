@@ -16150,6 +16150,7 @@ AMT___items_factory.prototype.startJobTimer = function() {
  * @param seed_object.input_onclick_callback
  * @param seed_object.do_submit_next_tab
  * @param seed_object.do_submit_add_to_tabs_queue
+ * @param seed_object.sort_results_by_array // Jan2018
  */
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
@@ -16198,17 +16199,37 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		doSubmit();
 	}
 	
+	// Sort the results based on a sort, if called.
+	// Ex: 'abcd'.match(/(a|b|c)/gi).length
+	//		Result: 3
+	if (seed_object.hasOwnProperty('sort_results_by_array') &&
+		seed_object.sort_results_by_array.length) {
+		var search = [];
+		for (var i in seed_object.sort_results_by_array) {
+			var str = seed_object.sort_results_by_array[i];
+			search.push(__js_escape_regEx(str));
+		}
+		search = '('+search.join('|')+')'; // Match any
+		search = new RegExp(search, 'gi'); // global, case insensitive
+		var new_results = [];
+		for (var j in email_contexts) {
+			
+		}
+	}
+	
+	
 	// ...
 	for (var j in email_contexts) {
-		var context = email_contexts[j]	.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
+		var context = email_contexts[j];
+		context = context.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
 		context = __js_clean_html_str(context);
-		context = context				.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
+		context = context.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
 		//context = context.replace(/[\r\n]/g, '<br>');
 		context = context.replace(/\t/g, '&nbsp;&nbsp;');
 		context = context.replace(/\s{2,}/g, '&nbsp;&nbsp;');
 		context = context.replace(
 			new RegExp('(' + __js_escape_regEx(results_array.email_email) + ')', 'gi'),
-			'<span style="zoom:1.2;color:DarkGreen;">$1</span>'
+			'<span style="zoom:1.2;color:DarkGreen;font-weight:bold;">$1</span>'
 		);
 		//context = MT__bold(context, NAME_ARRAY);
 		
@@ -16244,7 +16265,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 					
 					this.do_submit_callback(this.do_submit_next_tab, this.do_submit_add_to_tabs_queue);
 					//~ doSubmit();
-				
 				}
 			}
 		}

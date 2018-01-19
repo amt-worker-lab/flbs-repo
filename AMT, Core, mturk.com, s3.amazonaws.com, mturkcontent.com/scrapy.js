@@ -124,7 +124,8 @@ function init__scrapy() {
 				'position:absolute;top:0px;left:0%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1b);
-			d1b.innerText = o.name + ' ' + o.title + ' ' + td[17].innerText.trim();
+			d1b.innerText = o.name + '|' + o.title + '|' +
+				td[17].innerText.trim()+' '+o.school;
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
 				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
@@ -220,6 +221,7 @@ function init__scrapy() {
 				var first = true;
 				for (var i in rs) {
 					o.sd_start_urls.push(rs[i][0]);
+					if (i > 6) break; // Six only!
 				}
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
@@ -233,8 +235,8 @@ function init__scrapy() {
 			 * 			Sort results by the "relevance". In particular,
 			 * 			sort by number of matches of array [ search items ],
 			 * 			such as [ first_name, last_name, job_title, etc.].
-			 * 
-			 * 		Add BOLD to snippet text!
+			 * 		Feature:
+			 *	 		Add BOLD to snippet text!!
 			 */
 			function scrapy(start_urls, allowed_domains) {
 				//
@@ -277,6 +279,9 @@ function init__scrapy() {
 								input_send_success: o.q[0],
 								skip_if_no_emails: true,
 								accept_if_emails: true,
+								sort_results_by_array: 
+									o.fname.split(' ').concat(
+									o.lname.split(' ')),
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) {
 									// RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									if (AMT__Global_Vars.isPreview) {
