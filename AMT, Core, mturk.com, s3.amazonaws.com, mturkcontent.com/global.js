@@ -16199,25 +16199,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		doSubmit();
 	}
 	
-	// Sort the results based on a sort, if called.
-	// Ex: 'abcd'.match(/(a|b|c)/gi).length
-	//		Result: 3
-	if (seed_object.hasOwnProperty('sort_results_by_array') &&
-		seed_object.sort_results_by_array.length) {
-		var search = [];
-		for (var i in seed_object.sort_results_by_array) {
-			var str = seed_object.sort_results_by_array[i];
-			search.push(__js_escape_regEx(str));
-		}
-		search = '('+search.join('|')+')'; // Match any
-		search = new RegExp(search, 'gi'); // global, case insensitive
-		var new_results = [];
-		for (var j in email_contexts) {
-			
-		}
-	}
-	
-	
 	// ...
 	for (var j in email_contexts) {
 		var context = email_contexts[j];
@@ -16362,6 +16343,57 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		AMT___Floater.accept();
 		return;
 	}
+	
+	// Sort the results based on a sort, if called.
+	// Ex: 'abcd'.match(/(a|b|c)/gi).length
+	//		Result: 3
+	// Ex: 'abcd'.match(/(acc)/gi).length
+	//		Result: type error
+	// Ex: var x = [3,1,2,3]; x.sort(); console.log(x);
+	//		Result: [1, 2, 3, 3]
+	if (seed_object.hasOwnProperty('sort_results_by_array') &&
+		seed_object.sort_results_by_array.length) {
+		var search = [];
+		for (var i in seed_object.sort_results_by_array) {
+			var str = seed_object.sort_results_by_array[i];
+			search.push(__js_escape_regEx(str));
+		}
+		search = '('+search.join('|')+')'; // Match any
+		search = new RegExp(search, 'gi'); // global, case insensitive
+		//~ var new_results = [];
+		//~ for (var j in email_contexts) {
+			
+		//~ }
+		//~ console.log(email_contexts[0].match(search).length);
+		
+		//~ for (var i in object_response.matches) {
+			//~ rslt = object_response.matches[i];
+			//~ // rslt.url
+			//~ // rslt.email_email
+			
+		//~ }
+		object_response.matches.sort(function (obj1, obj2) {
+			var n1, n2;
+			try{
+				n1 = obj1.email_email.match(search).length;
+			}catch(e){
+				n1 = 0;
+			}
+			try{
+				n2 = obj2.email_email.match(search).length;
+			}catch(e){
+				n2 = 0;
+			}
+			return n2-n1;
+		});
+		console.log('object_response.matches');
+		console.log(object_response.matches);
+		
+		
+		// var x = [3,1,2,3]; x.sort(); console.log(x);
+		//~ return;
+	}
+	
 	
 	// matches select
 	var el_select = document.createElement('select');

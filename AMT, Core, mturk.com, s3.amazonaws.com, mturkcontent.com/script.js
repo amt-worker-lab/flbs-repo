@@ -5924,7 +5924,7 @@ function MT__RUN() {
 										coords[4] - coords[2],
 										0, 0,
 										coords[3] - coords[1],
-										coords[4] - coords[2],
+										coords[4] - coords[2]
 									);
 									add_el(o.q[num][el], im);
 									//~ o.q[num][el].parentNode.appendChild(document.createElement('br'));
@@ -5973,7 +5973,7 @@ function MT__RUN() {
 								coords[4] - coords[2],
 								0, 0,
 								coords[3] - coords[1],
-								coords[4] - coords[2],
+								coords[4] - coords[2]
 							);
 							add_el(o.q[num].wellName, im);
 							//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
@@ -6019,7 +6019,7 @@ function MT__RUN() {
 								coords[4] - coords[2],
 								0, 0,
 								coords[3] - coords[1],
-								coords[4] - coords[2],
+								coords[4] - coords[2]
 							);
 							add_el(o.q[num].wellName, im);
 							//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
