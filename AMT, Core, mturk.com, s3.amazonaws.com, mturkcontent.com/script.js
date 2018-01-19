@@ -5930,7 +5930,7 @@ function MT__RUN() {
 					var wn_text = line;
 					wn_text = wn_text.replace(/ II*(\d+)II* /g, ' "$1" '); // At one or more Is.
 					wn_text = wn_text.replace(/-1O([A-Z]) /g, '-10$1 '); // Fix number ten, it is not "1(capital letter o)"
-					wn_text = wn_text.replace(/ (\d{1,2})-(\d{2})[A-Z]-(\d{2})[A-Z]* /g, ' $1-$2N-$3W '); // Always N/W lat lng
+					wn_text = wn_text.replace(/ (\d{1,2})-(\d{2})[A-Z]-(\d{2})[A-Z]*( |$)/g, ' $1-$2N-$3W$4'); // Always N/W lat lng, ends in $ or " ".
 					wn_text = wn_text.replace(/ZH$/g, '2H'); // Always 2H, Usually never ZH
 					o.q[num].wellName.value		= wn_text;
 					// Set html_line for later use (if necessary).
