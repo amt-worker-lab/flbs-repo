@@ -16360,38 +16360,22 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		}
 		search = '('+search.join('|')+')'; // Match any
 		search = new RegExp(search, 'gi'); // global, case insensitive
-		//~ var new_results = [];
-		//~ for (var j in email_contexts) {
-			
-		//~ }
-		//~ console.log(email_contexts[0].match(search).length);
-		
-		//~ for (var i in object_response.matches) {
-			//~ rslt = object_response.matches[i];
-			//~ // rslt.url
-			//~ // rslt.email_email
-			
-		//~ }
-		object_response.matches.sort(function (obj1, obj2) {
-			var n1, n2;
-			try{
-				n1 = obj1.email_email.match(search).length;
-			}catch(e){
-				n1 = 0;
-			}
-			try{
-				n2 = obj2.email_email.match(search).length;
-			}catch(e){
-				n2 = 0;
-			}
-			return n2-n1;
-		});
-		console.log('object_response.matches');
-		console.log(object_response.matches);
-		
-		
-		// var x = [3,1,2,3]; x.sort(); console.log(x);
-		//~ return;
+		if (object_response.matches && object_response.matches.length) {
+			object_response.matches.sort(function (obj1, obj2) {
+				var n1, n2;
+				try{
+					n1 = obj1.email_email.match(search).length;
+				}catch(e){
+					n1 = 0;
+				}
+				try{
+					n2 = obj2.email_email.match(search).length;
+				}catch(e){
+					n2 = 0;
+				}
+				return n2-n1;
+			});
+		}
 	}
 	
 	
@@ -16415,20 +16399,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 			//~ this.options[this.selectedIndex].results_array
 		//~ );
 	}
-	//~ for (var i in object_response.matches) {
-		//~ rslt = object_response.matches[i];
-		//~ // add option
-		//~ el_option = document.createElement('option');
-		//~ el_option.value = rslt.email_email;
-		//~ el_option.innerText = rslt.email_email;
-		//~ // email highlight !!
-		//~ console.log(rslt.url);
-		//~ if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
-			//~ el_option.setAttribute('style', 'background-color:LightGreen;');
-		//~ }
-		//~ el_option.results_array = rslt;
-		//~ el_select.appendChild(el_option);
-	//~ }
 	// urls on right select, for email-on-page
 	var el_select3 = document.createElement('select');
 	out_div.appendChild(el_select3);

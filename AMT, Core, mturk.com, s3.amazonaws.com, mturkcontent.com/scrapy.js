@@ -221,7 +221,7 @@ function init__scrapy() {
 				var first = true;
 				for (var i in rs) {
 					o.sd_start_urls.push(rs[i][0]);
-					if (i > 6) break; // Six only!
+					if (i >= 2) break; // Only a few start URLs!
 				}
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
@@ -253,9 +253,9 @@ function init__scrapy() {
 						//'SCHEDULER_ORDER=BFO',
 						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						'CONCURRENT_ITEMS=200', //DEFAUL = 100
+						'CONCURRENT_ITEMS=100', //DEFAUL = 100
 						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
-						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=1', //false
 						//'COOKIES_ENABLED=0', //false
