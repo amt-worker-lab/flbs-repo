@@ -5690,6 +5690,9 @@ function MT__RUN() {
 					for (var j in words) {
 						var word = words[j];
 						if (obj.hasOwnProperty(word)) {
+							// Log it for consideration (debug).
+							console.log('Solutions for '+word+':');
+							console.log(obj[word]);
 							// The word exists.
 							// Now check if it differs from what is here.
 							// Most times it will not differ.
@@ -5901,8 +5904,10 @@ function MT__RUN() {
 					//~ var words_el = words_el
 				//~ } else {
 				//~ }
+				var from_manual_entry = false;
 				if (!html_line) {
 					var html_line = o.q[num].wellName.html_line;
+					from_manual_entry = true; // Set to true now.
 				}
 				console.log(html_line);
 				//~ if (!html_line.getElementsByClassName) {
@@ -5917,7 +5922,7 @@ function MT__RUN() {
 				
 				// WELL NAME", "OTC LEASE NO", "MERGE NBR", "CUST NO", "YRMO" & "RUNS".
 				// try easiest
-				var x = / ([\d]+-[\d]+-[\d]+) ([\d]+) [-,\d&A-Z]+( [-,\d&A-Z]+|) ([\d]+) 1 ([\d]+) ([\d,]+)$/.exec(line);
+				var x = / +([\d]+-[\d]+-[\d]+) +([\d]+) [-,\d&A-Z]+( [-,\d&A-Z]+|) +([\d]+) 1 ([\d]+) +([\d,]+)$/.exec(line);
 				if (x) {
 					line = line.replace(x[0], '').trim();
 					// Just the names now.
@@ -6013,6 +6018,9 @@ function MT__RUN() {
 					//		left of this x-value will not be part
 					//		of the well name.
 					
+					if (from_manual_entry) { // Quit now.
+						return;
+					}
 					// Make image.
 					var im = document.createElement('canvas');
 					// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
@@ -6034,7 +6042,7 @@ function MT__RUN() {
 						coords[3] - coords[1],
 						coords[4] - coords[2]
 					);
-					add_el(o.q[num].wellName, im, true);
+					add_el(o.q[num].wellName, im);
 					//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
 					//~ o.q[num].wellName.parentNode.appendChild(im);
 					// set the word x-values, so that .onclick,
@@ -6055,6 +6063,9 @@ function MT__RUN() {
 				}
 				else // This is a non-auto line!
 				{
+					if (from_manual_entry) { // Quit now.
+						return;
+					}
 					// Show error
 					o.q[num].wellName.style.border = '4px solid blue';
 					// Show line text
