@@ -5554,17 +5554,17 @@ function MT__RUN() {
 			d4.type = 'button'
 			d4.setAttribute('style', 'position:absolute;top:0px;left:180px;width:100px;height:20px;');
 			document.body.appendChild(d4);
-			if (sessionStorage['virenda-el'] == undefined) { // default = bottom
-				sessionStorage['virenda-el'] = 'bottom';	
+			if (localStorage['virenda-el'] == undefined) { // default = bottom
+				localStorage['virenda-el'] = 'bottom';	
 			}
-			d4.value = sessionStorage['virenda-el'];
+			d4.value = localStorage['virenda-el'];
 			d4.onclick = function() {
 				if (this.value == 'bottom') {
 					this.value = 'top';
-					sessionStorage['virenda-el'] = 'top';
+					localStorage['virenda-el'] = 'top';
 				} else {
 					this.value = 'bottom';
-					sessionStorage['virenda-el'] = 'bottom';
+					localStorage['virenda-el'] = 'bottom';
 				}
 			}
 			/*END ITEMS*/
@@ -5602,7 +5602,7 @@ function MT__RUN() {
 					//~ }
 					
 					// Try a scrape over.
-					fill_in_fields(this.value, this.num_el);
+					fill_in_fields(this.value, false, this.num_el);
 				}
 				o.q[i].wellName.onclick = function(e) {
 					// Click on a word, removes everything to the left
@@ -5811,20 +5811,40 @@ function MT__RUN() {
 					scrape();
 				}
 			}
-			function add_el(el, im) {
+			function add_el(el, im, add_as_tr=false) {
 				// Add elements to top or bottom, based on user variable.
 				//
 				// Sample call: add_el(o.q[num][el], im);
-				if (sessionStorage['virenda-el'] == 'bottom') {
-					el.parentNode.appendChild(document.createElement('br'));
-					el.parentNode.appendChild(im);
-				} else {
-					// prepend br
-					el.parentNode.insertBefore(
-						document.createElement('br'),
-						el.parentNode.firstChild);
-					// prepend image
-					el.parentNode.insertBefore(im, el.parentNode.firstChild);
+				if (!add_as_tr) {
+					if (localStorage['virenda-el'] == 'bottom') {
+						el.parentNode.appendChild(document.createElement('br'));
+						el.parentNode.appendChild(im);
+					} else {
+						// prepend br
+						el.parentNode.insertBefore(
+							document.createElement('br'),
+							el.parentNode.firstChild);
+						// prepend image
+						el.parentNode.insertBefore(im, el.parentNode.firstChild);
+					}
+				}
+				else
+				{ // As tr
+					var tr = document.createElement('tr');// Create a tr
+					var td = document.createElement('td');// Create a td
+					td.colSpan = 6;
+					tr.appendChild(td); // Append td to tr
+					td.appendChild(im); // Add image to td
+					var old_tr = el.parentNode.parentNode;
+					// Add to page
+					//console.log(el);							// INPUT
+					//console.log(el.parentNode);				// TD
+					//console.log(el.parentNode.parentNode);	// TR
+					if (localStorage['virenda-el'] == 'bottom') {
+						old_tr.parentNode.insertBefore(tr, old_tr.nextSibling);
+					} else {
+						old_tr.parentNode.insertBefore(tr, old_tr);
+					}
 				}
 			}
 			function scrape() {
@@ -5868,19 +5888,25 @@ function MT__RUN() {
 					if (fill_in) {
 						
 						// Refactor this section to a function.
-						fill_in_fields(line, num)
+						fill_in_fields(line, lines[i], num)
 						
 						// start incrementing inputs
 						num++;
 					}
 				}
 			}
-			function fill_in_fields(line, num) {
+			function fill_in_fields(line, html_line, num) {
 				//~ // num is optional
 				//~ if (words_el) {
 					//~ var words_el = words_el
 				//~ } else {
-					
+				//~ }
+				if (!html_line) {
+					var html_line = o.q[num].wellName.html_line;
+				}
+				console.log(html_line);
+				//~ if (!html_line.getElementsByClassName) {
+					//~ return;
 				//~ }
 				
 				// If false then it does not matter at this point.
@@ -5902,6 +5928,9 @@ function MT__RUN() {
 					wn_text = wn_text.replace(/ (\d{1,2})-(\d{2})[A-Z]-(\d{2})[A-Z]* /g, ' $1-$2N-$3W '); // Always N/W lat lng
 					wn_text = wn_text.replace(/ZH$/g, '2H'); // Always 2H, Usually never ZH
 					o.q[num].wellName.value		= wn_text;
+					// Set html_line for later use (if necessary).
+					// That is, for when editing wellName.
+					o.q[num].wellName.html_line	= html_line;
 					// others
 					o.q[num].otcLeaseNo.value	= x[1];
 					o.q[num].mergeNbr.value		= x[2];
@@ -5909,7 +5938,8 @@ function MT__RUN() {
 					o.q[num].yrMo.value			= x[5];
 					o.q[num].runs.value			= x[6];
 					//ocrx_word
-					var w = lines[i].getElementsByClassName('ocrx_word');
+				
+					var w = html_line.getElementsByClassName('ocrx_word');
 					var sf = false;
 					var els = ['otcLeaseNo','mergeNbr','custNo','yrMo','runs',];
 					var leftovers = [];
@@ -5959,15 +5989,12 @@ function MT__RUN() {
 								coords[4] - coords[2]
 							);
 							add_el(o.q[num][el], im);
-							//~ o.q[num][el].parentNode.appendChild(document.createElement('br'));
-							//~ o.q[num][el].parentNode.appendChild(im);
 							// zoom
 							im.setAttribute('style', 'zoom:0.4');
 							// Update el to next one in line.
 							el = els.shift(); // get first
 						}
 					}
-					
 					// Now with the leftovers, the first
 					// el will be the left-most.
 					// The last el will be the right-most.
@@ -6007,7 +6034,7 @@ function MT__RUN() {
 						coords[3] - coords[1],
 						coords[4] - coords[2]
 					);
-					add_el(o.q[num].wellName, im);
+					add_el(o.q[num].wellName, im, true);
 					//~ o.q[num].wellName.parentNode.appendChild(document.createElement('br'));
 					//~ o.q[num].wellName.parentNode.appendChild(im);
 					// set the word x-values, so that .onclick,
@@ -6025,16 +6052,23 @@ function MT__RUN() {
 					// zoom
 					im.setAttribute('style', 'zoom:0.4;'); //margin-right:-66px;
 					im.parentNode.setAttribute('style', 'padding-right:10px;'); //margin-right:-66px;
-				} else {
+				}
+				else // This is a non-auto line!
+				{
+					// Show error
 					o.q[num].wellName.style.border = '4px solid blue';
-					// show line text
+					// Show line text
 					o.q[num].wellName.value = line;
-					// add image of entire line!
-					//title="bbox 109 472 1089 501; baseline 0.004 -4; x_size 43.75; x_descenders 8.5; x_ascenders 11.75"
+					// Add html line for later editing.
+					// This is the HTML dom element for the OCR.
+					o.q[num].wellName.html_line	= html_line;
+					
+					// Add image of entire line!
+						// title="bbox 109 472 1089 501; baseline 0.004 -4; x_size 43.75; x_descenders 8.5; x_ascenders 11.75"
 					
 					// Make image.
 					var coords = /bbox (\d+) (\d+) (\d+) (\d+)/
-						.exec(lines[i].getAttribute('title'));
+						.exec(html_line.getAttribute('title'));
 					var im = document.createElement('canvas');
 					// context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
 					coords[1] = parseInt(coords[1]);
@@ -6053,9 +6087,10 @@ function MT__RUN() {
 						coords[3] - coords[1],
 						coords[4] - coords[2]
 					);
-					add_el(o.q[num].wellName, im);
+					add_el(o.q[num].wellName, im, true);
 					// zoom
-					im.setAttribute('style', 'zoom:0.4;position:absolute;');
+					//~ im.setAttribute('style', 'zoom:0.4;position:absolute;');
+					im.setAttribute('style', 'zoom:0.4;');
 					// resize td
 					o.q[num].wellName.parentNode.style.height = '40px';
 				}
