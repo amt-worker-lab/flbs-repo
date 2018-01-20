@@ -13,7 +13,6 @@
 	  ],
       "js": [
 		"includes/pdfobject.js",
-		
 		"includes/Chart.js",
 		"includes/jshash-2.2/md5.js",
 		"includes/sha1.js",
@@ -26,8 +25,8 @@
 		"test.js",
 		"scrapy.js",
 		"script.js",
-		"mturk_load.js",
-		"navigation_collector.js" // Initialize
+		"mturk_load.js"// Initialize
+		
 	  ],
       "matches": ["http://*/*","https://*/*"],
       "run_at": "document_idle",
@@ -35,6 +34,7 @@
    } ],
    "background": {
       "scripts": ["eventPage.js"]
+      //"scripts": ["navigation_collector.js","eventPage.js"]
    },
    "permissions": [
 		"cookies",
