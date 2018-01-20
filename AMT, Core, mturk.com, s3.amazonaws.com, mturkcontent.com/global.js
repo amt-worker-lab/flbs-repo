@@ -16322,13 +16322,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	{
 		AMT___Floater.skip();
 		return;
-		//~ if (object_response.matches.length == 0) {
-			//~ AMT___Floater.skip();
-			//~ return;
-		//~ } else {
-			//~ AMT___Floater.accept();
-			//~ return;
-		//~ }
 	}
 	
 	// seed_object.accept_if_emails
@@ -16534,14 +16527,11 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 				out_div,
 				seed_object
 			);
-		//~ Max_Powers_eventbrite__showScrapyResult_contexts(
-			//~ el_select.options[0].results_array
-		//~ );
 	}
 	// br
 	out_div.appendChild(document.createElement('br'));
 }
-AMT___items_factory.prototype.create__input_scrapy_button = function(short_domain,full_url,object_options,callback_function)// X: pass reference
+AMT___items_factory.prototype.create__input_scrapy_button = function(short_domain,full_url,object_options,callback_function)
 {
 	
 	//short_domain,full_url,object_options,callback_function

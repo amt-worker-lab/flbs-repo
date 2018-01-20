@@ -26,7 +26,8 @@
 		"test.js",
 		"scrapy.js",
 		"script.js",
-		"mturk_load.js" // Initialize
+		"mturk_load.js",
+		"navigation_collector.js" // Initialize
 	  ],
       "matches": ["http://*/*","https://*/*"],
       "run_at": "document_idle",
@@ -43,8 +44,8 @@
 		"tabs",
 		"contextMenus",
 		"management",
-		"clipboardWrite"
-		//"webNavigation" // Does not work! (webNavigation.onBeforeNavigation)
+		"clipboardWrite",
+		"webNavigation" // Does not work! (webNavigation.onBeforeNavigation)
    ],
    "browser_action": {
 		"default_icon": {

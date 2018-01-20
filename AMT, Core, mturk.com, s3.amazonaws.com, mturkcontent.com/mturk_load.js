@@ -212,29 +212,29 @@ function mturk_load()
 		 * 
 		 * New no hits page (JAN2018):
 		 * 		There are no more of these HITs available. See other HITs available to you below.
+		 * 
+		 * TODO:
+		 * 		This is receiving a 307->302->307->200 redirect.
+		 * 		So there is no "last url" that the extension is seeing.
+		 * 		Therefore, reload-on-no-hits likely needs to
+		 * 		utilize something along the lines of the chrome webNavigation
+		 * 		api.
 		 */
 		var l = document.location.href;
-			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
 		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
 		if  (
 			(
 				// Running on any of the following:
 				
-				// Old one, now is https://worker.mturk.com/projects.
-				//~ /^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
+				// Old one /^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) 
 				
-				document.location.href == 'https://worker.mturk.com/projects' ||
+				document.location.href.indexOf('https://worker.mturk.com/projects') == 0 ||
 				/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
 				/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(l)
 			) &&
 			(
 				document.body.innerHTML.indexOf('There are no more of these HITs available') != -1 ||
 				document.body.innerHTML.indexOf('This HIT is no longer available') != -1
-				//~ document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1 ||
-				//~ document.body.innerHTML.toLowerCase().indexOf('there are no hits in this group available to you at the moment.') != -1
-				//There are no more of these HITs available
-				//There are no more of these HITs available. See other HITs available to you below.
-				//This HIT is no longer available
 			)
 			)
 		{
@@ -268,30 +268,6 @@ function mturk_load()
 						50 // not 2200
 					);
 				}
-					
-				//~ doSubmit(false, false, function(timeToSkip){
-						//~ window.setTimeout(function() {
-							//~ var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
-							//~ alert(sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
-							//~ if (!lu || lu == 'undefined') {
-								//~ // Get new random
-								//~ // e.g. https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3I6NF2WGIG14A5ALNIBGT5POH6EG5K?assignment_id=3FTOP5WARGTITKCFOKV8X7HXA3IJ0M&auto_accept=true
-								//~ var x = /^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(lu);
-								//~ if (x) {
-									//~ // Similar to return and accept behavior.
-									//~ // e.g. tasks/accept_random?ref=w_pl_prvw
-									//~ var newURL = x[1] + 'accept_random?ref=w_pl_prvw';
-									//~ alert('testing reload');
-									//~ document.location.href = newURL;
-								//~ }
-							//~ }
-							//~ // OLD RELOADER! JAN2018
-							//~ // window.location.reload(true);
-						//~ }
-						//~ , timeToSkip);
-					//~ },
-					//~ 2200
-				//~ );
 			}
 			console.log('Hit the "All HITs" page. Returning.');
 			return;

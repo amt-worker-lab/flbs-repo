@@ -8,6 +8,25 @@
  * Consider implementing http://srchea.com/build-a-real-time-application-using-html5-websockets ?
  * 
  **/
+ 
+/**
+ * Test code for Reload On No Hits.
+ * 
+ * Ex: https://chromium.googlesource.com/chromium/src/+/master/chrome/common/extensions/docs/examples/api/webNavigation/basic
+ */
+var eventList = ['onBeforeNavigate', 'onCreatedNavigationTarget',
+    'onCommitted', 'onCompleted', 'onDOMContentLoaded',
+    'onErrorOccurred', 'onReferenceFragmentUpdated', 'onTabReplaced',
+    'onHistoryStateUpdated'];
+eventList.forEach(function(e) {
+  chrome.webNavigation[e].addListener(function(data) {
+    if (typeof data)
+      console.log(chrome.i18n.getMessage('inHandler'), e, data);
+    else
+      console.error(chrome.i18n.getMessage('inHandlerError'), e);
+  });
+});
+
 /**
  * THIS IS A TEST
  * When using two separate profiles this switches from
