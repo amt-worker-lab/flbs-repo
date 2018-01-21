@@ -18,30 +18,44 @@ var eventList = ['onBeforeNavigate', 'onCreatedNavigationTarget',
     'onCommitted', 'onCompleted', 'onDOMContentLoaded',
     'onErrorOccurred', 'onReferenceFragmentUpdated', 'onTabReplaced',
     'onHistoryStateUpdated'];
-var savedTabsUrls = {}; // Set a global variable.
+var savedTabUrls = {}; // Set a global variable.
 eventList.forEach(function(e) {
   chrome.webNavigation[e].addListener(function(data) {
     if (typeof data) {
-		// console.log(chrome.i18n.getMessage('inHandler'), e, data);
-		// console.log(e); // name of event
-		// console.log(data); // data object
+		// Debug
+		// 		console.log(chrome.i18n.getMessage('inHandler'), e, data);
+		// 		console.log(e); // name of event
+		// 		console.log(data); // data object
 		var condition1 = data.url.indexOf('https://worker.mturk.com/projects/') == 0 && // Cheap test, indexOf
 					/^https:\/\/worker\.mturk\.com\/projects\/[A-Z]+\/tasks/.exec(data.url); // Expensive test, exec
-		var condition2 = data.url.indexOf('https://www.mturk.com/mturk/previewandaccept?groupId=') &&
-					/https:\/\/www\.mturk\.com\/mturk\/previewandaccept\?groupId=[A-Z]+/.exec(data.url);
+		var condition2 = data.url.indexOf('https://www.mturk.com/mturk/previewandaccept?groupId=') == 0 &&
+					/^https:\/\/www\.mturk\.com\/mturk\/previewandaccept\?groupId=[A-Z0-9]+/.exec(data.url);
 		if (e == 'onBeforeNavigate' && (condition1 || condition2)) {
-			// Save tab id + url in sessionStorage.
-			// Reload on no hits
-			// accept random for:
+			// The tab is leaving and it matches the "job" condition.
+			// Save the job url, just in case "reload on no hits" occurs.
+			// Saves tab id + url.
+			// To accept random for:
 			// https://worker.mturk.com/projects/3HEPP9UUSV409UUP1DH2YO52C81ETF/tasks
-			// data.tabId
-			// data.url
-			savedTabsUrls[data.tabId] = data.url;
+			// Params: data.tabId, data.url
+			savedTabUrls[data.tabId] = data.url;
 		}
-		else
-		{ //https://worker.mturk.com/projects?filters%5Bsearch…nt&page_number=1&page_size=100&sort=num_hits_des
-			
+		else if (e == 'onCompleted' && data.url.indexOf('https://worker.mturk.com/projects?filters') == 0)
+		{	//https://worker.mturk.com/projects?filters%5Bsearch…nt&page_number=1&page_size=100&sort=num_hits_des
+			// This request has landed on the "There are no more hits" page.
+			// Do nothing here.
 		}
+		else if (e == 'onCompleted' && (condition1 || condition2))
+		{	// New job has been loaded. Update lastUrl to match this.
+			savedTabUrls[data.tabId] = data.url;console.log('x');
+		}
+		else if (e == 'onCompleted' && data.url.indexOf('https://worker.mturk.com/projects?filters') != 0)
+		{	// This is the "no hits" page.
+			// It is also the front page, in some sense.
+			// But anyway, it is not a job page and it is not a 
+			// "no hits" page, so clear "lastUrl".
+			savedTabUrls[data.tabId] = null;console.log('x');
+		}
+		console.log('savedTabUrls', savedTabUrls);
     } else
       console.error(chrome.i18n.getMessage('inHandlerError'), e);
   });
@@ -109,7 +123,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	//console.log(request);
 	
 	// request.reloadOnNoHits
-	// Utilizes global variable savedTabsUrls{}.
+	// Utilizes global variable savedTabUrls{}.
 	if (request.reloadOnNoHits) {
 		//~ console.log('sender');
 		//~ console.log(sender.tab);
@@ -119,10 +133,16 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//~ }
 		
 		// Tab id
+		// If tab id has a last url, send it back to the tab.
 		var senderId = sender.tab.id;
-		if (savedTabsUrls.hasOwnProperty('') ) {
-			
+		var response = {
+			url: null
 		}
+		if (savedTabUrls.hasOwnProperty(senderId)) {
+			response.url = savedTabUrls[senderId];
+		}
+		console.log('sending', response);
+		sendResponse(response);
 		// Exit
 		return;
 	}

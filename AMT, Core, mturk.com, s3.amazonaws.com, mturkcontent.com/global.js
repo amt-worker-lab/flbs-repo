@@ -119,20 +119,19 @@ for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
  * 		an error occurs and the function is blocked / destroyed.
  * 		For more info see: https://stackoverflow.com/questions/7560532/what-can-i-put-in-beforeunload
  */
-function setPresentURL() {
-	if (/^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(document.location.href)) {
-		console.log('setting bu listener');
-		window.addEventListener('beforeunload', function (event) {
-			//~ alert('setting bu');
-			//event.preventDefault();
-			sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'] = document.location.href;
-			console.log('bu listener is now:'+ sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'] );
-			return true; // MUST RETURN!
-		});
-	}
-}
-// Record the present URL in sessionStorage.
-setPresentURL();
+//~ function setPresentURL() {
+	//~ if (/^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(document.location.href)) {
+		//~ console.log('setting bu listener');
+		//~ window.addEventListener('beforeunload', function (event) {
+			//~ //event.preventDefault();
+			//~ sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'] = document.location.href;
+			//~ console.log('bu listener is now:'+ sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'] );
+			//~ return true; // MUST RETURN!
+		//~ });
+	//~ }
+//~ }
+//~ // Record the present URL in sessionStorage.
+//~ setPresentURL();
 /**
  * var getReturnButton
  */

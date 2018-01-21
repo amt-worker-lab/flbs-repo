@@ -243,31 +243,62 @@ function mturk_load()
 				
 				// Change to immediate (200ms).
 				// Use DS so that nextTab is called.
-				var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
-				console.log('LastURL:'+sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
-				if (lu && lu != 'undefined') {
-					doSubmit(false, false, function(timeToSkip){
-							window.setTimeout(function() {
-								var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
-								console.log('LastURL:'+sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
-								if (lu && lu != 'undefined') {
+				//~ var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
+				//~ console.log('LastURL:'+sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
+				chrome.extension.sendRequest({reloadOnNoHits: true}, 
+					function(response) {
+						if (response && response.url != null) {
+							window.setTimeout(
+								function() {
 									// Get new random
 									// e.g. https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3I6NF2WGIG14A5ALNIBGT5POH6EG5K?assignment_id=3FTOP5WARGTITKCFOKV8X7HXA3IJ0M&auto_accept=true
-									var x = /^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(lu);
+									var r = response.url;
+									var x = /^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(r);
 									if (x) {
 										// Similar to return and accept behavior.
 										// e.g. tasks/accept_random?ref=w_pl_prvw
 										var newURL = x[1] + 'accept_random?ref=w_pl_prvw';
 										document.location.href = newURL;
+										return;
 									}
-								}
-								// OLD RELOADER! JAN2018
-								// window.location.reload(true);
-							}, timeToSkip);
-						},
-						50 // not 2200
-					);
-				}
+									// Try url 2.
+									// Old-style p&a.
+									var x = r.indexOf('https://www.mturk.com/mturk/previewandaccept?groupId=') == 0;
+									if (x) {
+										// Similar to return and accept behavior.
+										// e.g. tasks/accept_random?ref=w_pl_prvw
+										document.location.href = r;
+										return;
+									}
+								}, 1000
+							);
+							
+							// OLD RELOAD, Timeout~=2 seconds.
+							//~ doSubmit(false, false,
+								//~ function(timeToSkip){
+									//~ window.setTimeout(function() {
+										//~ var lu = sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL'];
+										//~ console.log('LastURL:'+sessionStorage['tab' + AMT__Global_Vars.tabId + 'LastURL']);
+										//~ if (lu && lu != 'undefined') {
+											//~ // Get new random
+											//~ // e.g. https://worker.mturk.com/projects/3T9V9E4TMOA5UDMLFP9XPL5YOY4QXZ/tasks/3I6NF2WGIG14A5ALNIBGT5POH6EG5K?assignment_id=3FTOP5WARGTITKCFOKV8X7HXA3IJ0M&auto_accept=true
+											//~ var x = /^(https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/)/.exec(lu);
+											//~ if (x) {
+												//~ // Similar to return and accept behavior.
+												//~ // e.g. tasks/accept_random?ref=w_pl_prvw
+												//~ var newURL = x[1] + 'accept_random?ref=w_pl_prvw';
+												//~ document.location.href = newURL;
+											//~ }
+										//~ }
+										//~ // OLD RELOADER! JAN2018
+										//~ // window.location.reload(true);
+									//~ }, timeToSkip);
+								//~ },
+								//~ 1000 // not 2200
+							//~ );
+						}
+					}
+				);
 			}
 			console.log('Hit the "All HITs" page. Returning.');
 			return;
