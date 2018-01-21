@@ -18,11 +18,31 @@ var eventList = ['onBeforeNavigate', 'onCreatedNavigationTarget',
     'onCommitted', 'onCompleted', 'onDOMContentLoaded',
     'onErrorOccurred', 'onReferenceFragmentUpdated', 'onTabReplaced',
     'onHistoryStateUpdated'];
+var savedTabsUrls = {}; // Set a global variable.
 eventList.forEach(function(e) {
   chrome.webNavigation[e].addListener(function(data) {
-    if (typeof data)
-      console.log(chrome.i18n.getMessage('inHandler'), e, data);
-    else
+    if (typeof data) {
+		// console.log(chrome.i18n.getMessage('inHandler'), e, data);
+		// console.log(e); // name of event
+		// console.log(data); // data object
+		var condition1 = data.url.indexOf('https://worker.mturk.com/projects/') == 0 && // Cheap test, indexOf
+					/^https:\/\/worker\.mturk\.com\/projects\/[A-Z]+\/tasks/.exec(data.url); // Expensive test, exec
+		var condition2 = data.url.indexOf('https://www.mturk.com/mturk/previewandaccept?groupId=') &&
+					/https:\/\/www\.mturk\.com\/mturk\/previewandaccept\?groupId=[A-Z]+/.exec(data.url);
+		if (e == 'onBeforeNavigate' && (condition1 || condition2)) {
+			// Save tab id + url in sessionStorage.
+			// Reload on no hits
+			// accept random for:
+			// https://worker.mturk.com/projects/3HEPP9UUSV409UUP1DH2YO52C81ETF/tasks
+			// data.tabId
+			// data.url
+			savedTabsUrls[data.tabId] = data.url;
+		}
+		else
+		{ //https://worker.mturk.com/projects?filters%5Bsearch…nt&page_number=1&page_size=100&sort=num_hits_des
+			
+		}
+    } else
       console.error(chrome.i18n.getMessage('inHandlerError'), e);
   });
 });
@@ -88,6 +108,24 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	//console.log(request);
 	
+	// request.reloadOnNoHits
+	// Utilizes global variable savedTabsUrls{}.
+	if (request.reloadOnNoHits) {
+		//~ console.log('sender');
+		//~ console.log(sender.tab);
+		//~ if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+			//~ alert('no utility window set');
+			//~ return false;
+		//~ }
+		
+		// Tab id
+		var senderId = sender.tab.id;
+		if (savedTabsUrls.hasOwnProperty('') ) {
+			
+		}
+		// Exit
+		return;
+	}
 	
 	/**
 	 * Get all

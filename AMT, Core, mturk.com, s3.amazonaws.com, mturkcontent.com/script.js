@@ -31,8 +31,36 @@ function MT__RUN() {
 	// In what form are these items consumed?
 	//
 	// 
+	var s = '<p>Look at the picture provided and determine if there is one or more&nbsp;beverages visible in the image. Then tell us how many. Then determine if one or more of the beverages is a soda (a carbonated drink EXCLUDING alcohol and energy drinks.)&nbsp;If the image is broken choose "no image"&nbsp;</p>';
+	if (ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('#workContent > div.col-xs-12.col-sm-8.content {width:50% !important;}');
+			GM_addStyle('img {cursor:pointer;}');
+			document.getElementsByTagName('img')[0].onclick = function() {
+				var a = document.getElementById('0');
+				var b = document.getElementById('soda_-1')
+				a.parentNode.click();
+				b.parentNode.click();
+				if (a.checked && b.checked) {
+					doSubmit();
+				}
+			}
+		}
+		new run().f();
+		return;
+	}
+	// Amazon Requester Inc. - Tax Engine
+	// In what form are these items consumed?
+	//
+	// 
 	var s = '<div class="well"><span style="background-color: rgb(255, 255, 255);">Pick the correct category for the item from link. See the </span><strong style="background-color: rgb(255, 255, 255);">Selection Criteria</strong><span style="background-color: rgb(255, 255, 255);"> above for more details.</span></div>';
-	if (ih.indexOf(s) != -1 & 0 ==1
+	if (ih.indexOf(s) != -1 && 0 ==1
 		)
 	{
 		var run = function() {}
