@@ -51,6 +51,17 @@ function MT__RUN() {
 					doSubmit();
 				}
 			}
+			// No image
+			document.getElementById('beverage_').getElementsByTagName('label')[5].onclick = function() {
+				this_radio = this.getElementsByTagName('input')[0];
+				//~ var a = document.getElementById('-1');
+				var b = document.getElementById('soda_-1')
+				this_radio.checked = true;
+				b.parentNode.click();
+				if (this_radio.checked && b.checked) {
+					doSubmit();
+				}
+			}
 		}
 		new run().f();
 		return;

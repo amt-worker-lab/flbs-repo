@@ -67,7 +67,7 @@ eventList.forEach(function(e) {
 			// This request has landed on the "There are no more hits" page.
 			// Do nothing here.
 		}
-		else if (e == 'onCompleted' && (condition1 || condition2)) // jobs page
+		else if (e == 'onCompleted' && (condition1 || condition2))
 		{	// New job has been loaded. Update lastUrl to match this.
 			savedTabUrls[data.tabId] = data.url;
 		}
@@ -76,7 +76,9 @@ eventList.forEach(function(e) {
 			// It is also the front page, in some sense.
 			// But anyway, it is not a job page and it is not a 
 			// "no hits" page, so clear "lastUrl".
-			savedTabUrls[data.tabId] = null;
+			
+			//savedTabUrls[data.tabId] = null;
+			// Never?
 		}
     } else
       console.error(chrome.i18n.getMessage('inHandlerError'), e);
