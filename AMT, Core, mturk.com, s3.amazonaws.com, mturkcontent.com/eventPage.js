@@ -13,6 +13,17 @@
  * Test code for Reload On No Hits.
  * 
  * Ex: https://chromium.googlesource.com/chromium/src/+/master/chrome/common/extensions/docs/examples/api/webNavigation/basic
+ * 
+ * Todo:
+ * 		Clear savedTabUrls after some time so that it does not contain
+ * 		tabs which no longer exist. E.g., 800 tabs that have come and
+ * 		gone, but only 10 which are present.
+ * 		E.g., after awhile the savedTabUrls object looks like this:
+ * 		{88: null, 89: null, 93: null, 95: null, 97: null, 815: null, 823: null, 825: null, 827: null, ....}
+ * 
+ * Todo:
+ * 		Consider adding the old preview url:
+ * 		https://www.mturk.com/mturk/preview?groupId=3HEPP9UUSV409UUP1DH2YO52C81ETF
  */
 var eventList = ['onBeforeNavigate', 'onCreatedNavigationTarget',
     'onCommitted', 'onCompleted', 'onDOMContentLoaded',
@@ -26,10 +37,19 @@ eventList.forEach(function(e) {
 		// 		console.log(chrome.i18n.getMessage('inHandler'), e, data);
 		// 		console.log(e); // name of event
 		// 		console.log(data); // data object
-		var condition1 = data.url.indexOf('https://worker.mturk.com/projects/') == 0 && // Cheap test, indexOf
-					/^https:\/\/worker\.mturk\.com\/projects\/[A-Z]+\/tasks/.exec(data.url); // Expensive test, exec
+		var condition1 = data.url.indexOf('https://worker.mturk.com/projects/') == 0 && // Cheap
+					/^https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks/.exec(data.url); // Expensive
 		var condition2 = data.url.indexOf('https://www.mturk.com/mturk/previewandaccept?groupId=') == 0 &&
 					/^https:\/\/www\.mturk\.com\/mturk\/previewandaccept\?groupId=[A-Z0-9]+/.exec(data.url);
+		var condition_no_more_hits = 
+			(
+			data.url.indexOf('https://worker.mturk.com/requesters/') != 0 && 
+			/^https:\/\/worker\.mturk\.com\/requesters\/[A-Z0-9]+\/projects/.exec(data.url)
+			) || 
+			(
+			data.url.indexOf('https://worker.mturk.com/requesters/') == 0 && 
+			/^https:\/\/worker\.mturk\.com\/requesters\/[A-Z0-9]+\/projects/.exec(data.url)
+			);
 		if (e == 'onBeforeNavigate' && (condition1 || condition2)) {
 			// The tab is leaving and it matches the "job" condition.
 			// Save the job url, just in case "reload on no hits" occurs.
@@ -39,23 +59,25 @@ eventList.forEach(function(e) {
 			// Params: data.tabId, data.url
 			savedTabUrls[data.tabId] = data.url;
 		}
-		else if (e == 'onCompleted' && data.url.indexOf('https://worker.mturk.com/projects?filters') == 0)
+		else if (e == 'onCompleted' &&
+			( data.url.indexOf('https://worker.mturk.com/projects?filters') == 0 || // no more hits page
+			  data.url.indexOf('https://worker.mturk.com/requesters/') == 0 // no more hits page
+			))
 		{	//https://worker.mturk.com/projects?filters%5Bsearch…nt&page_number=1&page_size=100&sort=num_hits_des
 			// This request has landed on the "There are no more hits" page.
 			// Do nothing here.
 		}
-		else if (e == 'onCompleted' && (condition1 || condition2))
+		else if (e == 'onCompleted' && (condition1 || condition2)) // jobs page
 		{	// New job has been loaded. Update lastUrl to match this.
-			savedTabUrls[data.tabId] = data.url;console.log('x');
+			savedTabUrls[data.tabId] = data.url;
 		}
-		else if (e == 'onCompleted' && data.url.indexOf('https://worker.mturk.com/projects?filters') != 0)
+		else if (e == 'onCompleted') // any other page
 		{	// This is the "no hits" page.
 			// It is also the front page, in some sense.
 			// But anyway, it is not a job page and it is not a 
 			// "no hits" page, so clear "lastUrl".
-			savedTabUrls[data.tabId] = null;console.log('x');
+			savedTabUrls[data.tabId] = null;
 		}
-		console.log('savedTabUrls', savedTabUrls);
     } else
       console.error(chrome.i18n.getMessage('inHandlerError'), e);
   });
