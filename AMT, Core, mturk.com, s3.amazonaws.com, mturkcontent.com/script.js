@@ -13969,13 +13969,20 @@ Laurens Hammond, Chicago, Ill.**/
 			d1a.setAttribute('style','position:absolute;top:0px;width:50%;height:60px;left:20%;font-size:2em;background-color:#eee;border:1px solid black;font-size:1.4em !important;overflow:auto;')
 			document.body.appendChild(d1a);
 			var d2a = document.createElement('div');
-			d2a.setAttribute('style','position:absolute;top:60px;width:50%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
+			d2a.setAttribute('style','position:absolute;top:60px;width:78%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
 			document.body.appendChild(d2a);
-			var d2b = document.createElement('div');
-			d2b.setAttribute('style','position:absolute;top:60px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:70%;overflow:auto;');
+			var d2b = document.createElement('div'); // Make tiny b/c it's not used here.
+			d2b.setAttribute('style','position:absolute;top:60px;width:1%;height:500px;background-color:#eee;border:1px solid black;left:98%;overflow:auto;');
 			document.body.appendChild(d2b);
+			//~ var d2a = document.createElement('div');
+			//~ d2a.setAttribute('style','position:absolute;top:60px;width:50%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
+			//~ document.body.appendChild(d2a);
+			//~ var d2b = document.createElement('div');
+			//~ d2b.setAttribute('style','position:absolute;top:60px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:70%;overflow:auto;');
+			//~ document.body.appendChild(d2b);
 			/**END OF ITEMS**/
 			// innerHeight
+			// TODO: FIX
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
 				// to fill up the whole window, minus their
