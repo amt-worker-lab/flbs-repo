@@ -27,8 +27,8 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
-	// Amazon Requester Inc. - Tax Engine
-	// In what form are these items consumed?
+	// Soda / beverage job. Who is the requester?
+	// 
 	//
 	// 
 	var s = '<p>Look at the picture provided and determine if there is one or more&nbsp;beverages visible in the image. Then tell us how many. Then determine if one or more of the beverages is a soda (a carbonated drink EXCLUDING alcohol and energy drinks.)&nbsp;If the image is broken choose "no image"&nbsp;</p>';
@@ -68,7 +68,7 @@ function MT__RUN() {
 	}
 	// Amazon Requester Inc. - Tax Engine
 	// In what form are these items consumed?
-	//
+	// This is not running because it is scripted elsewhere.
 	// 
 	var s = '<div class="well"><span style="background-color: rgb(255, 255, 255);">Pick the correct category for the item from link. See the </span><strong style="background-color: rgb(255, 255, 255);">Selection Criteria</strong><span style="background-color: rgb(255, 255, 255);"> above for more details.</span></div>';
 	if (ih.indexOf(s) != -1 && 0 ==1
@@ -77,16 +77,6 @@ function MT__RUN() {
 		var run = function() {}
 		run.prototype.f = function() {
 			console.log('x');
-			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
-			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:100px !important;}');// Move content to bottom...
-			//~ GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');// Move content to bottom...
-			
-			// Other gm
-			//~ GM_addStyle('.select2-container--default .select2-results>.select2-results__options {max-height:600px!important;}');
-			//~ GM_addStyle('.exe:hover {background-color:orange;}');
-			//~ GM_addStyle('#submitButton {width:100%;height:200px;margin-top:-160px;}');// Move content to bottom...
 			// Elements
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -13930,6 +13920,298 @@ Laurens Hammond, Chicago, Ill.**/
 	 * 
 	 
 	 */
+	// Amazon Requester Inc. - Tax Engine
+	// Does the label say "Dietary Supplement" on it?
+	var s = '<div class="well">Click on the link above to answer the following question: Does the item say&nbsp;"Dietary Supplement" on the label?<br>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td,fieldset {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;top:2000px}'); // width:1100px=default
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:1000px}');
+			//~ GM_addStyle('img {cursor:pointer;}');
+			//~ GM_addStyle('.radio>label {font-size:2em !important;}');
+			//~ GM_addStyle('input[type="radio"] {zoom:1.4;}');
+			
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[1].href,
+				amScrape: {
+					title: null,
+					maker: null,
+					details: null,
+					images: null
+				},
+				q:[
+					//~ document.getElementsByName('classification')[0],// Single
+					//~ document.getElementsByName('classification')[1],//
+					//~ document.getElementsByName('classification')[2],//
+					//~ document.getElementsByName('name_suggest')[0],	// Yes
+					//~ document.getElementsByName('name_suggest')[1]	// No
+				]
+			}
+			//~ var n = document.getElementsByName('categories');
+			var n = document.getElementsByClassName('btn btn-default');
+			for (var i=0; i<n.length; i++) { // input[type=radio]
+				n[i].onclick = function(e) {
+					var x = this.getElementsByTagName('input')[0];
+					x.checked = true;
+					if (x.checked && x.type=='radio') {
+						doSubmit();
+					}
+				}
+			}
+			
+			/**CREATE ITEMS**/
+			var d1a = document.createElement('div');
+			d1a.setAttribute('style','position:absolute;top:0px;width:50%;height:60px;left:20%;font-size:2em;background-color:#eee;border:1px solid black;font-size:1.4em !important;overflow:auto;')
+			document.body.appendChild(d1a);
+			var d2a = document.createElement('div');
+			d2a.setAttribute('style','position:absolute;top:60px;width:50%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
+			document.body.appendChild(d2a);
+			var d2b = document.createElement('div');
+			d2b.setAttribute('style','position:absolute;top:60px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:70%;overflow:auto;');
+			document.body.appendChild(d2b);
+			/**END OF ITEMS**/
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d2a, d2b
+				],
+				offset: 60 // offset top
+			});
+			// Init
+			scrapeAmazon();
+			function scrapeAmazon() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							console.log('err:');
+							console.log(response.status);
+							return;
+						}
+						else {
+							var dom =  new DOMParser().parseFromString(rs,'text/html');
+							var title = dom.getElementById('productTitle');
+							if(title) {
+								title = title.innerText;
+							}
+							//~ var maker = dom.getElementById('brand').innerText;
+							d1a.innerHTML = title;// + '<span style="color:blue">' + maker +'</span>';
+							
+							// Add UL containing product info.
+							// a-unordered-list a-vertical a-spacing-none
+							var pi = dom.getElementsByClassName('a-unordered-list a-vertical a-spacing-none');
+							if (pi && pi.length)
+								d2b.appendChild(pi[0]);
+							
+							
+							// Images.
+							// 
+							// 
+							// 
+							var type_rslt = 0;
+							r = /'colorImages': (\{[^\r\n]+)/.exec(rs);
+							if (!r) {
+								type_rslt = 1;
+								r = /<script type="text\/javascript">var loadState = false; \(function\(\)\{var i=new Image; i\.onload = function\(\) \{ loadState = true; \}; i\.src = "([^"]+)";\}\)\(\);<\/script>/.exec(rs);
+							}
+							if (!r) {
+								d2a.innerText = 'NO IMAGES';
+							}
+							else {
+								if (type_rslt == 0) {
+									r = r[1].trim();
+									r = r.replace(/,$/, '');
+									r = r.replace(/'/g, '"');
+									r = JSON.parse(r);
+								} else {
+									r = {
+										initial: [{
+											large: r[1].trim()
+										}]
+									}
+								}
+								// Debug
+								console.log(r);
+								// No Images
+								if  (
+									r.initial.length == 1 &&
+									r.initial[0].large.indexOf('images-amazon.com/images/G/01/x-site/icons/no-img-sm.') != -1 &&
+									r.initial[0].thumb.indexOf('images-amazon.com/images/G/01/x-site/icons/no-img-sm.') != -1
+									)
+								{
+									//~ submit_no_img();
+									return; // End here
+								}
+								
+								// r.initial holds the image object. Each image object has keys: String hiRes,String thumb,String large,Obj main
+								//
+								//
+								//
+								var all_images_tmp;
+								if (r.initial) { // is [{1},{2}, ...{n}]
+									r = r.initial;
+									// Image size
+									var numImages = r.length;
+									// Loop images
+									for (var i in r) {
+										
+										// BUNDLE image
+										var tmp_src;
+										if (r[i].main && JSON.stringify(r[i].main).indexOf('bundle') != -1) {
+											// Get first
+											// main[key == img URL == ex http://ecx.images-amazon.com/images/I/6 ... ... .jpg] = array [width, height]
+											for (var j in r[i].main) {
+												tmp_src = j;
+												break;
+											}
+											// Add to page
+											// e.g. PIbundle-6
+											var m = JSON.stringify(r[i].main);
+											var n = /PIbundle-(\d+)/.exec(m);
+											if (n) {
+												//~ o.q[2].value = MT___numberWithCommas(n[1]);
+												//~ o.q[2].style.backgroundColor = 'aqua';
+												
+												//~ // RED BORDER IF UNAVAILABLE
+												//~ var cu = rs.indexOf('<span class="a-size-medium a-color-base">\n                                    Currently Unavailable\n                                </span>');
+												//~ if (cu != -1) {
+													//~ o.q[2].style.border = '6px solid blue';
+												//~ }
+											}
+										}
+										if (tmp_src)
+											addImage(tmp_src, d2a);
+											
+										// Regular images
+										var tmp_src;
+										if (r[i].hiRes) {
+											tmp_src = r[i].hiRes;
+										} else if (r[i].large) {
+											tmp_src = r[i].large;
+										} else if (r[i].thumb) {
+											tmp_src = r[i].thumb;
+										} 
+										if (tmp_src)
+											addImage(tmp_src, d2a);
+									}
+								}
+								// Add a spacer
+								d2a.appendChild(''.div({style:'height:2000px;'}));
+							}
+						}
+					}
+				});
+			}
+			
+			/**
+			 * function addImage
+			 */
+			function addImage(tmp_src, out) {
+				
+				var img = document.createElement('img');
+				out.appendChild(img);
+				img.isSmall = false;
+				img.className = 'images_class';
+				img.setAttribute('style', 'border:1px solid #a2a2a2;float:left;');
+				//img.equal_width = equal_width;
+				
+				if (!AMT__Global_Vars.isPreview) {
+					img.src = tmp_src;
+					Grocery_ROI_organic_labels__resizeImg(img, 400);
+				}
+				
+				//
+				// Decrement total_stats.tImages if "No image available" from Amazon.
+				//
+				//
+				if (tmp_src == 'http://g-ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm._V192198896_.gif') {
+					img.isSmall = true;
+					img.style.zoom = '0.05';
+					//~ td.parentNode.style.zoom = '0.1';
+				}
+				
+				img.onclick = function() {
+					if (!this.isSmall) {
+						this.style.zoom = '0.05'; //.2
+						this.isSmall = true;
+					} else {
+						this.style.zoom = this.zoomFactor; // reset zoom factor!
+						this.isSmall = false;
+					}
+					
+					// section_fieldsets scrollIntoView !!
+					// out element 0 focus
+					//~ o.q[0].focus();
+					//~ o.q[0].select();
+					//out.section_fieldsets.scrollIntoView();
+				}
+				
+				img.addEventListener('mousewheel', function(e) {
+					if (!this.style.zoom)
+						this.style.zoom = 1;
+					if (e.wheelDelta > 0) { // "120", zoom in
+						this.style.zoom = this.style.zoom * 1 + 0.1;
+					} else { // "-120", zoom out
+						this.style.zoom = this.style.zoom * 1 - 0.1;
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}, false);
+			}
+			function Grocery_ROI_organic_labels__resizeImg(img, maxSize) {
+				var img = img;
+				var maxSize = (maxSize) ? maxSize : 400;
+				
+				//
+				// Is img.isSmall not false? If yes,
+				// then exit.
+				if (img.isSmall) return;
+				
+				//
+				// img.isSmall is true. So resize.
+				//
+				setTimeout(function() {
+					var imgSz = img.getBoundingClientRect();
+					var maxSz = maxSize; //OLD 400;
+					var imgBiggest;
+					var zoomFactor;
+					
+					if (imgSz.height > imgSz.width) {
+						imgBiggest = imgSz.height;
+					} else {
+						imgBiggest = imgSz.width;
+					}
+					
+					console.log(imgSz);
+					console.log(imgBiggest);
+					console.log(maxSz);
+					
+					// 400 / 500, zoom = .8, 400 / 300, zoom = 1.33
+					zoomFactor = Math.round(maxSz / imgBiggest * 10) / 10;
+					
+					// LIMIT ZOOM TO 10 !!
+					if (zoomFactor > 10)
+						zoomFactor = 0.5;
+					
+					img.style.zoom = zoomFactor;
+					img.zoomFactor = zoomFactor;
+					//
+				}, 600);
+			}
+		}
+		new run().f();
+	}
 	// Amazon Requester Inc. - Tax Engine
 	// In what form are these items consumed?
 	var s = '<div class="well"><span style="background-color: rgb(255, 255, 255);">Pick the correct category for the item from link. See the </span><strong style="background-color: rgb(255, 255, 255);">Selection Criteria</strong><span style="background-color: rgb(255, 255, 255);"> above for more details.</span></div>';
