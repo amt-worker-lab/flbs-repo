@@ -298,7 +298,8 @@ function mturk_load()
 										}
 									}, timeToSkip);
 								},
-								2000 // not 2200
+								// 2000, worked jan20-jan22
+								1200 // not 2200
 							);
 						}
 					}
