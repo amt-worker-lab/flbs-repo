@@ -14690,8 +14690,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				var r, r1, r2;//, r3;
 				r1 = /<span itemprop="streetAddress">([^<]*)<\/span><br \/><span itemprop="addressLocality">([^<]*)<\/span>, <span itemprop="addressRegion">([^<]*)<\/span>, ([^<]+)<span itemprop="addressCountry">([^<]*)<\/span>/.exec(rs);
 				r2 = /<p div itemprop="address" itemscope itemtype="[^"]*">((.|\s)*?(?=<\/p>|$)|$)/.exec(rs);
-				//~ console.log(r1);
-				//~ console.log(r2);
 				
 				if (r1) {
 					r = r1;
@@ -14753,10 +14751,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					// opts.profile_url
 					opts.profile_url = btn.url_hv;
 					
-					// onclick_callback
-					if(opts.hasOwnProperty('onclick_callback') && !is_geocoding) {
-						opts.onclick_callback(opts);
-					}
 				}
 				
 				// WEBSITE & TELELPHONE
@@ -14778,8 +14772,11 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					if (opts.output_elements.hasOwnProperty('phone')) {
 						var sp = d.getElementsByTagName('span');
 						for (var i=0; i<sp.length; i++) {
-							if (sp[i].getAttribute('itemprop') && sp[i].getAttribute('itemprop') == 'telephone' && sp[i].innerText) {
+							if (sp[i].getAttribute('itemprop') &&
+								sp[i].getAttribute('itemprop') == 'telephone' &&
+								sp[i].innerText) {
 								opts.output_elements.phone.value = sp[i].innerText.trim();
+								opts.o.final_location.phone = sp[i].innerText.trim();
 							}
 						}
 					}
@@ -14798,6 +14795,11 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					// First el?
 					opts.output_elements[0].value = r[1];
 					opts.o.final_location.name = r[1];
+				}
+				
+				// onclick_callback
+				if(opts.hasOwnProperty('onclick_callback') && !is_geocoding) {
+					opts.onclick_callback(opts);
 				}
 			}
 		});

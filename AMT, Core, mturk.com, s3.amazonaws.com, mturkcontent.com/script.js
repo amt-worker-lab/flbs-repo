@@ -130666,6 +130666,7 @@ qatar,80
 			// TODO#2: Preview mode skip when COUNTRY!=USA.
 			// #3:On Google, show by line, e.g.: Street Address:698. From:
 			// adr_address: "<span class="street-address">698</span> <span class="extended-address">Azu</span>, <span class="locality">Hanno</span>, <span class="region">Saitama Prefecture</span> <span class="postal-code">357-0046</span>, <span class="country-name">Japan</span>"
+			// TODO: Add display:none if phone==null
 			var opts = {
 				parent: dx1,
 				parent_controller_el: dx2,
@@ -130688,10 +130689,16 @@ qatar,80
 					if (x) {
 						o.q[0].value = '(' + x[1] + ') ' + x[2] + '-' + x[3];
 					} else {
-						sbm = false;
-						document.body.style.backgroundColor = 'pink';
-						o.q[0].value = opts.o.final_location.phone;
-						o.q[0].style.border = '2px solid blue';
+						// Try 1+ ...
+						var x = /^1(\d{3})(\d{3})(\d{4})$/.exec(opts.o.final_location.phone);
+						if (x) {
+							o.q[0].value = '(' + x[1] + ') ' + x[2] + '-' + x[3];
+						} else {
+							sbm = false;
+							document.body.style.backgroundColor = 'pink';
+							o.q[0].value = opts.o.final_location.phone;
+							o.q[0].style.border = '2px solid blue';
+						}
 					}
 					var x = /^[A-Z]{2}$/.exec(opts.o.final_location.state_abbr);
 					o.q[1].value = opts.o.final_location.state_abbr;
