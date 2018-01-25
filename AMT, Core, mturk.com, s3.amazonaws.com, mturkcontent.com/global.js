@@ -14894,28 +14894,29 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	function bbb_addr_profile(html_el) {
 		var rslt = html_el.rslt;
 		if (opts.output_elements.hasOwnProperty('street')) {
-			opts.output_elements.street.value = r[1];
-			opts.o.final_location.street = r[1];
+			opts.output_elements.street.value = rslt.Address;
+			opts.o.final_location.street = rslt.Address;
 		}
 		if (opts.output_elements.hasOwnProperty('city')) {
-			opts.output_elements.city.value = r[2];
-			opts.o.final_location.city = r[2];
+			opts.output_elements.city.value = rslt.City;
+			opts.o.final_location.city = rslt.City;
 		}
 		if (opts.output_elements.hasOwnProperty('state')) {
-			opts.output_elements.state.value = r[3];
-			opts.o.final_location.state = r[3];
+			opts.output_elements.state.value = rslt.State;
+			opts.o.final_location.state = rslt.State;
 		}
 		else if (opts.output_elements.hasOwnProperty('state_abbr')) {
-			opts.output_elements.state_abbr.value = r[3];
-			opts.o.final_location.state_abbr = r[3];
+			var sf = rslt.State.state_full_to_abbr();
+			opts.output_elements.state_abbr.value = sf;
+			opts.o.final_location.state_abbr = sf;
 		}
 		if (opts.output_elements.hasOwnProperty('zip')) {
-			opts.output_elements.zip.value = r[4];
-			opts.o.final_location.zip = r[4];
+			opts.output_elements.zip.value = rslt.PostalCode;
+			opts.o.final_location.zip = rslt.PostalCode;
 		}
 		if (opts.output_elements.hasOwnProperty('country')) {
-			opts.output_elements.country.value = r[5];
-			opts.o.final_location.country = r[5];
+			opts.output_elements.country.value = '';
+			opts.o.final_location.country = '';
 		}
 		
 		if 	(
@@ -14923,38 +14924,46 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			opts.output_elements.hasOwnProperty('lng')
 			)
 		{
-			is_geocoding = true;
-			geocode(location);
+			//~ is_geocoding = true;
+			//~ geocode(location);
 		}
-		
 		// Full address
 		if (opts.output_elements.hasOwnProperty('full_address')) {
-			opts.output_elements.full_address.value = location;
-			opts.o.final_location.full_address = location;
+			var addr_str = rslt.Address + ',' + rslt.City + ',' +
+					rslt.StateProvince;
+			opts.output_elements.full_address.value = addr_str;
+			opts.o.final_location.full_address = addr_str;
 		}
-		
 		// opts.profile_url
 		//~ opts.profile_url = btn.url_hv;
 	}
 	function bbb_addr() {
 		d1c.innerHTML = '';
-		var url = 'https://api.bbb.org/api/orgs/search?pageSize=&pageNumber=&primaryOrganizationName='+encodeURIComponent(d2.value)+'&organizationNameExact=&businessId=&bBBID=&bBBRating=&isBBBAccredited=&altOrganizationNames=&organizationName=&isReportable=&primaryCategory=&reportUrl=&ratingLastChanged=&organizationLastChanged=&accreditationStatusLastChanged=&organizationType=&contactFirstName=&contactLastName=&contactMiddleName=&contactTitle=&contactPrefix=&phone=&address=&city=&stateProvince=&postalCode=&businessUrl=&collectionId=&isCharity=&entityId=';
+		var url = 'https://api.bbb.org/api/orgs/search?pageSize=10&pageNumber=0&primaryOrganizationName='+encodeURIComponent(d2.value)+'&organizationNameExact=&businessId=&bBBID=&bBBRating=&isBBBAccredited=&altOrganizationNames=&organizationName=&isReportable=&primaryCategory=&reportUrl=&ratingLastChanged=&organizationLastChanged=&accreditationStatusLastChanged=&organizationType=&contactFirstName=&contactLastName=&contactMiddleName=&contactTitle=&contactPrefix=&phone=&address=&city=&stateProvince=&postalCode=&businessUrl=&collectionId=&isCharity=&entityId=';
 		//
-		new AMT___requests_factory().xhr_with_disk_cache({
-			URL: url,
+		var opts = {
+			url: url,
+			//~ do_not_save_to_file: false,
 			filename: new AMT___requests_factory().md5(url), // Static file name
-			check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-				var rs = options.response.responseText;
-				if  (options.response.status != 200) {
-					d1c.style.backgroundColor = 'yellow';
-					return false;
-				}
-				else
-					return true;
-			},
-			success_callback: function(options) {
-				var rs = options.response.responseText;
-				if (options.response.status != 200) {
+			cookie_filename: o.cookie_filename,
+			headers_array: [ //THE SOLUTION HERE IS TO SET HEADERS. In particular it appears that headers have to contain Cookie.
+				'"Authorization": "Bearer 4KqFIGQhp00VfWV4_U3PTdwO01NyHoLiDsBghvmoBz19RBG77tOXJJ8zcAdcKxOfX9jd2dXBDeK1LqB6gqqI3R9Fgc5RSpMF8bPPLI6ln11QVZgF9bHzefMUTx2IzVpap2AF5rI4l7Xc8CT4tAEdC4QRTVGCKSiWBGh23gylVgBs8p3kHuiQ6TIlyAhWtE_nRe_DbE2LiSkogJPXVRUS7YP6n40FSjsuH2wCo2pVKyIJg3vOkBbBONsDHZhDOfNVl7saj82nq5TvpGR8Ddbi9bHrx2tXMFjL7TYgy1p4N-wAtMpgjXXxAxLWQyVqIhBqTeBwaW7HwFlYPTta4KxdTNv6eCuU2-L2i2O43TgMvt5G7pMjHH90ODNLC8USrwutPwWIDtx95su8bEXyiZrWuAaVksogbV_wmaFktopg8ePce_iAF78t_DohqoJO8Ao-QrYq7IDL9IihWzSxJZOK7wo_vGfb0N1EEL5DhaJLEW-qBMYcUXA9rTWgq0Xoslcg3KHlAE3wcvRg56GD7BYsAjeJxG4WVWxVpHC1mHWfIxtKyOiJsbDsW0DsP8nR6oN1WSsQqiAvExLPDssekvVnGhRCbPkGPQJodkJmoqlHpnaePIfBUDMW8ANjdUvoMB1tfgwMoo1fjDRPlZdiK9c2C9jk3YE"'
+			],
+			//~ post_object_as_str: '',
+			//~ set_cookie_content: 'TS019ab495=01cf497f1e1d5d4434f08cca8579bfdd3df2bed1fd19be8a599a1391fde1d18a5f9f5f1c30efe90ff12ab154a479794cefc09d2a0f; Path=/'
+			//'TS019ab495=01cf497f1ed52599ba0c95a353c2f70fd9d31462a2d346a985139d23f89c229ff716b110db'
+			//<form method="POST" action="%2fCorpWeb%2fCorpSearch%2fCorpSearch.aspx"/>
+		}
+		opts = JSON.stringify(opts);
+		var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (/^\d{3}$/.exec(rs)) { // If status code is returned
+					// Display output
+					d1c.innerText = 'em0 ERROR='+rs;
 					complete('bbb');// Mark complete
 					return;
 				}
@@ -14966,14 +14975,15 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				}
 				// rs.SearchResults
 				for (var i in rs.SearchResults) {
+					var rslt = rs.SearchResults[i];
 					// div
 					var div = document.createElement('div');
 					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
 					// input
 					var inp = document.createElement('button');
 					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
-					inp.innerHTML = m[2];
-					inp.rslt = rs.SearchResults[i];
+					inp.innerText = rslt.OrganizationName;
+					inp.rslt = rslt;
 					inp.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						// focus
@@ -14981,25 +14991,33 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							opts.first_element.focus();
 						bbb_addr_profile(this);
 					}
-					
 					div.appendChild(inp);
 					div.appendChild(document.createElement('br'));
-					
+					// filter by
 					if(opts.filter_for_only &&
 					   opts.filter_for_only.country &&
 					   opts.filter_for_only.country == 'USA') {
-						if(m[3].toLowerCase().indexOf('united states') == -1) {
+						if (rslt.Address.toLowerCase().indexOf('united states') == -1) {
 							continue;
 						}					
 					}
-					
+					// add location+bold
 					var locSpan = document.createElement('span');
-					locSpan.innerHTML = (opts.bold_locn_array ? ''+ MT__bold(m[3], opts.bold_locn_array) :
-										 m[3]);
+					var addr_str = rslt.Address + ',' + rslt.City + ',' +
+						rslt.StateProvince;
+					locSpan.innerHTML = (
+						opts.bold_locn_array ?
+							MT__bold(addr_str, opts.bold_locn_array) :
+							addr_str
+					);
 					div.appendChild(locSpan);
-					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createTextNode(m[4]));
-					
+					if (rslt.Phones && rslt.Phones.length) {
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(
+							rslt.Phones.join(' | ')
+						));
+					}
+					// add to d1c
 					d1c.appendChild(div);
 				}
 				// Done with items
@@ -15013,6 +15031,31 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				complete('bbb');// Mark complete
 			}
 		});
+		//
+		//~ new AMT___requests_factory().xhr_with_disk_cache({
+			//~ URL: url,
+			//~ filename: new AMT___requests_factory().md5(url), // Static file name
+			//~ headers: {
+				//~ 'Authorization': '"Bearer 4KqFIGQhp00VfWV4_U3PTdwO01NyHoLiDsBghvmoBz19RBG77tOXJJ8zcAdcKxOfX9jd2dXBDeK1LqB6gqqI3R9Fgc5RSpMF8bPPLI6ln11QVZgF9bHzefMUTx2IzVpap2AF5rI4l7Xc8CT4tAEdC4QRTVGCKSiWBGh23gylVgBs8p3kHuiQ6TIlyAhWtE_nRe_DbE2LiSkogJPXVRUS7YP6n40FSjsuH2wCo2pVKyIJg3vOkBbBONsDHZhDOfNVl7saj82nq5TvpGR8Ddbi9bHrx2tXMFjL7TYgy1p4N-wAtMpgjXXxAxLWQyVqIhBqTeBwaW7HwFlYPTta4KxdTNv6eCuU2-L2i2O43TgMvt5G7pMjHH90ODNLC8USrwutPwWIDtx95su8bEXyiZrWuAaVksogbV_wmaFktopg8ePce_iAF78t_DohqoJO8Ao-QrYq7IDL9IihWzSxJZOK7wo_vGfb0N1EEL5DhaJLEW-qBMYcUXA9rTWgq0Xoslcg3KHlAE3wcvRg56GD7BYsAjeJxG4WVWxVpHC1mHWfIxtKyOiJsbDsW0DsP8nR6oN1WSsQqiAvExLPDssekvVnGhRCbPkGPQJodkJmoqlHpnaePIfBUDMW8ANjdUvoMB1tfgwMoo1fjDRPlZdiK9c2C9jk3YE"'
+			//~ },
+			//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+				//~ var rs = options.response.responseText;
+				//~ if  (options.response.status != 200) {
+					//~ d1c.style.backgroundColor = 'yellow';
+					//~ return false;
+				//~ }
+				//~ else
+					//~ return true;
+			//~ },
+			//~ success_callback: function(options) {
+				//~ var rs = options.response.responseText;
+				//~ if (options.response.status != 200) {
+					//~ complete('bbb');// Mark complete
+					//~ return;
+				//~ }
+				
+			//~ }
+		//~ });
 	}
 	function FB_test_phone(phone) {
 		var p = phone;
