@@ -14051,6 +14051,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		FB_addr();
 		hoovers_addr();
 		google_addr();
+		bbb_addr();
 		
 		//~ businessweek_addr(false);
 	}
@@ -14084,6 +14085,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		FB_addr();
 		hoovers_addr();
 		google_addr();
+		bbb_addr();
 		
 		//~ businessweek_addr(false); // initial
 	}
@@ -14809,13 +14811,25 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	}
 	function hoovers_addr() {
 		d1b.innerHTML = '';
+		var url = 'http://www.hoovers.com/company-information/\
+				company-search.html?term=+'+encodeURIComponent(d2.value)+
+				'&sortDir=Descending&sort=SalesUS&maxitems=50';
 		//
-		GM_xmlhttpRequest({ // init
-			method: "GET",
-			url: 'http://www.hoovers.com/company-information/company-search.html?term=+'+encodeURIComponent(d2.value)+'&sortDir=Descending&sort=SalesUS&maxitems=50', //#
-			onload: function(response) {
-				var rs = response.responseText;
-				if (response.status != 200) {
+		new AMT___requests_factory().xhr_with_disk_cache({
+			URL: url,
+			filename: new AMT___requests_factory().md5(url), // Static file name
+			check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+				var rs = options.response.responseText;
+				if  (options.response.status != 200) {
+					d1c.style.backgroundColor = 'yellow';
+					return false;
+				}
+				else
+					return true;
+			},
+			success_callback: function(options) {
+				var rs = options.response.responseText;
+				if (options.response.status != 200) {
 					complete('hoovers');// Mark complete
 					return;
 				}
@@ -14874,6 +14888,129 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					d1b.appendChild(div);
 				}
 				complete('hoovers');// Mark complete
+			}
+		});
+	}
+	function bbb_addr_profile(html_el) {
+		var rslt = html_el.rslt;
+		if (opts.output_elements.hasOwnProperty('street')) {
+			opts.output_elements.street.value = r[1];
+			opts.o.final_location.street = r[1];
+		}
+		if (opts.output_elements.hasOwnProperty('city')) {
+			opts.output_elements.city.value = r[2];
+			opts.o.final_location.city = r[2];
+		}
+		if (opts.output_elements.hasOwnProperty('state')) {
+			opts.output_elements.state.value = r[3];
+			opts.o.final_location.state = r[3];
+		}
+		else if (opts.output_elements.hasOwnProperty('state_abbr')) {
+			opts.output_elements.state_abbr.value = r[3];
+			opts.o.final_location.state_abbr = r[3];
+		}
+		if (opts.output_elements.hasOwnProperty('zip')) {
+			opts.output_elements.zip.value = r[4];
+			opts.o.final_location.zip = r[4];
+		}
+		if (opts.output_elements.hasOwnProperty('country')) {
+			opts.output_elements.country.value = r[5];
+			opts.o.final_location.country = r[5];
+		}
+		
+		if 	(
+			opts.output_elements.hasOwnProperty('lat') &&
+			opts.output_elements.hasOwnProperty('lng')
+			)
+		{
+			is_geocoding = true;
+			geocode(location);
+		}
+		
+		// Full address
+		if (opts.output_elements.hasOwnProperty('full_address')) {
+			opts.output_elements.full_address.value = location;
+			opts.o.final_location.full_address = location;
+		}
+		
+		// opts.profile_url
+		//~ opts.profile_url = btn.url_hv;
+	}
+	function bbb_addr() {
+		d1c.innerHTML = '';
+		var url = 'https://api.bbb.org/api/orgs/search?pageSize=&pageNumber=&primaryOrganizationName='+encodeURIComponent(d2.value)+'&organizationNameExact=&businessId=&bBBID=&bBBRating=&isBBBAccredited=&altOrganizationNames=&organizationName=&isReportable=&primaryCategory=&reportUrl=&ratingLastChanged=&organizationLastChanged=&accreditationStatusLastChanged=&organizationType=&contactFirstName=&contactLastName=&contactMiddleName=&contactTitle=&contactPrefix=&phone=&address=&city=&stateProvince=&postalCode=&businessUrl=&collectionId=&isCharity=&entityId=';
+		//
+		new AMT___requests_factory().xhr_with_disk_cache({
+			URL: url,
+			filename: new AMT___requests_factory().md5(url), // Static file name
+			check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+				var rs = options.response.responseText;
+				if  (options.response.status != 200) {
+					d1c.style.backgroundColor = 'yellow';
+					return false;
+				}
+				else
+					return true;
+			},
+			success_callback: function(options) {
+				var rs = options.response.responseText;
+				if (options.response.status != 200) {
+					complete('bbb');// Mark complete
+					return;
+				}
+				try {
+					rs = JSON.parse(rs);
+				} catch(e) {
+					complete('bbb');// Mark complete
+					return;
+				}
+				// rs.SearchResults
+				for (var i in rs.SearchResults) {
+					// div
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					// input
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = m[2];
+					inp.rslt = rs.SearchResults[i];
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						// focus
+						if (opts.first_element)
+							opts.first_element.focus();
+						bbb_addr_profile(this);
+					}
+					
+					div.appendChild(inp);
+					div.appendChild(document.createElement('br'));
+					
+					if(opts.filter_for_only &&
+					   opts.filter_for_only.country &&
+					   opts.filter_for_only.country == 'USA') {
+						if(m[3].toLowerCase().indexOf('united states') == -1) {
+							continue;
+						}					
+					}
+					
+					var locSpan = document.createElement('span');
+					locSpan.innerHTML = (opts.bold_locn_array ? ''+ MT__bold(m[3], opts.bold_locn_array) :
+										 m[3]);
+					div.appendChild(locSpan);
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[4]));
+					
+					d1c.appendChild(div);
+				}
+				// Done with items
+				if (d1c.innerHTML == '') {
+					d1c.innerHTML = '0';
+				} else {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1c.appendChild(div);
+				}
+				complete('bbb');// Mark complete
 			}
 		});
 	}
