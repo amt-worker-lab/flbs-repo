@@ -20559,6 +20559,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//
 		//
 		ignore_requesters__ids = {
+			'A3R4SK6L3Q33OB':true, //DataAnalysis
 			'A3A0N4OPTWRYPD':true, //Research Project
 			'A2GGMBBJ00PKKX':true, //AdultNetHITs
 			'A222T6DOEXIL8L':true, //zTask by zCrowd.com
