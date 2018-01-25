@@ -20569,6 +20569,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'AB2WW1DFMYT5F':true,  //The req. known as "Shopping" (doing receipts)
 		};
 		ignore_requesters = {
+			'TaskWorkers':true,
+			'AI Research':true,
+			'Tamara Berg':true,
 			'Hannah Rashkin':true,
 			'NEL Research':true,
 			'Raucous Data':true,
