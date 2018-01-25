@@ -130610,11 +130610,11 @@ qatar,80
 			document.body.appendChild(dx2);
 			dx2.value = o.comp;
 			//~ dx2.value = o.comp;
-			var dx3 = document.createElement('div'); // info div
-			dx3.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:100px;border:1px solid blue;background-color:#eee;font-size:1.6em !important;');
+			var dx3 = document.createElement('input'); // info div
+			dx3.value = 'N/A';
+			dx3.type = 'button';
+			dx3.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:100px;font-size:1.6em !important;');
 			document.body.appendChild(dx3);
-			// tmp placeholder for states
-			var dx4 = document.createElement('input');
 			/*END ITEMS*/
 			//~ dx3.innerText = o.zip;
 			var ef = new AMT___events_factory();
@@ -130625,7 +130625,13 @@ qatar,80
 					input_object.element.blur();
 				}
 			});
-			
+			// onclick
+			dx3.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = 'N/A';
+				o.q[1].value = 'N/A';
+				doSubmit();
+			}
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -130633,7 +130639,6 @@ qatar,80
 				// distance from page top (top:XX pixels;).
 				elements: [
 					dx1
-					//~ dx3
 				],
 				offset: 160 // offset top
 			});
