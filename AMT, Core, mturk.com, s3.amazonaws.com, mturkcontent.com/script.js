@@ -130642,16 +130642,18 @@ qatar,80
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				//~ for (var i in o.q) {
-					//~ o.q[i].value = o.q[i].value.trim();
-					//~ if (o.q[i].value == '') return false;
-					//~ if (o.q[i].value.length < 2) return false;
-				//~ }
 				//~ doSubmit(); // Still here? Submit.
+				if (!/^\(\d{3}\) \d{3}-\d{4}$/.exec(o.q[0].value)) {
+					return false;
+				}
+				if (!/^[A-Z]{2}$/.exec(o.q[1].value)) {
+					return false;
+				}
+				doSubmit(); // Still here? Submit.
 				return false;
 			}
 			// try_sbm
-			//~ function try_sbm() {
+			function try_sbm() {
 				//~ for (var i in o.q) {
 					//~ o.q[i].value = o.q[i].value.trim();
 					//~ if (/[\D]/.exec(o.q[i].value)) return false; // Contains non-digit
@@ -130659,7 +130661,7 @@ qatar,80
 					//~ if (o.q[i].value.length < 2) return false;
 				//~ }
 				//~ doSubmit(); // Still here? Submit.
-			//~ }
+			}
 			
 			// Opts
 			// TODO#1: RUN ONLY GOOGLE, OR SET UP FACEBOOK AND RUN ONLY GOOGLE/FB.
@@ -130677,11 +130679,11 @@ qatar,80
 				onclick_callback: function(opts) { // (opts)
 					console.log(opts);
 					document.body.style.backgroundColor = '';
-					if (opts.o.final_location.phone == null || 
-						opts.o.final_location.state_abbr == null ) {
-						document.body.style.backgroundColor = 'blue';
-						return;
-					}
+					//~ if (opts.o.final_location.phone == null || 
+						//~ opts.o.final_location.state_abbr == null ) {
+						//~ document.body.style.backgroundColor = 'blue';
+						//~ return;
+					//~ }
 					// Convert phone to three fields
 					var sbm = true;
 					opts.o.final_location.phone = opts.o.final_location.phone.replace(/[^\d]/g, '');
