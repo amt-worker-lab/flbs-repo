@@ -13981,8 +13981,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		s_complete: {
 			fb: false,
 			hoovers: false,
-			bw: false,
-			google: false
+			google: false,
+			yelp: false,
+			
+			//~ bw: false,
 		},
 		final_location: {
 			name: null,
@@ -14048,8 +14050,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		this.value = this.value.trim();
 		FB_addr();
 		hoovers_addr();
-		businessweek_addr(false);
 		google_addr();
+		
+		//~ businessweek_addr(false);
 	}
 	
 	// ...
@@ -14066,10 +14069,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	
 	// onsubmit
 	if (opts.hasOwnProperty('submitButton_onclick_callback')) {
-		//~ document.getElementById('submitButton').onclick = opts.submitButton_onclick_callback;
+		
 	} else {
-		//~ document.getElementById('submitButton').onclick = function() {
-		//~ }
+		
 	}
 	
 	// ...
@@ -14081,8 +14083,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	function addr__init() {
 		FB_addr();
 		hoovers_addr();
-		businessweek_addr(false); // initial
 		google_addr();
+		
+		//~ businessweek_addr(false); // initial
 	}
 	
 	// 
