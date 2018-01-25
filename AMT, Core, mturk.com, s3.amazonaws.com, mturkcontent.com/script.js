@@ -130606,14 +130606,14 @@ qatar,80
 			dx1.setAttribute('style','position:absolute;top:158px;left:0%;width:99%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:58%;height:40px;');
 			document.body.appendChild(dx2);
 			dx2.value = o.comp;
 			//~ dx2.value = o.comp;
 			var dx3 = document.createElement('input'); // info div
 			dx3.value = 'N/A';
 			dx3.type = 'button';
-			dx3.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:100px;font-size:1.6em !important;');
+			dx3.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:150px !important;');
 			document.body.appendChild(dx3);
 			/*END ITEMS*/
 			//~ dx3.innerText = o.zip;
