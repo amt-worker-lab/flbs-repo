@@ -14834,6 +14834,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				var rs = options.response.responseText;
 				if  (options.response.status != 200) {
 					d1c.style.backgroundColor = 'yellow';
+					o.stats.hoovers.num_results = 0;
 					return false;
 				}
 				else
@@ -14843,6 +14844,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				var rs = options.response.responseText;
 				if (options.response.status != 200) {
 					complete('hoovers');// Mark complete
+					o.stats.hoovers.num_results = 0;
 					return;
 				}
 				
@@ -14894,7 +14896,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				}
 				if (d1b.innerHTML == '') {
 					d1b.innerHTML = '0';
-					o.stats.hoover.num_results = 0;
+					o.stats.hoovers.num_results = 0;
 				} else {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:1400px;');

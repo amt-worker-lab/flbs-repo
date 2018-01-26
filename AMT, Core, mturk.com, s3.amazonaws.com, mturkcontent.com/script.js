@@ -130844,7 +130844,19 @@ qatar,80
 					phone: o.q[0],
 				},
 				build_complete_callback: function(opts) {
-					if (o.second_try
+					if (!o.second_try) {
+						o.second_try = true; // set true
+						// zero results?
+						for (var type in opts.o.stats) {
+							if (opts.o.stats[ type ].num_results != 0) {
+								return; // Stop, there is a result.
+							}
+						}
+						if (/\d+$/.exec(dx2.value)) {
+							dx2.value = dx2.value.replace(/\d+$/, '');
+							dx2.blur();
+						}
+					}
 				},
 				onclick_callback: function(opts) { // (opts)
 					console.log(opts);
@@ -130866,6 +130878,7 @@ qatar,80
 					}
 				}
 			};
+			//~ o.opts = opts; // set here.
 			new AMT___items_factory().create_dashboard_find_address(opts);
 		}
 		new run().f();
