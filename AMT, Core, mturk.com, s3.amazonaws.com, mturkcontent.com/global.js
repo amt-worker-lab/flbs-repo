@@ -13982,8 +13982,16 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			fb: false,
 			hoovers: false,
 			google: false,
-			yelp: false,
-			
+			bbb: false,
+			//~ yelp: false,
+			//~ bw: false,
+		},
+		stats: {
+			fb: {num_results: null},
+			hoovers: {num_results: null},
+			google: {num_results: null},
+			bbb: {num_results: null},
+			//~ yelp: {},
 			//~ bw: false,
 		},
 		final_location: {
@@ -14241,6 +14249,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				var rs = response.responseText;
 				if (response.status != 200) {
 					complete('google');// Mark complete
+					o.stats.google.num_results = 0;
 					return;
 				}
 				
@@ -14249,6 +14258,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					console.log(rs.status);
 					d1d.innerText = rs.status;
 					complete('google');// Mark complete
+					o.stats.google.num_results = 0;
 					return;
 				}
 				
@@ -14416,6 +14426,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:1200px;');
 					d1d.appendChild(div);
+				} else {
+					//~ o.stats.google.num_results = 0;
 				}
 				// Mark complete
 				complete('google');
@@ -14882,6 +14894,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				}
 				if (d1b.innerHTML == '') {
 					d1b.innerHTML = '0';
+					o.stats.hoover.num_results = 0;
 				} else {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:1400px;');
@@ -14983,6 +14996,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				if (/^\d{3}$/.exec(rs)) { // If status code is returned
 					// Display output
 					d1c.innerText = 'em0 ERROR='+rs;
+					o.stats.bbb.num_results = 0;
 					complete('bbb');// Mark complete
 					return;
 				}
@@ -14990,6 +15004,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					rs = JSON.parse(rs);
 				} catch(e) {
 					complete('bbb');// Mark complete
+					o.stats.bbb.num_results = 0;
 					return;
 				}
 				// rs.SearchResults
@@ -15043,6 +15058,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				// Done with items
 				if (d1c.innerHTML == '') {
 					d1c.innerHTML = '0';
+					o.stats.bbb.num_results = 0;
 				} else {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:1400px;');
@@ -15051,27 +15067,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				complete('bbb');// Mark complete
 			}
 		});
-		//
-		//~ new AMT___requests_factory().xhr_with_disk_cache({
-			//~ URL: url,
-			//~ filename: new AMT___requests_factory().md5(url), // Static file name
-			//~ headers: {
-				//~ 'Authorization': 'Bearer 4KqFIGQhp00VfWV4_U3PTdwO01NyHoLiDsBghvmoBz19RBG77tOXJJ8zcAdcKxOfX9jd2dXBDeK1LqB6gqqI3R9Fgc5RSpMF8bPPLI6ln11QVZgF9bHzefMUTx2IzVpap2AF5rI4l7Xc8CT4tAEdC4QRTVGCKSiWBGh23gylVgBs8p3kHuiQ6TIlyAhWtE_nRe_DbE2LiSkogJPXVRUS7YP6n40FSjsuH2wCo2pVKyIJg3vOkBbBONsDHZhDOfNVl7saj82nq5TvpGR8Ddbi9bHrx2tXMFjL7TYgy1p4N-wAtMpgjXXxAxLWQyVqIhBqTeBwaW7HwFlYPTta4KxdTNv6eCuU2-L2i2O43TgMvt5G7pMjHH90ODNLC8USrwutPwWIDtx95su8bEXyiZrWuAaVksogbV_wmaFktopg8ePce_iAF78t_DohqoJO8Ao-QrYq7IDL9IihWzSxJZOK7wo_vGfb0N1EEL5DhaJLEW-qBMYcUXA9rTWgq0Xoslcg3KHlAE3wcvRg56GD7BYsAjeJxG4WVWxVpHC1mHWfIxtKyOiJsbDsW0DsP8nR6oN1WSsQqiAvExLPDssekvVnGhRCbPkGPQJodkJmoqlHpnaePIfBUDMW8ANjdUvoMB1tfgwMoo1fjDRPlZdiK9c2C9jk3YE'
-			//~ },
-			//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-				//~ var rs = options.response.responseText;
-				//~ if  (options.response.status != 200) {
-					//~ d1c.style.backgroundColor = 'yellow';
-					//~ return false;
-				//~ }
-				//~ else
-					//~ return true;
-			//~ },
-			//~ success_callback: function(options) {
-				//~ var rs = options.response.responseText;
-				
-			//~ }
-		//~ });
 	}
 	function FB_test_phone(phone) {
 		var p = phone;
@@ -15105,6 +15100,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				var rs = response.responseText;
 				if (response.status != 200) {
 					complete('fb');// Mark complete
+					o.stats.fb.num_results = 0;
 					return;
 				}
 				
@@ -15112,6 +15108,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				if (!r.data) {
 					d1.innerHTML = '!r.data';
 					complete('fb');// Mark complete
+					o.stats.fb.num_results = 0;
 					return;
 				}
 				r = r.data;
@@ -15331,6 +15328,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				complete('fb');
 				if (c == 0) {
 					d1.innerHTML = '0';
+					o.stats.fb.num_results = 0;
 					return;
 				}
 				// Here?

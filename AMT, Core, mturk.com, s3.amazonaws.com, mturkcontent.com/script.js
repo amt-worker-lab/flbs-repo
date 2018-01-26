@@ -130755,6 +130755,7 @@ qatar,80
 				//city: t[3].innerText.trim(),
 				state: t[3].innerText.trim().stateAbbrToFull(),
 				zip: t[5].innerText.trim(),
+				second_try: false, // to be set
 				q: [
 					document.getElementById('Field1'),
 					document.getElementById('Field2'),
@@ -130770,6 +130771,7 @@ qatar,80
 			document.body.appendChild(dx2);
 			dx2.value = o.comp +', ' + (o.city ? o.city  + ', ' : '') + o.state + ', ' + o.zip;
 			dx2.value = o.comp +', ' + o.state + ', ' + o.zip;
+			dx2.first_click = false; // For first blur
 			var dx3 = document.createElement('div'); // info div
 			dx3.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:100px;border:1px solid blue;background-color:#eee;font-size:1.6em !important;');
 			document.body.appendChild(dx3);
@@ -130785,7 +130787,16 @@ qatar,80
 					input_object.element.blur();
 				}
 			});
-			
+			// on first click of dx2
+			dx2.onclick = function() {
+				//~ if (!this.first_click) {
+					//~ this.first_click = true;
+					//~ if (/\d+$/.exec(this.value)) {
+						//~ this.value = this.value.replace(/\d+$/, '')
+						//~ this.blur();
+					//~ }
+				//~ }
+			}
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -130831,6 +130842,9 @@ qatar,80
 				parent_controller_el: dx2,
 				output_elements: {
 					phone: o.q[0],
+				},
+				build_complete_callback: function(opts) {
+					if (o.second_try
 				},
 				onclick_callback: function(opts) { // (opts)
 					console.log(opts);
