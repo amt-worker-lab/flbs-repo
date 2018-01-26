@@ -66,45 +66,6 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
-	// Amazon Requester Inc. - Tax Engine
-	// In what form are these items consumed?
-	// This is not running because it is scripted elsewhere.
-	// 
-	var s = '<div class="well"><span style="background-color: rgb(255, 255, 255);">Pick the correct category for the item from link. See the </span><strong style="background-color: rgb(255, 255, 255);">Selection Criteria</strong><span style="background-color: rgb(255, 255, 255);"> above for more details.</span></div>';
-	if (ih.indexOf(s) != -1 && 0 ==1
-		)
-	{
-		var run = function() {}
-		run.prototype.f = function() {
-			console.log('x');
-			// Elements
-			var a = document.getElementsByTagName('a');
-			var o = {
-				u: a[1].href.trim(),
-				q: [
-					//~ document.getElementsByName('product_name')[0],
-					//~ document.getElementsByName('keyword')[0]
-				],
-			}
-			var n = document.getElementsByName('categories');
-			for (var i in n) { // input[type=radio]
-				n[i].onclick = function(e) {
-					this.checked = true;
-					if (this.checked) {
-						doSubmit();
-					}
-				}
-			}
-			console.log(o);
-			// Load util tabs
-			//~ AMT__setUtilityTabs([{
-				//~ url: o.u,
-			//~ }]);
-			
-			AMT__setUtilityTabs([{url: o.u}]);
-		}
-		new run().f();
-	};
 	// Marketing Research ""
 	// Categorize Products And Key Phrases
 	//
@@ -14275,10 +14236,10 @@ Laurens Hammond, Chicago, Ill.**/
 			d1a.setAttribute('style','position:absolute;top:0px;width:50%;height:60px;left:20%;font-size:2em;background-color:#eee;border:1px solid black;font-size:1.4em !important;overflow:auto;')
 			document.body.appendChild(d1a);
 			var d2a = document.createElement('div');
-			d2a.setAttribute('style','position:absolute;top:60px;width:50%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
+			d2a.setAttribute('style','position:absolute;top:60px;width:70%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
 			document.body.appendChild(d2a);
-			var d2b = document.createElement('div');
-			d2b.setAttribute('style','position:absolute;top:60px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:70%;overflow:auto;');
+			var d2b = document.createElement('div'); // make small if unnecessary
+			d2b.setAttribute('style','position:absolute;top:60px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:90%;overflow:auto;');
 			document.body.appendChild(d2b);
 			//~ o.q[0].onclick = o.q[1].onclick = function() {
 				//~ console.log(this.checked)
