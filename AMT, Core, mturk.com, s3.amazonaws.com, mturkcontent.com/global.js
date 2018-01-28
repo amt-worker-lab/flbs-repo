@@ -17507,6 +17507,33 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		}
 	}
 	this.array_duckDuckGo_results = array_duckDuckGo_results;
+	/**
+	 * DDG #2
+	 */
+	function array_duckDuckGo_results2(rs) {
+		var dom = new DOMParser().parseFromString(rs, 'text/html');
+		var r = dom.getElementsByClassName('result__body'); //result__snippet, result__title
+		var arr = [];
+		if (!r || !r.length)
+			return arr;
+		for (var i=0; i<r.length; i++) {
+			var r_title = r[i].getElementsByClassName('result__title');
+			var r_body  = r[i].getElementsByClassName('result__snippet');
+			var r_url;
+			if (r_title && r_body) {
+				r_title = r_title[0];
+				r_body = r_body[0];
+				r_url = decodeURIComponent(
+					/uddg=([^&\?\/]+)/.exec(r_title.getAttribute('href'))[1]
+				);
+				arr.push([ // url, body
+					r_url, r_title + '<br>' + r_body
+				]);
+			}
+		}
+		return arr;
+	}
+	this.array_duckDuckGo_results = array_duckDuckGo_results;
 	
 	// duckDuckGoId
 	// Scrapes out id for next request.
@@ -17533,8 +17560,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			// https://duckduckgo.com/d.js?q=%&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us&vqd=36057200348787870467786428861113700502&yhs=1&sp=1
 			return true;
 		} else {
-			alert('Dashboard err: DuckDuckGo id missing!');
-			console.log(rs);
+			//~ alert('Dashboard err: DuckDuckGo id missing!');
+			//~ console.log(rs);
 			// In this case, a result is:
 			/**
 			 * 
@@ -17608,7 +17635,12 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 							o.duckDuckGoSecondStage = true;
 							// update catch include string
 							o.obj_vars.catch_success = 'DDG'; // probably good enough
-							if (duckDuckGoId(rs) == null) return false;
+							if (duckDuckGoId(rs) == null) {
+								// Are these good results?
+								rs = array_duckDuckGo_results2(rs);
+								// Continue...
+								//return false;
+							}
 							else {
 								// Load second page, then quit.
 								generateLocalURL(); // Regenerate local url
