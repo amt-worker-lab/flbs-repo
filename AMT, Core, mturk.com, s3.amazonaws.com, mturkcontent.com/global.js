@@ -12078,7 +12078,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		else if(out_div == d1c)
 			col = 2;
 		for (var i in rs) {
-			//~ console.log(rs[i]);
 			var x = rs[i][0];
 			var link = rs[i][0];
 			var full = rs[i][1];
@@ -12157,7 +12156,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//
 			//
 			div_result.url = x;
-			//~ console.log(x);
+			
 			// DOMAIN
 			var domain = x.replace(/^https?:\/\//, ''); // beginning
 			// SKIP BUTTON CREATE
@@ -12168,7 +12167,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						domain: x,
 						load_file: 'austin_load_skips', 
 						var_skip_sites: SKIP_SITES, 
-						callback_function: false
+						callback_function: false,
+						callback_if_ignore:
+							(options_object.hasOwnProperty('onclick_success')) ?
+							options_object.onclick_success :
+							click_success,
+						full_url: link
 					}
 				);
 			
@@ -12217,6 +12221,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//
 			if (el_inp_skip2__obj.isSkip) {
 				d.appendChild(el_inp_skip2__obj.el_btn);
+				d.appendChild(el_inp_skip2__obj.el_btn_choose);
 				continue; // END
 			}
 			FOUND_ONE_NONSKIP = true; // Set FOUND_ONE_NONSKIP
@@ -12288,48 +12293,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			
 			// Onclick
 			//
-			txa.onclick = (options_object.hasOwnProperty('onclick_success')) ? options_object.onclick_success :
-				function(e) {
-					if(options_object.clickIntoUtilityTabs) { //Utility behavior: jump into utility tab
-						if(!this.utilityTabBtn) {
-							this.utilityTabBtn = addUtilityTab({
-									url: this.full_url,
-									options: options_object.clickIntoUtilityTabs 
-								}
-								);
-						}else {
-							//click on my associated utility tab
-							this.utilityTabBtn.click();
-							
-						}
-					}
-					else { //Standard behavior, put url in out_element
-						this.style.backgroundColor = 'LightGreen';
-						//~ update_bgc_results_onclick(this.parentNode);
-						// Has CTRL key?
-						if (!e.ctrlKey)
-							options_object.out_element.value = this.value;
-						else
-							options_object.out_element.value = this.full_url;
-						// Check site is 200?
-						if (options_object.onclick_check_site_is200) {
-							check_site_is200(options_object.out_element.value);
-							return;
-						}
-						// Submit...
-						if (options_object.AmtRecordAndSubmit) { // Test:alert('x');
-							AMT___recordAndSubmit(); // Record
-						} else {
-							doSubmit();				 // Regular
-						}
-						//~ if(AMT__Global_Vars.scriptVars['Skip For High Yield'] == '0')
-							//~ doSubmit();
-						//~ else {
-							//~ showNextTab();
-							//~ doSubmit();
-						//~ }
-					}
-				};
+			txa.onclick = (options_object.hasOwnProperty('onclick_success')) ?
+				options_object.onclick_success :
+				click_success;
+				
 			////////////////////////////////////
 			// Mouse event functions
 			// Note: New functionality! ... Each "<p>" has a .className ("cls_[HREF] result_highlight") and .tmp_className ("cls_[HREF]").
@@ -12390,6 +12357,48 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			var d = document.createElement('div');
 			d.setAttribute('style','height:2000px;');
 			out_div.appendChild(d);
+		}
+	}
+	// Select this URL.
+	function click_success(e) {
+		if (options_object.clickIntoUtilityTabs) {
+			//Utility behavior: jump into utility tab
+			if(!this.utilityTabBtn) {
+				this.utilityTabBtn = addUtilityTab({
+						url: this.full_url,
+						options: options_object.clickIntoUtilityTabs 
+					}
+					);
+			}else {
+				//click on my associated utility tab
+				this.utilityTabBtn.click();
+				
+			}
+		}
+		else { //Standard behavior, put url in out_element
+			this.style.backgroundColor = 'LightGreen';
+			//~ update_bgc_results_onclick(this.parentNode);
+			// Has CTRL key?
+			if (!e.ctrlKey) {
+				// If a skip ignore, then this value is not this.value.
+				if (this.value == ' + ') {
+					options_object.out_element.value = this._ignored_value;
+				} else {
+					options_object.out_element.value = this.value;
+				}
+			} else
+				options_object.out_element.value = this.full_url;
+			// Check site is 200?
+			if (options_object.onclick_check_site_is200) {
+				check_site_is200(options_object.out_element.value);
+				return;
+			}
+			// Submit...
+			if (options_object.AmtRecordAndSubmit) {
+				AMT___recordAndSubmit(); // Record
+			} else {
+				doSubmit();				 // Regular
+			}
 		}
 	}
 	/**
@@ -17016,10 +17025,6 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 		
 	} else
 		input_skips_object.short_domain = input_skips_object.domain.trim();
-	// Debug
-	//
-	//
-	//~ console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
 	
 	// remove_skips
 	// 
@@ -17075,22 +17080,26 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 		el_inp.setAttribute('style','width:auto;');
 		el_inp.setAttribute('type','button');
 		el_inp.value = ' S ';
-		//~ el_inp.className = 
-		//~ el_inp.id = url; //argv
-		//~ el_inp.skips_key_php_get = skips_key_php_get; //argv
 		el_inp.onclick = write_skips;
-		
+		return el_inp;
+	}
+	function choose_if_ignored_button(url) {
+		var el_inp = document.createElement('input');
+		el_inp.setAttribute('style','width:auto;background-color:#eee;border:1px solid #0a0a0a;cursor:pointer;');
+		el_inp.setAttribute('type','button');
+		el_inp.value = ' + ';
+		el_inp._ignored_value = input_skips_object.domain;
+		el_inp.full_url = input_skips_object.full_url;
+		el_inp.onclick = input_skips_object.callback_if_ignore;
 		return el_inp;
 	}
 	function remove_button() { //url
-		//~ 
 		var el_inp = document.createElement('input');
 		el_inp.setAttribute('style','width:auto;background-color:#eee;border:0;cursor:pointer;');
 		el_inp.setAttribute('type','button');
 		el_inp.value = '>' + input_skips_object.domain;
 		el_inp.className = 'input_skip_button2_rm_';
 		el_inp.onclick = remove_skips;
-		
 		return el_inp;
 	}
 	
@@ -17104,6 +17113,7 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 	{
 		return {
 			el_btn: remove_button(),
+			el_btn_choose: choose_if_ignored_button(),
 			isSkip: true
 		};
 	}
