@@ -17534,6 +17534,21 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			return true;
 		} else {
 			alert('Dashboard err: DuckDuckGo id missing!');
+			console.log(rs);
+			// In this case, a result is:
+			/**
+			 * 
+			 * <div class="links_main links_deep result__body"> <!-- This is the visible part -->
+
+			<h2 class="result__title">
+          
+            <a rel="nofollow" class="result__a" href="/l/?kh=-1&amp;uddg=https%3A%2F%2Fwww.tmz.com%2F2014%2F01%2F31%2Fcarly%2Drae%2Djepsen%2Dowl%2Dcity%2Dgood%2Dtime%2Dally%2Dburnett%2Dlawsuit%2Dbmi%2F">Carly Rae Jepsen &amp; Owl City -- Still Waging Battle Over &#x27;Good <b>Time&#x27;</b> ...</a>
+          
+          </h2>
+
+      
+            <a class="result__snippet" href="/l/?kh=-1&amp;uddg=https%3A%2F%2Fwww.tmz.com%2F2014%2F01%2F31%2Fcarly%2Drae%2Djepsen%2Dowl%2Dcity%2Dgood%2Dtime%2Dally%2Dburnett%2Dlawsuit%2Dbmi%2F"><b>Publishing</b> <b>Co</b>. Releases $800K. Carly Rae Jepsen and Owl City are in a dog fight over their hit track &quot;Good <b>Time</b>&quot; -- battling another artist who claims they ripped her off ... and now we&#x27;ve learned...</a>
+      */
 			return null;
 		}
 	}
