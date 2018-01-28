@@ -17476,9 +17476,23 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			return arr;
 		}
 		else {
-			// Remove );
-			r = r[1].trim().replace(/\);$/, '');
-			r = JSON.parse(r);
+			// Remove
+			//		);
+			// Or in another case, remove:
+			//		);DDG.page.showMessage("safeSearch");"
+			console.log(r);
+			r = r[1];
+			// Case 1
+			r = r.trim().replace(/\);DDG\.page\.showMessage\("safeSearch"\);$/, '');
+			// Case 2
+			r = r.trim().replace(/\);$/, '');
+			// Try to parse
+			try {
+				r = JSON.parse(r);
+			} catch(e) {
+				alert('parse error:array_duckDuckGo_results');
+				return arr;
+			}
 			// Each element is a search result.
 			// There are typically 30 results.
 			// Then there is one final element of the array
@@ -17520,14 +17534,19 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			var r_title = r[i].getElementsByClassName('result__title');
 			var r_body  = r[i].getElementsByClassName('result__snippet');
 			var r_url;
+			var r_link;
 			if (r_title && r_body) {
 				r_title = r_title[0];
 				r_body = r_body[0];
+				r_link = r_title.getElementsByTagName('a')[0];
+				//~ console.log(r_title);
+				//~ console.log(r_title.href);
+				//~ console.log(r_title.getAttribute('href'));
 				r_url = decodeURIComponent(
-					/uddg=([^&\?\/]+)/.exec(r_title.getAttribute('href'))[1]
+					/uddg=([^&\?\/]+)/.exec(r_link.getAttribute('href'))[1]
 				);
 				arr.push([ // url, body
-					r_url, r_title + '<br>' + r_body
+					r_url, r_title.innerText.trim() + '<br>' + r_body.innerText.trim()
 				]);
 			}
 		}
