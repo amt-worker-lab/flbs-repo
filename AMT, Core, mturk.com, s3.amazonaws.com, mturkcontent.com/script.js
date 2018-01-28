@@ -203594,8 +203594,21 @@ function top_window(okay_to_run) {
 				// Update Jan2018
 				// Let's use document.getElementsByTagName('form')[1]
 				// in doSubmit by changing its id to "tmp_sbm_jan2018".
-				var f = document.getElementsByTagName('form')[1];
-				if (f.id != '') {
+				// Update: Make sure that the form's action is "subit_qap"
+				// 		because, when moving things around the page,
+				//		it may change form #s.
+				var n = document.getElementsByTagName('form');
+				var f = false;
+				for (var i=0; i<n.length; i++) {
+					if (n[i].action.indexOf('/submit_qap') != -1) {
+						f = n[i];
+						break;
+					}
+				}
+				if (!f) {
+					alert('Core script.js: Form changed!');
+					return false;
+				} else if (f.id != '') {
 					alert('Core script.js: Form id has changed!');
 					return false;
 				}
@@ -203604,7 +203617,8 @@ function top_window(okay_to_run) {
 			}
 			// Onclick
 			document.getElementsByClassName('btn btn-primary')[0].onclick = function(e) {
-			//~ document.getElementsByName('/submit')[0].onclick = function(e) {
+				// old version
+				// document.getElementsByName('/submit')[0].onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
 				try_sbm();

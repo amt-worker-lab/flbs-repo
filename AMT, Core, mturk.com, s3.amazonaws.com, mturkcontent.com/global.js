@@ -21048,8 +21048,8 @@ function AMT___ReturnAndAcceptKeyPress(event) {
  * 
  */
 function AMT___returnAndAcceptButton() {
-	console.log('llllllllllllllllllllllll');
-	console.log(document.cookie);
+	//~ console.log('llllllllllllllllllllllll');
+	//~ console.log(document.cookie);
 	//~ console.log();
 	//~ return; // testing
 	
@@ -21081,16 +21081,24 @@ function AMT___returnAndAcceptButton() {
 	var MT__newtask_url = u[1] + 'accept_random?ref=w_pl_prvw';
 	var MT__return_form = document.getElementsByTagName('form')[0];
 	if (MT__return_form.action.indexOf('ref=w_wp_rtrn_top') == -1) {
-		alert('Return and Except - Error: Return button form has changed!');
-		// QUIT TO DEBUG!
-		return;
-	} else {
-		var MT__return_form_url = MT__return_form.action;
-		//~ alert(MT__return_form_url);
-		console.log('return url:'+MT__return_form_url);
-		// TEST!
-		// https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/37ZQELHEQ0JVDRX1O2KJGEPLZJ1NMU?assignment_id=3V0Z7YWSIZLK0CZB6DTS060N2MHV2Z&ref=w_wp_rtrn_top
+		// Just in case the form moves around the page.
+		// For example, on VSR the forms are moved around (because of us
+		// making changes to the page!)
+		var n = document.getElementsByTagName('form');
+		for (var i=0; i<n.length; i++) {
+			if (n[i].action.indexOf('ref=w_wp_rtrn_top') != -1) {
+				MT__return_form = n[i];
+				break;
+			}
+		}
 	}
+	var MT__return_form_url = MT__return_form.action;
+	console.log('return url:'+MT__return_form_url);
+	
+	 //~ else {
+		//~ // TEST!
+		//~ // https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/37ZQELHEQ0JVDRX1O2KJGEPLZJ1NMU?assignment_id=3V0Z7YWSIZLK0CZB6DTS060N2MHV2Z&ref=w_wp_rtrn_top
+	//~ }
 	
 	// Change the form's action to random new task, plus post to get:
 	//		Does not work.
