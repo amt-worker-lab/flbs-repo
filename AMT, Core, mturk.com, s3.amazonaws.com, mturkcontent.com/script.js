@@ -140377,9 +140377,10 @@ qatar,80
 			});
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
-				//~ search: {
+				search: {
 					//~ str_add_to_searches_hidden: ' site:linkedin.com/', //
-				//~ },
+					use_duckduckgo_search_engine: true,
+				},
 				searches:[ // comp, comp+location, comp+industry
 					o.comp,
 					o.spaced,
