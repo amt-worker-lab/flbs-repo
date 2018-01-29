@@ -17575,13 +17575,11 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				'&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us'+
 				'&vqd='+x[1]+'&yhs=1&sp=1';
 			console.log('===========================');	
-			console.log(o.obj_vars.url);
-			// https://duckduckgo.com/d.js?q=%&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us&vqd=36057200348787870467786428861113700502&yhs=1&sp=1
 			return true;
 		} else {
-			//~ alert('Dashboard err: DuckDuckGo id missing!');
-			//~ console.log(rs);
 			// In this case, a result is:
+			// Return null so that the program scrapes the current
+			// page for result.
 			/**
 			 * 
 			 * <div class="links_main links_deep result__body"> <!-- This is the visible part -->
