@@ -1456,7 +1456,7 @@ function MT__RUN() {
 			GM_addStyle('#submitButton {position:absolute;top:200px;left:40%;width:40%;height:40px;}');
 			var td = document.getElementsByTagName('td');
 			var o = {
-				a: d[0].innerText.replace(/^Instagram Account name: /i, '').trim(),
+				a: td[1].innerText.trim(),
 				q: [
 					document.getElementById('email_address'),
 					document.getElementsByName('has_email')[0],
@@ -1554,8 +1554,10 @@ function MT__RUN() {
 						rs.indexOf('Fatal error') != -1
 						) {
 						d1.style.backgroundColor = 'blue';
-						o.q[0].value = 'personal@noaddress.com';
-						AMT___recordAndSubmit();
+						o.q[0].value = '';
+						o.q[1].checked = false;
+						o.q[2].checked = true;
+						doSubmit();
 						return;
 					}
 					// try
@@ -1575,7 +1577,9 @@ function MT__RUN() {
 							o.q[0].value = rs.user.email;
 							// ^[two or more non-@]@[two or more anything]$
 							if (/^[^@]{1,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
-								AMT___recordAndSubmit();
+								o.q[1].checked = true;
+								o.q[2].checked = false;
+								doSubmit();
 							} else {
 								err(rs);
 							}
@@ -1583,7 +1587,9 @@ function MT__RUN() {
 							o.q[0].value = rs.user.public_email;
 							// ^[two or more non-@]@[two or more anything]$
 							if (/^[^@]{1,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
-								AMT___recordAndSubmit();
+								o.q[1].checked = true;
+								o.q[2].checked = false;
+								doSubmit();
 							} else {
 								err(rs);
 							}
@@ -1593,17 +1599,6 @@ function MT__RUN() {
 					} catch(e) {
 						d1.innerText = e.name + e.message;
 					}
-					//~ // Sbm
-					//~ var sbm = true;
-					// Dom
-					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
-					//~ var div = dom.getElementsByTagName('div');
-					//~ for (var i=0;i<div.length;i++) {
-						//~ if (div[i].innerText == 'Content Management Systems') {
-						//~ }
-					//~ }
-					
-					//AMT___recordAndSubmit();
 				}
 			});
 			function err(rs) {
@@ -1629,10 +1624,15 @@ function MT__RUN() {
 					.exec(rs.user.biography);
 				if (r) {
 					o.q[0].value = r[1];
+					o.q[1].checked = true; // found
 					o.q[0].style.border = '8px solid blue';
 				} else if (!/(@|\[at\]| at )/i.exec(JSON.stringify(rs))) {
+					// none found
 					d1.style.border = '2px solid orange';
+					o.q[2].checked = true; // none found
 					d2.click();
+				} else {
+					o.q[2].checked = true; // none found
 				}
 			}
 		}
@@ -1785,17 +1785,6 @@ function MT__RUN() {
 					} catch(e) {
 						d1.innerText = e.name + e.message;
 					}
-					//~ // Sbm
-					//~ var sbm = true;
-					// Dom
-					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
-					//~ var div = dom.getElementsByTagName('div');
-					//~ for (var i=0;i<div.length;i++) {
-						//~ if (div[i].innerText == 'Content Management Systems') {
-						//~ }
-					//~ }
-					
-					//AMT___recordAndSubmit();
 				}
 			});
 			function err(rs) {
@@ -1823,6 +1812,7 @@ function MT__RUN() {
 					o.q[0].value = r[1];
 					o.q[0].style.border = '8px solid blue';
 				} else if (!/(@|\[at\]| at )/i.exec(JSON.stringify(rs))) {
+					// none found
 					d1.style.border = '2px solid orange';
 					d2.click();
 				}
