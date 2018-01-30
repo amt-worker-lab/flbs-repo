@@ -1432,6 +1432,213 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	/**
+	 * Instagram API emails
+	 * 
+	 * @clients
+	 * Jake Phillips
+	 * Eatify
+	 * 
+	 * 
+	 */
+	// Eatify
+	// Find the email address of an Instagram user using mobile app
+	s = '<li>Download and install the offical Instagram app on a mobile device and log in.</li>\n	<li>Use the app to search for the given username and view the user\'s account.</li>\n	<li>Check to see if an "Email" link exists in the area between the user\'s bio and picture feed.&nbsp;(<a href="https://s3.us-west-1.amazonaws.com/static.truefluence.io/mturk/mturk1.jpg" style="background-color: rgb(255, 255, 255);">click here to see example</a>)</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:240px !important;}');
+			GM_addStyle('b {font-size:1.6em;font-family:monospace;}');
+			// gm
+			// font-family: Verdana, Geneva, sans-serif !important;
+			GM_addStyle('#email {position:absolute;top:0px;left:40%;}');
+			GM_addStyle('#submitButton {position:absolute;top:200px;left:40%;width:40%;height:40px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				a: d[0].innerText.replace(/^Instagram Account name: /i, '').trim(),
+				q: [
+					document.getElementById('email_address'),
+					document.getElementsByName('has_email')[0],
+					document.getElementsByName('has_email')[1],
+				]
+			}
+			//~ AMT___addUserDecision(
+				//~ 'JakePhillips',
+				//~ function() { return o.a; },
+				//~ [
+					//~ "Id(email)",
+				//~ ]
+			//~ );
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:100%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.type = 'button';
+			d2.value = 'personal@noaddress.com';
+			d2.setAttribute('style','position:absolute;top:200px;left:0%;width:40%;height:40px;');
+			document.body.appendChild(d2);
+			/*End Items*/
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 0 // offset top
+			//~ });
+			// Turn off form submit.
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[0].value.length<4) {
+					if (o.q[1].checked || !o.q[2].checked) {
+						// True must not be checked.
+						// False must be checked.
+						return false;
+					}
+				}
+				//~ AMT___recordAndSubmit();
+				doSubmit();
+				return false;
+			}
+			d2.onclick = function() {
+				this.style.backgroundColor = 'lightgreen';
+				if (o.q[0].value == '') {
+					o.q[0].value = '';
+					o.q[1].checked = false;
+					o.q[2].checked = true;
+					//~ AMT___recordAndSubmit();
+					doSubmit();
+				}
+			}
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'http://192.168.1.2/mturk/.dev/insta/vendor/test.php?username='+encodeURIComponent(o.a),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					if (rs.indexOf('Throttled by Instagram because of too many API requests') != -1) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('throttle'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					if (/@/i.exec(rs)) {
+						d1.style.backgroundColor = 'pink';
+					}
+					// throttled (no new pages are saved when throttled,
+					// but there may be a few cached ones hanging around).
+					if (rs.indexOf('Throttled by Instagram because of too many API requests') != -1) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('throttle'.div());
+						return false;
+					}
+					// user not found error message
+					console.log(rs);
+					if (rs.indexOf('UserInfoResponse: User not found') != -1 &&
+						rs.indexOf('Fatal error') != -1
+						) {
+						d1.style.backgroundColor = 'blue';
+						o.q[0].value = 'personal@noaddress.com';
+						AMT___recordAndSubmit();
+						return;
+					}
+					// try
+					try {
+						rs = JSON.parse(rs);
+						console.log(rs);
+						
+						// full bio != bio?
+						if (rs.fullResponse.user.biography != rs.user.biography) {
+							alert('rs.fullResponse.user.biography!');
+							console.log(rs.fullResponse.user.biography);
+							console.log(rs.user.biography);
+							return;
+						}
+						
+						if (rs.user.email != null) {
+							o.q[0].value = rs.user.email;
+							// ^[two or more non-@]@[two or more anything]$
+							if (/^[^@]{1,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
+								AMT___recordAndSubmit();
+							} else {
+								err(rs);
+							}
+						} else if (rs.user.public_email != null) {
+							o.q[0].value = rs.user.public_email;
+							// ^[two or more non-@]@[two or more anything]$
+							if (/^[^@]{1,}@[\d\D]{2,}$/.exec(o.q[0].value)) {
+								AMT___recordAndSubmit();
+							} else {
+								err(rs);
+							}
+						} else {
+							err(rs);
+						}
+					} catch(e) {
+						d1.innerText = e.name + e.message;
+					}
+					//~ // Sbm
+					//~ var sbm = true;
+					// Dom
+					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//~ var div = dom.getElementsByTagName('div');
+					//~ for (var i=0;i<div.length;i++) {
+						//~ if (div[i].innerText == 'Content Management Systems') {
+						//~ }
+					//~ }
+					
+					//AMT___recordAndSubmit();
+				}
+			});
+			function err(rs) {
+				var h = ['email','@','mail','contact',' at ']; // Things to highlight.
+				rs.user.username	= (rs.user.username) ? rs.user.username : '';
+				rs.user.full_name	= (rs.user.full_name) ? rs.user.full_name : '';
+				rs.user.biography	= (rs.user.biography) ? rs.user.biography : '';
+				rs.user.external_url= (rs.user.external_url) ? rs.user.external_url : '';
+				rs.user.category	= (rs.user.category) ? rs.user.category : '';
+				rs.user.email		= (rs.user.email) ? rs.user.email : '';
+				rs.user.public_email= (rs.user.public_email) ? rs.user.public_email : '';
+				rs.user.status		= (rs.user.status) ? rs.user.status : '';
+				d1.innerHTML =	'username: ' + MT__bold(rs.user.username, h) + '<br>' +
+								'full_name: ' + MT__bold(rs.user.full_name, h) + '<br>' + 
+								'biography: ' + MT__bold(rs.user.biography, h) + '<br>' + 
+								'external_url: ' + MT__bold(rs.user.external_url, h) + '<br>' + 
+								'category: ' + MT__bold(rs.user.category, h) + '<br>' + 
+								'em: ' + MT__bold(rs.user.email, h) + '<br>' + 
+								'public_em: ' + MT__bold(rs.user.public_email, h) + '<br>' + 
+								'status: ' + MT__bold(rs.status, h);
+				// try checking for auto email in bio section.
+				r = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}\[at\][ ]{0,}|&#064;)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/i
+					.exec(rs.user.biography);
+				if (r) {
+					o.q[0].value = r[1];
+					o.q[0].style.border = '8px solid blue';
+				} else if (!/(@|\[at\]| at )/i.exec(JSON.stringify(rs))) {
+					d1.style.border = '2px solid orange';
+					d2.click();
+				}
+			}
+		}
+		new run().f();
+		return;
+	}
 	// Jake Phillips
 	// Localhost xhr task, w/Instragram api
 	// 
