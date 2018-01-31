@@ -5195,6 +5195,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 					var x = obj[i].email_email;
 					x = x.replace(/^value=/g, ''); // Remove "value=" from lines that start with "value=xyz@abc.com"
 					x = x.replace(/^'/g, ''); // Remove "'" from lines that start with "'xyz@abc.com"
+					x = x.replace(/^data-mailto=/g, ''); // Remove data-mailto=
 					x = x.replace(/^\+[A-Z]{2}\+\d+\/@\d+\.\d+$/, ''); // eg ...
 					x = x.replace(/^[^\d\w]+/, ''); // Remove non-digit non-word characters at start
 					if (x.indexOf('@example.com') != -1) // Ends with @example.com
