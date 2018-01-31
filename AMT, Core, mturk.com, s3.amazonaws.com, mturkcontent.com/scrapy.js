@@ -281,8 +281,11 @@ function init__scrapy() {
 								input_send_success: o.q[0],
 								skip_if_no_emails: true,
 								accept_if_emails: true,
+								contexts_bold_array: // array for contexts
+									o.fname.split(' ').concat(
+									o.lname.split(' ')),
 								sort_results: {
-									sarray:
+									sarray: // sort
 										o.fname.split(' ').concat(
 										o.lname.split(' ')),
 									levensht: o.fname + o.lname, // A string to match levenshtein.

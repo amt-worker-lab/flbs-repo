@@ -16371,7 +16371,8 @@ AMT___items_factory.prototype.startJobTimer = function() {
  * @param seed_object.input_onclick_callback
  * @param seed_object.do_submit_next_tab
  * @param seed_object.do_submit_add_to_tabs_queue
- * @param seed_object.sort_results_by_array // Jan2018
+ * @param seed_object.sort_results // Jan2018
+ * @param seed_object.contexts_bold_array // Jan2018
  */
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
@@ -16385,7 +16386,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	
 	var el_div = document.createElement('div');
 	el_div.setAttribute('style','width:100%;height:40px;overflow:auto;border:1px solid #a2a2a2;');
-	//~ el_div.innerText = url;
 	
 	var el_a = document.createElement('a');
 	el_a.href = url;
@@ -16429,17 +16429,21 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		//context = context.replace(/[\r\n]/g, '<br>');
 		context = context.replace(/\t/g, '&nbsp;&nbsp;');
 		context = context.replace(/\s{2,}/g, '&nbsp;&nbsp;');
+		
+		// Bolding.
+		// seed_object.bold array.
+		// Add email to bold array.
+		var ba = seed_object.contexts_bold_array.concat(results_array.email_email);
+		for (var w in ba) {
+			ba[w] = __js_escape_regEx(ba[w]); // escape for regex
+		}
 		context = context.replace(
-			new RegExp('(' + __js_escape_regEx(results_array.email_email) + ')', 'gi'),
+			new RegExp('(' + ba.join('|') + ')', 'gi'),
 			'<span style="zoom:1.2;color:DarkGreen;font-weight:bold;">$1</span>'
 		);
-		//context = MT__bold(context, NAME_ARRAY);
 		
 		var el_div = document.createElement('div');
 		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
-		//el_div.setAttribute('style','cursor:pointer;min-width:400px;width:60%;height:140px;overflow:auto;border:1px solid #a2a2a2;');
-		//newDiv.setAttribute('style','border-bottom:1px dashed #626262;margin:0;padding:0;cursor:pointer;');
-	
 		el_div.innerHTML = context;
 		el_div.email = results_array.email_email;
 		el_div.complete = results_array.email_email;
@@ -16521,6 +16525,11 @@ AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_resp
 	out_div.innerHTML = '';
 	return;
 }
+/**
+ * .create_dashboard__powers_v1
+ * 
+ * @param seed_object.sort_results // Jan2018
+ */
 //
 // callback_function(jobid, callback_obj, seed_object);
 // IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
