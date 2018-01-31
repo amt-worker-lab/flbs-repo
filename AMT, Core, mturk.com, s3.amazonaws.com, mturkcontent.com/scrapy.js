@@ -281,9 +281,12 @@ function init__scrapy() {
 								input_send_success: o.q[0],
 								skip_if_no_emails: true,
 								accept_if_emails: true,
-								sort_results_by_array: 
-									o.fname.split(' ').concat(
-									o.lname.split(' ')),
+								sort_results: {
+									sarray:
+										o.fname.split(' ').concat(
+										o.lname.split(' ')),
+									levensht: o.fname + o.lname, // A string to match levenshtein.
+								},
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) {
 									// RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									if (AMT__Global_Vars.isPreview) {

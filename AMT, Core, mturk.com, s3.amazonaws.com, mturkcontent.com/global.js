@@ -5193,6 +5193,8 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 				if (obj[i].email_email) {
 					// Integrity check
 					var x = obj[i].email_email;
+					x = x.replace(/^value=/g, ''); // Remove "value=" from lines that start with "value=xyz@abc.com"
+					x = x.replace(/^'/g, ''); // Remove "'" from lines that start with "'xyz@abc.com"
 					x = x.replace(/^\+[A-Z]{2}\+\d+\/@\d+\.\d+$/, ''); // eg ...
 					x = x.replace(/^[^\d\w]+/, ''); // Remove non-digit non-word characters at start
 					if (x.indexOf('@example.com') != -1) // Ends with @example.com
@@ -5207,8 +5209,15 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 						x = '';
 					if (x.indexOf('google.com/calendar') != -1) // google.com/calendar
 						x = '';
-					if (x.trim() != '')
+					x = x.trim();
+					if (x != '') {
+						// OOPS!
+						// Don't push original value!
+						// Fixed: Jan2018
+						// ~~~~~~ callback_obj.matches.push(obj[i]);
+						obj[i].email_email = x;
 						callback_obj.matches.push(obj[i]);
+					}
 				}
 				//~ if (callback_obj.matches.length)
 				//~ else 						// is match
@@ -5983,14 +5992,17 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 /**
  * AMT___gen_functions
  * 
+ * levensht
  * 
  * 
  */
 function AMT___gen_functions(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
-/*
+/**
  * Levenshtein
+ * 
+ * @Q How does this compare to a "similarity" match?
  */
 AMT___gen_functions.prototype.levensht = function(a, b) {
 	
@@ -16553,27 +16565,44 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	//		Result: type error
 	// Ex: var x = [3,1,2,3]; x.sort(); console.log(x);
 	//		Result: [1, 2, 3, 3]
-	if (seed_object.hasOwnProperty('sort_results_by_array') &&
-		seed_object.sort_results_by_array.length) {
+	// Feature:
+	//		Use Levenshtein distance for all remaining results that have
+	//		0 matches.
+	//		Implementation:
+	//		Multiply matched words by 100.
+	//		Then, if no matches, do inverse of Levenshtein distance.
+	//		I.e., 10 changes = 1/10, whereas 2 changes = 1/2.
+	// @param levensht: A string to match levenshtein.
+	// @param sarray: Sort array, an array to sort by.
+	if (seed_object.hasOwnProperty('sort_results') &&
+		seed_object.sort_results.sarray.length) {
 		var search = [];
-		for (var i in seed_object.sort_results_by_array) {
-			var str = seed_object.sort_results_by_array[i];
+		for (var i in seed_object.sort_results.sarray) {
+			var str = seed_object.sort_results.sarray[i];
 			search.push(__js_escape_regEx(str));
 		}
 		search = '('+search.join('|')+')'; // Match any
 		search = new RegExp(search, 'gi'); // global, case insensitive
 		if (object_response.matches && object_response.matches.length) {
+			var g = new AMT___gen_functions();
+			var lev = seed_object.sort_results.levensht;
 			object_response.matches.sort(function (obj1, obj2) {
-				var n1, n2;
+				var n1, n2,
+					x1 = obj1.email_email.replace(/@[\d\D]*$/, ''),
+					x2 = obj2.email_email.replace(/@[\d\D]*$/, '');
 				try{
-					n1 = obj1.email_email.match(search).length;
+					// Only search before the @ symbol.
+					n1 = x1.match(search).length * 100;
 				}catch(e){
-					n1 = 0;
+					//n1 = 0;
+					n1 = 1 / g.levensht(lev, x1);
 				}
 				try{
-					n2 = obj2.email_email.match(search).length;
+					// Only search before the @ symbol.
+					n2 = x2.match(search).length * 100;
 				}catch(e){
-					n2 = 0;
+					//n2 = 0;
+					n2 = 1 / g.levensht(lev, x2);
 				}
 				return n2-n1;
 			});
