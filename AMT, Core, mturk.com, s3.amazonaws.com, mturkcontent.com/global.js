@@ -16640,14 +16640,14 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 				if (x[i].is_facebook)
 					x[i].style.backgroundColor = 'LightGreen';
 			}
-			this.style.backgroundColor = 'DeepSkyBlue';
+			this.style.backgroundColor = 'SkyBlue';
 			var x = this.field_selector.parentNode.getElementsByTagName('option');
 			for (var i=0; i<x.length; i++) {
 				x[i].style.backgroundColor = '';
 				if (x[i].is_facebook)
 					x[i].style.backgroundColor = 'LightGreen';
 			}
-			this.field_selector.style.backgroundColor = 'DeepSkyBlue';
+			this.field_selector.style.backgroundColor = 'SkyBlue';
 			//~ this.parentNode.value = '9999';
 			//~ this.selected = true;
 			//~ this.field_selector.parentNode.value='9999';
