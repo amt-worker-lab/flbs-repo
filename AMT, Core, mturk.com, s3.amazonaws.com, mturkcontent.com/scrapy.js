@@ -193,7 +193,7 @@ function init__scrapy() {
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					url: 'https://startpage.com/do/metasearch.pl?query=' +
-						encodeURIComponent('site:.edu ("email" OR "contact") '+o.name+' '+o.title) +
+						encodeURIComponent('site:.edu ("email" OR "contact") '+o.name+' '+o.title+' '+o.school) +
 						opts,
 					callback_function: sp,
 					host: MT___host
