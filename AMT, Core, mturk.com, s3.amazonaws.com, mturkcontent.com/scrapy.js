@@ -218,6 +218,8 @@ function init__scrapy() {
 				// Look for Facebook pages in results.
 				// And secondly check if first result is a "non-skip" result,
 				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
+				// TODO: MAKE SURE NOT IN SKIPS!!
+				// TODO: MAKE ALLOWED_DOMAINS ONLY THOSE IN THIS LIST.
 				var first = true;
 				for (var i in rs) {
 					o.sd_start_urls.push(rs[i][0]);
