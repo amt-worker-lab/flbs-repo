@@ -105,6 +105,15 @@ function init__scrapy() {
 				try_autos: false, // Turn on and off as necessary. Default=false (off)
 				//~ auto_emails: ['info','contact','contactus','mail'],
 			}
+			if (o.name.indexOf(',') != -1) {
+				// reverse
+				var x = o.name.split(',');
+				if (x.length > 2) {
+					// do nothing
+				} else {
+					o.name = x[1].trim() +' '+ x[0].trim();
+				}
+			}
 			//~ o.name = o.fname + ' ' + o.lname;
 			//~ o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			//~ o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
