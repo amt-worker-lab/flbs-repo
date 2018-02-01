@@ -54528,6 +54528,7 @@ Laurens Hammond, Chicago, Ill.**/
 	// Charles Devereux
 	// -SimpleSearch
 	// Find the Details for Politically Prominent Leaders
+	// Wikipedia api
 	var s = '<p>Find the date of birth and place of birth for prominent political leaders</p>';
 	if (ih.indexOf(s) != -1)
 	{		
