@@ -16592,6 +16592,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 			var str = seed_object.sort_results.sarray[i];
 			search.push(__js_escape_regEx(str));
 		}
+		console.log('starting new sort');
+		console.log(new Date().getTime());
 		search = '('+search.join('|')+')'; // Match any
 		search = new RegExp(search, 'gi'); // global, case insensitive
 		if (object_response.matches && object_response.matches.length) {
@@ -16617,6 +16619,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 				}
 				return n2-n1;
 			});
+			console.log('finishing sort');
+			console.log(new Date().getTime());
 		}
 	}
 	
