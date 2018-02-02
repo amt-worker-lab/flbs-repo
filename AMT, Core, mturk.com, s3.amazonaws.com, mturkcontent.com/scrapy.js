@@ -209,7 +209,7 @@ function init__scrapy() {
 					startPage: true,
 					url: 'https://startpage.com/do/metasearch.pl?query=' +
 						encodeURIComponent(
-							'("email" OR "contact" OR "e-mail") '+o.search_str
+							'("email" OR "e-mail") '+o.search_str //"contact" OR 
 						) + opts,
 					callback_function: sp,
 					host: MT___host
