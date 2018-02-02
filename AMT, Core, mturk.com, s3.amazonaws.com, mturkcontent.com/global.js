@@ -16595,11 +16595,11 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		search = new RegExp(search, 'gi'); // global, case insensitive
 		if (object_response.matches && object_response.matches.length) {
 			var g = new AMT___gen_functions();
-			var lev = seed_object.sort_results.levensht;
+			var lev = seed_object.sort_results.levensht.replace(/\s+/, '').toLowerCase();
 			object_response.matches.sort(function (obj1, obj2) {
 				var n1, n2,
-					x1 = obj1.email_email.replace(/@[\d\D]*$/, ''),
-					x2 = obj2.email_email.replace(/@[\d\D]*$/, '');
+					x1 = obj1.email_email.replace(/@[\d\D]*$/, '').toLowerCase(), // Remove anything after @ and then lower-case.
+					x2 = obj2.email_email.replace(/@[\d\D]*$/, '').toLowerCase();
 				try{
 					// Only search before the @ symbol.
 					n1 = x1.match(search).length * 100;

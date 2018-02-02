@@ -233,11 +233,13 @@ function init__scrapy() {
 				// TODO: MAKE ALLOWED_DOMAINS ONLY THOSE IN THIS LIST.
 				var num_found = 0;
 				for (var i in rs) {
-					if (!o.SKIP_SITES.hasOwnProperty( rs[i][0] )) {
+					var dm = rs[i][0].replace(
+						/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
+					if (!o.SKIP_SITES.hasOwnProperty( dm )) {
 						o.sd_start_urls.push(rs[i][0]);
 						num_found++;
 					}
-					if (num_found >= 3) break; // Only a few start URLs!
+					if (num_found >= 6) break; // Only a few start URLs!
 				}
 				// None?
 				if (num_found == 0) {
