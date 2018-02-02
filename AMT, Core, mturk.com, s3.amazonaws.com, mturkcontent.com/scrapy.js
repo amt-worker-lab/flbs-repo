@@ -115,6 +115,11 @@ function init__scrapy() {
 				if (x == 'NULL') continue;
 				if (x == 'NA') continue;
 				if (i == 5) continue; // bad phones
+				if (i == 1) { // exact name
+					x = x.split(' ');
+					x = x.join('" "');
+					x = '"'+x+'"';
+				}
 				o.search_str += ' '+x;
 			}
 			o.search_str = o.search_str.trim();
@@ -233,13 +238,16 @@ function init__scrapy() {
 				// TODO: MAKE ALLOWED_DOMAINS ONLY THOSE IN THIS LIST.
 				var num_found = 0;
 				for (var i in rs) {
-					var dm = rs[i][0].replace(
-						/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
-					if (!o.SKIP_SITES.hasOwnProperty( dm )) {
-						o.sd_start_urls.push(rs[i][0]);
-						num_found++;
-					}
-					if (num_found >= 6) break; // Only a few start URLs!
+					//~ var dm = rs[i][0].replace(
+						//~ /https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
+					//~ if (!o.SKIP_SITES.hasOwnProperty( dm )) {
+						//~ o.sd_start_urls.push(rs[i][0]);
+						//~ num_found++;
+					//~ }
+					//~ if (num_found >= 6) break; // Only a few start URLs!
+					o.sd_start_urls.push(rs[i][0]);
+					num_found++;
+					if (num_found >= 2) break; // Only a few start URLs!
 				}
 				// None?
 				if (num_found == 0) {
