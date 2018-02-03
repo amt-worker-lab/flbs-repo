@@ -101,7 +101,10 @@ function load()
 	//
 	if  (
 		window.top == window.self &&
-		location.href.indexOf("mturk.com/mturk") != -1
+		location.href.indexOf("mturk.com") != -1
+		
+		// Old, Jan2018
+		//~ location.href.indexOf("mturk.com/mturk") != -1
 		)
 	{
 		AMT__Global_Vars.isPreview = false;
@@ -118,7 +121,8 @@ function load()
 			loc.indexOf('https://www.mturk.com') != -1 ||
 			loc.indexOf('https://www.mturkcontent.com') != -1 ||
 			loc.indexOf('https://s3.amazonaws.com') != -1 ||
-			loc.indexOf('https://workersandbox.mturk.com') != -1
+			loc.indexOf('https://workersandbox.mturk.com') != -1 ||
+			loc.indexOf('https://worker.mturk.com') != -1
 		)
 	{	// Run any dual mode content here!
 		load__allPages_AMT_combo();
