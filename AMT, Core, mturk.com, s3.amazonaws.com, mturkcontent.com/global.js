@@ -16599,23 +16599,29 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		if (object_response.matches && object_response.matches.length) {
 			var g = new AMT___gen_functions();
 			var lev = seed_object.sort_results.levensht.replace(/\s+/, '').toLowerCase();
+			// create a cleaned email to match on
+			for (var i in object_response.matches) {
+				var n = object_response.matches[i];
+				// Remove anything after @ and then lower-case.
+				object_response.matches[i].clean_email =
+					n.email_email.replace(/@[\d\D]*$/, '').toLowerCase();
+			}
+			// sort
 			object_response.matches.sort(function (obj1, obj2) {
-				var n1, n2,
-					x1 = obj1.email_email.replace(/@[\d\D]*$/, '').toLowerCase(), // Remove anything after @ and then lower-case.
-					x2 = obj2.email_email.replace(/@[\d\D]*$/, '').toLowerCase();
+				var score1, score2,
+					x1 = obj1.clean_email,
+					x2 = obj2.clean_email;
 				try{
 					// Only search before the @ symbol.
-					n1 = x1.match(search).length * 100;
+					score1 = x1.match(search).length * 100;
 				}catch(e){
-					//n1 = 0;
-					n1 = 1 / g.levensht(lev, x1);
+					score1 = 1 / g.levensht(lev, x1);
 				}
 				try{
 					// Only search before the @ symbol.
-					n2 = x2.match(search).length * 100;
+					score2 = x2.match(search).length * 100;
 				}catch(e){
-					//n2 = 0;
-					n2 = 1 / g.levensht(lev, x2);
+					score2 = 1 / g.levensht(lev, x2);
 				}
 				return n2-n1;
 			});
