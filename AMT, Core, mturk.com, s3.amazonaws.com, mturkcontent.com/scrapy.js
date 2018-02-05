@@ -114,7 +114,7 @@ function init__scrapy() {
 			}
 			// If website
 			if (td[15].innerText.trim() != '') {
-				o.sd_start_urls[0] = td[15].innerText.trim()
+				o.sd_start_urls.push(td[15].innerText.trim());
 				o.sd_allowed_domains = [// Remove https & trailing / if present
 					o.sd_start_urls[0].replace(
 						/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")
