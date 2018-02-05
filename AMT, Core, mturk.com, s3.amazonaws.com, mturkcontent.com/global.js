@@ -16623,7 +16623,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 				}catch(e){
 					score2 = 1 / g.levensht(lev, x2);
 				}
-				return n2-n1;
+				return score2-score1;
 			});
 			console.log('finishing sort');
 			console.log(new Date().getTime());

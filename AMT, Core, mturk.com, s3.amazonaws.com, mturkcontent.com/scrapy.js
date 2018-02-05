@@ -114,7 +114,6 @@ function init__scrapy() {
 			}
 			// If website
 			if (td[15].innerText.trim() != '') {
-				o.search_str = null;
 				o.sd_start_urls[0] = td[15].innerText.trim()
 				o.sd_allowed_domains = [// Remove https & trailing / if present
 					o.sd_start_urls[0].replace(
@@ -126,30 +125,36 @@ function init__scrapy() {
 						'http://'+ o.sd_start_urls[0] :
 						o.sd_start_urls[0];
 			} else {
-				// Build string
-				// it is the odd TDs
-				// 1=doctor's name,3=firm name,5=street,7=city,9=state,
-				// 11=zip,13=phone,15=website
-				for (var i=1; i<=13; i+=2) {
-					console.log(td[i]);
-					var x = td[i].innerText.trim();
-					if (x == '') continue;
-					if (x == 'NULL') continue;
-					if (x == 'NA') continue;
-					if (i == 5) continue; // skip exact street addr
-					if (i == 13) {// remove non-digits from phone for clean search
-						x = x.replace(/[\D]/, ' ');
-						x = x.replace(/\s+/, ' ');
-					}
-					if (i == 1) { // exact name
-						x = x.split(' ');
-						x = x.join('" "');
-						x = '"'+x+'"';
-					}
-					o.search_str += ' '+x;
-				}
-				o.search_str = o.search_str.trim();
+				// ...
 			}
+			// Build search string
+			// it is the odd TDs
+			// 1=doctor's name,3=firm name,5=street,7=city,9=state,
+			// 11=zip,13=phone,15=website
+			for (var i=1; i<=13; i+=2) {
+				console.log(td[i]);
+				var x = td[i].innerText.trim();
+				if (x == '') continue;
+				if (x == 'NULL') continue;
+				if (x == 'NA') continue;
+				if (i == 5) continue; // skip exact street addr
+				if (i == 11) continue; // skip zip
+				if (i == 13) {// remove non-digits from phone for clean search
+					continue; // or rather, just skip it instead.
+					x = x.replace(/[\D]/g, ' ');
+					x = x.replace(/\s+/g, ' ');
+					//x = '('+x+' OR "")';
+				}
+				if (i == 1) { // exact name
+					x = x.split(' ');
+					if (x[0] == 'Dr.') x[0] = '';
+					x = x.join('" "');
+					x = '"'+x+'"';
+				}
+				o.search_str += ' '+x;
+			}
+			o.search_str = o.search_str.trim();
+			
 			o.q[0].value = '';
 			console.log(o);
 			
@@ -269,7 +274,7 @@ function init__scrapy() {
 						o.sd_start_urls.push(rs[i][0]);
 						num_found++;
 					}
-					if (num_found >= 6) break; // Only a few start URLs!
+					if (num_found >= 2) break; // Only a few start URLs!
 					// no skips
 					//~ o.sd_start_urls.push(rs[i][0]);
 					//~ num_found++;
@@ -285,6 +290,7 @@ function init__scrapy() {
 						);
 					return;
 				}
+				console.log(o); // dbg
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			}
@@ -338,7 +344,7 @@ function init__scrapy() {
 							{
 								// add PREVIEW all snippets
 								div: d1,
-								input_send_success: o.q[1],
+								input_send_success: o.q[0],
 								skip_if_no_emails: true,
 								accept_if_emails: true,
 								contexts_bold_array: // array for contexts
