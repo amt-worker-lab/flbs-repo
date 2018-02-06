@@ -16384,6 +16384,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	}
 	
 	var email_contexts = results_array.email_contexts;
+	var email = results_array.email_email;
 	var url = results_array.url;
 	
 	var el_div = document.createElement('div');
@@ -16422,6 +16423,10 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		doSubmit();
 	}
 	
+	// Add gm style
+	GM_addStyle('.showScrapy_contexts_email:hover {background-color:#e2ffe2;}');
+	GM_addStyle('.showScrapy_contexts_email_clicked:hover {background-color:Orange;}');
+	
 	// ...
 	for (var j in email_contexts) {
 		var context = email_contexts[j];
@@ -16433,22 +16438,30 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		context = context.replace(/\s{2,}/g, '&nbsp;&nbsp;');
 		
 		// Bolding.
-		// seed_object.bold array.
+		// @param seed_object.contexts_bold_array.
 		// Add email to bold array.
-		var ba = seed_object.contexts_bold_array.concat(results_array.email_email);
-		for (var w in ba) {
-			ba[w] = __js_escape_regEx(ba[w]); // escape for regex
+		if (seed_object.hasOwnProperty('contexts_bold_array')) {
+			var ba = seed_object.contexts_bold_array.concat(email);
+			for (var w in ba) {
+				ba[w] = __js_escape_regEx(ba[w]); // escape for regex
+			}
+			context = context.replace(
+				new RegExp('(' + ba.join('|') + ')', 'gi'),
+				'<span style="zoom:1.2;color:DarkGreen;font-weight:bold;">$1</span>'
+			);
+		} else {
+			context = context.replace(
+				new RegExp('(' + __js_escape_regEx(email) + ')', 'gi'),
+				'<span style="zoom:1.2;color:DarkGreen;font-weight:bold;">$1</span>'
+			);
 		}
-		context = context.replace(
-			new RegExp('(' + ba.join('|') + ')', 'gi'),
-			'<span style="zoom:1.2;color:DarkGreen;font-weight:bold;">$1</span>'
-		);
 		
 		var el_div = document.createElement('div');
 		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
+		el_div.className = 'showScrapy_contexts_email';
 		el_div.innerHTML = context;
-		el_div.email = results_array.email_email;
-		el_div.complete = results_array.email_email;
+		el_div.email = email;
+		el_div.complete = email;
 		el_div.url = url;
 	
 		//input_success
@@ -16466,7 +16479,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		//onclick
 		if (!input_onclick_callback) {
 			el_div.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
+				this.className = 'showScrapy_contexts_email_clicked';
+				this.style.backgroundColor = 'Orange';
 				
 				this.input_send_success.value = this.email;
 				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
