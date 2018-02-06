@@ -1922,8 +1922,6 @@ function MT__RUN() {
 	// input field the page displays.
 	s = 'Please copy &amp; paste the product name from the link given below';
 	var s2 =  'I have pasted the requested data';
-	console.log(ih.indexOf(s));
-	console.log(ih.indexOf(s2));
 	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1) {
 		//~ return;// !
 		var run = function() {};

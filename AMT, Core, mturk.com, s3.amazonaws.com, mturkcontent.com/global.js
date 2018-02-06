@@ -16424,8 +16424,9 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	}
 	
 	// Add gm style
-	GM_addStyle('.showScrapy_contexts_email:hover {background-color:#e2ffe2;}');
-	GM_addStyle('.showScrapy_contexts_email_clicked:hover {background-color:Orange;}');
+	GM_addStyle('.showScrapy_contexts_email:hover \
+		{border:2px solid #0e0e0e;border-bottom:2px solid #0e0e0e !important;}');
+	//~ GM_addStyle('.showScrapy_contexts_email_clicked:hover {background-color:Orange;}');
 	
 	// ...
 	for (var j in email_contexts) {
@@ -16479,7 +16480,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		//onclick
 		if (!input_onclick_callback) {
 			el_div.onclick = function() {
-				this.className = 'showScrapy_contexts_email_clicked';
+				//~ this.className = 'showScrapy_contexts_email_clicked';
 				this.style.backgroundColor = 'Orange';
 				
 				this.input_send_success.value = this.email;
