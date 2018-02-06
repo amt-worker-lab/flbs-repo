@@ -32,6 +32,7 @@ var eventList = ['onBeforeNavigate', 'onCreatedNavigationTarget',
 var savedTabUrls = {}; // Set a global variable.
 eventList.forEach(function(e) {
   chrome.webNavigation[e].addListener(function(data) {
+	//~ return; // testing
     if (typeof data) {
 		// Debug
 		// 		console.log(chrome.i18n.getMessage('inHandler'), e, data);

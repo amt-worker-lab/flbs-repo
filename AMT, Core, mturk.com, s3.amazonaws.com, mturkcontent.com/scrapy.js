@@ -247,8 +247,8 @@ function init__scrapy() {
 						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
 						'CONCURRENT_ITEMS=200', //DEFAULT = 100
-						'CONCURRENT_REQUESTS=16', //DEFAULT = 16
-						'CONCURRENT_REQUESTS_PER_DOMAIN=' + crt, //DEFAULT = 8, Changed from 16
+						'CONCURRENT_REQUESTS=' + crt, //DEFAULT = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=' + crt, //DEFAULT = 8
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=1', //false
 						//'COOKIES_ENABLED=0', //false
