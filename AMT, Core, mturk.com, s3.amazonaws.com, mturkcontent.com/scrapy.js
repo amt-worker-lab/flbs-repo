@@ -208,17 +208,17 @@ function init__scrapy() {
 				// xxLook for Facebook pages in results.
 				// xxAnd secondly check if first result is a "non-skip" result,
 				// xxin which case add to both o.sd_start_urls and o.sd_allowed_domains.
-				var first = true;
-				for (var i in rs) {
-					var dm = rs[i][0].replace(
-						/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
-					if (!o.SKIP_SITES.hasOwnProperty( dm )) {
-						o.sd_start_urls.push(rs[i][0]);
-						break; // Only one......
-					}
-					// Old: Add all.
-					//~ o.sd_start_urls.push(rs[i][0]);
-				}
+				//~ var first = true;
+				//~ for (var i in rs) {
+					//~ var dm = rs[i][0].replace(
+						//~ /https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
+					//~ if (!o.SKIP_SITES.hasOwnProperty( dm )) {
+						//~ o.sd_start_urls.push(rs[i][0]);
+						//~ break; // Only one......
+					//~ }
+					//~ // Old: Add all.
+					//~ // o.sd_start_urls.push(rs[i][0]);
+				//~ }
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			}
@@ -227,6 +227,11 @@ function init__scrapy() {
 			 * function scrapy
 			 */
 			function scrapy(start_urls, allowed_domains) {
+				// concurrent
+				// E.g., 20 pages to fetch / 4 = 5 rounds of fetching.
+				var crt = Math.round(
+					AMT__Global_Vars.scriptVars['arg_max_pages_to_fetch'] / 4);
+					
 				//
 				var s_obj =
 				{
@@ -241,9 +246,9 @@ function init__scrapy() {
 						//'SCHEDULER_ORDER=BFO',
 						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						'CONCURRENT_ITEMS=200', //DEFAUL = 100
-						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
-						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+						'CONCURRENT_ITEMS=200', //DEFAULT = 100
+						'CONCURRENT_REQUESTS=16', //DEFAULT = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=' + crt, //DEFAULT = 8, Changed from 16
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=1', //false
 						//'COOKIES_ENABLED=0', //false
