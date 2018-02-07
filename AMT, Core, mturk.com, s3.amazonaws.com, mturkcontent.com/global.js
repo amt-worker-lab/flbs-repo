@@ -16425,7 +16425,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	
 	// Add gm style
 	GM_addStyle('.showScrapy_contexts_email:hover \
-		{border:2px solid #0e0e0e;border-bottom:2px solid #0e0e0e !important;}');
+		{border:1px solid #0e0e0e;border-bottom:1px solid #0e0e0e !important;}');
 	//~ GM_addStyle('.showScrapy_contexts_email_clicked:hover {background-color:Orange;}');
 	
 	// ...
@@ -16458,7 +16458,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		}
 		
 		var el_div = document.createElement('div');
-		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
+		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;padding-top:2px;padding-bottom:2px;');
 		el_div.className = 'showScrapy_contexts_email';
 		el_div.innerHTML = context;
 		el_div.email = email;
