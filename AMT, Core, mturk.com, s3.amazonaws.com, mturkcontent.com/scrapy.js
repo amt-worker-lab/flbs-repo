@@ -2611,7 +2611,8 @@ function init__scrapy() {
 	// Collect data from a Website
 	// 
 	var s = '<p>Click the link below to review the Website. Collect the following information if it\'s available:<\/p>\n\n<ul>\n	<li>Email</li>\n</ul>';
-	if (ih.indexOf(s) != -1)
+	var s2= '<label for="email">Email address:</label> <input class="form-control" id="email" name="email" placeholder="e.g. example@email.com" type="email">';
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
@@ -2628,6 +2629,7 @@ function init__scrapy() {
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
 			// Call nextTab now...
 			new AMT___core_factory().nextTab();
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '1'); //meh
 			//
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -2741,7 +2743,8 @@ function init__scrapy() {
 				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
 				var first = true;
 				for (var i in rs) {
-					o.sd_start_urls.push(rs[i][0]);
+					if (i < 3)
+						o.sd_start_urls.push(rs[i][0]);
 				}
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
@@ -2834,7 +2837,7 @@ function init__scrapy() {
 												break; // Stop here
 											}
 										}
-									} else {
+									} else if (!callback_obj.matches.length) {
 										// Auto return and accept because
 										// there are no emails found.
 										// R&A from global.js...
