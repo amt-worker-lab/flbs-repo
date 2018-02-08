@@ -2365,10 +2365,10 @@ HITStorage.export_csv = function(results)
 
 HITStorage.export_xhr = function(results, doRStats)
 {
-	var name = document.getElementsByClassName('title_orange_text_bold')[0].innerText;
-	var nameReg = /Dashboard - ([\d\D]+)/;
+	var name = document.getElementsByClassName('col-xs-5 text-xs-right')[0].innerText.trim();
+	var nameReg = /Hello,\s+([^\|]+)/;
 	name = nameReg.exec(name)[1].trim();
-	if(name == '_REDACTED_4_')
+	if (name == '_REDACTED_4_')
 	{
 	  name = 'Ben';
 	}

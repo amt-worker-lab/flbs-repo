@@ -2,7 +2,7 @@
    "content_scripts": [ {
       "exclude_globs": [  ],
       "exclude_matches": [  ],
-      "include_globs": [ "https://*.mturk.com/mturk/dashboard" ],
+      "include_globs": [ "https://*.mturk.com/mturk/dashboard", "https://worker.mturk.com/dashboard"],
       "js": [ "bigvar.js","jquery.min.js","highcharts.js","160501.js" ],
       "matches": [ "http://*/*", "https://*/*" ],
       "run_at": "document_idle"
