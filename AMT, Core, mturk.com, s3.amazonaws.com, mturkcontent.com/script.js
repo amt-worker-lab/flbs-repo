@@ -204242,16 +204242,27 @@ function top_window(okay_to_run) {
 			GM_addStyle('#Answer_1_FreeText {width:90%;zoom:1.4}'); // ...
 			GM_addStyle('#Answer_3_FreeText {width:90%;}'); // ...
 			
-			// ?Checkbox
-			//GM_addStyle('#Answer_4 {position:absolute;top:0;right:0%;z-index:1000;zoom:10;cursor:pointer;}'); // ... old=18
+			// Checkbox
+			// Old=zoom:10. New=width/height.
+			GM_addStyle('.checkbox-wrapper {position:absolute;top:0;right:0%;z-index:1000;}');
+			GM_addStyle('.checkbox-wrapper>input {width:46px;height:46px;cursor:pointer;}');
+			
+			// URL
+			GM_addStyle('.text {margin:0 !important;}'); // ...
+			
+			// Select
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
+			GM_addStyle('p.dropdown-wrapper {margin:0 !important;padding:0 !important;}'); // ...
+			
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
 			GM_addStyle('#theTime {position:absolute;top:0px;left:100px;background-color:white;}'); // ...
 			GM_addStyle('.exe-result-btn:hover {text-decoration:underline;}'); // ...
 			GM_addStyle('.reporting-and-why {z-index:-1000 !important;}'); // Jan.11 2016, Fixes AMT overlay glitch
-			//~ GM_addStyle('.exe-status-btn {}');
-			GM_addStyle('input[type="button"] {border:1px solid blue;}');
+			GM_addStyle('.exe-status-btn,.div-search>input {border:1px solid #828282;}');
+			
+			//~ GM_addStyle('#checkbox-wrapper {zoom:10;}');
+			//~ GM_addStyle('input[type="button"] {border:1px solid blue;}');
 			
 			// Script vars
 			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
@@ -204305,6 +204316,12 @@ function top_window(okay_to_run) {
 				goog_has_run: false,
 				SKIP_SITES: null, // Skips
 			}
+			// Checkbox clean
+			var d = document.querySelectorAll('.answer.text');
+			if (d && d.length==1 && d[0].innerText=='Item not found') {
+				d[0].innerText = 'inf.';
+			}
+			// Setup select field.
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 			o.q[2].multiple = true;
 			o.q[2].size = 3; // Changed from 2 to 3, June 5.
@@ -204318,23 +204335,24 @@ function top_window(okay_to_run) {
 					break;
 				}
 			}
+			// Add "|" to select field options.
 			var opt = o.q[2].getElementsByTagName('option');
 			for (var i in opt) {
 				if (i == 'length') break;
-				opt[i].innerHTML = opt[i].innerHTML +'|';
+				opt[i].innerHTML = opt[i].innerHTML +' |';
 			}
 			// Set bird variable enable tabs queue to 0!
 			// EnableTabsQ
 			// Note: But not "new AMT___core_factory().createScriptVar('...', '0');"
-			//~ AMT__Global_Vars.scriptVars['EnableTabsQ'] = 0;
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			AMT__Global_Vars.scriptVars['EnableTabsQ'] = 0;//??
 			// SELECT FIELD for submit...
-			// Changed from dblclick to click.
-			//~ o.q[2].ondblclick
 			o.q[2].onclick = function() {
 				try_sbm();
 			}
-			/* BEGIN ITEMS */
+			/**
+			 * BEGIN ITEMS 
+			 **/
 			// Wrapper for top
 			var dqw = document.getElementsByClassName('question-wrapper')[0];
 			dqw.appendChild(document.createTextNode(' ' +upc)); // Add UPC text
@@ -204411,16 +204429,18 @@ function top_window(okay_to_run) {
 			// Div 1
 			var d2 = document.createElement('div');
 			d2.setAttribute('style','float:left;width:19%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2.className = 'div-search';
 			x.appendChild(d2);
 			// Div 3
 			var d2c = document.createElement('div');
 			d2c.setAttribute('style','float:left;width:19%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2c.className = 'div-search';
 			x.appendChild(d2c);
-			//~ // Old middle div....
-			//~ d2b.setAttribute('style','float:left;width:16%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			// ...
 			x.appendChild(document.createElement('br'));
-			/* END ITEMS */
+			/**
+			 * END ITEMS 
+			 **/
 			
 			// iframe size
 			var t = d1.getBoundingClientRect();
@@ -204484,7 +204504,7 @@ function top_window(okay_to_run) {
 					return false;
 				doSubmit('tmp_sbm_jan2018');
 			}
-			// Onclick
+			// Submit button onclick
 			document.getElementsByClassName('btn btn-primary')[0].onclick = function(e) {
 				// old version
 				// document.getElementsByName('/submit')[0].onclick = function(e) {
