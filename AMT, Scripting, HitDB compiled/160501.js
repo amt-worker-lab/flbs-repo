@@ -1852,10 +1852,12 @@ HITStorage.getHITData = function(day_to_fetch, hitData, page, days_to_update)
   {
     if (day_to_fetch.submitted == -1 || hitData.length == day_to_fetch.submitted)
     {
-		for(i in hitData)
-		{
-			console.log(hitData[i]);
-		}
+      for(i in hitData)
+      { // Log the first hit, as a sample.
+        console.log('sample task:');
+        console.log(hitData[i]);
+        break;
+      }
       setTimeout(function(){ HITStorage.indexedDB.addHITs(hitData, day_to_fetch, days_to_update); }, 1000);
     }
     else
