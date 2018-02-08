@@ -204250,6 +204250,8 @@ function top_window(okay_to_run) {
 			GM_addStyle('#theTime {position:absolute;top:0px;left:100px;background-color:white;}'); // ...
 			GM_addStyle('.exe-result-btn:hover {text-decoration:underline;}'); // ...
 			GM_addStyle('.reporting-and-why {z-index:-1000 !important;}'); // Jan.11 2016, Fixes AMT overlay glitch
+			//~ GM_addStyle('.exe-status-btn {}');
+			GM_addStyle('input[type="button"] {border:1px solid blue;}');
 			
 			// Script vars
 			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
@@ -204434,6 +204436,32 @@ function top_window(okay_to_run) {
 					document.getElementsByClassName('question selection')[0].click();
 				}
 			}
+			// Update Jan2018
+			// Let's use document.getElementsByTagName('form')[1]
+			// in doSubmit by changing its id to "tmp_sbm_jan2018".
+			// Update: Make sure that the form's action is "subit_qap"
+			// 		because, when moving things around the page,
+			//		it may change form #s.
+			function modifyForm() {
+				var n = document.getElementsByTagName('form');
+				var f = false;
+				for (var i=0; i<n.length; i++) {
+					if (n[i].action.indexOf('/submit_qap') != -1) {
+						f = n[i];
+						break;
+					}
+				}
+				if (!f) {
+					alert('Core script.js: Form changed!');
+					return false;
+				} else if (f.id != '') {
+					alert('Core script.js: Form id has changed!');
+					return false;
+				}
+				f.id = 'tmp_sbm_jan2018';
+			}
+			modifyForm(); // Call function.
+			
 			// try_sbm
 			function try_sbm() {
 				x1.value = x1.value.trim();
@@ -204454,28 +204482,6 @@ function top_window(okay_to_run) {
 						o.q[3].checked
 					)
 					return false;
-				// Update Jan2018
-				// Let's use document.getElementsByTagName('form')[1]
-				// in doSubmit by changing its id to "tmp_sbm_jan2018".
-				// Update: Make sure that the form's action is "subit_qap"
-				// 		because, when moving things around the page,
-				//		it may change form #s.
-				var n = document.getElementsByTagName('form');
-				var f = false;
-				for (var i=0; i<n.length; i++) {
-					if (n[i].action.indexOf('/submit_qap') != -1) {
-						f = n[i];
-						break;
-					}
-				}
-				if (!f) {
-					alert('Core script.js: Form changed!');
-					return false;
-				} else if (f.id != '') {
-					alert('Core script.js: Form id has changed!');
-					return false;
-				}
-				f.id = 'tmp_sbm_jan2018'
 				doSubmit('tmp_sbm_jan2018');
 			}
 			// Onclick
@@ -204499,7 +204505,8 @@ function top_window(okay_to_run) {
 				o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 				this.checked = true;
 				//~ console.log('NA Button clicked');
-				doSubmit('hitForm');
+				//~ doSubmit('hitForm');
+				doSubmit('tmp_sbm_jan2018');
 			}
 			// middle-click-na
 			new AMT___core_factory().createScriptVar('middle-click-na', '0');
