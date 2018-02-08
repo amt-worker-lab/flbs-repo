@@ -1680,47 +1680,63 @@ HITStorage.getLatestHITs = function()
   
   var auto_button = document.getElementById('auto_button');
   var page = HITStorage.getHTTPObject();
-  page.open("GET", 'https://www.mturk.com/mturk/status', false);
+  //~ page.open("GET", 'https://www.mturk.com/mturk/status', false);
+  page.open("GET", 'https://worker.mturk.com/dashboard', false);
   page.send(null);
   auto_button.textContent += ' +';
-   
-  var page_html = document.createElement('div');
-  page_html.innerHTML = page.responseText;
+  
+  //~ var page_html = document.createElement('div');
+  //~ page_html.innerHTML = page.responseText;
 
-  var dateElements = page_html.getElementsByClassName('statusDateColumnValue');
-  var submittedElements = page_html.getElementsByClassName('statusSubmittedColumnValue');
-  var approvedElements = page_html.getElementsByClassName('statusApprovedColumnValue');
-  var rejectedElements = page_html.getElementsByClassName('statusRejectedColumnValue');
-  var pendingElements = page_html.getElementsByClassName('statusPendingColumnValue');
-  var earningsElements = page_html.getElementsByClassName('statusEarningsColumnValue');
-
-  if (dateElements[0].childNodes[1].textContent.trim() != 'Today')
+  //~ var dateElements = page_html.getElementsByClassName('statusDateColumnValue');
+  //~ var submittedElements = page_html.getElementsByClassName('statusSubmittedColumnValue');
+  //~ var approvedElements = page_html.getElementsByClassName('statusApprovedColumnValue');
+  //~ var rejectedElements = page_html.getElementsByClassName('statusRejectedColumnValue');
+  //~ var pendingElements = page_html.getElementsByClassName('statusPendingColumnValue');
+  //~ var earningsElements = page_html.getElementsByClassName('statusEarningsColumnValue');
+  
+  var dom = new DOMParser().parseFromString(rs, 'text/html');
+  var trs = dom.getElementsByClassName('daily_hit_statuses');
+  var tds = trs[0].getElementsByTagName('td');
+  
+  // Feb 2018.
+  // Not too sure about this one.
+  // But here it is.
+  //~ if (dateElements[0].childNodes[1].textContent.trim() != 'Today')
+  if (trs[0].innerText.indexOf('Today') == -1)
     return;
 
-  var url = dateElements[0].childNodes[1].href;
-  var date = url.substr(53); // keep MMDDYYYY
-  var submitted = parseInt(submittedElements[0].textContent);
-  //var approved = parseInt(approvedElements[0].textContent);
-  //var rejected = parseInt(rejectedElements[0].textContent);
-  //var pending  = parseInt(pendingElements[0].textContent);
-  //var earnings = parseFloat(earningsElements[0].textContent.slice(1));
+  // New date, url, submitted.
+  // url = https://worker.mturk.com/status_details/2018-01-08
+  var old_date = trs[0].getElementsByTagName('a')[0].innerText.replace(/\//g, '');
+  var new_date = trs[0].getElementsByTagName('a')[0].innerText.replace(/\//g, '-');
+  var submitted = parseInt(tds[1].innerText);
+  //~ var url = trs[0].getElementsByTagName('a')[0].href;
+  //~ var url = dateElements[0].childNodes[1].href;
+  //~ var date = url.substr(53); // keep MMDDYYYY
+  //~ var submitted = parseInt(submittedElements[0].textContent);
   var pages_done = null;
   if (localStorage['HITDB AUTOUPDATE PAGES'] !== undefined)
   {
     pages_done = JSON.parse(localStorage['HITDB AUTOUPDATE PAGES']);
   }
-  if (pages_done == null || pages_done.date != date)
-    pages_done = {date: date};
+  if (pages_done == null || pages_done.date != old_date)
+    pages_done = {date: old_date};
 
   var new_hits = 0;
-  var page = 1 + Math.floor(submitted/25);
+  var page = 1 + Math.floor(submitted/20);
+  // New Feb 2018: Pages have 20 tasks per page, rather than 25.
+  //~ var page = 1 + Math.floor(submitted/25);
   page = (page<1) ? 1 : page;
 
   var hitData = [];  
   if (submitted != pages_done.submitted)
   {
-    url = "https://www.mturk.com/mturk/statusdetail?sortType=All&pageNumber=" + page + "&encodedDate=" + date;
+    var url = "https://worker.mturk.com/status_details/" +
+              date + "/?page_number=" + page;
+    //~ url = "https://www.mturk.com/mturk/statusdetail?sortType=All&pageNumber=" + page + "&encodedDate=" + date;
     HITStorage.process_page(url, date, hitData);
+    //~ HITStorage.process_page(url, old_date, hitData);
     new_hits += submitted - pages_done.submitted;
     pages_done.submitted = submitted;
     localStorage['HITDB AUTOUPDATE PAGES'] = JSON.stringify(pages_done);
@@ -1735,8 +1751,11 @@ HITStorage.getLatestHITs = function()
     {
       if (pages_done[extra_page] != true)
       {
-        url = "https://www.mturk.com/mturk/statusdetail?sortType=All&pageNumber=" + extra_page + "&encodedDate=" + date;
-        if (HITStorage.process_page(url, date, hitData) == 25)
+        var url = "https://worker.mturk.com/status_details/"
+                  + date + "/?page_number=" + extra_page;
+        //~ url = "https://www.mturk.com/mturk/statusdetail?sortType=All&pageNumber=" + extra_page + "&encodedDate=" + date;
+        if (HITStorage.process_page(url, date, hitData) == 20) // Feb 2018: 20, not 25
+        //~ if (HITStorage.process_page(url, old_date, hitData) == 20) // Feb 2018: 20, not 25
         {
           pages_done[extra_page] = true;
           localStorage['HITDB AUTOUPDATE PAGES'] = JSON.stringify(pages_done);
@@ -1754,9 +1773,13 @@ HITStorage.getLatestHITs = function()
 // Collects all HITs for given date to hitData array
 HITStorage.getHITData = function(day_to_fetch, hitData, page, days_to_update)
 {
-  var dataDate = convert_iso_date(day_to_fetch.date);
+  //~ var dataDate = convert_iso_date(day_to_fetch.date);
+  var dataDate = convert_date(day_to_fetch.date);
   page = page || 1;
-  detailed_status_page_link = "https://www.mturk.com/mturk/statusdetail?sortType=All&pageNumber=" + page + "&encodedDate=" + dataDate;            
+  detailed_status_page_link =
+    "https://worker.mturk.com/status_details/" + dataDate + "/?page_number=" + page;
+
+  //~ detailed_status_page_link = "https://www.mturk.com/mturk/statusdetail?sortType=All&pageNumber=" + page + "&encodedDate=" + dataDate;            
 
   if (HITStorage.process_page(detailed_status_page_link, dataDate, hitData) == 0)
   {
@@ -1770,17 +1793,17 @@ HITStorage.getHITData = function(day_to_fetch, hitData, page, days_to_update)
     }
     else
     {
-		// AN ERROR HERE?
-		// 
-		console.log('BEGIN CONSOLE');
-		console.log(day_to_fetch.submitted);
-		console.log(day_to_fetch);
-		console.log(hitData);
-		console.log(page);
-		console.log(days_to_update);
-		console.log(detailed_status_page_link);
-		console.log( HITStorage.process_page(detailed_status_page_link, dataDate, hitData) );
-		console.log('END CONSOLE');
+		//~ // AN ERROR HERE?
+		//~ // 
+		//~ console.log('BEGIN CONSOLE');
+		//~ console.log(day_to_fetch.submitted);
+		//~ console.log(day_to_fetch);
+		//~ console.log(hitData);
+		//~ console.log(page);
+		//~ console.log(days_to_update);
+		//~ console.log(detailed_status_page_link);
+		//~ console.log( HITStorage.process_page(detailed_status_page_link, dataDate, hitData) );
+		//~ console.log('END CONSOLE');
 		
       alert("There was an error while fetching HITs for date: " + day_to_fetch.date + ".\n" +
             "Script monkeys expected " + day_to_fetch.submitted + " bananas, but got " + hitData.length + "! 😞");
@@ -2404,7 +2427,7 @@ HITStorage.export_xhr = function(results, doRStats)
 	}
 
 	var csvData = 'hitId,date,requesterName,requesterId,title,reward,status,feedback\n';
-	for (var i=0; i< results.length;i++){//results.length; i++) {
+	for (var i=0; i< results.length;i++){
 		csvData += HITStorage.format_csv_line(results[i]);
 	}
 
@@ -2425,8 +2448,6 @@ HITStorage.export_xhr = function(results, doRStats)
 	 * One day of ~3,600 HITs = 612,000 bytes, aka 612 kb. (Visual Search Requester-Find associated product information for a given barcode value)
 	 * 
 	 */
-	//~ console.log(csvData.length);//return;
-	//~ 
 	var maxLength = 20000000; // 20,000,000 bytes = 20 mb
 	var chunks; // 1 to n...
 	var filesize = csvData.length; //  / 1000;
@@ -2453,8 +2474,6 @@ HITStorage.export_xhr = function(results, doRStats)
 			csvData.substr(i * maxLength, maxLength) // start, length
 		);
 	}
-	//~ console.log(array_csvData_chunks);
-	//~ console.log(array_csvData_chunks[0].length);return;
 	
 	// Start the post process.
 	HITStorage.post_export_chunk(
@@ -2533,11 +2552,11 @@ HITStorage.format_csv_line = function(hit, noFeedback)
 {
   var line = '';
   line += '"' + hit.hitId.trim() + '",';
-  line += '"' + hit.date.trim() + '",';
+  line += '"' + hit.date.trim() + '",'; // CONVERT
   line += '"' + hit.requesterName.trim() + '",';
   line += '"' + hit.requesterId.trim() + '",';
   line += '"' + hit.title.trim() + '",';
-  line += hit.reward.toFixed(2) + ',';
+  line += hit.reward.toFixed(2) + ','; // CONVERT
   line += '"' + hit.status.trim().replace(/\&nbsp;/g,' ') + (noFeedback ? '"'  : '", ');
   if(noFeedback)
   {
@@ -3114,21 +3133,38 @@ function progress_bar(done, max, full, empty, c1, c2)
 //    Add formatting for two types: "Today", "02/06/2018"
 function convert_date(date)
 {
+  if (date == 'Today') {
+    var d = new Date();
+    var m = d.getMonth()+1;      // Change 0-11 to 1-12.
+    if (m < 10) m = '0'+m;       // Add preceding 0.
+    var day = d.getDate();       // 1-31
+    if (day < 10) day = '0'+day; // Add preceding 0.
+    return d.getFullYear() + '-' + m + '-' +  day;
+  }
   if (date.indexOf('-') > 0)
     return date;
-  var day   = date.substr(2,2);
-  var month = date.substr(0,2);
-  var year  = date.substr(4,4);
-  return (year + '-' + month + '-' + day);
+  if (date.indexOf('/') > 0) {
+    var day   = date.substr(3,2);
+    var month = date.substr(0,2);
+    var year  = date.substr(6,4);
+    return (year + '-' + month + '-' + day);
+  } else { // Old style.
+    var day   = date.substr(2,2);
+    var month = date.substr(0,2);
+    var year  = date.substr(4,4);
+    return (year + '-' + month + '-' + day);
+  }
 }
 
 // convert date from YYYY-MM-DD to MMDDYYYY if it isn't already
 function convert_iso_date(date)
 {
-  if (date.indexOf('-') < 0)
-    return date;
-  var t = date.split('-');
-  return t[1] + t[2] + t[0];
+  return date;
+  // Ignore this: Feb 2018
+  //~ if (date.indexOf('-') < 0)
+    //~ return date;
+  //~ var t = date.split('-');
+  //~ return t[1] + t[2] + t[0];
 }
 
 // Format date for display YYYY-MM-DD, DD/MM/YYYY or DD.MM.YYYY
