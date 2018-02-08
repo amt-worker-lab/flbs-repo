@@ -204239,8 +204239,8 @@ function top_window(okay_to_run) {
 			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
 			//~ GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:98% !important;max-width:100% !important;left:0 !important;margin:0 !important;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-			GM_addStyle('#Answer_1_FreeText {width:90%;zoom:1.4}'); // ...
-			GM_addStyle('#Answer_3_FreeText {width:90%;}'); // ...
+			GM_addStyle('#Answer_1_FreeText {width:90%;zoom:1.4}'); 
+			GM_addStyle('#Answer_3_FreeText {width:90%;}'); 
 			
 			// Checkbox
 			// Old=zoom:10. New=width/height.
@@ -204248,16 +204248,19 @@ function top_window(okay_to_run) {
 			GM_addStyle('.checkbox-wrapper>input {width:46px;height:46px;cursor:pointer;}');
 			
 			// URL
-			GM_addStyle('.text {margin:0 !important;}'); // ...
+			GM_addStyle('.text {margin:0 !important;padding:0 !important;}'); 
+			// page
+			GM_addStyle('p.question-wrapper {margin:0 !important;padding:0 !important;}');
+			GM_addStyle('.question-wrapper  {margin:-10px !important;}'); // squeeze page some
 			
 			// Select
-			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
-			GM_addStyle('option:hover {background-color:aqua;}'); // ...
-			GM_addStyle('p.dropdown-wrapper {margin:0 !important;padding:0 !important;}'); // ...
+			GM_addStyle('option {float:left;cursor:pointer;}'); 
+			GM_addStyle('option:hover {background-color:aqua;}'); 
+			GM_addStyle('p.dropdown-wrapper {margin:0 !important;padding:0 !important;}'); 
 			
-			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
-			GM_addStyle('#theTime {position:absolute;top:0px;left:100px;background-color:white;}'); // ...
-			GM_addStyle('.exe-result-btn:hover {text-decoration:underline;}'); // ...
+			GM_addStyle('.answer .text {vertical-align:top;}'); 
+			GM_addStyle('#theTime {position:absolute;top:0px;left:100px;background-color:white;}'); 
+			GM_addStyle('.exe-result-btn:hover {text-decoration:underline;}'); 
 			GM_addStyle('.reporting-and-why {z-index:-1000 !important;}'); // Jan.11 2016, Fixes AMT overlay glitch
 			GM_addStyle('.exe-status-btn,.div-search>input {border:1px solid #828282;}');
 			
