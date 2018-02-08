@@ -1596,30 +1596,43 @@ HITStorage.getAllAvailableDays = function(try_extra_days)
   var days = [];
   
   var page = HITStorage.getHTTPObject();
-  page.open("GET", 'https://www.mturk.com/mturk/status', false);
+  //~ page.open("GET", 'https://www.mturk.com/mturk/status', false);
+  page.open("GET", 'https://worker.mturk.com/dashboard', false);
   page.send(null);
    
-  var page_html = document.createElement('div');
-  page_html.innerHTML = page.responseText;
+  
+  //~ var page_html = document.createElement('div');
+  //~ page_html.innerHTML = page.responseText;
 
-  var dateElements = page_html.getElementsByClassName('statusDateColumnValue');
-  var submittedElements = page_html.getElementsByClassName('statusSubmittedColumnValue');
-  var approvedElements = page_html.getElementsByClassName('statusApprovedColumnValue');
-  var rejectedElements = page_html.getElementsByClassName('statusRejectedColumnValue');
-  var pendingElements = page_html.getElementsByClassName('statusPendingColumnValue');
-  var earningsElements = page_html.getElementsByClassName('statusEarningsColumnValue');
-
-  for (var i=0; i<dateElements.length; i++)
+  //~ var dateElements = page_html.getElementsByClassName('statusDateColumnValue');
+  //~ var submittedElements = page_html.getElementsByClassName('statusSubmittedColumnValue');
+  //~ var approvedElements = page_html.getElementsByClassName('statusApprovedColumnValue');
+  //~ var rejectedElements = page_html.getElementsByClassName('statusRejectedColumnValue');
+  //~ var pendingElements = page_html.getElementsByClassName('statusPendingColumnValue');
+  //~ var earningsElements = page_html.getElementsByClassName('statusEarningsColumnValue');
+  var dom = new DOMParser().parseFromString(rs, 'text/html');
+  var trs = dom.getElementsByClassName('daily_hit_statuses');
+  
+  for (var i=0; i<trs.length; i++)
   {
-    var date = dateElements[i].childNodes[1].href.substr(53);
+    var tds = trs[i].getElementsByTagName('td');
+    //~ var dateElements      = td[0];
+    //~ var submittedElements = dom.getElementsByClassName('statusSubmittedColumnValue');
+    //~ var approvedElements  = dom.getElementsByClassName('statusApprovedColumnValue');
+    //~ var rejectedElements  = dom.getElementsByClassName('statusRejectedColumnValue');
+    //~ var pendingElements   = dom.getElementsByClassName('statusPendingColumnValue');
+    //~ var earningsElements  = dom.getElementsByClassName('statusEarningsColumnValue');
+
+
+    //~ var date = dateElements[i].childNodes[1].href.substr(53);
+    var date = tds[0].innerText;
     date = convert_date(date);
-      
     days.push( { date: date,
-                 submitted: parseInt(submittedElements[i].textContent),
-                 approved : parseInt(approvedElements[i].textContent),
-                 rejected : parseInt(rejectedElements[i].textContent),
-                 pending  : parseInt(pendingElements[i].textContent),
-                 earnings : parseFloat(earningsElements[i].textContent.slice(1)) });
+                 submitted: parseInt(td[1].innerText),
+                 approved : parseInt(td[2].innerText),
+                 rejected : parseInt(td[3].innerText),
+                 pending  : parseInt(td[4].innerText),
+                 earnings : parseFloat(td[5].innerText.slice(1)) }); // Remove "$"
   }
 
   if (try_extra_days > 0)
@@ -1629,7 +1642,7 @@ HITStorage.getAllAvailableDays = function(try_extra_days)
     d.setFullYear(parseInt(date.substr(0,4)), parseInt(date.substr(5,2))-1, parseInt(date.substr(8,2)));
     
     for (var i=0; i<try_extra_days; i++)
-    {      
+    {
       d.setDate(d.getDate()-1);
       var month = '0' + (d.getMonth() + 1);
       var day = '0' + d.getDate();
@@ -3097,6 +3110,8 @@ function progress_bar(done, max, full, empty, c1, c2)
 }
 
 // convert date to more practical form (MMDDYYYY => YYYY-MM-DD)
+// New Feb2018:
+//    Add formatting for two types: "Today", "02/06/2018"
 function convert_date(date)
 {
   if (date.indexOf('-') > 0)
@@ -3139,17 +3154,24 @@ HITStorage.indexedDB.create();
 // Backup plan
 //HITStorage.update_date_format(true);
 
-if (document.location.href.match('https://www.mturk.com/mturk/dashboard'))
-{  
-  var footer = document.getElementsByClassName('footer_separator')[0];
+/**
+ * Feb2018: Update href.
+ * Old: https://www.mturk.com/mturk/dashboard
+ * Note: HITs DB original is now at:
+ *    https://greasyfork.org/en/scripts/11733-mturk-hit-database-mk-ii
+ */
+if (document.location.href.match('https://worker.mturk.com/dashboard'))
+{
+  // Feb2018: New footer element
+  // Old = class:footer_separator[0]
+  var footer = document.getElementsByTagName('footer')[0];
   if (footer == null) {
-		console.log('booter is HULL');
 		alert('footer is NULL');
 	}
  
   var extra_table = document.createElement('table');
   extra_table.width = '700';
-  extra_table.style.boder = '1px solid black';
+  extra_table.style.border = '1px solid black';
   extra_table.align = 'center';
   extra_table.cellSpacing = '0px';
   extra_table.cellPadding = '0px';
@@ -3465,162 +3487,162 @@ if (document.location.href.match('https://www.mturk.com/mturk/dashboard'))
 }
 else if (document.location.href.match('https://www.mturk.com/mturk/preview'))
 {
-  var table = document.getElementById('requester.tooltip');
-  if (table == null) {
-	  alert('table is null');
-    //return;
-	}
-  table = table.parentNode.parentNode.parentNode;
-  var title = table.parentNode.parentNode.parentNode.parentNode.getElementsByTagName('div')[0].textContent.trim();
+  //~ var table = document.getElementById('requester.tooltip');
+  //~ if (table == null) {
+	  //~ alert('table is null');
+    //~ //return;
+	//~ }
+  //~ table = table.parentNode.parentNode.parentNode;
+  //~ var title = table.parentNode.parentNode.parentNode.parentNode.getElementsByTagName('div')[0].textContent.trim();
   
-  var extra_row = document.createElement('tr');
-  var td_1 = document.createElement('td');
-  var td_2 = document.createElement('td');
+  //~ var extra_row = document.createElement('tr');
+  //~ var td_1 = document.createElement('td');
+  //~ var td_2 = document.createElement('td');
 
-  var requesterId = document.getElementsByName('requesterId')[0].value;
-  var auto_approve = parseInt(document.getElementsByName('hitAutoAppDelayInSeconds')[0].value);
+  //~ var requesterId = document.getElementsByName('requesterId')[0].value;
+  //~ var auto_approve = parseInt(document.getElementsByName('hitAutoAppDelayInSeconds')[0].value);
 
-  var buttons = [];
-  var b = ['Requester', 'HIT Title'];
-  for (var i=0; i<b.length; i++)
-  {
-    buttons[i] = document.createElement('button');
-    buttons[i].textContent = b[i];
-    buttons[i].id = b[i] + 'Button' + i;
-    buttons[i].style.fontSize = '10px';
-    buttons[i].style.height = '18px';
-    buttons[i].style.width = '80px';
-    buttons[i].style.border = '1px solid';
-    buttons[i].style.paddingLeft = '3px';
-    buttons[i].style.paddingRight = '3px';
-    buttons[i].style.backgroundColor = 'lightgrey';
-    buttons[i].setAttribute('form', 'NOThitForm');
-    td_1.appendChild(buttons[i]);
-  }
-  buttons[0].title = 'Search requester ' + requesterId + ' from HIT database';
-  buttons[1].title = 'Search title \'' + title + '\' from HIT database';
+  //~ var buttons = [];
+  //~ var b = ['Requester', 'HIT Title'];
+  //~ for (var i=0; i<b.length; i++)
+  //~ {
+    //~ buttons[i] = document.createElement('button');
+    //~ buttons[i].textContent = b[i];
+    //~ buttons[i].id = b[i] + 'Button' + i;
+    //~ buttons[i].style.fontSize = '10px';
+    //~ buttons[i].style.height = '18px';
+    //~ buttons[i].style.width = '80px';
+    //~ buttons[i].style.border = '1px solid';
+    //~ buttons[i].style.paddingLeft = '3px';
+    //~ buttons[i].style.paddingRight = '3px';
+    //~ buttons[i].style.backgroundColor = 'lightgrey';
+    //~ buttons[i].setAttribute('form', 'NOThitForm');
+    //~ td_1.appendChild(buttons[i]);
+  //~ }
+  //~ buttons[0].title = 'Search requester ' + requesterId + ' from HIT database';
+  //~ buttons[1].title = 'Search title \'' + title + '\' from HIT database';
 
-  HITStorage.indexedDB.colorRequesterButton(requesterId, buttons[0]);
-  HITStorage.indexedDB.colorTitleButton(title, buttons[1]);
-  buttons[0].addEventListener("click", search_func(requesterId, 'requesterId'), false);
-  buttons[1].addEventListener("click", search_func(title, 'title'), false);
+  //~ HITStorage.indexedDB.colorRequesterButton(requesterId, buttons[0]);
+  //~ HITStorage.indexedDB.colorTitleButton(title, buttons[1]);
+  //~ buttons[0].addEventListener("click", search_func(requesterId, 'requesterId'), false);
+  //~ buttons[1].addEventListener("click", search_func(title, 'title'), false);
 
-  td_2.innerHTML = '<span class="capsule_field_title">Auto-Approval:</span>&nbsp&nbsp' + HITStorage.formatTime(auto_approve*1000) + '';
-  td_1.colSpan = '3';
-  td_2.colSpan = '8';
+  //~ td_2.innerHTML = '<span class="capsule_field_title">Auto-Approval:</span>&nbsp&nbsp' + HITStorage.formatTime(auto_approve*1000) + '';
+  //~ td_1.colSpan = '3';
+  //~ td_2.colSpan = '8';
 
-  extra_row.appendChild(td_1);
-  extra_row.appendChild(td_2);
-  table.appendChild(extra_row);
+  //~ extra_row.appendChild(td_1);
+  //~ extra_row.appendChild(td_2);
+  //~ table.appendChild(extra_row);
 }
 else
 {
-  for (var item=0; item<10; item++) {
-    var tooltip = document.getElementById('requester.tooltip--' + item);
-    if (tooltip == null)
-      break; // no need to continue
-    var titleElement = document.getElementById('capsule' + item + '-0');
-    var emptySpace = tooltip.parentNode.parentNode.parentNode.parentNode.parentNode;
+  //~ for (var item=0; item<10; item++) {
+    //~ var tooltip = document.getElementById('requester.tooltip--' + item);
+    //~ if (tooltip == null)
+      //~ break; // no need to continue
+    //~ var titleElement = document.getElementById('capsule' + item + '-0');
+    //~ var emptySpace = tooltip.parentNode.parentNode.parentNode.parentNode.parentNode;
     
-    var hitItem = tooltip.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;//.parentNode;
+    //~ var hitItem = tooltip.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;//.parentNode;
 
-    var requesterLabel = tooltip.parentNode;
-    var requesterId = tooltip.parentNode.parentNode.getElementsByTagName('a');
-    var title = titleElement.textContent.trim();
+    //~ var requesterLabel = tooltip.parentNode;
+    //~ var requesterId = tooltip.parentNode.parentNode.getElementsByTagName('a');
+    //~ var title = titleElement.textContent.trim();
 
-    requesterId = get_requester_id(requesterId[1].href);
+    //~ requesterId = get_requester_id(requesterId[1].href);
   
-    var buttons = [];
-    var row = document.createElement('tr');
-    var div = document.createElement('div');
-    emptySpace.appendChild(row);
-    row.appendChild(div);
+    //~ var buttons = [];
+    //~ var row = document.createElement('tr');
+    //~ var div = document.createElement('div');
+    //~ emptySpace.appendChild(row);
+    //~ row.appendChild(div);
 
-    /* Turkopticon link next to requester name */
-    //to_link = document.createElement('a');
-    //to_link.textContent = ' TO ';
-    //to_link.href = 'http://turkopticon.differenceengines.com/' + requesterId;
-    //to_link.target = '_blank';
-    //to_link.title = requesterId + ' on Turkopticon';
-    //tooltip.parentNode.parentNode.appendChild(to_link);
-    /*-----------------------------------------*/
+    //~ /* Turkopticon link next to requester name */
+    //~ //to_link = document.createElement('a');
+    //~ //to_link.textContent = ' TO ';
+    //~ //to_link.href = 'http://turkopticon.differenceengines.com/' + requesterId;
+    //~ //to_link.target = '_blank';
+    //~ //to_link.title = requesterId + ' on Turkopticon';
+    //~ //tooltip.parentNode.parentNode.appendChild(to_link);
+    //~ /*-----------------------------------------*/
     
-    HITStorage.indexedDB.blockHITS(requesterId, title, hitItem, titleElement);
+    //~ HITStorage.indexedDB.blockHITS(requesterId, title, hitItem, titleElement);
           
-    var b = ['R', 'T', 'N', 'B'];
-    for (var i=0; i<b.length; i++)
-    {
-      buttons[i] = document.createElement('button');
-      buttons[i].textContent = b[i];
-      buttons[i].id = b[i] + 'Button' + i;
-      buttons[i].style.height = '18px';
-      buttons[i].style.fontSize = '10px';
-      buttons[i].style.border = '1px solid';
-      buttons[i].style.paddingLeft = '3px';
-      buttons[i].style.paddingRight = '3px';
-      buttons[i].style.backgroundColor = 'lightgrey';
-      div.appendChild(buttons[i]);
-    }
-    buttons[0].title = 'Search requester ' + requesterId + ' from HIT database';
-    buttons[1].title = 'Search title \'' + title + '\' from HIT database';
-    buttons[2].title = 'Add a requester note';
-    buttons[3].title = '"Block" requester';
+    //~ var b = ['R', 'T', 'N', 'B'];
+    //~ for (var i=0; i<b.length; i++)
+    //~ {
+      //~ buttons[i] = document.createElement('button');
+      //~ buttons[i].textContent = b[i];
+      //~ buttons[i].id = b[i] + 'Button' + i;
+      //~ buttons[i].style.height = '18px';
+      //~ buttons[i].style.fontSize = '10px';
+      //~ buttons[i].style.border = '1px solid';
+      //~ buttons[i].style.paddingLeft = '3px';
+      //~ buttons[i].style.paddingRight = '3px';
+      //~ buttons[i].style.backgroundColor = 'lightgrey';
+      //~ div.appendChild(buttons[i]);
+    //~ }
+    //~ buttons[0].title = 'Search requester ' + requesterId + ' from HIT database';
+    //~ buttons[1].title = 'Search title \'' + title + '\' from HIT database';
+    //~ buttons[2].title = 'Add a requester note';
+    //~ buttons[3].title = '"Block" requester';
 
-    var notelabel = document.createElement('label');
-    notelabel.textContent = '';
-    notelabel.id = b[i] + 'notelabel' + item;
-    notelabel.style.height = '18px';
-    notelabel.style.fontSize = '10px';
-    notelabel.style.marginLeft = '10px';
-    notelabel.style.padding = '1px';
-    notelabel.style.backgroundColor = 'transparent';
-    HITStorage.indexedDB.updateNoteButton(requesterId, notelabel);
-    div.appendChild(notelabel);
+    //~ var notelabel = document.createElement('label');
+    //~ notelabel.textContent = '';
+    //~ notelabel.id = b[i] + 'notelabel' + item;
+    //~ notelabel.style.height = '18px';
+    //~ notelabel.style.fontSize = '10px';
+    //~ notelabel.style.marginLeft = '10px';
+    //~ notelabel.style.padding = '1px';
+    //~ notelabel.style.backgroundColor = 'transparent';
+    //~ HITStorage.indexedDB.updateNoteButton(requesterId, notelabel);
+    //~ div.appendChild(notelabel);
 
-    HITStorage.indexedDB.colorRequesterButton(requesterId, buttons[0]);
-    HITStorage.indexedDB.colorTitleButton(title, buttons[1]);
-    buttons[0].addEventListener("click", search_func(requesterId, 'requesterId'), false);
-    buttons[1].addEventListener("click", search_func(title, 'title'), false);
-    buttons[2].addEventListener("click", note_func(requesterId, notelabel), false);
-    buttons[3].addEventListener("click", block_func(requesterId, title, hitItem), false);
+    //~ HITStorage.indexedDB.colorRequesterButton(requesterId, buttons[0]);
+    //~ HITStorage.indexedDB.colorTitleButton(title, buttons[1]);
+    //~ buttons[0].addEventListener("click", search_func(requesterId, 'requesterId'), false);
+    //~ buttons[1].addEventListener("click", search_func(title, 'title'), false);
+    //~ buttons[2].addEventListener("click", note_func(requesterId, notelabel), false);
+    //~ buttons[3].addEventListener("click", block_func(requesterId, title, hitItem), false);
 
-    div.style.margin = "0px";
+    //~ div.style.margin = "0px";
     
-    buttons[2].style.visibility = "hidden"; // "visible"
-    buttons[2].parentNode.addEventListener("mouseover", visible_func(buttons[2], true), false);
-    buttons[2].parentNode.addEventListener("mouseout", visible_func(buttons[2], false), false);
-    buttons[2].addEventListener("mouseout", visible_func(buttons[2], false), false);
-    buttons[3].style.visibility = "hidden"; // "visible"
-    buttons[3].parentNode.addEventListener("mouseover", visible_func(buttons[3], true), false);
-    buttons[3].parentNode.addEventListener("mouseout", visible_func(buttons[3], false), false);
-    buttons[3].addEventListener("mouseout", visible_func(buttons[3], false), false);
-  }
+    //~ buttons[2].style.visibility = "hidden"; // "visible"
+    //~ buttons[2].parentNode.addEventListener("mouseover", visible_func(buttons[2], true), false);
+    //~ buttons[2].parentNode.addEventListener("mouseout", visible_func(buttons[2], false), false);
+    //~ buttons[2].addEventListener("mouseout", visible_func(buttons[2], false), false);
+    //~ buttons[3].style.visibility = "hidden"; // "visible"
+    //~ buttons[3].parentNode.addEventListener("mouseover", visible_func(buttons[3], true), false);
+    //~ buttons[3].parentNode.addEventListener("mouseout", visible_func(buttons[3], false), false);
+    //~ buttons[3].addEventListener("mouseout", visible_func(buttons[3], false), false);
+  //~ }
 
-  var auto_button = document.createElement('button');
-  auto_button.setAttribute('id', 'auto_button');
-  auto_button.title = 'HIT DataBase Auto Update\nAutomagically update newest HITs to database when reloading this page';
+  //~ var auto_button = document.createElement('button');
+  //~ auto_button.setAttribute('id', 'auto_button');
+  //~ auto_button.title = 'HIT DataBase Auto Update\nAutomagically update newest HITs to database when reloading this page';
 
-  if (localStorage['HITDB AUTO UPDATE'] === undefined)
-  {
-    auto_button.textContent = 'Auto update ?';
-    auto_button.style.color = 'red';
-  }
-  else if (localStorage['HITDB AUTO UPDATE'] == 'ON')
-  {
-    auto_button.textContent = 'Auto Update is ON';
-    auto_button.style.color = 'green';
-  }
-  else
-  {
-    auto_button.textContent = 'Auto Update is OFF';
-    auto_button.style.color = 'red';
-  }
+  //~ if (localStorage['HITDB AUTO UPDATE'] === undefined)
+  //~ {
+    //~ auto_button.textContent = 'Auto update ?';
+    //~ auto_button.style.color = 'red';
+  //~ }
+  //~ else if (localStorage['HITDB AUTO UPDATE'] == 'ON')
+  //~ {
+    //~ auto_button.textContent = 'Auto Update is ON';
+    //~ auto_button.style.color = 'green';
+  //~ }
+  //~ else
+  //~ {
+    //~ auto_button.textContent = 'Auto Update is OFF';
+    //~ auto_button.style.color = 'red';
+  //~ }
   
-  var element = document.body.childNodes[13].childNodes[3].childNodes[1].childNodes[0].childNodes[5];
-  element.insertBefore(auto_button, element.firstChild);
-  auto_button.addEventListener("click", auto_update_func(), false);
+  //~ var element = document.body.childNodes[13].childNodes[3].childNodes[1].childNodes[0].childNodes[5];
+  //~ element.insertBefore(auto_button, element.firstChild);
+  //~ auto_button.addEventListener("click", auto_update_func(), false);
  
-  setTimeout(HITStorage.getLatestHITs, 100);
+  //~ setTimeout(HITStorage.getLatestHITs, 100);
 }
 
 
