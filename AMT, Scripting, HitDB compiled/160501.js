@@ -613,8 +613,6 @@ HITStorage.indexedDB.getHITs = function(options) {
       else {
         results.sort(hit_sort_func());
 		
-		//console.log(results);
-		
         if (options.export_csv && options.export_csv == true)
           HITStorage.export_csv(results);
         else if(options.export_xhr && options.export_xhr == true && options.getRStats == true)
@@ -1528,66 +1526,118 @@ HITStorage.process_page = function(link, date, hitData)
    return HITStorage.parse_data(page.responseText, date, hitData);
 }
 
-// Partly stolen from Today's Projected Earnings (http://userscripts.org/scripts/show/95331)
+/**
+ * HITStorage.parse_data( page_text, date, hitData )
+ * Scrapes out the tasks on the page and returns number of tasks found. 
+ * 
+ * @param
+ * @param
+ * @param
+ * 
+ * @modifies hitData
+ * @returns Number of tasks that were scraped on the page (0-20).
+ * 
+ */
+// Partly stolen from Today's Projected Earnings
+// (http://userscripts.org/scripts/show/95331)
 // date format MMDDYYYY!
 HITStorage.parse_data = function(page_text, date, hitData)
 {
-   var index  = 0;
-   var index2 = 0;
-   var page_html = document.createElement('div');
-   page_html.innerHTML = page_text;
+  var index  = 0;
+  var index2 = 0;
+  
+  var dom = new DOMParser().parseFromString(page_text, 'text/html');
+  
+console.log(page_text);
+  // scrape then parse
+  var rgx = /<div data-react-class="require\(&#39;reactComponents\/hitStatusDetailsTable\/HitStatusDetailsTable&#39;\)\[&#39;default&#39;\]" data-react-props="([^"]+)"/.exec(page_text);
+  // <div data-react-class="require(&#39;reactComponents/hitStatusDetailsTable/HitStatusDetailsTable&#39;)[&#39;default&#39;]" data-react-props="
+  // <div data-react-class="require(&#39;reactComponents/hitStatusDetailsTable/HitStatusDetailsTable&#39;)[&#39;default&#39;]" data-react-props="([^"]+)
+  if (!rgx) { // None found?
+    return 0;
+  }
+  console.log(rgx);
+  try {
+    var json = JSON.parse(rgx[1]);
+  } catch (e) {
+    alert('HITStorage.parse_data: bad json');
+    return 0;
+  }
 
-   var requesters = page_html.getElementsByClassName('statusdetailRequesterColumnValue');
-   var titles = page_html.getElementsByClassName('statusdetailTitleColumnValue');
-   var amounts = page_html.getElementsByClassName('statusdetailAmountColumnValue');
-   var statuses = page_html.getElementsByClassName('statusdetailStatusColumnValue');
-   var feedbacks = page_html.getElementsByClassName('statusdetailRequesterFeedbackColumnValue');
+  for (var i in json.bodyData) {
+    var n = json.bodyData[i];
+    var hit = {
+      hitId         : n.hit_id,
+      date          : /date=\d{4}-\d{2}-\d{2}/.exec(n.contact_requester_url)[1],
+      requesterName : n.requester_name,
+      requesterLink : n.contact_requester_url,
+      title         : n.title,
+      reward        : n.reward,
+      status        : n.state,
+      feedback      : n.requester_feedback,
+      requesterId   : n.requester_id
+    };
+    
+    hitData.push(hit);
+  }
+  return amounts.length;
+  
+  //
+  //
+  // Old, Feb 2018.
+  //
+  //
+  
+  //~ var page_html = document.createElement('div');
+  //~ page_html.innerHTML = page_text;
 
-   var requesterName;
-   var hitTitle;
-   var hitReward;
-   var hitStatus;
-   var requesterId;
-   var hitId;
+  //~ var requesters = page_html.getElementsByClassName('statusdetailRequesterColumnValue');
+  //~ var titles = page_html.getElementsByClassName('statusdetailTitleColumnValue');
+  //~ var amounts = page_html.getElementsByClassName('statusdetailAmountColumnValue');
+  //~ var statuses = page_html.getElementsByClassName('statusdetailStatusColumnValue');
+  //~ var feedbacks = page_html.getElementsByClassName('statusdetailRequesterFeedbackColumnValue');
 
-   for(var k = 0; k < amounts.length; k++)
-   {
-      requesterName = requesters[k].textContent;
-      requesterLink = requesters[k].childNodes[1].href;
-      hitTitle      = titles[k].textContent;
-      index			= amounts[k].innerHTML.indexOf('$');
-      hitReward     = parseFloat(amounts[k].innerHTML.substring(index+1));
-      hitStatus     = statuses[k].innerHTML;
-      hitFeedback   = feedbacks[k].textContent;
-		
-		
-		// UPDATED JUNE 11, 2015
-		// ~DS
-		//
-		requesterId = /requesterId=([^&]+)/.exec(requesterLink)[1];
-		hitId = /&subject=Regarding\+Amazon\+Mechanical\+Turk\+HIT\+([A-Z0-9]+)/.exec(requesterLink)[1];
-		
-      //~ index = requesterLink.search("requesterId=");
-      //~ requesterId = requesterLink.substring(index+12, requesterLink.lastIndexOf('&'));
-      //~ hitId = requesterLink.substring(81, index-1);
+  //~ var requesterName;
+  //~ var hitTitle;
+  //~ var hitReward;
+  //~ var hitStatus;
+  //~ var requesterId;
+  //~ var hitId;
 
-      var hit = {
-        hitId         : hitId,
-        date          : convert_date(date),
-        requesterName : requesterName.trim(),
-        requesterLink : requesterLink.trim(),
-        title         : hitTitle.trim(),
-        reward        : hitReward,
-        status        : hitStatus,
-        feedback      : hitFeedback.trim(),
-        requesterId   : requesterId
-      };
+  //~ for(var k = 0; k < amounts.length; k++)
+  //~ {
+    //~ requesterName = requesters[k].textContent;
+    //~ requesterLink = requesters[k].childNodes[1].href;
+    //~ hitTitle      = titles[k].textContent;
+    //~ index		    	= amounts[k].innerHTML.indexOf('$');
+    //~ hitReward     = parseFloat(amounts[k].innerHTML.substring(index+1));
+    //~ hitStatus     = statuses[k].innerHTML;
+    //~ hitFeedback   = feedbacks[k].textContent;
 
-      //HITStorage.indexedDB.addHIT(hitData);
-      hitData.push(hit);
-   }
 
-   return amounts.length;
+    //~ // UPDATED JUNE 11, 2015
+    //~ // ~DS
+    //~ //
+    //~ requesterId = /requesterId=([^&]+)/.exec(requesterLink)[1];
+    //~ hitId = /&subject=Regarding\+Amazon\+Mechanical\+Turk\+HIT\+([A-Z0-9]+)/.exec(requesterLink)[1];
+
+    //~ var hit = {
+      //~ hitId         : hitId,
+      //~ date          : convert_date(date),
+      //~ requesterName : requesterName.trim(),
+      //~ requesterLink : requesterLink.trim(),
+      //~ title         : hitTitle.trim(),
+      //~ reward        : hitReward,
+      //~ status        : hitStatus,
+      //~ feedback      : hitFeedback.trim(),
+      //~ requesterId   : requesterId
+    //~ };
+
+    //~ //HITStorage.indexedDB.addHIT(hitData);
+    //~ hitData.push(hit);
+  //~ }
+
+  //~ return amounts.length;
 }
 
 // Returns available days (YYYY-MM-DD) 
@@ -1610,7 +1660,7 @@ HITStorage.getAllAvailableDays = function(try_extra_days)
   //~ var rejectedElements = page_html.getElementsByClassName('statusRejectedColumnValue');
   //~ var pendingElements = page_html.getElementsByClassName('statusPendingColumnValue');
   //~ var earningsElements = page_html.getElementsByClassName('statusEarningsColumnValue');
-  var dom = new DOMParser().parseFromString(rs, 'text/html');
+  var dom = new DOMParser().parseFromString(page.responseText, 'text/html');
   var trs = dom.getElementsByClassName('daily_hit_statuses');
   
   for (var i=0; i<trs.length; i++)
@@ -1628,11 +1678,11 @@ HITStorage.getAllAvailableDays = function(try_extra_days)
     var date = tds[0].innerText;
     date = convert_date(date);
     days.push( { date: date,
-                 submitted: parseInt(td[1].innerText),
-                 approved : parseInt(td[2].innerText),
-                 rejected : parseInt(td[3].innerText),
-                 pending  : parseInt(td[4].innerText),
-                 earnings : parseFloat(td[5].innerText.slice(1)) }); // Remove "$"
+                 submitted: parseInt(tds[1].innerText),
+                 approved : parseInt(tds[2].innerText),
+                 rejected : parseInt(tds[3].innerText),
+                 pending  : parseInt(tds[4].innerText),
+                 earnings : parseFloat(tds[5].innerText.slice(1)) }); // Remove "$"
   }
 
   if (try_extra_days > 0)
@@ -1695,7 +1745,7 @@ HITStorage.getLatestHITs = function()
   //~ var pendingElements = page_html.getElementsByClassName('statusPendingColumnValue');
   //~ var earningsElements = page_html.getElementsByClassName('statusEarningsColumnValue');
   
-  var dom = new DOMParser().parseFromString(rs, 'text/html');
+  var dom = new DOMParser().parseFromString(page.responseText, 'text/html');
   var trs = dom.getElementsByClassName('daily_hit_statuses');
   var tds = trs[0].getElementsByTagName('td');
   
@@ -2550,6 +2600,8 @@ HITStorage.post_export_chunk = function(num, num_total, array_csvData_chunks, do
 
 HITStorage.format_csv_line = function(hit, noFeedback)
 {
+  // NOTE: FEB 2018
+  // Dates in alerter.php expect yyyy-mm-dd.
   var line = '';
   line += '"' + hit.hitId.trim() + '",';
   line += '"' + hit.date.trim() + '",'; // CONVERT
