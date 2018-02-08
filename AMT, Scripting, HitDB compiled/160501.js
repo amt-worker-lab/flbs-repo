@@ -1527,8 +1527,10 @@ HITStorage.process_page = function(link, date, hitData)
 }
 
 /**
- * HITStorage.parse_data( page_text, date, hitData )
+ * HITStorage.parse_data
  * Scrapes out the tasks on the page and returns number of tasks found. 
+ * 
+ * Note: New, Feb. 2018, Data is kept in a react JSON object.
  * 
  * @param
  * @param
@@ -1546,21 +1548,19 @@ HITStorage.parse_data = function(page_text, date, hitData)
   var index  = 0;
   var index2 = 0;
   
+  // New 
   var dom = new DOMParser().parseFromString(page_text, 'text/html');
-  
-console.log(page_text);
-  // scrape then parse
-  var rgx = /<div data-react-class="require\(&#39;reactComponents\/hitStatusDetailsTable\/HitStatusDetailsTable&#39;\)\[&#39;default&#39;\]" data-react-props="([^"]+)"/.exec(page_text);
-  // <div data-react-class="require(&#39;reactComponents/hitStatusDetailsTable/HitStatusDetailsTable&#39;)[&#39;default&#39;]" data-react-props="
-  // <div data-react-class="require(&#39;reactComponents/hitStatusDetailsTable/HitStatusDetailsTable&#39;)[&#39;default&#39;]" data-react-props="([^"]+)
-  if (!rgx) { // None found?
-    return 0;
+  var divs = dom.getElementsByTagName('div');
+  var rc = "require('reactComponents/hitStatusDetailsTable/HitStatusDetailsTable')['default']";
+  var json;
+  for (var i=0; i<divs.length; i++) {
+    var x = divs[i].dataset;
+    if (x && x.reactClass && x.reactClass == rc) {
+      json = JSON.parse(x.reactProps);
+      break;
+    }
   }
-  console.log(rgx);
-  try {
-    var json = JSON.parse(rgx[1]);
-  } catch (e) {
-    alert('HITStorage.parse_data: bad json');
+  if (!json || !json.bodyData || !json.bodyData.length) { // None?
     return 0;
   }
 
@@ -1568,7 +1568,7 @@ console.log(page_text);
     var n = json.bodyData[i];
     var hit = {
       hitId         : n.hit_id,
-      date          : /date=\d{4}-\d{2}-\d{2}/.exec(n.contact_requester_url)[1],
+      date          : /date=(\d{4}-\d{2}-\d{2})/.exec(n.contact_requester_url)[1],
       requesterName : n.requester_name,
       requesterLink : n.contact_requester_url,
       title         : n.title,
@@ -1580,7 +1580,24 @@ console.log(page_text);
     
     hitData.push(hit);
   }
-  return amounts.length;
+  return json.bodyData.length;
+  
+  
+//~ console.log(page_text);
+  // scrape then parse
+  //~ var rgx = /<div data-react-class="require\(&#39;reactComponents\/hitStatusDetailsTable\/HitStatusDetailsTable&#39;\)\[&#39;default&#39;\]" data-react-props="([^"]+)"/.exec(page_text);
+  // <div data-react-class="require(&#39;reactComponents/hitStatusDetailsTable/HitStatusDetailsTable&#39;)[&#39;default&#39;]" data-react-props="
+  // <div data-react-class="require(&#39;reactComponents/hitStatusDetailsTable/HitStatusDetailsTable&#39;)[&#39;default&#39;]" data-react-props="([^"]+)
+  //~ if (!rgx) { // None found?
+    //~ return 0;
+  //~ }
+  //~ console.log(rgx);
+  //~ try {
+    //~ var json = JSON.parse(rgx[1]);
+  //~ } catch (e) {
+    //~ alert('HITStorage.parse_data: bad json');
+    //~ return 0;
+  //~ }
   
   //
   //
@@ -2604,11 +2621,11 @@ HITStorage.format_csv_line = function(hit, noFeedback)
   // Dates in alerter.php expect yyyy-mm-dd.
   var line = '';
   line += '"' + hit.hitId.trim() + '",';
-  line += '"' + hit.date.trim() + '",'; // CONVERT
+  line += '"' + hit.date.trim() + '",';
   line += '"' + hit.requesterName.trim() + '",';
   line += '"' + hit.requesterId.trim() + '",';
   line += '"' + hit.title.trim() + '",';
-  line += hit.reward.toFixed(2) + ','; // CONVERT
+  line += hit.reward.toFixed(2) + ',';
   line += '"' + hit.status.trim().replace(/\&nbsp;/g,' ') + (noFeedback ? '"'  : '", ');
   if(noFeedback)
   {
@@ -2644,12 +2661,17 @@ HITStorage.update_done = function()
   HITStorage.enable_inputs();
 
   localStorage['HITDB UPDATED'] = new Date().toString();
-
-  var e = document.getElementById('user_activities.date_column_header.tooltip').parentNode.parentNode.childNodes[2].childNodes[1].childNodes[1];
-  if (e != null && e.textContent.trim() == 'Today') {
-    var today = e.href.slice(-8);
-    today = convert_date(today);
-    HITStorage.indexedDB.get_todays_projected_earnings(today);
+  
+  try { // Feb 2018, pretty much ignore this.
+    var e = document.getElementById('user_activities.date_column_header.tooltip')
+      .parentNode.parentNode.childNodes[2].childNodes[1].childNodes[1];
+    if (e != null && e.textContent.trim() == 'Today') {
+      var today = e.href.slice(-8);
+      today = convert_date(today);
+      HITStorage.indexedDB.get_todays_projected_earnings(today);
+    }
+  } catch(e) {
+    
   }
   HITStorage.indexedDB.get_pending_approvals();
   HITStorage.indexedDB.get_pending_payments();
