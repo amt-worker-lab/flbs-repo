@@ -14856,8 +14856,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 				var rs = options.response.responseText;
 				if  (options.response.status != 200) {
-					d1c.style.backgroundColor = 'yellow';
+					d1b.style.backgroundColor = 'yellow';
 					o.stats.hoovers.num_results = 0;
+					complete('hoovers');// Mark complete
 					return false;
 				}
 				else
