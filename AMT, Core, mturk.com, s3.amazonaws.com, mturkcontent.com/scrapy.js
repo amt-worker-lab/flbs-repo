@@ -71,7 +71,8 @@ function init__scrapy() {
 	// chuck wells
 	// Given URL, find Contact information
 	// try_autos is *FALSE*.
-	var s = '<p>2. Try and find a contact email on the site</p>\n\n<p><span style="line-height: 1.6em;">Place Email address in this box</span></p>\n\n<p><input id="Q1Url" name="Q2Url" size="100" type="text"></p>';
+	//~ var s = '<p>2. Try and find a contact email on the site</p>\n\n<p><span style="line-height: 1.6em;">Place Email address in this box</span></p>\n\n<p><input id="Q1Url" name="Q2Url" size="100" type="text"></p>';
+	var s = '<p>2. Try and find a contact email on the site (if no email is found, add contact form pls)</p>\n\n<p><span style="line-height: 1.6em;">Place Email address (or contact form if no email found)&nbsp;in this box</span></p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
