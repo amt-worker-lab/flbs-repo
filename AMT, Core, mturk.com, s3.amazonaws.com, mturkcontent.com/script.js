@@ -9483,13 +9483,13 @@ Laurens Hammond, Chicago, Ill.**/
 				o.nm_obj.l = x[x.length - 1];
 			}
 			// Move & style outputs...
-			o.q[0].setAttribute('style', 'position:absolute;top:30px;left:0%;width:99%;height:24px;');
-			o.q[1].setAttribute('style', 'position:absolute;top:54px;left:0%;width:99%;height:24px;');
-			o.q[2].multiple = true;
-			// 
-			o.q[2].onclick = function() {
+			//~ o.q[0].setAttribute('style', 'position:absolute;top:30px;left:0%;width:99%;height:24px;');
+			//~ o.q[1].setAttribute('style', 'position:absolute;top:54px;left:0%;width:99%;height:24px;');
+			//~ o.q[2].multiple = true;
+			//~ // 
+			//~ o.q[2].onclick = function() {
 				
-			}
+			//~ }
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -9541,7 +9541,7 @@ Laurens Hammond, Chicago, Ill.**/
 				searches:[
 					o.name_search + ' ',
 					o.name_search + ', ' + o.comp + ' ',
-					o.name_search + ', (' + o.state + ' OR ' + o.state_full + ') '
+					o.name_search + ', (' + o.locn + ') '
 				],
 				search: {
 					str_add_to_searches_hidden: ' site:linkedin.com '+terms
@@ -9553,7 +9553,6 @@ Laurens Hammond, Chicago, Ill.**/
 						return url.replace(/\?[\d\D]*$/, '');
 					},
 					url_ignore_test: function(obj_reslt) { // If true then ignore the URL.
-						//~ console.log(obj_reslt.url);
 						if 	(
 								(
 								obj_reslt.url.indexOf('linkedin.com/pub/') != -1 ||
@@ -9610,20 +9609,20 @@ Laurens Hammond, Chicago, Ill.**/
 				},
 				na_callback: function(e) {
 					this.style.backgroundColor = 'LightGreen';
-					o.q[0].value = 'N/A';
-					o.q[1].value = 'Could not find lawyer\'s profile on linkedin.com.';
-					//~ doSubmit();
+					
+					//~ o.q[0].value = 'N/A';
+					//~ o.q[1].value = 'Could not find lawyer\'s profile on linkedin.com.';
 				},
 			});
 			
-			document.body.addEventListener('click', function(e) {
-				console.log(e);
-				switch(e.which) {
-					case 2:
-						document.getElementById('naButtonForDashboardFindUrl').click();
-					break;
-				}
-			});
+			//~ document.body.addEventListener('click', function(e) {
+				//~ console.log(e);
+				//~ switch(e.which) {
+					//~ case 2:
+						//~ document.getElementById('naButtonForDashboardFindUrl').click();
+					//~ break;
+				//~ }
+			//~ });
 			
 			function bold_blue_black(str) {
 				str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
@@ -9702,7 +9701,7 @@ Laurens Hammond, Chicago, Ill.**/
 							this.inner.style.display = 'none';
 						}, false);
 						// Let's set the person's name & location close-by so it's possible to see it clearly.
-						str = '' + o.nm + ',' + o.state + '<hr>' + str; // No ~?
+						str = '' + o.nm + ',' + o.locn + '<hr>' + str; // No ~?
 						// Set dv
 						//
 						//
@@ -9721,15 +9720,15 @@ Laurens Hammond, Chicago, Ill.**/
 						// onclick
 						dv.purl = options.url;
 						dv.onclick = function(e) {
-							if(e.which == 2) {
-								console.log('e.which == 2');
-								return;
-							}
+							//~ if(e.which == 2) {
+								//~ console.log('e.which == 2');
+								//~ return;
+							//~ }
 							this.style.backgroundColor = 'LightGreen';
-							o.q[1].value = this.purl;
-							if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
-								//~ doSubmit();
-							}
+							//~ o.q[1].value = this.purl;
+							//~ if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
+								//doSubmit();
+							//~ }
 						}
 						
 						// Experience
@@ -9759,19 +9758,19 @@ Laurens Hammond, Chicago, Ill.**/
 								(dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
 							dvl.appendChild(dx);
 							dx.onclick = function() {
-								var x = this.headline.split(':');
-								o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
-								o.q[1].value = this.purl;
-								// try auto...
-								var x = x[0].clean_str_to_auto();
-								for (var i in o.q[2].options) {
-									var y = o.q[2].options[i].innerText.trim().clean_str_to_auto();
-									if (x == y && x.length >=3) { // Must be at least 3 chars.
-										o.q[2].value = o.q[2].options[i].value;
-										o.q[2].options[i].style.backgroundColor = 'LightGreen';
-										break;
-									}
-								}
+								//~ var x = this.headline.split(':');
+								//~ o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
+								//~ o.q[1].value = this.purl;
+								//~ // try auto...
+								//~ var x = x[0].clean_str_to_auto();
+								//~ for (var i in o.q[2].options) {
+									//~ var y = o.q[2].options[i].innerText.trim().clean_str_to_auto();
+									//~ if (x == y && x.length >=3) { // Must be at least 3 chars.
+										//~ o.q[2].value = o.q[2].options[i].value;
+										//~ o.q[2].options[i].style.backgroundColor = 'LightGreen';
+										//~ break;
+									//~ }
+								//~ }
 							}
 						}
 						
