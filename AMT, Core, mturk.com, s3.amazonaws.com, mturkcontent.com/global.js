@@ -5269,11 +5269,13 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 		url: MT___host + '/mturk/.cached/'+ md5_url + random,
 		onload: function(response) {
 			var rs = response.responseText;
-			
-			if (response.status == 200) {
+			var str404 = '<title>404 Not Found</title>';
+			// Ensure good result.
+			if (response.status == 200 && rs.indexOf(str404) == -1) {
+				console.log('200');
 				scrapy__begin_scrape__process_completed({
-					rs:				rs,
-					seed_object:	seed_object
+					rs: rs,
+					seed_object: seed_object
 					//~ jobid:			jobid,
 				});
 				return;
@@ -5290,9 +5292,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 				},
 				onload: function (response) {
 					var rs = response.responseText;
-					
 					console.log(rs);
-					
 					rs = JSON.parse(rs);
 					
 					var jobid = rs.jobid;
