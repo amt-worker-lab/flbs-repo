@@ -14846,9 +14846,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	}
 	function hoovers_addr() {
 		d1b.innerHTML = '';
-		var url = 'http://www.hoovers.com/company-information/\
-				company-search.html?term=+'+encodeURIComponent(d2.value)+
-				'&sortDir=Descending&sort=SalesUS&maxitems=50';
+		var url = 'http://www.hoovers.com/company-information/'+
+				'company-search.html?sortDir=Descending&sort=SalesUS'+
+				'&maxitems=50&term='+encodeURIComponent(d2.value);
 		//
 		new AMT___requests_factory().xhr_with_disk_cache({
 			URL: url,
@@ -14856,7 +14856,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 				var rs = options.response.responseText;
 				if  (options.response.status != 200) {
-					d1b.style.backgroundColor = 'yellow';
+					//~ d1b.style.backgroundColor = 'yellow';
+					d1b.innerHTML = '?';
 					o.stats.hoovers.num_results = 0;
 					complete('hoovers');// Mark complete
 					return false;
@@ -14867,6 +14868,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			success_callback: function(options) {
 				var rs = options.response.responseText;
 				if (options.response.status != 200) {
+					d1b.innerHTML = '?';
 					complete('hoovers');// Mark complete
 					o.stats.hoovers.num_results = 0;
 					return;

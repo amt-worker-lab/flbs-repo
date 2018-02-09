@@ -131533,6 +131533,7 @@ qatar,80
 						}
 						if (/\d+$/.exec(dx2.value)) {
 							dx2.value = dx2.value.replace(/\d+$/, '');
+							dx2.focus();
 							dx2.blur();
 						}
 					}
