@@ -20001,7 +20001,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			console.log(this.value);
 			console.log(this.db_id);
 			console.log(this.history_id);
-			
 			if (this.history_id != null) {
 				tasks_obj.current_init_history_ids = [
 					this.history_id
@@ -20009,21 +20008,28 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				init_graph(this.value, this.chart_td); //chart_type
 			}
 		}
-		select.onblur = function() {
-			
-		}
+		select.onblur = function() {}
 		
 		// Chart.js
 		// 14%
 		// Set tasks_obj[row.hash_id] = td;
 		var td = document.createElement('td');
+		td.colspan = 1;
 		td.setAttribute('style',
-			'width:16%;'
+			'width:2%;'
 			//+'max-width:10px;'
 		);
 		tr.appendChild(td);
-		
 		select.chart_td = td;
+		// Chart.js overflow
+		var td = document.createElement('td');
+		td.colspan = 1;
+		td.setAttribute('style',
+			'width:0%;'
+			//+'max-width:10px;'
+		);
+		tr.appendChild(td);
+		select.overflow_td = td;
 		
 		// Hidden row
 		// Set num columns to "tr".getElementsByTagName('td');
@@ -20079,7 +20085,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			chart_type == ''
 			)
 			return;
-		
+		chart_td.colspan = 2;
 		// Global
 		var chart_type = chart_type;
 		var chart_td = chart_td;
