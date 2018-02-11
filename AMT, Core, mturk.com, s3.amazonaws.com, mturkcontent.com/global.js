@@ -20016,20 +20016,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var td = document.createElement('td');
 		td.colspan = 1;
 		td.setAttribute('style',
-			'width:2%;'
+			'width:1%;overflow:hidden;'
 			//+'max-width:10px;'
 		);
 		tr.appendChild(td);
 		select.chart_td = td;
-		// Chart.js overflow
-		var td = document.createElement('td');
-		td.colspan = 1;
-		td.setAttribute('style',
-			'width:0%;'
-			//+'max-width:10px;'
-		);
-		tr.appendChild(td);
-		select.overflow_td = td;
 		
 		// Hidden row
 		// Set num columns to "tr".getElementsByTagName('td');
@@ -20085,7 +20076,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			chart_type == ''
 			)
 			return;
-		chart_td.colspan = 2;
+		
 		// Global
 		var chart_type = chart_type;
 		var chart_td = chart_td;
@@ -20115,12 +20106,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				"Content-Type": "application/x-www-form-urlencoded"
 			},
 			onload: function (response) {
-				
 				var rs = response.responseText;
-				//~ console.log(response);
 				console.log(rs);
-				
-				//~ return;
 				rs = JSON.parse(rs);
 				
 				// GRAPH
@@ -20239,11 +20226,20 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					// Canvas & TD
 					var chart = document.createElement('canvas');
 					chart.setAttribute('style',
-						'width:100%;height:20px;'
+						'width:100%;height:20px;position:;background-color:white;'
 					);
 					chart.height = '100';
 					chart_td.innerHTML = ''; // Reset
 					chart_td.appendChild(chart);
+					
+					// onclick, hide and show
+					chart.onclick = function() {
+						if (this.style.position == 'absolute') {
+							this.style.position = '';
+						} else {
+							this.style.position = 'absolute';
+						}
+					}
 					
 					// ...
 					var context = chart.getContext("2d");
