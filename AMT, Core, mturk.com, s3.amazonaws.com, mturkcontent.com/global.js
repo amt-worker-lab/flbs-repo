@@ -19806,7 +19806,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// ID
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'border-right:1px solid #a4a4a4;'//width:8px;
+			'border-right:1px solid #a4a4a4;width:1%;'//width:8px;
 		);
 		td.innerHTML = '&nbsp;&#10549;&nbsp;';
 		//~ td.innerText = row.db_id; // OLD
@@ -19818,9 +19818,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Rate TD
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'border-right:1px solid #a4a4a4;'//width:8px;
+			'border-right:1px solid #a4a4a4;width:1%;'//width:8px;
 		);
-		td.innerText = row.db_id;
+		td.innerText = ''; // not: row.db_id;
 		tr.appendChild(td);
 		// Rate btn
 		var btn = document.createElement('button');
@@ -19839,11 +19839,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		 * Has the user rated or commented the title?
 		 * */
 		//>> Title Rating
-		var td = document.createElement('td');
-		td.setAttribute('style',
-			''
-		);
-		tr.appendChild(td);
+		//~ var td = document.createElement('td');
+		//~ td.setAttribute('style',
+			//~ ''
+		//~ );
+		//~ tr.appendChild(td);
+		
 		/** 
 		 * DB Ratings 
 		 * Displays the current rating (if any) as a decimal, e.g. 2 or 3.5.
@@ -19857,24 +19858,24 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					fk_user_name	varchar(10) 
 					fk_id_jobs_history_index	int(11) UN 
 		 * */
-		if (row.title_ratings != null && row.title_ratings.hasOwnProperty( row.history_id )) {
-			var title_ratings = row.title_ratings[ row.history_id ];
-			var tmp_users_obj = {};
-			for (var i in title_ratings) {
-				//~ tmp_users_obj[ title_ratings[i].fk_user_name ] = 
-			}
-		}
-		// TODO: Title Comments
-		var td = document.createElement('td');
-		td.setAttribute('style',
-			''
-		);
-		tr.appendChild(td);
+		//~ if (row.title_ratings != null && row.title_ratings.hasOwnProperty( row.history_id )) {
+			//~ var title_ratings = row.title_ratings[ row.history_id ];
+			//~ var tmp_users_obj = {};
+			//~ for (var i in title_ratings) {
+				//tmp_users_obj[ title_ratings[i].fk_user_name ] = 
+			//~ }
+		//~ }
+		//~ // TODO: Title Comments
+		//~ var td = document.createElement('td');
+		//~ td.setAttribute('style',
+			//~ ''
+		//~ );
+		//~ tr.appendChild(td);
 		
 		// Title
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:50%;'
+			'width:40%;' //drop from 50 to 40, feb2018
 		);
 		tr.appendChild(td);
 		var a_gid;
@@ -19902,17 +19903,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		/* Req. Rating & Comment */
 		// Req. Rating
-		var td = document.createElement('td');
-		td.setAttribute('style',
-			''
-		);
-		tr.appendChild(td);
+		//~ var td = document.createElement('td');
+		//~ td.setAttribute('style',
+			//~ ''
+		//~ );
+		//~ tr.appendChild(td);
 		// Req. Comments
-		var td = document.createElement('td');
-		td.setAttribute('style',
-			''
-		);
-		tr.appendChild(td);
+		//~ var td = document.createElement('td');
+		//~ td.setAttribute('style',
+			//~ ''
+		//~ );
+		//~ tr.appendChild(td);
 		
 		
 		// Req. name
@@ -20226,18 +20227,27 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					// Canvas & TD
 					var chart = document.createElement('canvas');
 					chart.setAttribute('style',
-						'width:100%;height:20px;position:;background-color:white;'
+						'width:100%;height:20px;background-color:white;cursor:pointer;'
 					);
 					chart.height = '100';
+					// div container
+					var divcont = document.createElement('div');
+					divcont.appendChild(chart);
+					divcont.style.border = '1px solid #a2a2a2';
+					chart.divcont = divcont;
 					chart_td.innerHTML = ''; // Reset
-					chart_td.appendChild(chart);
+					chart_td.appendChild(divcont);
 					
 					// onclick, hide and show
 					chart.onclick = function() {
-						if (this.style.position == 'absolute') {
-							this.style.position = '';
+						if (this.divcont.style.overflow == 'hidden') {
+							this.divcont.style.overflow = '';
+							this.divcont.style.height = '';
+							this.divcont.style.width = '';
 						} else {
-							this.style.position = 'absolute';
+							this.divcont.style.overflow = 'hidden';
+							this.divcont.style.height = '10px';
+							this.divcont.style.width = '10px';
 						}
 					}
 					
