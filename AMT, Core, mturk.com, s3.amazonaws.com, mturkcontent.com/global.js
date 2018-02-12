@@ -11025,6 +11025,54 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 /**
  * create_dashboard_linkedin_pub_dir
  * 
+ * e.g. Karen Veltri
+ * 
+ * @params
+ * 
+ * searches		Array of objects
+ *  [.first				String, Optional
+ *  [.last				String, Optional
+ *  [.company			String, Optional
+ *  TODO				[.location	String, Optional, Is for DISPLAY ONLY.
+ * 	[.onclick_success	Function, Optional
+ * 	[. {...bold...}
+ * 
+ * @returns
+ * Default is Profile URL to .out_element
+ * 
+ */
+AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(options_object) {
+	//~ AMT___items_factory.prototype.({
+				//~ parent: d1,
+				//~ offsetTop: 0,
+				//~ bold_array: o.bold,
+				//~ bold_location_array: o.bold_locn,
+				//~ bold_types_array: o.bold_types,
+				//~ searches:[
+					//~ {first:o.nm_obj.f, last:o.nm_obj.l, company:o.comp}
+				//~ ],
+				//~ onclick_callback: function(e) {
+					
+				//~ },
+	// Default search.
+	// Monday, Feb. 12, 2018.
+	'https://www.linkedin.com/sales/search/results?'+
+	'facet=N&facet.N=O'+
+	'&companyScope=CURRENT'+
+	'&companyEntities=White%20%26%20Case'+
+	'&firstName=Caitlin'+
+	'&lastName=Lloyd'+
+	'&count=25'+
+	'&start=0'+
+	'&updateHistory=true'+
+	'&searchHistoryId=6092614503'+
+	'&trackingInfoJson.contextId=481DD8BE6AA51215C0F750F5E62A0000'+
+	'&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
+	'&_=' // 1518457806735, which (divided by 3) is today
+}
+/**
+ * create_dashboard_linkedin_pub_dir
+ * 
  * e.g. Gerry Gorman
  * 
  * @params
