@@ -72,7 +72,8 @@ function init__scrapy() {
 	// Given URL, find Contact information
 	// try_autos is *FALSE*.
 	//~ var s = '<p>2. Try and find a contact email on the site</p>\n\n<p><span style="line-height: 1.6em;">Place Email address in this box</span></p>\n\n<p><input id="Q1Url" name="Q2Url" size="100" type="text"></p>';
-	var s = '<p>2. Try and find a contact email on the site (if no email is found, add contact form pls)</p>\n\n<p><span style="line-height: 1.6em;">Place Email address (or contact form if no email found)&nbsp;in this box</span></p>';
+	//~ var s = '<p>2. Try and find a contact email on the site (if no email is found, add contact form pls)</p>\n\n<p><span style="line-height: 1.6em;">Place Email address (or contact form if no email found)&nbsp;in this box</span></p>';
+	var s = '<p>2. Try and find a contact email on the site</p>\n\n<p><span style="line-height: 1.6em;">Place Email address in this box</span></p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -86,7 +87,7 @@ function init__scrapy() {
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			document.body.style.zoom = '0.5'; // This is default for "loading".
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
-			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '40');
+			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '20');
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
 			// Call nextTab now...
 			new AMT___core_factory().nextTab();
