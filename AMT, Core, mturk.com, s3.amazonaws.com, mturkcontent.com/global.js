@@ -6419,6 +6419,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			url: u,
 			onload: function(response) {
 				var rs = response.responseText;
+				opts.response = response;
 				// Process results.
 				// Note: This modifies the opts variable!
 				opts.tmp_callback(rs);
@@ -7082,11 +7083,12 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		{
 			opts.response.parsed = {error: 'linkedin_salesnav_search_profile: no json body!'};
 		} else {
-			j = j.innerHTML.replace(/^<!--/, '').replace(/-->$/, '');
+			var x = j.innerHTML.replace(/^<!--/, '').replace(/-->$/, '');
 			try {
-				opts.response.parsed = JSON.parse(json);
+				opts.response.parsed = JSON.parse(x);
 			} catch(e) {
 				// Parse failed.
+				console.log(x);
 				opts.response.parsed = {error: 'linkedin_salesnav_search_profile: bad json!'};
 			}
 		}
@@ -7098,6 +7100,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 */
 	function linkedin_salesnav_search() {
 		var rs = opts.response.responseText;
+		if (/^\d{3}$/.exec(rs)) {
+			opts.response.parsed = {error: 'linkedin_salesnav_search: invalid response1!'};
+			return;
+		}
 		try {
 			opts.response.parsed = JSON.parse(rs);
 		} catch(e) {
@@ -7105,7 +7111,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			// Likely the response is simply the string "404"
 			// or "501", etc. That is, LinkedIn gave back a
 			// non-200 response.
-			opts.response.parsed = {error: 'linkedin_salesnav_search: invalid response!'};
+			opts.response.parsed = {error: 'linkedin_salesnav_search: invalid response2!'};
 		}
 	}
 	
@@ -11148,6 +11154,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	//
 	var o = {
 		bold_array: options_object.bold_array,
+		bold_name_array: options_object.bold_name_array,
 		bold_location_array: options_object.bold_location_array,
 		bold_types_array: options_object.bold_types_array,
 		panels_loaded: 0,
@@ -11171,7 +11178,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			'&count=25'+
 			'&start=0'+
 			'&updateHistory=false'+ //default=true
-			'&searchHistoryId='+ //default=6092614503
+			'&searchHistoryId=6092614503'+ //default=6092614503
 			'&trackingInfoJson.contextId=481DD8BE6AA51215C0F750F5E62A0000'+
 			'&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
 			'&_=' // 1518457806735, which (divided by 3) is today
@@ -11441,6 +11448,34 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	//
 	init();
 	// 
+	/**
+	 * generate_server_obj_profile()
+	 **/
+	function generate_server_obj_profile(url) {
+		var server_obj = {
+			url: url,
+			//~ //do_not_save_to_file: false,
+			filename: new AMT___requests_factory().md5(url), // Static file name
+			//~ //no_cookies: true, // Static file name
+			//~ //cookie_filename: o.cookie_filename,
+			headers_array: [
+				'accept-encoding: gzip, deflate, br',
+				'accept-language: en-US,en;q=0.9',
+				'upgrade-insecure-requests: 1',
+				'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',
+				'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+				'cache-control: max-age=0',
+				'authority: www.linkedin.com',
+				'cookie: bcookie="v=2&83a394df-7292-4438-8c98-98e9a06efe84"; bscookie="v=1&20180203043219d0d8f080-ce8e-4e59-8721-c9440c7a004fAQHPvyazTla2w_b0RVnM2wAKcc4K8l57"; _ga=GA1.2.583005834.1517632241; visit="v=1&M"; lang="v=2&lang=en-us"; SID=d9edd8b6-9fb6-4b8a-83cc-b87d711fc21d; VID=V_2018_02_09_10_1080; JSESSIONID="ajax:2202654343812369029"; AMCVS_14215E3D5995C57C0A495C55%40AdobeOrg=1; ELOQUA=GUID=12153B68A4DE420397D881A76EBD1F04; liap=true; AMCV_14215E3D5995C57C0A495C55%40AdobeOrg=-1891778711%7CMCIDTS%7C17574%7CMCMID%7C85251912467527594492611713602339315816%7CMCOPTOUT-1518463937s%7CNONE%7CvVersion%7C2.4.0; PLAY_SESSION=357ec6db6274009389a7a0ee61689b48cc52a9ca-chsInfo=670512c7-beb9-4737-814d-4c3f1e77cecb+lss_web_sbd_mktg_pricing_test; li_at=AQEDASYBhUgE9lK1AAABYYsgspsAAAFhry02m00AJoRDsKfcewmZkq8w-AAXUwdyZ9kc9QPwlUtHDmZt-A7j-hZiU92Musvo5_9vgrsB6vcCX7r3CxcCyNiQxtty-2dYG5monltTqMZidWdthlryGAbe; sl="v=1&HaMgd"; __ssid=5495d68c-b73a-469a-baf7-e6a7bbec7f3d; li_a=AQJ2PTEmc2FsZXNfY2lkPTUzMTQ0MjUwNSUzQSUzQTE0MzgzNTAwNVQxOZSZws9574m4RnTOT0IbCXRD; onboarding_session=cf1939a5-3303-4d48-b0dd-1011a824f0cc; _lipt=CwEAAAFhiyLempcmbgvU4Cj6s_z7yW5shxw449xHabkkVNXbJawrxd1CJ9QDV6wAcnd6LaCfGe2-hs-shrmc1Pizet_5v0hZ6xX33ckipmn1q6fddlYOP8axyJMI8p2KSmSEkDNJ0RnW7D3dtQxqMvdY_uXwprQnPtn7ULqDBRLsCff869K4; sdsc=31%3A1%2C1518458443698%7ECAOR%2C0%7ECAPS%2C-85sIFSzL5iODROb%2BCPjvwGGtA6AY8%3D; lidc="b=VB64:g=1084:u=3:i=1518459422:t=1518545822:s=AQG8RUYBxCPbyKbEjxiJ0hvqFan8hAKq"'
+			],
+			//~ //post_object: {},
+			//~ //post_object_as_str: '',
+			//~ set_cookie_content: 'TS019ab495=01cf497f1e1d5d4434f08cca8579bfdd3df2bed1fd19be8a599a1391fde1d18a5f9f5f1c30efe90ff12ab154a479794cefc09d2a0f; Path=/'
+			//'TS019ab495=01cf497f1ed52599ba0c95a353c2f70fd9d31462a2d346a985139d23f89c229ff716b110db'
+			//<form method="POST" action="%2fCorpWeb%2fCorpSearch%2fCorpSearch.aspx"/>
+		}
+		return server_obj;
+	}
 	// generate_server_obj()
 	function generate_server_obj(first, last, company) {
 		var server_obj = {
@@ -11462,29 +11497,29 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			],
 			//~ //post_object: {},
 			//~ //post_object_as_str: '',
-			//~ set_cookie_content: 'TS019ab495=01cf497f1e1d5d4434f08cca8579bfdd3df2bed1fd19be8a599a1391fde1d18a5f9f5f1c30efe90ff12ab154a479794cefc09d2a0f; Path=/'
+			set_cookie_content: 'bcookie="v=2&83a394df-7292-4438-8c98-98e9a06efe84"; bscookie="v=1&20180203043219d0d8f080-ce8e-4e59-8721-c9440c7a004fAQHPvyazTla2w_b0RVnM2wAKcc4K8l57"; _ga=GA1.2.583005834.1517632241; visit="v=1&M"; lang="v=2&lang=en-us"; SID=d9edd8b6-9fb6-4b8a-83cc-b87d711fc21d; VID=V_2018_02_09_10_1080; JSESSIONID="ajax:2202654343812369029"; AMCVS_14215E3D5995C57C0A495C55%40AdobeOrg=1; ELOQUA=GUID=12153B68A4DE420397D881A76EBD1F04; liap=true; AMCV_14215E3D5995C57C0A495C55%40AdobeOrg=-1891778711%7CMCIDTS%7C17574%7CMCMID%7C85251912467527594492611713602339315816%7CMCOPTOUT-1518463937s%7CNONE%7CvVersion%7C2.4.0; PLAY_SESSION=357ec6db6274009389a7a0ee61689b48cc52a9ca-chsInfo=670512c7-beb9-4737-814d-4c3f1e77cecb+lss_web_sbd_mktg_pricing_test; lidc="b=VB64:g=1084:u=2:i=1518457627:t=1518535984:s=AQHKDjC13xVIJaD4QfUDsDd2KvW422-o"; li_at=AQEDASYBhUgE9lK1AAABYYsgspsAAAFhry02m00AJoRDsKfcewmZkq8w-AAXUwdyZ9kc9QPwlUtHDmZt-A7j-hZiU92Musvo5_9vgrsB6vcCX7r3CxcCyNiQxtty-2dYG5monltTqMZidWdthlryGAbe; sl="v=1&HaMgd"; __ssid=5495d68c-b73a-469a-baf7-e6a7bbec7f3d; li_a=AQJ2PTEmc2FsZXNfY2lkPTUzMTQ0MjUwNSUzQSUzQTE0MzgzNTAwNVQxOZSZws9574m4RnTOT0IbCXRD; onboarding_session=cf1939a5-3303-4d48-b0dd-1011a824f0cc; _lipt=CwEAAAFhiyLempcmbgvU4Cj6s_z7yW5shxw449xHabkkVNXbJawrxd1CJ9QDV6wAcnd6LaCfGe2-hs-shrmc1Pizet_5v0hZ6xX33ckipmn1q6fddlYOP8axyJMI8p2KSmSEkDNJ0RnW7D3dtQxqMvdY_uXwprQnPtn7ULqDBRLsCff869K4; RT=s=1518457806543&r=https%3A%2F%2Fwww.linkedin.com%2Fsales%2Fonboardingv2%2Fsplashcomplete; sdsc=22%3A1%2C1518458087974%7ECAOR%2C0OQYlEl7v9R6JxhNpKq4r%2FjjSjUM%3D'
 			//'TS019ab495=01cf497f1ed52599ba0c95a353c2f70fd9d31462a2d346a985139d23f89c229ff716b110db'
 			//<form method="POST" action="%2fCorpWeb%2fCorpSearch%2fCorpSearch.aspx"/>
 		}
 		var search = o.search;
-		if (i.txa.company.value != '') {
+		if (company.value != '') {
 			search = search.replace(
 				'&companyEntities=',
-				'&companyEntities='+encodeURIComponent(i.txa.company.value));
+				'&companyEntities='+encodeURIComponent(company.value));
 		} else {
 			search = search.replace('&companyEntities=', '');
 		}
-		if (i.txa.first.value != '') {
+		if (first.value != '') {
 			search = search.replace(
 				'&firstName=',
-				'&firstName='+encodeURIComponent(i.txa.first.value));
+				'&firstName='+encodeURIComponent(first.value));
 		} else {
 			search = search.replace('&firstName=', '');
 		}
-		if (i.txa.last.value != '') {
+		if (last.value != '') {
 			search = search.replace(
 				'&lastName=',
-				'&lastName='+encodeURIComponent(i.txa.last.value));
+				'&lastName='+encodeURIComponent(last.value));
 		} else {
 			search = search.replace('&lastName=', '');
 		}
@@ -11500,11 +11535,8 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	// XHR
 	// e.g. https://www.linkedin.com/pub/dir/stephen
 	function init(input) {
-		
-		 
-		
-		
-		if (input) { // Updates only one column!
+		// Updates only one column!
+		if (input) {
 			var i = input.connecter;
 			var so = generate_server_obj(i.txa.first, i.txa.last, i.txa.company)
 			new AMT___site_scrapes().scrape({
@@ -11515,25 +11547,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			});
 			return;
 		}
-		
-				//~ if (/^\d{3}$/.exec(rs)) { // If status code is returned
-					//~ // Display output
-					//~ d1c.innerText = 'em0 ERROR='+rs;
-					//~ o.stats.bbb.num_results = 0;
-					//~ complete('bbb');// Mark complete
-					//~ return;
-				//~ }
-				//~ try {
-					//~ rs = JSON.parse(rs);
-				//~ } catch(e) {
-					//~ complete('bbb');// Mark complete
-					//~ o.stats.bbb.num_results = 0;
-					//~ return;
-				//~ }
-				//~ // rs.SearchResults
-				//~ for (var i in rs.SearchResults) {
-					
-					
+		// Updates all columns
 		if (options_object.searches.length == 3) {
 			var so = generate_server_obj(d3, d3_, d3__)
 			new AMT___site_scrapes().scrape({
@@ -11600,11 +11614,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			return;
 		}
 		// Success
-		var rs = options.response.parsed.searchResults;
+		var rs = options.response.parsed.searchResults; console.log(rs.length);
 		var out = options.___seed___;
 		// Show num results.
 		var n = rs.length+' result'+
-			(rs.length != 1) ? 's' : ''; // Add "s"
+			((rs.length != 1) ? 's' : ''); // Add "s"
 		out.appendChild(
 			n.div({style:'border-bottom:1px solid teal;'})
 		);
@@ -11616,25 +11630,29 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			callback = scrape_profile;
 		}
 		for (var i in rs) {
+			console.log(o);
+			console.log(rs);
+			console.log(rs[i]);
 			var rslt_str =
-				'N:' + MT__bold(rs.formattedName, o.bold_name_array)+
-				'<br>C:' + rs.company.companyName + // includes bolding... //MT__bold(, o.bold_location_array)
-				'<br>L:' + MT__bold(rs.location, o.bold_location_array)
-				'<br>T:' + rs.title;// + '<hr>';
+				'N:' + MT__bold(rs[i].member.formattedName, o.bold_name_array)+
+				'<br>C:' + rs[i].company.companyName + // includes bolding... //MT__bold(, o.bold_location_array)
+				'<br>L:' + MT__bold(rs[i].member.location, o.bold_location_array) +
+				'<br>T:' + rs[i].company.title;// + '<hr>';
 			
 			var d = rslt_str.div({
 				style:'border-bottom:1px solid teal;cursor:pointer;',
 				innerHTML: true
 			});
-			d.memberId = rs.member.memberId;
+			out.appendChild(d);
+			d.memberId = rs[i].member.memberId;
 			
-			var tmp_class = 'class_' + rs.member.memberId;
+			var tmp_class = 'class_' + rs[i].member.memberId;
 		
 			d.className = 'exe-result-create-dashboard-lipd ' + tmp_class + ' result_highlight'; // Create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
 			d.profile_url =
 				'https://www.linkedin.com/sales/profile/'+
 				encodeURIComponent(d.memberId)+','+
-				encodeURIComponent(rs.member.authToken)+
+				encodeURIComponent(rs[i].member.authToken)+
 				',NAME_SEARCH?moduleKey=peopleSearchResults'+
 				'&pageKey=sales-search3-people-refinement'+
 				'&contextId=481DD8BE6AA51215C0F750F5E62A0000'+
@@ -11669,87 +11687,10 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			}, false);
 		}
 		
-		
-		// Is this a directory listing...
-		// Or has LI forwarded us to the one person's profile?
-		//~ var item = {
-			//~ name: vcards[i].getElementsByTagName('h2')[0].innerText,
-			//~ title: vcb.getElementsByClassName('title')[0].innerText,
-			//~ location: vcb.getElementsByClassName('location')[0].innerText,
-			//~ industry: vcb.getElementsByClassName('industry')[0].innerText,
-			//~ profile_url: a,
-			//~ vceit: vce.innerText,
-		//~ }
-		//~ opts.response.vars.results
-		//~ console.log(options);
-		//~ var out = options.___seed___;
-		//~ var divs = []; // An array of divs (for display and optional sorting later)
-		
-		//~ // Append the number of results!
-		//~ //
-		//~ //
-		//~ var n = options.response.total_li_results+' result';
-		//~ n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
-		//~ var ndiv = n.div({style:'border-bottom:1px solid teal;'});
-		//~ out.appendChild(ndiv);
-		//~ // Make aqua when there are less than 25!
-		//~ if (options.response.total_li_results*1 < 25) {
-			//~ ndiv.style.backgroundColor = 'aqua';
-			//~ // Do nothing.......
-		//~ } else if (options.response.total_li_results*1 < 200) {	// Show orange < 200
-			//~ ndiv.style.backgroundColor = 'yellow';
-		//~ } else {												// Show red >= 200
-			//~ ndiv.style.backgroundColor = 'red';
-		//~ }
-		
-		//~ // No results....
-		//~ //
-		//~ //
-		//~ if (options.response.hasOwnProperty('total_li_results') && options.response.total_li_results == '0') {
-			//~ return;
-		//~ }
-		
-		//~ // Sort...
-		//~ //
-		//~ //
-		//~ if (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
-			//~ for (var i in options.response.vars.results) {
-				//~ var div = profile(options.response.vars.results[i]);
-				//~ divs.push(div);
-			//~ }
-		//~ } else { // This is a redirected profile!
-			//~ // profile
-			//~ // options.response.vars
-			//~ // Make an object...
-			//~ // And send to profile
-			//~ var div = profile(
-				//~ {
-					//~ name: options.response.vars.result.name,
-					//~ title: options.response.vars.result.headline,
-					//~ location: options.response.vars.result.demographics,
-					//~ industry: '',
-					//~ profile_url: options.response.vars.result.public_url,
-					//~ vceit: '',
-				//~ }
-			//~ )
-			//~ divs.push(div);
-		//~ }
-		//~ divs.sort(function(a, b) {
-			//~ return b.num_bolds - a.num_bolds; // desc
-			//~ //return a.num_bolds - b.num_bolds; // asc
-		//~ });
-		
-		//~ // Append the profile divs...
-		//~ // 
-		//~ //
-		//~ for (var i in divs) {
-			//~ out.appendChild(divs[i]);
-		//~ }
-		
-		//~ // Add a spacer
-		//~ //
-		//~ //
-		//~ out.appendChild(''.div({style:'height:2000px;'}));
+		// Add a spacer
+		//
+		//
+		out.appendChild(''.div({style:'height:2000px;'}));
 	}
 	/**
 	 * scrape_profile
@@ -11762,7 +11703,13 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	 * @callback Runs options_object.scrape_profile_callback
 	 */
 	function scrape_profile(e) {
-		
+		this.style.backgroundColor = 'LightGreen';
+		var so = generate_server_obj_profile(this.profile_url);
+		new AMT___site_scrapes().scrape({
+			site: 'LINKEDIN_SALESNAV_SEARCH_PROFILE',
+			server_obj: so,
+			callback_function: options_object.scrape_profile_callback,
+		});
 	}
 	/**
 	 * profile

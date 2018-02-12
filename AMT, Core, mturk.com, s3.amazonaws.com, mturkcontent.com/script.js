@@ -9463,7 +9463,7 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ o.nm_array = o.nm.split(' ');
 			o.nm_array = o.nm.clean_string_to_array();
 			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
-			o.bold_locn = o.locn.clean_string_to_array();
+			o.bold_locn = o.locn.clean_string_to_array(); // TODO, REMOVE TRAILING COMMAS, e.g. "London," "England"
 			o.bold_nm = o.nm.clean_string_to_array();
 			//~ o.bold_nm = o.bold_nm.concat(ns);
 			o.bold = o.bold_nm.concat(o.bold_locn).concat(o.bold_types);
@@ -9528,8 +9528,19 @@ Laurens Hammond, Chicago, Ill.**/
 					company: o.comp,
 					//~ location: o.locn
 				}],
-				scrape_profile_callback: function(e) {
-					// returns profile result.
+				scrape_profile_callback: function(options) {
+					// returns parsed profile result, or error.
+					// options.response.parsed.error
+					// options.response.parsed
+					if (options.response.parsed.error) {
+						//
+						console.log(options.response.parsed);
+						alert('scrape_profile_callback:error');
+						return;
+					}
+					// Success
+					console.log(options.response.parsed);
+					// Fill in.
 				},
 				//~ onclick_callback: function(e) {
 					
