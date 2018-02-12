@@ -9410,11 +9410,15 @@ Laurens Hammond, Chicago, Ill.**/
 	// Karen Veltri
 	// Find the LinkedIn page for Lawyers, and Collect Job History & Education
 	// TODO
+	// "If only some information can be found, fill out what you can, and submit."
+	// "Do not fill in data if you cannot validate that the person is a lawyer."
 	s = '<li>Enter the website address for the <b>LinkedIn page</b> for each person. If you cannot find one, enter N/A. Do NOT list other websites.</li>\n	<li>Enter the person\'s current Company Name, <strong>exactly as displayed on LinkedIn</strong>, and their current Title, <strong>exactly as displayed on LinkedIn</strong>. It may be different than what we are providing, but as long as they\'re the right person, who once worked for the Company we\'re giving you, that\'s ok.</li>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('body {background-color:#fefefe !important;}');
+			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
 			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
@@ -9423,7 +9427,7 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('input[type="checkbox"] {zoom:2.6;cursor:pointer;}');
 			GM_addStyle('.row {margin-left:0 !important;margin-right:0 !important;}');
 			// Task specific
-			GM_addStyle('.col-sm-8.col-sm-offset-2 {margin-left: 26% !important;}');
+			GM_addStyle('.col-sm-8.col-sm-offset-2 {margin-left: 30% !important;}');
 			//~ GM_addStyle('fieldset {border:auto !important;}');
 			//~ GM_addStyle('select {position:absolute;top:0;left:0%;width:99%;height:24px;}');
 			//~ GM_addStyle('option {float:left;border-left:2px solid #222;}');
@@ -9499,7 +9503,7 @@ Laurens Hammond, Chicago, Ill.**/
 			document.body.appendChild(d1);
 			// div to output profile info if necessary
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;display:none;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;display:none;');
 			document.body.appendChild(d2);
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
@@ -9516,7 +9520,6 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			
 			// ...
-			// "If only some information can be found, fill out what you can, and submit."
 			AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav({
 				parent: d1,
 				offsetTop: 0,
@@ -9562,12 +9565,19 @@ Laurens Hammond, Chicago, Ill.**/
 						document.getElementById('web_url').style.border = '2px solid blue';
 					} else {
 						document.getElementById('web_url').value = r.profile.contactInfo.publicProfileUrl;
+						if (r.profile.contactInfo.publicProfileUrl.indexOf('linkedin.com/pub/') == -1 &&
+							r.profile.contactInfo.publicProfileUrl.indexOf('linkedin.com/in/') == -1
+						) {
+							sbm = false;
+							document.getElementById('web_url').style.border = '2px solid red';
+						}
 					}
-					//
-					
-					// show other
+					// Show other
 					d1.style.display = 'none';
 					d2.style.display = '';
+					// Log some output
+					d2.innerText = '#schools:'+r.educationsView.schools.length+
+						'\n#positions:'+r.positionsView.positions.length;
 					// current
 					var c = [
 						document.getElementById('current_firm'),
@@ -9587,9 +9597,9 @@ Laurens Hammond, Chicago, Ill.**/
 					//		take the most legal-sounding one."
 					var d = [];
 					var count = 1;
-					for (var i in r.previousPositions.positions) {
-						var x = r.previousPositions.positions[i].position;
-						console.log(x);
+					for (var i in r.positionsView.positions) {
+						if (i == 0) continue; // Skip the first one because it is the current!!
+						var x = r.positionsView.positions[i].position;
 						if (count >= 4) break;
 						var g = [
 							document.getElementById('previous_co_'+count),
@@ -9606,14 +9616,16 @@ Laurens Hammond, Chicago, Ill.**/
 						count++;
 					}
 					// education
+					// "Enter the person's Law School (Law School or LLB or Juris Doctorate) & Undergraduate University (Non-Law Bachelors Degree), if listed, and years of graduation for each. Do not list starting years for the schools - only graduation years.  For Undergrad, you are looking for where the person got their B.A. or non-law Bachelors Degree. For non-US Law Schools, you may see the degree listed as LLB or JD or Bachelors of Law."
 					var e = [];
 					var found_grad = false;
 					var found_ug = false;
 					for (var i in r.educationsView.schools) {
 						var x = r.educationsView.schools[i];
 						// Log output
-						var dvstr = x.degree + '\n' + x.schoolName + '\n' +
-							x.endDateYear+'\n';
+						var fs = (x.fieldOfStudy) ? '('+x.fieldOfStudy+')': '';
+						var dvstr = x.degree + fs + '\n' + x.schoolName + '\n' +
+							x.startDateYear+'-'+x.endDateYear+'\n';
 						var dv = (dvstr).div({style: 'border-bottom:1px solid teal;', innerText: dvstr});
 						d2.appendChild(dv);
 						dv.degree = x.degree;
@@ -9649,7 +9661,13 @@ Laurens Hammond, Chicago, Ill.**/
 						} else {
 							// ... 
 						}
-						
+					}
+					if (!found_grad || !found_ug) {
+						sbm = false;
+						d2.style.border = '2px solid blue';
+					}
+					if (sbm) {
+						document.body.style.backgroundColor = 'LightGreen';
 					}
 				},
 				//~ onclick_callback: function(e) {
