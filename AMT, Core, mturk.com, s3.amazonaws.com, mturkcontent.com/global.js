@@ -6373,6 +6373,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			opts.tmp_callback = linkedin_dir_url; // profile-card
 			xhr_get();
 			break;
+		case 'LINKEDIN_SALESNAV_SEARCH':
+			opts.tmp_callback = linkedin_salesnav_search; // profile-card
+			xhr_get();
+			break;
 		case 'choice_hotels_hotel_profile':
 			opts.tmp_callback = choice_hotels_hotel_profile;
 			xhr_get();
@@ -6414,44 +6418,6 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		//
 		new AMT___requests_factory().xhr_with_disk_cache(xwdc);
 	}
-	// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-	// XXXXXX OLD, this does not use disk cache.
-	// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-	//~ /**
-	 //~ * xhr_get
-	 //~ */
-	//~ function xhr_get() {
-		//~ GM_xmlhttpRequest({
-			//~ method: 'GET',
-			//~ url: opts.url,
-			//~ timeout: 30000,
-			//~ ontimeout: function() {
-				
-			//~ },
-			//~ onerror: function() {
-				
-			//~ },
-			//~ onload: function (response) {
-				//~ var rs = response.responseText;
-				
-				//~ // not 200 response.status
-				//~ if (response.status > 200) { // 400 - 599
-					//console.log(response.status);
-					//return;
-				//~ }
-				
-				//~ opts.response = response;
-				
-				//~ if (!opts.tmp_callback(rs)) {
-					//~ console.log('Returned False');
-					//~ return;
-				//~ }
-				
-				//~ // Callback final
-				//~ opts.callback_function(opts);
-			//~ }
-		//~ });
-	//~ }
 	
 	/**
 	 * choice_hotels_hotel_profile
@@ -11071,22 +11037,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	//~ '&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
 	//~ '&_=' // 1518457806735, which (divided by 3) is today
 	
-	o.url = 'https://www.linkedin.com/sales/search/results?'+
-	'facet=N&facet.N=O'+
-	'&companyScope=CURRENT'+
-	'&companyEntities=White%20%26%20Case'+
-	'&firstName=Caitlin'+
-	'&lastName=Lloyd'+
-	'&count=25'+
-	'&start=0'+
-	'&updateHistory=true'+
-	'&searchHistoryId=6092614503'+
-	'&trackingInfoJson.contextId=481DD8BE6AA51215C0F750F5E62A0000'+
-	'&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
-	'&_='; // 1518457806735, which (divided by 3) is today
-	
 	GM_addStyle('.exe-result-create-dashboard-lipd:hover {background-color:LightGreen;cursor:pointer;}');
-	
 	var options_object = options_object;
 	// Fills in
 	options_object.results = {
@@ -11124,6 +11075,19 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		],
 		//~ onLoadAddToTabsQ: options_object.onLoadAddToTabsQ,
 		//~ clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
+		search: 'https://www.linkedin.com/sales/search/results'+
+			'?facet=N&facet.N=O'+
+			'&companyScope=CURRENT'+
+			'&companyEntities='+ //White%20%26%20Case
+			'&firstName='+ //Caitlin
+			'&lastName='+ //Lloyd
+			'&count=25'+
+			'&start=0'+
+			'&updateHistory=false'+ //default=true
+			'&searchHistoryId='+ //default=6092614503
+			'&trackingInfoJson.contextId=481DD8BE6AA51215C0F750F5E62A0000'+
+			'&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
+			'&_='; // 1518457806735, which (divided by 3) is today
 	}
 	options_object.results.o = o; // ...
 	
@@ -11163,23 +11127,39 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	var br = document.createElement('br');
 	br.style.clear = 'both';
 	options_object.parent.appendChild(br);
+	// ROW 3 (company)
+	var d3__ = document.createElement('textarea');
+	d3__.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3__);
+	var d3b__ = document.createElement('textarea');
+	d3b__.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3b__);
+	var d3c__ = document.createElement('textarea');
+	d3c__.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3c__);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
 	// ROW 3 (location, display only!)
-	//
 	var d4 = document.createElement('div');
 	d4.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4);
-	d4.txa = d3;
-	d4.txa_ = d3_;
+	//~ d4.txa = d3;
+	//~ d4.txa_ = d3_;
+	//~ d4.txa__ = d3__;
 	var d4b = document.createElement('div');
 	d4b.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4b);
-	d4b.txa = d3b;
-	d4b.txa_ = d3b_;
+	//~ d4b.txa = d3b;
+	//~ d4b.txa_ = d3b_;
+	//~ d4b.txa__ = d3b__;
 	var d4c = document.createElement('div');
 	d4c.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4c);
-	d4c.txa = d3c;
-	d4c.txa_ = d3c_;
+	//~ d4c.txa = d3c;
+	//~ d4c.txa_ = d3c_;
+	//~ d4c.txa__ = d3c__;
 	// br
 	var br = document.createElement('br');
 	br.style.clear = 'both';
@@ -11188,24 +11168,34 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	var d1 = document.createElement('div');
 	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1);
-	d1.txa = d3;
-	d1.txa_ = d3_;
+	d1.txa = {
+		first:	d3,
+		last:	d3_,
+		company:d3__,
+	}
+	//~ d1.txa_ = d3_;
 	d1.results = []; // Fill in later
 	options_object.results.divs.push(d1);
 	//
 	var d1b = document.createElement('div');
 	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1b);
-	d1b.txa = d3b;
-	d1b.txa_ = d3b_;
+	d1b.txa = {
+		first:	d3b,
+		last:	d3b_,
+		company:d3b__,
+	}
 	d1b.results = [];
 	options_object.results.divs.push(d1b);
 	//
 	var d1c = document.createElement('div');
 	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1c);
-	d1c.txa = d3c;
-	d1c.txa_ = d3c_;
+	d1c.txa = {
+		first:	d3c,
+		last:	d3c_,
+		company:d3c__,
+	}
 	d1c.results = [];
 	options_object.results.divs.push(d1c);
 	/*END ITEMS*/
@@ -11216,40 +11206,51 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	d3_.connecter = d1;
 	d3b_.connecter = d1b;
 	d3c_.connecter = d1c;
+	d3__.connecter = d1;
+	d3b__.connecter = d1b;
+	d3c__.connecter = d1c;
 	//
-	d3.onblur = d3_.onblur = function() {
-		init(this);//,  this);
-	}
-	d3b.onblur = d3b_.onblur = function() {
+	d3.onblur = d3_.onblur = d3__.onblur = function() {
 		init(this);
 	}
-	d3c.onblur = d3c_.onblur = function() {
+	d3b.onblur = d3b_.onblur = d3b__.onblur = function() {
+		init(this);
+	}
+	d3c.onblur = d3c_.onblur = d3c__.onblur = function() {
 		init(this);
 	}
 	// ...
 	var ef = new AMT___events_factory();
-	d3.  addEventListener('keydown', ef.keydown__blur_field, true);
-	d3b. addEventListener('keydown', ef.keydown__blur_field, true);
-	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
-	d3_.  addEventListener('keydown', ef.keydown__blur_field, true);
-	d3b_. addEventListener('keydown', ef.keydown__blur_field, true);
-	d3c_. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3.    addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b.   addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c.   addEventListener('keydown', ef.keydown__blur_field, true);
+	d3_.   addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b_.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c_.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3__.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b__. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c__. addEventListener('keydown', ef.keydown__blur_field, true);
 	// Hide empty columns !!
 	//
 	//
 	if (options_object.searches.length == 1) {
+		// Textareas
 		d3b.style.display =
 		d3b_.style.display =
+		d3b__.style.display =
 		d3c.style.display =
 		d3c_.style.display =
+		d3c__.style.display =
 		
+		// Divs
 		d1b.style.display =
 		d1c.style.display = 'none';
 		
-		d1.style.width =
-		d3.style.width =
-		d3_.style.width =
-		d4.style.width = '99%';
+		// Main div
+		d1.style.width = // div
+		d3.style.width = // first
+		d3_.style.width = // last
+		d4.style.width = '99%'; // location display
 		
 		o.num_panels = 1; // Overwrite!
 		
@@ -11257,9 +11258,16 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		if (options_object.searches[0].location) {
 			d4.innerText = options_object.searches[0].location;
 		}
+		// Company
+		if (options_object.searches[0].company) {
+			d3__.value = options_object.searches[0].company;
+		} else {
+			d3__.style.display = 'none';
+		}
 	} else if (options_object.searches.length == 2) {
 		d3c.style.display =
 		d3c_.style.display =
+		d3c__.style.display =
 		
 		d1c.style.display = 'none';
 		
@@ -11281,6 +11289,17 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		if (options_object.searches[1].location) {
 			d4b.innerText = options_object.searches[1].location;
 		}
+		// Company
+		if (options_object.searches[0].company) {
+			d3__.value = options_object.searches[0].company;
+		} else {
+			d3__.style.display = 'none';
+		}
+		if (options_object.searches[1].company) {
+			d3b__.value = options_object.searches[1].company;
+		} else {
+			d3b__.style.display = 'none';
+		}
 	} else {
 		// Location
 		if (options_object.searches[0].location) {
@@ -11291,6 +11310,22 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		}
 		if (options_object.searches[2].location) {
 			d4c.innerText = options_object.searches[2].location;
+		}
+		// Company
+		if (options_object.searches[0].company) {
+			d3__.value = options_object.searches[0].company;
+		} else {
+			d3__.style.display = 'none';
+		}
+		if (options_object.searches[1].company) {
+			d3b__.value = options_object.searches[1].company;
+		} else {
+			d3b__.style.display = 'none';
+		}
+		if (options_object.searches[2].company) {
+			d3c__.value = options_object.searches[2].company;
+		} else {
+			d3c__.style.display = 'none';
 		}
 	}
 	// innerHeight
@@ -11309,8 +11344,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		],
 		offset: options_object.offsetTop*1 -4 // Offset top + a bit
 	});
-	// ...
-	// {first:o.nm_obj.f, last:o.nm_obj.l, location:...} // Location is optional!
+	// Fill in First and Last name fields.
 	d3.value  = (options_object.searches.length > 0) ? options_object.searches[0].first : '';
 	d3_.value  = (options_object.searches.length > 0) ? options_object.searches[0].last : '';
 	d3b.value = (options_object.searches.length > 1) ? options_object.searches[1].first : '';
@@ -11328,40 +11362,74 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	function init(input) {
 		if (input) { // Updates only one column!
 			var i = input.connecter;
-			//~ var i = input.parentNode;
-			//~ console.log(input);
-			//~ console.log(i);
-			i.innerText = '';
+			var search = o.search;
+			if (i.txa.company.value != '') {
+				search = search.replace(
+					'&companyEntities=',
+					'&companyEntities='+encodeURIComponent(i.txa.company.value));
+			}
+			search = search.replace(
+				'&firstName=',
+				'&firstName='+encodeURIComponent(i.txa.first.value));
+			search = search.replace(
+				'&lastName=',
+				'&lastName='+encodeURIComponent(i.txa.last.value));
+			
+			//~ '&companyEntities=White%20%26%20Case'+
+			//~ '&firstName=Caitlin'+
+			//~ '&lastName=Lloyd'+
+			//~ i.innerText = '';
+			
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(i.txa.value)+'/'+encodeURIComponent(i.txa_.value)+'/',
-				callback_function: result,//function(options) { result__(options); },//result__,//function(options) {}
+				callback_function: result,
 				___seed___: i,
 			});
 			return;
 		}
 		if (options_object.searches.length == 1) {
 			new AMT___site_scrapes().scrape({
-				site: 'LINKEDIN_DIR',
+				site: 'LINKEDIN_SALESNAV_SEARCH',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
-				callback_function: result,//function(options) { result__(options); },//result__,//function(options) {}
+				callback_function: result,
 				___seed___: d1,
 			});
-		}
-		else if (options_object.searches.length == 2)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
 				callback_function: result,
 				___seed___: d1b,
 			});
-		else if (options_object.searches.length == 3)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3c.value)+'/'+encodeURIComponent(d3c_.value)+'/',
 				callback_function: result,
 				___seed___: d1c,
 			});
+		}
+		else if (options_object.searches.length == 2) {
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
+				callback_function: result,
+				___seed___: d1,
+			});
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
+				callback_function: result,
+				___seed___: d1b,
+			});
+		}
+		else if (options_object.searches.length == 3) {
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
+				callback_function: result,
+				___seed___: d1,
+			});
+		}
 	}
 	function result(options) {
 		// Is this a directory listing...
