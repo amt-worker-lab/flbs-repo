@@ -9497,9 +9497,10 @@ Laurens Hammond, Chicago, Ill.**/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
-			//~ var d2 = document.createElement('div');
-			//~ d2.setAttribute('style','position:absolute;top:70px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-			//~ document.body.appendChild(d2);
+			// div to output profile info if necessary
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;display:none;');
+			document.body.appendChild(d2);
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
 			//~ document.body.appendChild(d1b);
@@ -9514,7 +9515,8 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ return false;
 			}
 			
-			// Scrape of linkedin.com/pub/dir/
+			// ...
+			// "If only some information can be found, fill out what you can, and submit."
 			AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav({
 				parent: d1,
 				offsetTop: 0,
@@ -9541,6 +9543,36 @@ Laurens Hammond, Chicago, Ill.**/
 					// Success
 					console.log(options.response.parsed);
 					// Fill in.
+					var r = options.response.parsed;
+					if (!r.currentPosition) {
+						
+					}
+					if (!r.educationsView) {
+						
+					}
+					if (!r.previousPositions) {
+						
+					}
+					var c = [
+						document.getElementById('current_firm'),
+						document.getElementById('current_title'),
+						document.getElementById('current_year'),];
+					c[0].value = r.currentPosition.position.companyName;
+					c[1].value = r.currentPosition.position.title;
+					c[2].value = r.currentPosition.position.formattedStartMonthYear.replace(/^\w+\s+/, ''); // eg "April 2016"
+					var d = [];
+					document.getElementById('previous_co_1'),
+					document.getElementById('previous_title_1'),
+					document.getElementById('previous_year_1')
+					var count = 1;
+					for (var i in r.previousPositions.positions) {
+						var x = r.previousPositions.positions[i];
+						if (count >= 4) break;
+						document.getElementById('previous_co_'+count).value =	x.companyName;
+						document.getElementById('previous_title_'+count).value =x.title;
+						document.getElementById('previous_year_'+count).value =	x.formattedEndMonthYear.replace(/^\w+\s+/, '');
+						count++;
+					}
 				},
 				//~ onclick_callback: function(e) {
 					
@@ -9555,257 +9587,6 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			return;
 			
-			
-			// create_dashboard_find_url
-			var terms = '';
-			//~ var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';
-			//~ var terms = '("lawyer" OR "parallegal" OR "attorney" OR "law" OR "legal" OR "litigation" OR "arbitration" "counsel" OR "")';
-			AMT___items_factory.prototype.create_dashboard_find_url({
-				parent: d1,
-				offsetTop: 80, // ###
-				bold_array: o.bold,
-				linkedInIgnoreNoBold: o.bold_nm,
-				searches:[
-					o.name_search + ' ',
-					o.name_search + ', ' + o.comp + ' ',
-					o.name_search + ', (' + o.locn + ') '
-				],
-				search: {
-					str_add_to_searches_hidden: ' site:linkedin.com '+terms
-				},
-				search_results: {
-					replace_urls_in_result_body: true,
-					use_full_urls: true,
-					url_modifier_callback: function(url) {
-						return url.replace(/\?[\d\D]*$/, '');
-					},
-					url_ignore_test: function(obj_reslt) { // If true then ignore the URL.
-						if 	(
-								(
-								obj_reslt.url.indexOf('linkedin.com/pub/') != -1 ||
-								obj_reslt.url.indexOf('linkedin.com/in/') != -1
-								) &&
-								obj_reslt.url.indexOf('linkedin.com/pub/dir/') == -1 &&
-								obj_reslt.url.indexOf('linkedin.com/in/updates') == -1
-							)
-						{
-							return false; // Good
-						}
-						return true; // Ignore
-					},
-					clean_body_regex: [
-						// e.g. Edward Lazarus | LinkedIn   View Edward Lazarus's professional profile on LinkedIn. LinkedIn is the world's largest business network, helping professionals like Edward Lazarus discover  ...
-						{a: /View ((.|\s)*?(?=on LinkedIn\.|$)|$)/, b:''}, // replace a/b
-						{a: /LinkedIn is the world's largest ((.|\s)*?(?=\.\.\.|$)|$)/, b:''},
-					],
-					//~ auto_click_callback: function() { // Function to auto click. This has the scope of the current iterator. Or div argument?
-						//~ 
-					//~ }
-				},
-				load_success_callback: function( options_object ) {
-					
-					//
-					var divs = options_object.results.divs;
-					if (divs[0].results.length) // 1st
-						divs[0].results[0].textarea.click();
-					if (divs[1].results.length) {
-						setTimeout(function() { // 2nd column
-							divs[1].results[0].textarea.click();
-						}, 1000);
-					}
-					if (divs[2].results.length) {
-						setTimeout(function() { // 3nd column
-							divs[2].results[0].textarea.click();
-						}, 2000);
-					}
-				},
-				out_element: o.q[0],
-				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
-					if(e.which == 2) {
-						console.log('e.which == 2');
-						return;
-					}
-					// Replace "full_url" ?(trk|...) with ""
-					this.style.backgroundColor = 'Orange';
-					this.full_url = this.full_url.replace(/\?[\d\D]*$/, '');
-					liprof(this);
-					
-					// Hide this P!
-					var d = this.parentNode;
-					d.result.body.style.display = 'none';
-				},
-				na_callback: function(e) {
-					this.style.backgroundColor = 'LightGreen';
-					
-					//~ o.q[0].value = 'N/A';
-					//~ o.q[1].value = 'Could not find lawyer\'s profile on linkedin.com.';
-				},
-			});
-			
-			//~ document.body.addEventListener('click', function(e) {
-				//~ console.log(e);
-				//~ switch(e.which) {
-					//~ case 2:
-						//~ document.getElementById('naButtonForDashboardFindUrl').click();
-					//~ break;
-				//~ }
-			//~ });
-			
-			function bold_blue_black(str) {
-				str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
-				str = MT__bold(str, o.bold_locn, {color: 'blue'}).bold_string;
-				str = MT__bold(str, o.bold);
-				return str;
-			}
-			// function liprof
-			// Textarea.parent_div, Textarea.full_url
-			function liprof(txt_area) {
-				if (!txt_area.parent_p.hasOwnProperty('profile_div_results')) {
-					var d = 'Retrieving Profile...'.div({style:'border-top:2px solid teal;border-bottom:2px solid teal;'});
-					d.is_showing = true;
-					txt_area.parent_p.appendChild(d);
-					txt_area.parent_p.profile_div_results = d;
-					d.onclick = function () {};
-				} else { // Hide/Show
-					var d = txt_area.parent_p.profile_div_results;
-					if (d.is_showing) {
-						d.is_showing = false;
-						d.style.display = 'none';
-						d.style.visibility = 'hidden';
-					} else {
-						d.is_showing = true;
-						d.style.display = 'block';
-						d.style.visibility = 'visible';
-					}
-				}
-				new AMT___site_scrapes().scrape({
-					site: 'LINKEDIN_PROFILE',
-					url: txt_area.full_url,
-					callback_function: function(options) {
-						// opts.response.vars.result.people_also_viewed.push( pav_person ); ({name:,title:})
-						
-						var d = txt_area.parent_p.profile_div_results;
-						
-						var err = options.response.vars.error;
-						var errType = options.response.vars.error;
-						if (err != null) {
-							d.innerText = errType;
-							return;
-						}
-						
-						var n = options.response.vars;
-						var exp = n.result.experience;
-						var name = n.result.name;
-						var hd = (n.result.headline) ? n.result.headline : '';
-						var dm = (n.result.demographics) ? n.result.demographics : '';
-						var pav = n.result.people_also_viewed;
-						var sk = (n.result.skills && n.result.skills.length) ? n.result.skills.join('|'): '';
-						
-						console.log(options);
-						console.log(n);
-						
-						// Reset
-						d.innerHTML = '';
-						
-						// str
-						var dm_bld, hd_bld;
-						dm_bld = bold_blue_black(dm);
-						dm_bld = dm_bld.replace('|', '<br>I:'); // Replace first "|" with <br>
-						hd_bld = bold_blue_black(hd);
-						
-						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
-						var sk_fmt = bold_blue_black(sk); //MT__bold(sk, o.bold_types); // Types rather than .bold
-						var sk_div = ('S:'+(sk=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
-						var sk_inn = document.createElement('span');
-						sk_inn.innerHTML = sk_fmt;
-						sk_inn.style.display = 'none';
-						sk_div.appendChild(sk_inn);
-						sk_div.inner = sk_inn;
-						sk_div.addEventListener('mouseover', function() {
-							this.inner.style.display = 'block';
-						}, false);
-						sk_div.addEventListener('mouseout', function() {
-							this.inner.style.display = 'none';
-						}, false);
-						// Let's set the person's name & location close-by so it's possible to see it clearly.
-						str = '' + o.nm + ',' + o.locn + '<hr>' + str; // No ~?
-						// Set dv
-						//
-						//
-						//
-						var dv =
-							str.div(
-								{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
-							);
-						// Add sk_div....
-						//
-						//
-						//~ dv.appendChild(sk_div);
-						// ...
-						dv.className = 'exe-zi';
-						d.appendChild(dv);
-						// onclick
-						dv.purl = options.url;
-						dv.onclick = function(e) {
-							//~ if(e.which == 2) {
-								//~ console.log('e.which == 2');
-								//~ return;
-							//~ }
-							this.style.backgroundColor = 'LightGreen';
-							//~ o.q[1].value = this.purl;
-							//~ if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
-								//doSubmit();
-							//~ }
-						}
-						
-						// Experience
-						//
-						//
-						var dvc = ''.div({style:'width:100%;max-height:120px;overflow:auto;'}); //background-color:#eee; // default=60
-						dv.appendChild(dvc);
-						
-						// xxxxx old xxxxx Left & Right divs.
-						//
-						var dvl = ''.div({style:'border-top:1px solid #a2a2a2;'});
-						dvc.appendChild(dvl);
-						
-						if (!exp.length) {
-							dvl.appendChild('0 experience'.div({style:''}));
-							return;
-						} else {
-							
-						}
-						// Experience
-						for (var i in exp) {
-							var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
-							dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
-							dx.headline = exp[i].headline;
-							dx.purl = options.url;
-							dx.innerHTML = 
-								(dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
-							dvl.appendChild(dx);
-							dx.onclick = function() {
-								//~ var x = this.headline.split(':');
-								//~ o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
-								//~ o.q[1].value = this.purl;
-								//~ // try auto...
-								//~ var x = x[0].clean_str_to_auto();
-								//~ for (var i in o.q[2].options) {
-									//~ var y = o.q[2].options[i].innerText.trim().clean_str_to_auto();
-									//~ if (x == y && x.length >=3) { // Must be at least 3 chars.
-										//~ o.q[2].value = o.q[2].options[i].value;
-										//~ o.q[2].options[i].style.backgroundColor = 'LightGreen';
-										//~ break;
-									//~ }
-								//~ }
-							}
-						}
-						
-						// Spacer...
-						dvc.appendChild(''.div({style:'height:2000px;'}));
-					}
-				});
-			}
 		}
 		new run().f();
 	}
