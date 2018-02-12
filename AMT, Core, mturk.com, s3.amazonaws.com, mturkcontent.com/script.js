@@ -9578,6 +9578,7 @@ Laurens Hammond, Chicago, Ill.**/
 					// Log some output
 					d2.innerText = '#schools:'+r.educationsView.schools.length+
 						'\n#positions:'+r.positionsView.positions.length;
+					d2.appendChild(document.createElement('hr'));
 					// current
 					var c = [
 						document.getElementById('current_firm'),
@@ -9615,6 +9616,13 @@ Laurens Hammond, Chicago, Ill.**/
 						d.push(g); // add for later
 						count++;
 					}
+					if (count != 4) { // Fill in empty positions.
+						for (var i=count; i<=3; i++) {
+							document.getElementById('previous_co_'+i).value = 'N/A';
+							document.getElementById('previous_title_'+i).value = 'N/A';
+							document.getElementById('previous_year_'+i).value = 'N/A';
+						}
+					}
 					// education
 					// "Enter the person's Law School (Law School or LLB or Juris Doctorate) & Undergraduate University (Non-Law Bachelors Degree), if listed, and years of graduation for each. Do not list starting years for the schools - only graduation years.  For Undergrad, you are looking for where the person got their B.A. or non-law Bachelors Degree. For non-US Law Schools, you may see the degree listed as LLB or JD or Bachelors of Law."
 					var e = [];
@@ -9624,8 +9632,10 @@ Laurens Hammond, Chicago, Ill.**/
 						var x = r.educationsView.schools[i];
 						// Log output
 						var fs = (x.fieldOfStudy) ? '('+x.fieldOfStudy+')': '';
-						var dvstr = x.degree + fs + '\n' + x.schoolName + '\n' +
-							x.startDateYear+'-'+x.endDateYear+'\n';
+						var dg = (x.degree) ? x.degree : 'No-Degree';
+						var dvstr = dg + fs + '\n' + x.schoolName + '\n' +
+							(x.startDateYear ? x.startDateYear : '-')+' to '+
+							(x.endDateYear ? x.endDateYear : '-')+'\n';
 						var dv = (dvstr).div({style: 'border-bottom:1px solid teal;', innerText: dvstr});
 						d2.appendChild(dv);
 						dv.degree = x.degree;
@@ -9638,7 +9648,11 @@ Laurens Hammond, Chicago, Ill.**/
 						dvb1.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
 							document.getElementById('law_school').value = this.parentNode.schoolName;
-							document.getElementById('graduation_year').value = this.parentNode.endDateYear;
+							if (this.parentNode.endDateYear) {
+								document.getElementById('graduation_year').value = this.parentNode.endDateYear;
+							} else {
+								document.getElementById('graduation_year').value = 'N/A';
+							}
 						}
 						dv.appendChild(dvb1);
 						//under
@@ -9648,7 +9662,11 @@ Laurens Hammond, Chicago, Ill.**/
 						dvb2.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
 							document.getElementById('undergrad_school').value = this.parentNode.schoolName;
-							document.getElementById('undergrad_graduation_year').value = this.parentNode.endDateYear;
+							if (this.parentNode.endDateYear) {
+								document.getElementById('undergrad_graduation_year').value = this.parentNode.endDateYear;
+							} else {
+								document.getElementById('undergrad_graduation_year').value = 'N/A';
+							}
 						}
 						dv.appendChild(dvb2);
 						//

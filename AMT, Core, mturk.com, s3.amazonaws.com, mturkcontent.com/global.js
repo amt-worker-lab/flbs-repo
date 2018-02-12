@@ -11502,13 +11502,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			//<form method="POST" action="%2fCorpWeb%2fCorpSearch%2fCorpSearch.aspx"/>
 		}
 		var search = o.search;
-		if (company.value != '') {
-			search = search.replace(
-				'&companyEntities=',
-				'&companyEntities='+encodeURIComponent(company.value));
-		} else {
-			search = search.replace('&companyEntities=', '');
-		}
+		first.value = first.value.trim();
+		last.value = last.value.trim();
+		company.value = company.value.trim();
 		if (first.value != '') {
 			search = search.replace(
 				'&firstName=',
@@ -11522,6 +11518,13 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 				'&lastName='+encodeURIComponent(last.value));
 		} else {
 			search = search.replace('&lastName=', '');
+		}
+		if (company.value.trim() != '') {
+			search = search.replace(
+				'&companyEntities=',
+				'&companyEntities='+encodeURIComponent(company.value));
+		} else {
+			search = search.replace('&companyEntities=', '');
 		}
 		
 		server_obj.url = search;
@@ -11616,6 +11619,8 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		// Success
 		var rs = options.response.parsed.searchResults; console.log(rs.length);
 		var out = options.___seed___;
+		// Clear output.
+		out.innerText = '';
 		// Show num results.
 		var n = rs.length+' result'+
 			((rs.length != 1) ? 's' : ''); // Add "s"
