@@ -6415,7 +6415,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			url: u,
 			onload: function(response) {
 				var rs = response.responseText;
-				// Process results
+				// Process results.
+				// Note: This modifies the opts variable!
 				opts.tmp_callback(rs);
 				// Finally, send processed results back to caller.
 				opts.callback_function(opts);
@@ -7063,6 +7064,24 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	}
 	
 	/**
+	 * linkedin_salesnav_search
+	 * 
+	 * e.g. Gerry Gorman
+	 */
+	function linkedin_salesnav_search() {
+		var rs = opts.response.responseText;
+		try {
+			opts.response.parsed = JSON.parse(rs);
+		} catch(e) {
+			// Parse failed.
+			// Likely the response is simply the string "404"
+			// or "501", etc. That is, LinkedIn gave back a
+			// non-200 response.
+			opts.response.parsed = {error: 'LI invalid response!'};
+		}
+	}
+	
+	/**
 	 * linkedin_dir_url
 	 * 
 	 * e.g. Gerry Gorman
@@ -7089,7 +7108,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		if (!/ profiles \| LinkedIn$/.exec(dom.title)) {
 			opts.response.total_li_results = 1; // Update # results
 			return linkedin_person_profile(); // Return this!
-		}console.log('x');
+		}
 		
 		// Still here...
 		// This is directory
@@ -11127,7 +11146,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			'&searchHistoryId='+ //default=6092614503
 			'&trackingInfoJson.contextId=481DD8BE6AA51215C0F750F5E62A0000'+
 			'&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
-			'&_='; // 1518457806735, which (divided by 3) is today
+			'&_=' // 1518457806735, which (divided by 3) is today
 	}
 	options_object.results.o = o; // ...
 	
@@ -11462,7 +11481,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			var so = generate_server_obj(i.txa.first, i.txa.last, i.txa.company)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_SALESNAV_SEARCH',
-				server_obj: so
+				server_obj: so,
 				callback_function: result,
 				___seed___: i,
 			});
@@ -11491,21 +11510,21 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			var so = generate_server_obj(d3, d3_, d3__)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_SALESNAV_SEARCH',
-				server_obj: so
+				server_obj: so,
 				callback_function: result,
 				___seed___: d1,
 			});
 			var so = generate_server_obj(d3b, d3b_, d3b__)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_SALESNAV_SEARCH',
-				server_obj: so
+				server_obj: so,
 				callback_function: result,
 				___seed___: d1b,
 			});
 			var so = generate_server_obj(d3c, d3c_, d3c__)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_SALESNAV_SEARCH',
-				server_obj: so
+				server_obj: so,
 				callback_function: result,
 				___seed___: d1c,
 			});
@@ -11514,14 +11533,14 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			var so = generate_server_obj(d3, d3_, d3__)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_SALESNAV_SEARCH',
-				server_obj: so
+				server_obj: so,
 				callback_function: result,
 				___seed___: d1,
 			});
 			var so = generate_server_obj(d3b, d3b_, d3b__)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_SALESNAV_SEARCH',
-				server_obj: so
+				server_obj: so,
 				callback_function: result,
 				___seed___: d1b,
 			});
@@ -11530,13 +11549,79 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			var so = generate_server_obj(d3, d3_, d3__)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_SALESNAV_SEARCH',
-				server_obj: so
+				server_obj: so,
 				callback_function: result,
 				___seed___: d1,
 			});
 		}
 	}
+	/**
+	 * result
+	 * Process search results.
+	 * 
+	 * @param options.response.parsed, type=object
+	 * 		Either: {error: 'LI non-200 response!'}
+	 * 		Or else: { LinkedIn API obj }
+	 * @param options.response.parsed.error, type=string
+	 * 		
+	 */
 	function result(options) {
+		// When error
+		if (options.response.parsed.error) {
+			alert(options.response.parsed.error);
+			return;
+		}
+		// Success
+		var rs = options.response.parsed.searchResults;
+		var out = options.___seed___;
+		// Show num results.
+		var n = rs.length+' result'+
+			(rs.length != 1) ? 's' : ''; // Add "s"
+		out.appendChild(
+			n.div({style:'border-bottom:1px solid teal;'})
+		);
+		// Build divs.
+		for (var i in rs) {
+			var str =
+				'N:' + MT__bold(rs.formattedName, o.bold_name_array)+
+				'<br>L:' + MT__bold(rs.location, o.bold_location_array)
+				'<br>T:' + rs.title +
+				'<br>I:' + industry;// + '<hr>';
+			
+			var d = ''.div(
+				{style:'border-bottom:1px solid teal;cursor:pointer;'}
+			);
+			d.memberId = rs.member.memberId;
+			
+			var tmp_class = 'class_' + rs.member.memberId;
+		
+			d.className = 'exe-result-create-dashboard-lipd ' + tmp_class + ' result_highlight'; // Create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
+			d.profile_url = 'xxx';
+		
+			// Add mouseover, mouseout.
+			// Note: This IS compatible with create_dashboard_find_url!
+			//
+			//
+			d.addEventListener('mouseover', function() {// mouseover...
+				var tcl = this.className.replace('exe-result-create-dashboard-lipd ','');
+				var x = document.getElementsByClassName(tcl);
+				for (var i in x) {
+					if (i == 'length') break;
+					x[i].style.backgroundColor = 'LightGreen';
+				}
+			}, false);
+			d.addEventListener('mouseout', function() {// mouseout...
+				var tcl = this.className.replace('exe-result-create-dashboard-lipd ','');
+				var x = document.getElementsByClassName(tcl);
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i].className == tcl || x[i].className == this.className)
+						x[i].style.backgroundColor = '';
+				}
+			}, false);
+		}
+		
+		
 		// Is this a directory listing...
 		// Or has LI forwarded us to the one person's profile?
 		//~ var item = {
@@ -11548,75 +11633,75 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			//~ vceit: vce.innerText,
 		//~ }
 		//~ opts.response.vars.results
-		console.log(options);
-		var out = options.___seed___;
-		var divs = []; // An array of divs (for display and optional sorting later)
+		//~ console.log(options);
+		//~ var out = options.___seed___;
+		//~ var divs = []; // An array of divs (for display and optional sorting later)
 		
-		// Append the number of results!
-		//
-		//
-		var n = options.response.total_li_results+' result';
-		n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
-		var ndiv = n.div({style:'border-bottom:1px solid teal;'});
-		out.appendChild(ndiv);
-		// Make aqua when there are less than 25!
-		if (options.response.total_li_results*1 < 25) {
+		//~ // Append the number of results!
+		//~ //
+		//~ //
+		//~ var n = options.response.total_li_results+' result';
+		//~ n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
+		//~ var ndiv = n.div({style:'border-bottom:1px solid teal;'});
+		//~ out.appendChild(ndiv);
+		//~ // Make aqua when there are less than 25!
+		//~ if (options.response.total_li_results*1 < 25) {
 			//~ ndiv.style.backgroundColor = 'aqua';
-			// Do nothing.......
-		} else if (options.response.total_li_results*1 < 200) {	// Show orange < 200
-			ndiv.style.backgroundColor = 'yellow';
-		} else {												// Show red >= 200
-			ndiv.style.backgroundColor = 'red';
-		}
+			//~ // Do nothing.......
+		//~ } else if (options.response.total_li_results*1 < 200) {	// Show orange < 200
+			//~ ndiv.style.backgroundColor = 'yellow';
+		//~ } else {												// Show red >= 200
+			//~ ndiv.style.backgroundColor = 'red';
+		//~ }
 		
-		// No results....
-		//
-		//
-		if (options.response.hasOwnProperty('total_li_results') && options.response.total_li_results == '0') {
-			return;
-		}
+		//~ // No results....
+		//~ //
+		//~ //
+		//~ if (options.response.hasOwnProperty('total_li_results') && options.response.total_li_results == '0') {
+			//~ return;
+		//~ }
 		
-		// Sort...
-		//
-		//
-		if (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
-			for (var i in options.response.vars.results) {
-				var div = profile(options.response.vars.results[i]);
-				divs.push(div);
-			}
-		} else { // This is a redirected profile!
-			// profile
-			// options.response.vars
-			// Make an object...
-			// And send to profile
-			var div = profile(
-				{
-					name: options.response.vars.result.name,
-					title: options.response.vars.result.headline,
-					location: options.response.vars.result.demographics,
-					industry: '',
-					profile_url: options.response.vars.result.public_url,
-					vceit: '',
-				}
-			)
-			divs.push(div);
-		}
-		divs.sort(function(a, b) {
-			return b.num_bolds - a.num_bolds; // desc
-			//return a.num_bolds - b.num_bolds; // asc
-		});
+		//~ // Sort...
+		//~ //
+		//~ //
+		//~ if (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
+			//~ for (var i in options.response.vars.results) {
+				//~ var div = profile(options.response.vars.results[i]);
+				//~ divs.push(div);
+			//~ }
+		//~ } else { // This is a redirected profile!
+			//~ // profile
+			//~ // options.response.vars
+			//~ // Make an object...
+			//~ // And send to profile
+			//~ var div = profile(
+				//~ {
+					//~ name: options.response.vars.result.name,
+					//~ title: options.response.vars.result.headline,
+					//~ location: options.response.vars.result.demographics,
+					//~ industry: '',
+					//~ profile_url: options.response.vars.result.public_url,
+					//~ vceit: '',
+				//~ }
+			//~ )
+			//~ divs.push(div);
+		//~ }
+		//~ divs.sort(function(a, b) {
+			//~ return b.num_bolds - a.num_bolds; // desc
+			//~ //return a.num_bolds - b.num_bolds; // asc
+		//~ });
 		
-		// Append the profile divs...
-		// 
-		//
-		for (var i in divs) {
-			out.appendChild(divs[i]);
-		}
+		//~ // Append the profile divs...
+		//~ // 
+		//~ //
+		//~ for (var i in divs) {
+			//~ out.appendChild(divs[i]);
+		//~ }
 		
-		// Add a spacer
-		//
-		//
-		out.appendChild(''.div({style:'height:2000px;'}));
+		//~ // Add a spacer
+		//~ //
+		//~ //
+		//~ out.appendChild(''.div({style:'height:2000px;'}));
 	}
 	/**
 	 * profile
@@ -11624,7 +11709,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	 * @returns
 	 * 	div
 	 * 		{div.num_bolds}		integer
-	 */
+	 *
 	function profile(pobj) { // Takes profile obj
 		// str
 		pobj.title = (pobj.title) ? pobj.title : '--';
@@ -11693,26 +11778,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		//
 		dv.appendChild(sk_div);
 		
-		// Add mouseover, mouseout.
-		// Note: This IS compatible with create_dashboard_find_url!
-		//
-		//
-		dv.addEventListener('mouseover', function() {// mouseover...
-			var x = document.getElementsByClassName(this.className.replace('exe-result-create-dashboard-lipd ',''));
-			for (var i in x) {
-				if (i == 'length') break;
-				x[i].style.backgroundColor = 'LightGreen';
-			}
-		}, false);
-		dv.addEventListener('mouseout', function() {// mouseout...
-			var tmpcl = this.className.replace('exe-result-create-dashboard-lipd ','');
-			var x = document.getElementsByClassName(tmpcl);
-			for (var i in x) {
-				if (i == 'length') break;
-				if (x[i].className == tmpcl || x[i].className == this.className)
-					x[i].style.backgroundColor = '';
-			}
-		}, false);
+		
 		
 		return dv;
 	}
@@ -11721,7 +11787,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
 		str = MT__bold(str, o.bold_array);
 		return str;
-	}
+	}*/
 }
 /**
  * create_dashboard_linkedin_pub_dir
