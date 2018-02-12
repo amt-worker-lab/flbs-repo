@@ -6377,6 +6377,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			opts.tmp_callback = linkedin_salesnav_search; // profile-card
 			server_request();
 			break;
+		case 'LINKEDIN_SALESNAV_SEARCH_PROFILE': // @requires @param:opts.server_obj
+			opts.tmp_callback = linkedin_salesnav_search_profile;
+			server_request();
+			break;
 		case 'choice_hotels_hotel_profile':
 			opts.tmp_callback = choice_hotels_hotel_profile;
 			xhr_get();
@@ -7064,9 +7068,33 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	}
 	
 	/**
+	 * linkedin_salesnav_search_profile
+	 *
+	 */
+	function linkedin_salesnav_search_profile() {
+		var rs = opts.response.responseText;
+		
+		// An HTML page. Scrape the JSON.
+		// DOM
+		var dom = new DOMParser().parseFromString(rs,'text/html');
+		var j = dom.getElementById('streamed-content-content');
+		if (!j || !j.innerHTML || j.innerHTML.trim().length == 0)
+		{
+			opts.response.parsed = {error: 'linkedin_salesnav_search_profile: no json body!'};
+		} else {
+			j = j.innerHTML.replace(/^<!--/, '').replace(/-->$/, '');
+			try {
+				opts.response.parsed = JSON.parse(json);
+			} catch(e) {
+				// Parse failed.
+				opts.response.parsed = {error: 'linkedin_salesnav_search_profile: bad json!'};
+			}
+		}
+	}
+	
+	/**
 	 * linkedin_salesnav_search
 	 * 
-	 * e.g. Gerry Gorman
 	 */
 	function linkedin_salesnav_search() {
 		var rs = opts.response.responseText;
@@ -7077,7 +7105,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			// Likely the response is simply the string "404"
 			// or "501", etc. That is, LinkedIn gave back a
 			// non-200 response.
-			opts.response.parsed = {error: 'LI invalid response!'};
+			opts.response.parsed = {error: 'linkedin_salesnav_search: invalid response!'};
 		}
 	}
 	
@@ -11581,23 +11609,43 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 			n.div({style:'border-bottom:1px solid teal;'})
 		);
 		// Build divs.
+		var callback = null;
+		if (options_object.hasOwnProperty('onclick_success')) {
+			callback = options_object.onclick_success;
+		} else if (options_object.hasOwnProperty('scrape_profile_callback')) {
+			callback = scrape_profile;
+		}
 		for (var i in rs) {
-			var str =
+			var rslt_str =
 				'N:' + MT__bold(rs.formattedName, o.bold_name_array)+
+				'<br>C:' + rs.company.companyName + // includes bolding... //MT__bold(, o.bold_location_array)
 				'<br>L:' + MT__bold(rs.location, o.bold_location_array)
-				'<br>T:' + rs.title +
-				'<br>I:' + industry;// + '<hr>';
+				'<br>T:' + rs.title;// + '<hr>';
 			
-			var d = ''.div(
-				{style:'border-bottom:1px solid teal;cursor:pointer;'}
-			);
+			var d = rslt_str.div({
+				style:'border-bottom:1px solid teal;cursor:pointer;',
+				innerHTML: true
+			});
 			d.memberId = rs.member.memberId;
 			
 			var tmp_class = 'class_' + rs.member.memberId;
 		
 			d.className = 'exe-result-create-dashboard-lipd ' + tmp_class + ' result_highlight'; // Create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
-			d.profile_url = 'xxx';
-		
+			d.profile_url =
+				'https://www.linkedin.com/sales/profile/'+
+				encodeURIComponent(d.memberId)+','+
+				encodeURIComponent(rs.member.authToken)+
+				',NAME_SEARCH?moduleKey=peopleSearchResults'+
+				'&pageKey=sales-search3-people-refinement'+
+				'&contextId=481DD8BE6AA51215C0F750F5E62A0000'+
+				'&requestId=e05235f2-577a-490b-8fa3-d0258b334af0'+
+				'&action=CLICK'+
+				'&target=urn%3Ali%3AsalesLead%3A(-1%2C'+encodeURIComponent(d.memberId)+')'+
+				'&pageNumber=0&targetEl=profilelink&position='+i+ // Include # of this result, e.g. 0-24
+				'&trk=lss-serp-result-lead_name';
+			
+			d.onclick = callback;
+			
 			// Add mouseover, mouseout.
 			// Note: This IS compatible with create_dashboard_find_url!
 			//
@@ -11702,6 +11750,19 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		//~ //
 		//~ //
 		//~ out.appendChild(''.div({style:'height:2000px;'}));
+	}
+	/**
+	 * scrape_profile
+	 * Optional function to scrape LI profile on click success.
+	 * 
+	 * @param e, Click Event
+	 * @param this, HTML div
+	 * 
+	 * @returns null
+	 * @callback Runs options_object.scrape_profile_callback
+	 */
+	function scrape_profile(e) {
+		
 	}
 	/**
 	 * profile

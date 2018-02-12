@@ -9528,9 +9528,12 @@ Laurens Hammond, Chicago, Ill.**/
 					company: o.comp,
 					//~ location: o.locn
 				}],
-				onclick_callback: function(e) {
-					
+				scrape_profile_callback: function(e) {
+					// returns profile result.
 				},
+				//~ onclick_callback: function(e) {
+					
+				//~ },
 				//~ out_element: o.q[0], // Default is Profile URL to out_element
 				//~ search: {
 				//~ },
