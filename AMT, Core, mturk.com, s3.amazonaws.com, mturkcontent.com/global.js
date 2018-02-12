@@ -11054,9 +11054,24 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 				//~ onclick_callback: function(e) {
 					
 				//~ },
+	
 	// Default search.
 	// Monday, Feb. 12, 2018.
-	'https://www.linkedin.com/sales/search/results?'+
+	//~ 'https://www.linkedin.com/sales/search/results?'+
+	//~ 'facet=N&facet.N=O'+
+	//~ '&companyScope=CURRENT'+
+	//~ '&companyEntities=White%20%26%20Case'+
+	//~ '&firstName=Caitlin'+
+	//~ '&lastName=Lloyd'+
+	//~ '&count=25'+
+	//~ '&start=0'+
+	//~ '&updateHistory=true'+
+	//~ '&searchHistoryId=6092614503'+
+	//~ '&trackingInfoJson.contextId=481DD8BE6AA51215C0F750F5E62A0000'+
+	//~ '&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
+	//~ '&_=' // 1518457806735, which (divided by 3) is today
+	
+	o.url = 'https://www.linkedin.com/sales/search/results?'+
 	'facet=N&facet.N=O'+
 	'&companyScope=CURRENT'+
 	'&companyEntities=White%20%26%20Case'+
@@ -11068,7 +11083,472 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	'&searchHistoryId=6092614503'+
 	'&trackingInfoJson.contextId=481DD8BE6AA51215C0F750F5E62A0000'+
 	'&trackingInfoJson.requestId=19e5f1c7-e1ac-48d5-af9f-24012545f718'+
-	'&_=' // 1518457806735, which (divided by 3) is today
+	'&_='; // 1518457806735, which (divided by 3) is today
+	
+	GM_addStyle('.exe-result-create-dashboard-lipd:hover {background-color:LightGreen;cursor:pointer;}');
+	
+	var options_object = options_object;
+	// Fills in
+	options_object.results = {
+		divs: [],
+		textareas: [],//TODO
+		o: null, // to be filled
+		// ...
+	}
+	// Defaults
+	//
+	//
+	//
+	if (!options_object.hasOwnProperty('bold_array')) {//
+		options_object.bold_array = []
+	}
+	if (!options_object.hasOwnProperty('bold_location_array')) {//
+		options_object.bold_location_array = []
+	}
+	// o
+	//
+	//
+	var o = {
+		bold_array: options_object.bold_array,
+		bold_location_array: options_object.bold_location_array,
+		bold_types_array: options_object.bold_types_array,
+		panels_loaded: 0,
+		num_panels: 3,
+		domain_counts: {}, // obj
+		first_domains: [],
+		first_full_urls: [],
+		first_in_each_column: [],
+		txas:[[],[],[]], //And array of arrays, where 1st array is column, 2nd array is row. E.g. o.txas[0][1] will give you the txa at first column, 2nd row
+		q: [
+			options_object.out_element
+		],
+		//~ onLoadAddToTabsQ: options_object.onLoadAddToTabsQ,
+		//~ clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
+	}
+	options_object.results.o = o; // ...
+	
+	/** BEGINS ITEMS 
+	 * textareas: first name (d3, d3b, d3c) last name (d3_, d3b_, d3c_)
+	 **/
+	//
+	// TODO
+	//  Make a column() function!
+	//
+	//
+	// ROW 1 (textareas)
+	var d3 = document.createElement('textarea');
+	d3.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3);
+	var d3b = document.createElement('textarea');
+	d3b.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3b);
+	var d3c = document.createElement('textarea');
+	d3c.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3c);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// ROW 2 (textareas)
+	var d3_ = document.createElement('textarea');
+	d3_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3_);
+	var d3b_ = document.createElement('textarea');
+	d3b_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3b_);
+	var d3c_ = document.createElement('textarea');
+	d3c_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3c_);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// ROW 3 (location, display only!)
+	//
+	var d4 = document.createElement('div');
+	d4.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
+	options_object.parent.appendChild(d4);
+	d4.txa = d3;
+	d4.txa_ = d3_;
+	var d4b = document.createElement('div');
+	d4b.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
+	options_object.parent.appendChild(d4b);
+	d4b.txa = d3b;
+	d4b.txa_ = d3b_;
+	var d4c = document.createElement('div');
+	d4c.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
+	options_object.parent.appendChild(d4c);
+	d4c.txa = d3c;
+	d4c.txa_ = d3c_;
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// ROW 4 (divs)
+	var d1 = document.createElement('div');
+	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1);
+	d1.txa = d3;
+	d1.txa_ = d3_;
+	d1.results = []; // Fill in later
+	options_object.results.divs.push(d1);
+	//
+	var d1b = document.createElement('div');
+	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1b);
+	d1b.txa = d3b;
+	d1b.txa_ = d3b_;
+	d1b.results = [];
+	options_object.results.divs.push(d1b);
+	//
+	var d1c = document.createElement('div');
+	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1c);
+	d1c.txa = d3c;
+	d1c.txa_ = d3c_;
+	d1c.results = [];
+	options_object.results.divs.push(d1c);
+	/*END ITEMS*/
+	// Connecters...
+	d3.connecter = d1;
+	d3b.connecter = d1b;
+	d3c.connecter = d1c;
+	d3_.connecter = d1;
+	d3b_.connecter = d1b;
+	d3c_.connecter = d1c;
+	//
+	d3.onblur = d3_.onblur = function() {
+		init(this);//,  this);
+	}
+	d3b.onblur = d3b_.onblur = function() {
+		init(this);
+	}
+	d3c.onblur = d3c_.onblur = function() {
+		init(this);
+	}
+	// ...
+	var ef = new AMT___events_factory();
+	d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3_.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b_. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c_. addEventListener('keydown', ef.keydown__blur_field, true);
+	// Hide empty columns !!
+	//
+	//
+	if (options_object.searches.length == 1) {
+		d3b.style.display =
+		d3b_.style.display =
+		d3c.style.display =
+		d3c_.style.display =
+		
+		d1b.style.display =
+		d1c.style.display = 'none';
+		
+		d1.style.width =
+		d3.style.width =
+		d3_.style.width =
+		d4.style.width = '99%';
+		
+		o.num_panels = 1; // Overwrite!
+		
+		// Location
+		if (options_object.searches[0].location) {
+			d4.innerText = options_object.searches[0].location;
+		}
+	} else if (options_object.searches.length == 2) {
+		d3c.style.display =
+		d3c_.style.display =
+		
+		d1c.style.display = 'none';
+		
+		d3.style.width =
+		d3_.style.width =
+		d3b.style.width =
+		d3b_.style.width =
+		d1.style.width =
+		d1b.style.width = 
+		d4.style.width =
+		d4b.style.width = '48%';
+		
+		o.num_panels = 2; // Overwrite!
+		
+		// Location
+		if (options_object.searches[0].location) {
+			d4.innerText = options_object.searches[0].location;
+		}
+		if (options_object.searches[1].location) {
+			d4b.innerText = options_object.searches[1].location;
+		}
+	} else {
+		// Location
+		if (options_object.searches[0].location) {
+			d4.innerText = options_object.searches[0].location;
+		}
+		if (options_object.searches[1].location) {
+			d4b.innerText = options_object.searches[1].location;
+		}
+		if (options_object.searches[2].location) {
+			d4c.innerText = options_object.searches[2].location;
+		}
+	}
+	// innerHeight
+	new AMT___core_factory().el_innerHeight({
+		// This set the elements d1,d1b, and d1c
+		// to fill up the whole window, minus their
+		// distance from page top (top:XX pixels;).
+		elements: [
+			d1, d1b, d1c
+		],
+		offset: options_object.offsetTop*1 + 50 + 30 // Offset top. Add to this 80px.
+	});
+	new AMT___core_factory().el_innerHeight({
+		elements: [
+			options_object.parent
+		],
+		offset: options_object.offsetTop*1 -4 // Offset top + a bit
+	});
+	// ...
+	// {first:o.nm_obj.f, last:o.nm_obj.l, location:...} // Location is optional!
+	d3.value  = (options_object.searches.length > 0) ? options_object.searches[0].first : '';
+	d3_.value  = (options_object.searches.length > 0) ? options_object.searches[0].last : '';
+	d3b.value = (options_object.searches.length > 1) ? options_object.searches[1].first : '';
+	d3b_.value = (options_object.searches.length > 1) ? options_object.searches[1].last : '';
+	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2].first : '';
+	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
+	//
+	init();
+	// 
+	//
+	// ... .scrape()
+	//LINKEDIN_DIR
+	// XHR
+	// e.g. https://www.linkedin.com/pub/dir/stephen
+	function init(input) {
+		if (input) { // Updates only one column!
+			var i = input.connecter;
+			//~ var i = input.parentNode;
+			//~ console.log(input);
+			//~ console.log(i);
+			i.innerText = '';
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(i.txa.value)+'/'+encodeURIComponent(i.txa_.value)+'/',
+				callback_function: result,//function(options) { result__(options); },//result__,//function(options) {}
+				___seed___: i,
+			});
+			return;
+		}
+		if (options_object.searches.length == 1) {
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
+				callback_function: result,//function(options) { result__(options); },//result__,//function(options) {}
+				___seed___: d1,
+			});
+		}
+		else if (options_object.searches.length == 2)
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
+				callback_function: result,
+				___seed___: d1b,
+			});
+		else if (options_object.searches.length == 3)
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3c.value)+'/'+encodeURIComponent(d3c_.value)+'/',
+				callback_function: result,
+				___seed___: d1c,
+			});
+	}
+	function result(options) {
+		// Is this a directory listing...
+		// Or has LI forwarded us to the one person's profile?
+		//~ var item = {
+			//~ name: vcards[i].getElementsByTagName('h2')[0].innerText,
+			//~ title: vcb.getElementsByClassName('title')[0].innerText,
+			//~ location: vcb.getElementsByClassName('location')[0].innerText,
+			//~ industry: vcb.getElementsByClassName('industry')[0].innerText,
+			//~ profile_url: a,
+			//~ vceit: vce.innerText,
+		//~ }
+		//~ opts.response.vars.results
+		console.log(options);
+		var out = options.___seed___;
+		var divs = []; // An array of divs (for display and optional sorting later)
+		
+		// Append the number of results!
+		//
+		//
+		var n = options.response.total_li_results+' result';
+		n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
+		var ndiv = n.div({style:'border-bottom:1px solid teal;'});
+		out.appendChild(ndiv);
+		// Make aqua when there are less than 25!
+		if (options.response.total_li_results*1 < 25) {
+			//~ ndiv.style.backgroundColor = 'aqua';
+			// Do nothing.......
+		} else if (options.response.total_li_results*1 < 200) {	// Show orange < 200
+			ndiv.style.backgroundColor = 'yellow';
+		} else {												// Show red >= 200
+			ndiv.style.backgroundColor = 'red';
+		}
+		
+		// No results....
+		//
+		//
+		if (options.response.hasOwnProperty('total_li_results') && options.response.total_li_results == '0') {
+			return;
+		}
+		
+		// Sort...
+		//
+		//
+		if (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
+			for (var i in options.response.vars.results) {
+				var div = profile(options.response.vars.results[i]);
+				divs.push(div);
+			}
+		} else { // This is a redirected profile!
+			// profile
+			// options.response.vars
+			// Make an object...
+			// And send to profile
+			var div = profile(
+				{
+					name: options.response.vars.result.name,
+					title: options.response.vars.result.headline,
+					location: options.response.vars.result.demographics,
+					industry: '',
+					profile_url: options.response.vars.result.public_url,
+					vceit: '',
+				}
+			)
+			divs.push(div);
+		}
+		divs.sort(function(a, b) {
+			return b.num_bolds - a.num_bolds; // desc
+			//return a.num_bolds - b.num_bolds; // asc
+		});
+		
+		// Append the profile divs...
+		// 
+		//
+		for (var i in divs) {
+			out.appendChild(divs[i]);
+		}
+		
+		// Add a spacer
+		//
+		//
+		out.appendChild(''.div({style:'height:2000px;'}));
+	}
+	/**
+	 * profile
+	 * 
+	 * @returns
+	 * 	div
+	 * 		{div.num_bolds}		integer
+	 */
+	function profile(pobj) { // Takes profile obj
+		// str
+		pobj.title = (pobj.title) ? pobj.title : '--';
+		var title = bold_blue_black(pobj.title);
+		var location = bold_blue_black(pobj.location).replace('|', '<br>I:'); // Replace Industry here with <br>
+		var industry = (pobj.industry) ? bold_blue_black(pobj.industry) : '';
+		var vceit = bold_blue_black(pobj.vceit);
+		//vceit = (pobj.vceit == null)
+		
+		var str = 'N:' + MT__bold(pobj.name, o.bold_array)+'<br>L:'+location+'<br>T:' + title +'<br>I:' + industry +'<hr>';
+		
+		var sk_fmt = vceit;
+		var sk_div = ('S:'+(vceit=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
+		var sk_inn = document.createElement('span');
+		sk_inn.innerHTML = sk_fmt;
+		sk_inn.style.display = 'none';
+		sk_div.appendChild(sk_inn);
+		sk_div.inner = sk_inn;
+		sk_div.addEventListener('mouseover', function() {
+			this.inner.style.display = 'block';
+		}, false);
+		sk_div.addEventListener('mouseout', function() {
+			this.inner.style.display = 'none';
+		}, false);
+		
+		// Change "S:" background color when there are "blue" bolds inside sk_div.
+		//
+		//
+		if (sk_div.innerHTML.indexOf('color:blue;')!= -1) {
+			sk_div.style.backgroundColor = 'aqua';
+		}
+		
+		//~ // Let's set the person's name & location close-by so it's possible to see it clearly.
+		//~ str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
+		
+		// Set dv
+		//
+		//
+		//
+		var tmp_class = 'class_' + pobj.profile_url.replace(/^(https?:\/\/|)(www\.|)/, '');
+		var dv =
+			str.div(
+				{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
+			);
+		dv.className = 'exe-result-create-dashboard-lipd ' + tmp_class + ' result_highlight'; // Create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
+		dv.profile_url = pobj.profile_url;
+		dv.headline = pobj.title;
+		dv.onclick = (options_object.hasOwnProperty('onclick_success')) ? options_object.onclick_success : function(e) {
+			options_object.out_element.value = this.profile_url;
+			this.style.backgroundColor = 'LightGreen';
+			if  (
+				/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(options_object.out_element.value) &&
+				/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(this.profile_url) &&
+				this.profile_url.indexOf('?') == -1
+				) // If valid...
+			{
+				doSubmit();
+			}
+		}
+		// Set this div's percent matched bolds!
+		// Actually, easier to implement is to just count the number of bold elemeents in this...
+		dv.num_bolds = dv.getElementsByTagName('b').length;
+		
+		// Add sk_div....
+		//
+		//
+		dv.appendChild(sk_div);
+		
+		// Add mouseover, mouseout.
+		// Note: This IS compatible with create_dashboard_find_url!
+		//
+		//
+		dv.addEventListener('mouseover', function() {// mouseover...
+			var x = document.getElementsByClassName(this.className.replace('exe-result-create-dashboard-lipd ',''));
+			for (var i in x) {
+				if (i == 'length') break;
+				x[i].style.backgroundColor = 'LightGreen';
+			}
+		}, false);
+		dv.addEventListener('mouseout', function() {// mouseout...
+			var tmpcl = this.className.replace('exe-result-create-dashboard-lipd ','');
+			var x = document.getElementsByClassName(tmpcl);
+			for (var i in x) {
+				if (i == 'length') break;
+				if (x[i].className == tmpcl || x[i].className == this.className)
+					x[i].style.backgroundColor = '';
+			}
+		}, false);
+		
+		return dv;
+	}
+	function bold_blue_black(str) {
+		str = MT__bold(str, o.bold_types_array, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+		str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
+		str = MT__bold(str, o.bold_array);
+		return str;
+	}
 }
 /**
  * create_dashboard_linkedin_pub_dir
@@ -11127,7 +11607,10 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	}
 	options_object.o = o; // ...
 	
-	/* BEGINS ITEMS */
+	/** BEGINS ITEMS 
+	 * textareas: first name (d3, d3b, d3c) last name (d3_, d3b_, d3c_)
+	 * */
+	//
 	// TODO
 	//  Make a column() function!
 	//
@@ -11136,11 +11619,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var d3 = document.createElement('textarea');
 	d3.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3);
-	//
 	var d3b = document.createElement('textarea');
 	d3b.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3b);
-	//
 	var d3c = document.createElement('textarea');
 	d3c.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3c);
@@ -11152,11 +11633,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var d3_ = document.createElement('textarea');
 	d3_.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3_);
-	//
 	var d3b_ = document.createElement('textarea');
 	d3b_.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3b_);
-	//
 	var d3c_ = document.createElement('textarea');
 	d3c_.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3c_);
@@ -11563,30 +12042,6 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
  */
 AMT___items_factory.prototype.search_container = function(options_object) {
 	// E.g. create 3 search+textarea divs
-	//~ o.container = new AMT___items_factory().search_container({
-		//~ divs: {num: 3} // Horizontal divs: yelp, tripadv, foursq. Default height=100%.
-		//~ style: 'width:99%;position:absolute;left:0;top:0;height:200px;overflow:hidden;',
-		//~ textareas: {num: 2} // Vertical textareas per div. Default height=40px.
-	//~ });
-	// RETURN:
-	//~ o.container.search[0].textareas[0].value = o.comp;
-	//~ o.container.search[0].textareas[1].value = o.addr;
-	//~ o.container.search[1].textareas[0].value = o.comp;
-	//~ o.container.search[1].textareas[1].value = o.addr;
-	//~ o.container.search[2].textareas[0].value = o.comp;
-	//~ o.container.search[2].textareas[1].value = o.addr;
-	
-	//~ 
-	//~ var d1 = document.createElement('div');
-	//~ d1.setAttribute('style','position:absolute;top:160px;left:0;width:80%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
-	//~ document.body.appendChild(d1);
-	//~ var d2  = document.createElement('textarea');
-	//~ d2.setAttribute('style','position:absolute;top:0px;left:0px;width:20%;height:30px;');
-	//~ document.body.appendChild(d2);
-	//~ var d2b = document.createElement('textarea');
-	//~ d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:20%;height:30px;');
-	//~ document.body.appendChild(d2b);
-	/*END ITEMS*/
 	
 	// Defaults
 	if (!options_object.hasOwnProperty('offset_top')) {
