@@ -27,6 +27,93 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Guo Xu
+	// Collect data from website
+	// Scrape of mca.gov.in/mcafoportal/viewDirectorMasterData.do
+	// https://worker.mturk.com/projects/3I2IYPM3ZTYL18QEKAMUEG5781LJ86/tasks/accept_random?auto_accept=true&from_submit=true
+	var s = '<p>1. Go to:&nbsp;<a href="http://www.mca.gov.in/mcafoportal/viewDirectorMasterData.do" target="_blank">http://www.mca.gov.in/mcafoportal/viewDirectorMasterData.do</a></p>\n\n<p>2. Click on the search icon (the magnifying glass)&nbsp;</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			//~ GM_addStyle('#workContent > div.col-xs-12.col-sm-8.content {width:50% !important;}');
+			//~ GM_addStyle('img {cursor:pointer;}');
+			var a = document.getElementsByTagName('a');
+			var n = /DoB: (\d+)\/(\d+)\/(\d{4})/.exec(ih); // 25\/09\/1952
+			if (n[1].length == 1) {
+				n[1] = '0'+n[1];
+			}
+			if (n[2].length == 1) {
+				n[2] = '0'+n[1];
+			}
+			var o = {
+				u: a[2].innerText.trim(),
+				n: n[1]+'/'+n[2]+'/'+n[3],
+				q: [
+					document.getElementById('din_dpin'),
+				],
+			}
+			AMT___addUserDecision(
+				'GuoXu,2018', function() {
+					return o.u;
+				}, ['Id(din_dpin)']
+			)
+			GM_xmlhttpRequest({
+				method: 'POST',
+				url: 'http://www.mca.gov.in/mcafoportal/dinLookup.do',
+				data: 'directorName='+encodeURIComponent(o.u)+'&fatherLastName=&dob='+encodeURIComponent(o.n), // 25/09/1952
+				//~ data: 'directorName='+encodeURIComponent(o.u)+'&fatherLastName=&dob='+o.n, // 25/09/1952
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						console.log('--0');
+						return;
+					}
+					try {
+						var j = JSON.parse(rs);
+						console.log(j);
+						if (j && j.directorList && j.directorList.length == 1) {
+							j = j.directorList[0];
+							var size = Object.keys(j).length;
+							if (!j.din || !j.directorName || !j.dob || !j.fatherLastName || size != 4) {
+								document.body.style.backgroundColor = 'blue';
+								console.log('--1a ',size);
+							} else if (j.dpin) {
+								document.body.style.backgroundColor = 'blue';
+								console.log('--1b');
+							} else if (/^\d{4,}$/.exec(j.din)) {// 4 or more numbers
+								o.q[0].value = j.din;
+								AMT___recordAndSubmit();
+							} else {
+								document.body.style.backgroundColor = 'blue';
+								console.log('--1c');
+							}
+						} else if (j.errors) {
+							if (j.errors.length == 1 && j.errors[0].errorDescription == 'No matching Director name found' && o.u.length > 2) {
+								o.q[0].value = 'NA';
+								AMT___recordAndSubmit();
+							}
+						} else {
+							document.body.style.backgroundColor = 'blue';
+							console.log('--2');
+						}
+					} catch(e) {
+						document.body.style.backgroundColor = 'blue';
+						console.log('--3');
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Soda / beverage job. Who is the requester?
 	// 
 	//
