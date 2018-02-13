@@ -11207,6 +11207,9 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// Date 
 			// Format is e.g. dd-Feb-yy
+			// todo January 30th, 2018
+			//		Feb 01, 2018 (1 to 01)
+			//		01.17.18
 			var tb = document.getElementsByTagName('table')[1];
 			var a = /<td><label>Published Date:<\/label><\/td>\n			<td>(\d+)-(\w+)-(\d+)<\/td>/.exec(tb.innerHTML);
 			if (a) {
