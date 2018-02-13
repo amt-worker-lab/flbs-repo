@@ -9511,11 +9511,24 @@ Laurens Hammond, Chicago, Ill.**/
 			// Button to fill in rest with N/A and submit.
 			// div to output profile info if necessary
 			var d3 = document.createElement('input');
-			d3.setAttribute('style','position:absolute;top:0px;left:10%;width:20%;height:20px;');
+			d3.setAttribute('style','position:absolute;top:0px;left:20%;width:10%;height:20px;');
 			d3.type = 'button';
 			d3.value = 'Submit';
+			document.body.appendChild(d3);
+			// Button to N/A all fields.
+			var d4 = document.createElement('input');
+			d4.setAttribute('style','position:absolute;top:0px;left:10%;width:10%;height:20px;');
+			d4.type = 'button';
+			d4.value = 'N/A';
+			document.body.appendChild(d4);
+			var d5 = document.createElement('input');
+			d5.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
+			d5.type = 'button';
+			d5.value = 'scope=any';
+			document.body.appendChild(d5);
+			/* END ITEMS */
+			// Fills in blanks with N/A and then submits.
 			d3.onclick = function() {
-				// Fills in N/A and then submits.
 				d1.style.display = 'none';
 				this.style.backgroundColor = 'LightGreen';
 				if (document.getElementById('web_url').value == '') {
@@ -9547,14 +9560,8 @@ Laurens Hammond, Chicago, Ill.**/
 				// Submit the form.
 				doSubmit();
 			}
-			document.body.appendChild(d3);
-			// Button to N/A all fields.
-			var d4 = document.createElement('input');
-			d4.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
-			d4.type = 'button';
-			d4.value = 'N/A';
+			// Fills in N/A in all fields and then submits.
 			d4.onclick = function() {
-				// Fills in N/A and then submits.
 				d1.style.display = 'none';
 				this.style.backgroundColor = 'LightGreen';
 				document.getElementById('web_url').value = 'http://NA.com';
@@ -9578,8 +9585,42 @@ Laurens Hammond, Chicago, Ill.**/
 				// Submit the form.
 				doSubmit();
 			}
-			document.body.appendChild(d4);
-			/* END ITEMS */
+			// Manual search where job == current OR past
+			d5.onclick = function() {
+				d1.innerText = '';
+				this.style.backgroundColor = 'lightgreen';
+				AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav({
+					parent: d1,
+					offsetTop: 0,
+					//~ bold_array: o.bold,
+					bold_name_array: o.bold_nm,
+					bold_location_array: o.bold_locn,
+					bold_types_array: o.bold_types,
+					auto_click_callback: function() {
+						// this is a loop through the profiles
+						// on the search page.
+						// auto click when match foudn.
+					},
+					nextTabOnProfileScrape: true,
+					companyScope: 'CURRENT_OR_PAST',
+					searches:[{
+						first: o.nm_obj.f,
+						last: o.nm_obj.l,
+						company: o.comp,
+						//~ location: o.locn,
+						//~ companyScope: '',
+					}],
+					scrape_profile_callback: sp_callback
+					//~ onclick_callback: function(e) {
+						
+					//~ },
+					//~ out_element: o.q[0], // Default is Profile URL to out_element
+					//~ search: {
+					//~ },
+					//~ search_results: {
+					//~ },
+				});
+			}
 			
 			// Enter key
 			window.addEventListener('keypress', function(e) {
@@ -9597,6 +9638,184 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 				doSubmit();
 				return false;
+			}
+			
+			// success profile callback
+			function sp_callback(options) {
+				// returns parsed profile result, or error.
+				// options.response.parsed.error
+				// options.response.parsed
+				if (options.response.parsed.error) {
+					//
+					console.log(options.response.parsed);
+					alert('scrape_profile_callback:error');
+					return;
+				}
+				// Success
+				console.log(options.response.parsed);
+				var sbm = true;
+				// Fill in.
+				var r = options.response.parsed;
+				if (!r.currentPosition) {
+					sbm = false;
+				}
+				if (!r.educationsView) {
+					sbm = false;
+				}
+				if (!r.previousPositions) {
+					sbm = false;
+				}
+				if (!r.previousPositions) {
+					sbm = false;
+				}
+				if (!r.profile || !r.profile.contactInfo || !r.profile.contactInfo.publicProfileUrl) {
+					sbm = false;
+					document.getElementById('web_url').style.border = '2px solid blue';
+				} else {
+					document.getElementById('web_url').value = r.profile.contactInfo.publicProfileUrl;
+					if (r.profile.contactInfo.publicProfileUrl.indexOf('linkedin.com/pub/') == -1 &&
+						r.profile.contactInfo.publicProfileUrl.indexOf('linkedin.com/in/') == -1
+					) {
+						sbm = false;
+						document.getElementById('web_url').style.border = '2px solid red';
+					}
+				}
+				// Show other
+				d1.style.display = 'none';
+				d2.style.display = '';
+				// Log some output
+				d2.innerText += '#positions:';
+				if (r.positionsView && r.positionsView.positions && r.positionsView.positions.length) {
+					d2.innerText += r.positionsView.positions.length-1;
+				} else {
+					d2.innerText += 0;
+				}
+				d2.innerText += '\n#schools:';
+				if (r.educationsView && r.educationsView.schools && r.educationsView.schools.length) {
+					d2.innerText += r.educationsView.schools.length-1;
+				} else {
+					d2.innerText += 0;
+				}	
+				d2.appendChild(document.createElement('hr'));
+				// current
+				var c = [
+					document.getElementById('current_firm'),
+					document.getElementById('current_title'),
+					document.getElementById('current_year')
+				];
+				if (r.currentPosition && r.currentPosition.position) {
+					c[0].value = r.currentPosition.position.companyName;
+					c[1].value = r.currentPosition.position.title;
+					if (r.currentPosition.position.formattedStartMonthYear) {
+						c[2].value = r.currentPosition.position.formattedStartMonthYear.replace(/^\w+\s+/, ''); // eg "April 2016"
+					} else {
+						c[2].value = 'N/A'; // Set it to the present year.
+					}
+				}
+				if (!/^\d{4}$/.exec(c[2].value)) {
+					sbm = false;
+					c[2].style.border = '2px solid blue';
+				}
+				// previous
+				// HMMMMMMMM.....
+				//		"3 most recent previous jobs ... If they
+				//		have 2 jobs happening at the same time,
+				//		take the most legal-sounding one."
+				var d = [];
+				var count = 1;
+				for (var i in r.positionsView.positions) {
+					if (i == 0) continue; // Skip the first one because it is the current!!
+					var x = r.positionsView.positions[i].position;
+					if (count >= 4) break;
+					var g = [
+						document.getElementById('previous_co_'+count),
+						document.getElementById('previous_title_'+count),
+						document.getElementById('previous_year_'+count),];
+					g[0].value = x.companyName;
+					g[1].value = x.title;
+					if (x.formattedStartMonthYear) {
+						g[2].value = x.formattedStartMonthYear.replace(/^\w+\s+/, '');
+					} else {
+						g[2].value = 'N/A';
+					}
+					if (!/^\d{4}$/.exec(g[2].value)) {
+						sbm = false;
+						g[2].style.border = '2px solid blue';
+					}
+					d.push(g); // add for later
+					count++;
+				}
+				if (count != 4) { // Fill in empty positions.
+					for (var i=count; i<=3; i++) {
+						document.getElementById('previous_co_'+i).value = 'N/A';
+						document.getElementById('previous_title_'+i).value = 'N/A';
+						document.getElementById('previous_year_'+i).value = 'N/A';
+					}
+				}
+				// education
+				// "Enter the person's Law School (Law School or LLB or Juris Doctorate) & Undergraduate University (Non-Law Bachelors Degree), if listed, and years of graduation for each. Do not list starting years for the schools - only graduation years.  For Undergrad, you are looking for where the person got their B.A. or non-law Bachelors Degree. For non-US Law Schools, you may see the degree listed as LLB or JD or Bachelors of Law."
+				var e = [];
+				var found_grad = false;
+				var found_ug = false;
+				for (var i in r.educationsView.schools) {
+					var x = r.educationsView.schools[i];
+					// Log output
+					var fs = (x.fieldOfStudy) ? '('+x.fieldOfStudy+')': '';
+					var dg = (x.degree) ? x.degree : 'No-Degree';
+					var dvstr = dg + fs + '\n' + x.schoolName + '\n' +
+						(x.startDateYear ? x.startDateYear : '-')+' to '+
+						(x.endDateYear ? x.endDateYear : '-')+'\n';
+					var dv = (dvstr).div({style: 'border-bottom:1px solid teal;', innerText: dvstr});
+					d2.appendChild(dv);
+					dv.degree = x.degree;
+					dv.schoolName = x.schoolName;
+					dv.endDateYear = x.endDateYear;
+					// grad
+					var dvb1 = document.createElement('input');
+					dvb1.type = 'button';
+					dvb1.value = 'grad';
+					dvb1.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('law_school').value = this.parentNode.schoolName;
+						if (this.parentNode.endDateYear) {
+							document.getElementById('graduation_year').value = this.parentNode.endDateYear;
+						} else {
+							document.getElementById('graduation_year').value = 'N/A';
+						}
+					}
+					dv.appendChild(dvb1);
+					//under
+					var dvb2 = document.createElement('input');
+					dvb2.type = 'button';
+					dvb2.value = 'undergrad';
+					dvb2.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('undergrad_school').value = this.parentNode.schoolName;
+						if (this.parentNode.endDateYear) {
+							document.getElementById('undergrad_graduation_year').value = this.parentNode.endDateYear;
+						} else {
+							document.getElementById('undergrad_graduation_year').value = 'N/A';
+						}
+					}
+					dv.appendChild(dvb2);
+					//
+					if (x.degree == 'Graduate Diploma in Law' && !found_grad) {
+						dvb1.click();
+						found_grad = true;
+					} else if (x.degree == 'BA' && !found_ug) {
+						dvb2.click();
+						found_ug = true;
+					} else {
+						// ... 
+					}
+				}
+				if (!found_grad || !found_ug) {
+					sbm = false;
+					d2.style.border = '2px solid blue';
+				}
+				if (sbm) {
+					document.body.style.backgroundColor = 'LightGreen';
+				}
 			}
 			
 			// ...
@@ -9619,178 +9838,7 @@ Laurens Hammond, Chicago, Ill.**/
 					company: o.comp,
 					//~ location: o.locn
 				}],
-				scrape_profile_callback: function(options) {
-					// returns parsed profile result, or error.
-					// options.response.parsed.error
-					// options.response.parsed
-					if (options.response.parsed.error) {
-						//
-						console.log(options.response.parsed);
-						alert('scrape_profile_callback:error');
-						return;
-					}
-					// Success
-					console.log(options.response.parsed);
-					var sbm = true;
-					// Fill in.
-					var r = options.response.parsed;
-					if (!r.currentPosition) {
-						sbm = false;
-					}
-					if (!r.educationsView) {
-						sbm = false;
-					}
-					if (!r.previousPositions) {
-						sbm = false;
-					}
-					if (!r.previousPositions) {
-						sbm = false;
-					}
-					if (!r.profile || !r.profile.contactInfo || !r.profile.contactInfo.publicProfileUrl) {
-						sbm = false;
-						document.getElementById('web_url').style.border = '2px solid blue';
-					} else {
-						document.getElementById('web_url').value = r.profile.contactInfo.publicProfileUrl;
-						if (r.profile.contactInfo.publicProfileUrl.indexOf('linkedin.com/pub/') == -1 &&
-							r.profile.contactInfo.publicProfileUrl.indexOf('linkedin.com/in/') == -1
-						) {
-							sbm = false;
-							document.getElementById('web_url').style.border = '2px solid red';
-						}
-					}
-					// Show other
-					d1.style.display = 'none';
-					d2.style.display = '';
-					// Log some output
-					d2.innerText += '#positions:';
-					if (r.positionsView && r.positionsView.positions && r.positionsView.positions.length) {
-						d2.innerText += r.positionsView.positions.length-1;
-					} else {
-						d2.innerText += 0;
-					}
-					d2.innerText += '\n#schools:';
-					if (r.educationsView && r.educationsView.schools && r.educationsView.schools.length) {
-						d2.innerText += r.educationsView.schools.length-1;
-					} else {
-						d2.innerText += 0;
-					}	
-					d2.appendChild(document.createElement('hr'));
-					// current
-					var c = [
-						document.getElementById('current_firm'),
-						document.getElementById('current_title'),
-						document.getElementById('current_year')
-					];
-					if (r.currentPosition && r.currentPosition.position) {
-						c[0].value = r.currentPosition.position.companyName;
-						c[1].value = r.currentPosition.position.title;
-						if (r.currentPosition.position.formattedStartMonthYear) {
-							c[2].value = r.currentPosition.position.formattedStartMonthYear.replace(/^\w+\s+/, ''); // eg "April 2016"
-						} else {
-							c[2].value = 'N/A'; // Set it to the present year.
-						}
-					}
-					if (!/^\d{4}$/.exec(c[2].value)) {
-						sbm = false;
-						c[2].style.border = '2px solid blue';
-					}
-					// previous
-					// HMMMMMMMM.....
-					//		"3 most recent previous jobs ... If they
-					//		have 2 jobs happening at the same time,
-					//		take the most legal-sounding one."
-					var d = [];
-					var count = 1;
-					for (var i in r.positionsView.positions) {
-						if (i == 0) continue; // Skip the first one because it is the current!!
-						var x = r.positionsView.positions[i].position;
-						if (count >= 4) break;
-						var g = [
-							document.getElementById('previous_co_'+count),
-							document.getElementById('previous_title_'+count),
-							document.getElementById('previous_year_'+count),];
-						g[0].value = x.companyName;
-						g[1].value = x.title;
-						g[2].value = x.formattedStartMonthYear.replace(/^\w+\s+/, '');
-						if (!/^\d{4}$/.exec(g[2].value)) {
-							sbm = false;
-							g[2].style.border = '2px solid blue';
-						}
-						d.push(g); // add for later
-						count++;
-					}
-					if (count != 4) { // Fill in empty positions.
-						for (var i=count; i<=3; i++) {
-							document.getElementById('previous_co_'+i).value = 'N/A';
-							document.getElementById('previous_title_'+i).value = 'N/A';
-							document.getElementById('previous_year_'+i).value = 'N/A';
-						}
-					}
-					// education
-					// "Enter the person's Law School (Law School or LLB or Juris Doctorate) & Undergraduate University (Non-Law Bachelors Degree), if listed, and years of graduation for each. Do not list starting years for the schools - only graduation years.  For Undergrad, you are looking for where the person got their B.A. or non-law Bachelors Degree. For non-US Law Schools, you may see the degree listed as LLB or JD or Bachelors of Law."
-					var e = [];
-					var found_grad = false;
-					var found_ug = false;
-					for (var i in r.educationsView.schools) {
-						var x = r.educationsView.schools[i];
-						// Log output
-						var fs = (x.fieldOfStudy) ? '('+x.fieldOfStudy+')': '';
-						var dg = (x.degree) ? x.degree : 'No-Degree';
-						var dvstr = dg + fs + '\n' + x.schoolName + '\n' +
-							(x.startDateYear ? x.startDateYear : '-')+' to '+
-							(x.endDateYear ? x.endDateYear : '-')+'\n';
-						var dv = (dvstr).div({style: 'border-bottom:1px solid teal;', innerText: dvstr});
-						d2.appendChild(dv);
-						dv.degree = x.degree;
-						dv.schoolName = x.schoolName;
-						dv.endDateYear = x.endDateYear;
-						// grad
-						var dvb1 = document.createElement('input');
-						dvb1.type = 'button';
-						dvb1.value = 'grad';
-						dvb1.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							document.getElementById('law_school').value = this.parentNode.schoolName;
-							if (this.parentNode.endDateYear) {
-								document.getElementById('graduation_year').value = this.parentNode.endDateYear;
-							} else {
-								document.getElementById('graduation_year').value = 'N/A';
-							}
-						}
-						dv.appendChild(dvb1);
-						//under
-						var dvb2 = document.createElement('input');
-						dvb2.type = 'button';
-						dvb2.value = 'undergrad';
-						dvb2.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							document.getElementById('undergrad_school').value = this.parentNode.schoolName;
-							if (this.parentNode.endDateYear) {
-								document.getElementById('undergrad_graduation_year').value = this.parentNode.endDateYear;
-							} else {
-								document.getElementById('undergrad_graduation_year').value = 'N/A';
-							}
-						}
-						dv.appendChild(dvb2);
-						//
-						if (x.degree == 'Graduate Diploma in Law' && !found_grad) {
-							dvb1.click();
-							found_grad = true;
-						} else if (x.degree == 'BA' && !found_ug) {
-							dvb2.click();
-							found_ug = true;
-						} else {
-							// ... 
-						}
-					}
-					if (!found_grad || !found_ug) {
-						sbm = false;
-						d2.style.border = '2px solid blue';
-					}
-					if (sbm) {
-						document.body.style.backgroundColor = 'LightGreen';
-					}
-				},
+				scrape_profile_callback: sp_callback
 				//~ onclick_callback: function(e) {
 					
 				//~ },

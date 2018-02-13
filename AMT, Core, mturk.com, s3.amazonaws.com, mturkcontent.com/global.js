@@ -11558,6 +11558,13 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		} else {
 			search = search.replace('&companyEntities=', '');
 		}
+		// Global options_object.companyScope.
+		// TODO: Make it on a case-by-case basis.
+		//		I.e., panel-by-panel.
+		//		Probably include a checkbox for this.
+		if (options_object.companyScope) {
+			search = search.replace('&companyScope=', options_object.companyScope);
+		}
 		// Location...
 		// E.g.
 		// https://www.linkedin.com/sales/search/ta/locations?query=Greater%20New%20York%20City%20Area&_=1518486716519
