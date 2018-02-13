@@ -11324,6 +11324,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	d3__.  addEventListener('keydown', ef.keydown__blur_field, true);
 	d3b__. addEventListener('keydown', ef.keydown__blur_field, true);
 	d3c__. addEventListener('keydown', ef.keydown__blur_field, true);
+	ef.mouseup__delete_range({
+		elements: [d3, d3b, d3c, d3_, d3b_, d3c_, d3__, d3b__, d3c__],
+		blur_element: true
+	});
+	
 	// Hide empty columns !!
 	//
 	//
@@ -11622,7 +11627,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		// Clear output.
 		out.innerText = '';
 		// Show num results.
-		var n = rs.length+' result'+
+		var n = out.txa.first.value + ',' + out.txa.last.value + ',' +
+			out.txa.company.value + ' - ' +
+			rs.length+' result'+
 			((rs.length != 1) ? 's' : ''); // Add "s"
 		out.appendChild(
 			n.div({style:'border-bottom:1px solid teal;'})

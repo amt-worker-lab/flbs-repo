@@ -9511,7 +9511,7 @@ Laurens Hammond, Chicago, Ill.**/
 			// Button to fill in rest with N/A and submit.
 			// div to output profile info if necessary
 			var d3 = document.createElement('input');
-			d3.setAttribute('style','position:absolute;top:0px;left:0%;width:30%;height:20px;');
+			d3.setAttribute('style','position:absolute;top:0px;left:10%;width:20%;height:20px;');
 			d3.type = 'button';
 			d3.value = 'Submit';
 			d3.onclick = function() {
@@ -9519,7 +9519,7 @@ Laurens Hammond, Chicago, Ill.**/
 				d1.style.display = 'none';
 				this.style.backgroundColor = 'LightGreen';
 				if (document.getElementById('web_url').value == '') {
-					//~ document.getElementById('web_url').value = 'http://NA.com';
+					document.getElementById('web_url').value = 'http://NA.com';
 					document.getElementById('web_url').style.border = '8px solid blue';
 					return false;
 				}
@@ -9548,6 +9548,37 @@ Laurens Hammond, Chicago, Ill.**/
 				doSubmit();
 			}
 			document.body.appendChild(d3);
+			// Button to N/A all fields.
+			var d4 = document.createElement('input');
+			d4.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
+			d4.type = 'button';
+			d4.value = 'N/A';
+			d4.onclick = function() {
+				// Fills in N/A and then submits.
+				d1.style.display = 'none';
+				this.style.backgroundColor = 'LightGreen';
+				document.getElementById('web_url').value = 'http://NA.com';
+				var fields = [
+					document.getElementById('current_firm'),
+					document.getElementById('current_title'),
+					document.getElementById('current_year'),
+					document.getElementById('graduation_year'),
+					document.getElementById('law_school'),
+					document.getElementById('undergrad_graduation_year'),
+					document.getElementById('undergrad_school')
+				];
+				for (var i=1; i<=3; i++) {
+					fields.push(document.getElementById('previous_co_'+i));
+					fields.push(document.getElementById('previous_title_'+i));
+					fields.push(document.getElementById('previous_year_'+i));
+				}
+				for (var i in fields) {
+					fields[i].value = 'N/A';
+				}
+				// Submit the form.
+				doSubmit();
+			}
+			document.body.appendChild(d4);
 			/* END ITEMS */
 			
 			// Enter key
@@ -9579,6 +9610,7 @@ Laurens Hammond, Chicago, Ill.**/
 				auto_click_callback: function() {
 					// this is a loop through the profiles
 					// on the search page.
+					// auto click when finding a match.
 				},
 				searches:[{
 					first: o.nm_obj.f,
@@ -9629,8 +9661,18 @@ Laurens Hammond, Chicago, Ill.**/
 					d1.style.display = 'none';
 					d2.style.display = '';
 					// Log some output
-					d2.innerText = '#positions:'+(r.positionsView.positions.length-1)+
-						'\n#schools:'+r.educationsView.schools.length;
+					d2.innerText += '#positions:';
+					if (r.positionsView && r.positionsView.positions && r.positionsView.positions.length) {
+						d2.innerText += r.positionsView.positions.length-1;
+					} else {
+						d2.innerText += 0;
+					}
+					d2.innerText += '\n#schools:';
+					if (r.educationsView && r.educationsView.schools && r.educationsView.schools.length) {
+						d2.innerText += r.educationsView.schools.length-1;
+					} else {
+						d2.innerText += 0;
+					}	
 					d2.appendChild(document.createElement('hr'));
 					// current
 					var c = [
@@ -9638,10 +9680,14 @@ Laurens Hammond, Chicago, Ill.**/
 						document.getElementById('current_title'),
 						document.getElementById('current_year')
 					];
-					if (r.currentPosition && r.currentPosition.position) { 
+					if (r.currentPosition && r.currentPosition.position) {
 						c[0].value = r.currentPosition.position.companyName;
 						c[1].value = r.currentPosition.position.title;
-						c[2].value = r.currentPosition.position.formattedStartMonthYear.replace(/^\w+\s+/, ''); // eg "April 2016"
+						if (r.currentPosition.position.formattedStartMonthYear) {
+							c[2].value = r.currentPosition.position.formattedStartMonthYear.replace(/^\w+\s+/, ''); // eg "April 2016"
+						} else {
+							c[2].value = 'N/A'; // Set it to the present year.
+						}
 					}
 					if (!/^\d{4}$/.exec(c[2].value)) {
 						sbm = false;
