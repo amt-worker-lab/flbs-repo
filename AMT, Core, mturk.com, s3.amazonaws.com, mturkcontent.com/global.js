@@ -11235,39 +11235,40 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	var br = document.createElement('br');
 	br.style.clear = 'both';
 	options_object.parent.appendChild(br);
-	// ROW 3 (location, display only!)
-	var d4 = document.createElement('div');
-	d4.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
-	options_object.parent.appendChild(d4);
-	//~ d4.txa = d3;
-	//~ d4.txa_ = d3_;
-	//~ d4.txa__ = d3__;
-	var d4b = document.createElement('div');
-	d4b.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
-	options_object.parent.appendChild(d4b);
-	//~ d4b.txa = d3b;
-	//~ d4b.txa_ = d3b_;
-	//~ d4b.txa__ = d3b__;
-	var d4c = document.createElement('div');
-	d4c.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
-	options_object.parent.appendChild(d4c);
-	//~ d4c.txa = d3c;
-	//~ d4c.txa_ = d3c_;
-	//~ d4c.txa__ = d3c__;
+	// ROW 4 (location)
+	var d3___ = document.createElement('textarea');
+	d3___.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3___);
+	var d3b___ = document.createElement('textarea');
+	d3b___.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3b___);
+	var d3c___ = document.createElement('textarea');
+	d3c___.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3c___);
 	// br
 	var br = document.createElement('br');
 	br.style.clear = 'both';
 	options_object.parent.appendChild(br);
-	// ROW 4 (divs)
+	// ROW 3 (location, display only!)
+	//~ var d4 = document.createElement('div');
+	//~ d4.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
+	//~ options_object.parent.appendChild(d4);
+	//~ var d4b = document.createElement('div');
+	//~ d4b.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
+	//~ options_object.parent.appendChild(d4b);
+	//~ var d4c = document.createElement('div');
+	//~ d4c.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
+	//~ options_object.parent.appendChild(d4c);
+	// ROW 5 (divs)
 	var d1 = document.createElement('div');
 	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1);
 	d1.txa = {
-		first:	d3,
-		last:	d3_,
-		company:d3__,
+		first:		d3,
+		last:		d3_,
+		company:	d3__,
+		lcoation:	d3___,
 	}
-	//~ d1.txa_ = d3_;
 	d1.results = []; // Fill in later
 	options_object.results.divs.push(d1);
 	//
@@ -11275,9 +11276,10 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1b);
 	d1b.txa = {
-		first:	d3b,
-		last:	d3b_,
-		company:d3b__,
+		first:		d3b,
+		last:		d3b_,
+		company:	d3b__,
+		location:	d3b___,
 	}
 	d1b.results = [];
 	options_object.results.divs.push(d1b);
@@ -11286,9 +11288,10 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1c);
 	d1c.txa = {
-		first:	d3c,
-		last:	d3c_,
-		company:d3c__,
+		first:		d3c,
+		last:		d3c_,
+		company:	d3c__,
+		location:	d3c___,
 	}
 	d1c.results = [];
 	options_object.results.divs.push(d1c);
@@ -11303,14 +11306,17 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	d3__.connecter = d1;
 	d3b__.connecter = d1b;
 	d3c__.connecter = d1c;
+	d3___.connecter = d1;
+	d3b___.connecter = d1b;
+	d3c___.connecter = d1c;
 	//
-	d3.onblur = d3_.onblur = d3__.onblur = function() {
+	d3.onblur = d3_.onblur = d3__.onblur = d3___.onblur = function() {
 		init(this);
 	}
-	d3b.onblur = d3b_.onblur = d3b__.onblur = function() {
+	d3b.onblur = d3b_.onblur = d3b__.onblur = d3b___.onblur = function() {
 		init(this);
 	}
-	d3c.onblur = d3c_.onblur = d3c__.onblur = function() {
+	d3c.onblur = d3c_.onblur = d3c__.onblur = d3c___.onblur = function() {
 		init(this);
 	}
 	// ...
@@ -11324,8 +11330,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	d3__.  addEventListener('keydown', ef.keydown__blur_field, true);
 	d3b__. addEventListener('keydown', ef.keydown__blur_field, true);
 	d3c__. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3___.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b___. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c___. addEventListener('keydown', ef.keydown__blur_field, true);
 	ef.mouseup__delete_range({
-		elements: [d3, d3b, d3c, d3_, d3b_, d3c_, d3__, d3b__, d3c__],
+		elements: [d3, d3b, d3c, d3_, d3b_, d3c_, d3__, d3b__, d3c__, d3___, d3b___, d3c___],
 		blur_element: true
 	});
 	
@@ -11337,9 +11346,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		d3b.style.display =
 		d3b_.style.display =
 		d3b__.style.display =
+		d3b___.style.display =
 		d3c.style.display =
 		d3c_.style.display =
 		d3c__.style.display =
+		d3c___.style.display =
 		
 		// Divs
 		d1b.style.display =
@@ -11349,13 +11360,17 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		d1.style.width = // div
 		d3.style.width = // first
 		d3_.style.width = // last
-		d4.style.width = '99%'; // location display
+		d3__.style.width = // company
+		d3___.style.width = // location
+			'99%';
 		
 		o.num_panels = 1; // Overwrite!
 		
 		// Location
 		if (options_object.searches[0].location) {
-			d4.innerText = options_object.searches[0].location;
+			d3___.value = options_object.searches[0].location;
+		} else {
+			d3___.style.display = 'none';
 		}
 		// Company
 		if (options_object.searches[0].company) {
@@ -11372,21 +11387,27 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		
 		d3.style.width =
 		d3_.style.width =
+		d3__.style.width =
+		d3___.style.width =
 		d3b.style.width =
 		d3b_.style.width =
+		d3b__.style.width =
+		d3b___.style.width =
 		d1.style.width =
-		d1b.style.width = 
-		d4.style.width =
-		d4b.style.width = '48%';
+		d1b.style.width = '48%';
 		
 		o.num_panels = 2; // Overwrite!
 		
 		// Location
 		if (options_object.searches[0].location) {
-			d4.innerText = options_object.searches[0].location;
+			d3___.value = options_object.searches[0].location;
+		} else {
+			d3___.style.display = 'none';
 		}
 		if (options_object.searches[1].location) {
-			d4b.innerText = options_object.searches[1].location;
+			d3b___.value = options_object.searches[1].location;
+		} else {
+			d3b___.style.display = 'none';
 		}
 		// Company
 		if (options_object.searches[0].company) {
@@ -11399,16 +11420,22 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		} else {
 			d3b__.style.display = 'none';
 		}
-	} else {
+	} else { // all three panels
 		// Location
 		if (options_object.searches[0].location) {
-			d4.innerText = options_object.searches[0].location;
+			d3___.value = options_object.searches[0].location;
+		} else {
+			d3___.style.display = 'none';
 		}
 		if (options_object.searches[1].location) {
-			d4b.innerText = options_object.searches[1].location;
+			d3b___.value = options_object.searches[1].location;
+		} else {
+			d3b___.style.display = 'none';
 		}
 		if (options_object.searches[2].location) {
-			d4c.innerText = options_object.searches[2].location;
+			d3c___.value = options_object.searches[2].location;
+		} else {
+			d3c___.style.display = 'none';
 		}
 		// Company
 		if (options_object.searches[0].company) {
@@ -11531,6 +11558,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 		} else {
 			search = search.replace('&companyEntities=', '');
 		}
+		// Location...
+		// E.g.
+		// https://www.linkedin.com/sales/search/ta/locations?query=Greater%20New%20York%20City%20Area&_=1518486716519
 		
 		server_obj.url = search;
 		server_obj.filename = new AMT___requests_factory().md5(search);
@@ -11716,6 +11746,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 	 */
 	function scrape_profile(e) {
 		this.style.backgroundColor = 'LightGreen';
+		if (options_object.nextTabOnProfileScrape) {
+			new AMT___core_factory().nextTab();
+		}
 		var so = generate_server_obj_profile(this.profile_url);
 		new AMT___site_scrapes().scrape({
 			site: 'LINKEDIN_SALESNAV_SEARCH_PROFILE',

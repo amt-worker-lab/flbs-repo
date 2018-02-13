@@ -9610,8 +9610,9 @@ Laurens Hammond, Chicago, Ill.**/
 				auto_click_callback: function() {
 					// this is a loop through the profiles
 					// on the search page.
-					// auto click when finding a match.
+					// auto click when match foudn.
 				},
+				nextTabOnProfileScrape: true,
 				searches:[{
 					first: o.nm_obj.f,
 					last: o.nm_obj.l,
