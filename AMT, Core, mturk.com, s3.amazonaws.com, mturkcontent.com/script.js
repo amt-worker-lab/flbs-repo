@@ -11131,15 +11131,34 @@ Laurens Hammond, Chicago, Ill.**/
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
-			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea,div {margin:0 !important;padding:0 !important;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {width:100% !important;}');
-			//~ GM_addStyle('#submitButton {width:100%;height:300px;position:absolute;top:400px;}');
+			// Task specific
+			GM_addStyle('.row.col-xs-12.col-md-10 {width:100% !important;}');
+			GM_addStyle('.col-xs-8.col-md-10.col-md-offset-1 {width:100% !important;}');
+			GM_addStyle('label {border:1px solid #a2a2a2;cursor:pointer;height:40px;vertical-align:middle;}');
+			GM_addStyle('label:hover {border:1px solid #a2a2a2;background-color:#ecbbec;}');
+			GM_addStyle('#submitButton {width:100%;height:300px;}');//position:absolute;top:400px;
 			var a = document.getElementsByTagName('a');
 			var o = {
 				url: a[1].innerText.trim(),
-				q: document.getElementById('Q1Url'),
+				q: [
+					document.getElementsByName('headline')[0],
+					document.getElementsByName('headline')[1],
+					document.getElementsByName('date')[0],
+					document.getElementsByName('date')[1],
+					document.getElementsByName('author')[0],
+					document.getElementsByName('author')[1],
+				],
 			}
+			// check first ones
+			o.q[0].click(); // simulate, to be sure...
+			o.q[0].checked = true;
+			o.q[2].click(); // simulate, to be sure...
+			o.q[2].checked = true;
+			o.q[4].click(); // simulate, to be sure...
+			o.q[4].checked = true;
 			
 			// scroll
 			document.getElementsByClassName('panel-primary')[0].scrollIntoView();
