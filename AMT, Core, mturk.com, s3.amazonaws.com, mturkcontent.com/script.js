@@ -11159,6 +11159,37 @@ Laurens Hammond, Chicago, Ill.**/
 			o.q[2].checked = true;
 			o.q[4].click(); // simulate, to be sure...
 			o.q[4].checked = true;
+			// Check auto-return / accept
+			// Authors
+			var tb = document.getElementsByTagName('table')[1];
+			var a = /<td><label>Author:<\/label><\/td>\n			<td>([^<]+)<\/td>/.exec(tb.innerHTML);
+			if (a) {
+				a = a[1].trim();
+				console.log('authors:', a);
+				var num_comm = a.split(',').length;
+				if (num_comm > 2) {
+					console.log('return');
+					// r&a
+					// return_and_accept
+					new AMT___core_factory().
+						iframe2parent__postMessage(
+							{
+								action: 'return_and_accept'
+							}
+						);
+					return;
+				} else if (a.length > 60) { // More than 60 characters
+					console.log('return');
+					new AMT___core_factory().
+						iframe2parent__postMessage(
+							{
+								action: 'return_and_accept'
+							}
+						);
+					return;
+				}
+			}
+
 			
 			// scroll
 			document.getElementsByClassName('panel-primary')[0].scrollIntoView();
@@ -11183,8 +11214,16 @@ Laurens Hammond, Chicago, Ill.**/
 				
 			}
 			
+			var opts = {
+				//~ task: 'AMT__all_pages_util',
+				highlight_strings_in_page: {
+					strings: o.hl_strings
+				},
+				//~ highlight_range_to_parent: true
+			}
 			AMT__setUtilityTabs([{
 				url: o.url,
+				options: opts
 			}]);
 		}
 		new run().f();
