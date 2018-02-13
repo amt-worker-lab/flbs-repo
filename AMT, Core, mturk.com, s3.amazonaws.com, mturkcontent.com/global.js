@@ -7111,6 +7111,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			// Likely the response is simply the string "404"
 			// or "501", etc. That is, LinkedIn gave back a
 			// non-200 response.
+			console.log(opts);
 			opts.response.parsed = {error: 'linkedin_salesnav_search: invalid response2!'};
 		}
 	}
