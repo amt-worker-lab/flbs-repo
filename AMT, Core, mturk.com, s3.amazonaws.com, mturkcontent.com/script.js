@@ -9508,7 +9508,9 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
 			//~ document.body.appendChild(d1b);
+			// Button to fill in rest with N/A and submit.
 			/* END ITEMS */
+			
 			
 			//
 			document.getElementById('submitButton').onclick = function(e) {
@@ -9576,8 +9578,8 @@ Laurens Hammond, Chicago, Ill.**/
 					d1.style.display = 'none';
 					d2.style.display = '';
 					// Log some output
-					d2.innerText = '#schools:'+r.educationsView.schools.length+
-						'\n#positions:'+r.positionsView.positions.length;
+					d2.innerText = '#positions:'+(r.positionsView.positions.length-1)+
+						'\n#schools:'+r.educationsView.schools.length;
 					d2.appendChild(document.createElement('hr'));
 					// current
 					var c = [
