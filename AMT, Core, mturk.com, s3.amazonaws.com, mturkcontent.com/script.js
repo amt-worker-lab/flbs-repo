@@ -76,13 +76,14 @@ function MT__RUN() {
 						console.log('--0');
 						return;
 					}
+					o.q[0].value = '';
 					try {
 						var j = JSON.parse(rs);
 						console.log(j);
 						if (j && j.directorList && j.directorList.length == 1) {
 							j = j.directorList[0];
 							var size = Object.keys(j).length;
-							if (!j.din || !j.directorName || !j.dob || !j.fatherLastName || size != 4) {
+							if (!j.din || !j.directorName || !j.dob || size != 4) { // !j.fatherLastName ||
 								document.body.style.backgroundColor = 'blue';
 								console.log('--1a ',size);
 							} else if (j.dpin) {
@@ -101,8 +102,24 @@ function MT__RUN() {
 								AMT___recordAndSubmit();
 							}
 						} else {
-							document.body.style.backgroundColor = 'blue';
-							console.log('--2');
+							var bad = false;
+							//~ o.q[0].value = '';
+							for (var i in j.directorList) {
+								var d = j.directorList[i];
+								var size = Object.keys(d).length;
+								if (!d.din || !d.directorName || !d.dob || size != 4) { // !j.fatherLastName ||
+									bad = true;
+								} else if (/^\d{4,}$/.exec(d.din)) {// 4 or more numbers
+									o.q[0].value += '\n'+d.din;
+								}
+							}
+							o.q[0].value = o.q[0].value.trim();
+							if (!bad) {
+								AMT___recordAndSubmit();
+							} else {
+								document.body.style.backgroundColor = 'blue';
+								console.log('--2');
+							}
 						}
 					} catch(e) {
 						document.body.style.backgroundColor = 'blue';
@@ -11106,6 +11123,53 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	
+	// Bruno Miranda
+	// Do the fields provided match the content in original article link?
+	// 
+	// 
+	s = '<p style="font-size: 0.9em;"><strong>Select \'YES\' if </strong>"Scraped Content" field matches the content in "Original Article Link" provided.&nbsp;<strong style="font-size: 0.9em;">Select \'NO\' if </strong><span style="font-size: 0.9em;">it does NOT.</span></p>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {width:100% !important;}');
+			//~ GM_addStyle('#submitButton {width:100%;height:300px;position:absolute;top:400px;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[1].innerText.trim(),
+				q: document.getElementById('Q1Url'),
+			}
+			
+			// scroll
+			document.getElementsByClassName('panel-primary')[0].scrollIntoView();
+			document.getElementsByClassName('table table-condensed table-bordered')[1].scrollIntoView();
+			console.log(o);
+			//~ o.q.focus();
+			//~ o.q.style.lineHeight = '44px';
+			//~ o.q.style.size = '44px';
+			//~ o.q.style.fontSize = '44px';
+			//~ document.body.ondblclick = function() {
+				//~ if(o.q.value == '') {
+					//~ o.q.value = 'no text';
+					//~ doSubmit();
+				//~ }
+			//~ }
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+				
+			}
+			
+			AMT__setUtilityTabs([{
+				url: o.url,
+			}]);
+		}
+		new run().f();
+	}
 	
 	// Christopher Bail
 	// Transcribing Words from Image for Academic Study of Non-Profits
@@ -11146,18 +11210,12 @@ Laurens Hammond, Chicago, Ill.**/
 				
 			}
 			
-			AMT__setUtilityTabs([
-						{
-							url: o.url,
-						}]);
-			
-			
-			
-			
+			AMT__setUtilityTabs([{
+				url: o.url,
+			}]);
 		}
 		new run().f();
 	}
-	
 	
 	// KoMarketing Associates
 	// Use a free online resource to find a specific value for a given web address
