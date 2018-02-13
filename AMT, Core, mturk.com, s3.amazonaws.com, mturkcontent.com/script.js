@@ -9513,11 +9513,15 @@ Laurens Hammond, Chicago, Ill.**/
 			var d3 = document.createElement('input');
 			d3.setAttribute('style','position:absolute;top:0px;left:0%;width:30%;height:20px;');
 			d3.type = 'button';
-			d3.value = 'N/A';
+			d3.value = 'Submit';
 			d3.onclick = function() {
+				// Fills in N/A and then submits.
+				d1.style.display = 'none';
 				this.style.backgroundColor = 'LightGreen';
 				if (document.getElementById('web_url').value == '') {
-					document.getElementById('web_url').value = 'http://NA.com';
+					//~ document.getElementById('web_url').value = 'http://NA.com';
+					document.getElementById('web_url').style.border = '8px solid blue';
+					return false;
 				}
 				var fields = [
 					document.getElementById('current_firm'),
@@ -9540,15 +9544,26 @@ Laurens Hammond, Chicago, Ill.**/
 						fields[i].value = 'N/A';
 					}
 				}
+				// Submit the form.
+				doSubmit();
 			}
 			document.body.appendChild(d3);
 			/* END ITEMS */
 			
-			
+			// Enter key
+			window.addEventListener('keypress', function(e) {
+				console.log(e);
+				if (e.keyCode == 13) {
+					d3.click();
+				}
+			}, false);
 			//
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
+				if (document.getElementById('web_url').value == '') {
+					return false;
+				}
 				doSubmit();
 				return false;
 			}
@@ -9561,6 +9576,10 @@ Laurens Hammond, Chicago, Ill.**/
 				bold_name_array: o.bold_nm,
 				bold_location_array: o.bold_locn,
 				bold_types_array: o.bold_types,
+				auto_click_callback: function() {
+					// this is a loop through the profiles
+					// on the search page.
+				},
 				searches:[{
 					first: o.nm_obj.f,
 					last: o.nm_obj.l,
@@ -9617,10 +9636,13 @@ Laurens Hammond, Chicago, Ill.**/
 					var c = [
 						document.getElementById('current_firm'),
 						document.getElementById('current_title'),
-						document.getElementById('current_year'),];
-					c[0].value = r.currentPosition.position.companyName;
-					c[1].value = r.currentPosition.position.title;
-					c[2].value = r.currentPosition.position.formattedStartMonthYear.replace(/^\w+\s+/, ''); // eg "April 2016"
+						document.getElementById('current_year')
+					];
+					if (r.currentPosition && r.currentPosition.position) { 
+						c[0].value = r.currentPosition.position.companyName;
+						c[1].value = r.currentPosition.position.title;
+						c[2].value = r.currentPosition.position.formattedStartMonthYear.replace(/^\w+\s+/, ''); // eg "April 2016"
+					}
 					if (!/^\d{4}$/.exec(c[2].value)) {
 						sbm = false;
 						c[2].style.border = '2px solid blue';
