@@ -9499,26 +9499,58 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:20px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			// div to output profile info if necessary
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;display:none;');
+			d2.setAttribute('style','position:absolute;top:20px;left:0%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;display:none;');
 			document.body.appendChild(d2);
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
 			//~ document.body.appendChild(d1b);
 			// Button to fill in rest with N/A and submit.
+			// div to output profile info if necessary
+			var d3 = document.createElement('input');
+			d3.setAttribute('style','position:absolute;top:0px;left:0%;width:30%;height:20px;');
+			d3.type = 'button';
+			d3.value = 'N/A';
+			d3.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				if (document.getElementById('web_url').value == '') {
+					document.getElementById('web_url').value = 'http://NA.com';
+				}
+				var fields = [
+					document.getElementById('current_firm'),
+					document.getElementById('current_title'),
+					document.getElementById('current_year'),
+					document.getElementById('graduation_year'),
+					document.getElementById('law_school'),
+					document.getElementById('undergrad_graduation_year'),
+					document.getElementById('undergrad_school')
+				];
+				for (var i=1; i<=3; i++) {
+					fields.push(document.getElementById('previous_co_'+i));
+					fields.push(document.getElementById('previous_title_'+i));
+					fields.push(document.getElementById('previous_year_'+i));
+				}
+				for (var i in fields) {
+					console.log(fields[i]);
+					fields[i].value = fields[i].value.trim();
+					if (fields[i].value == '') {
+						fields[i].value = 'N/A';
+					}
+				}
+			}
+			document.body.appendChild(d3);
 			/* END ITEMS */
 			
 			
 			//
 			document.getElementById('submitButton').onclick = function(e) {
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ if (o.q[0].value == '') { return false; }
-				//~ doSubmit();
-				//~ return false;
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
 			}
 			
 			// ...
