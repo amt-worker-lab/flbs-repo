@@ -11143,6 +11143,10 @@ Laurens Hammond, Chicago, Ill.**/
 			var a = document.getElementsByTagName('a');
 			var o = {
 				url: a[1].innerText.trim(),
+				title: null,
+				date: null,
+				author: null,
+				array_search: [],
 				q: [
 					document.getElementsByName('headline')[0],
 					document.getElementsByName('headline')[1],
@@ -11165,6 +11169,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var a = /<td><label>Author:<\/label><\/td>\n			<td>([^<]+)<\/td>/.exec(tb.innerHTML);
 			if (a) {
 				a = a[1].trim();
+				o.author = a;
 				console.log('authors:', a);
 				var num_comm = a.split(',').length;
 				if (num_comm > 2) {
@@ -11188,7 +11193,91 @@ Laurens Hammond, Chicago, Ill.**/
 						);
 					return;
 				}
+				// Add names to search.
+				console.log(a.clean_string_to_array());
+				//~ o.array_search.concat(
+					//~ a.clean_string_to_array()
+				//~ );
+				o.array_search = a.clean_string_to_array();
+				//~ a = a.split(',');
+				//~ for (var i in num_comm) {
+					//~ console.log(num_comm[i]);
+					
+				//~ }
 			}
+			// Date 
+			// Format is e.g. dd-Feb-yy
+			var tb = document.getElementsByTagName('table')[1];
+			var a = /<td><label>Published Date:<\/label><\/td>\n			<td>(\d+)-(\w+)-(\d+)<\/td>/.exec(tb.innerHTML);
+			if (a) {
+				o.date = a.slice(1).join('-');
+				
+				// 01-feb-2018;
+				o.array_search.push(a[1]+'-'+a[2]+'-20'+a[3]);
+				o.array_search.push(a[2]+'-'+a[1]+'-20'+a[3]);
+				o.array_search.push(a[1]+'-'+a[2]+'-'+a[3]);
+				o.array_search.push(a[2]+'-'+a[1]+'-'+a[3]);
+				
+				// 01 feb 2018
+				o.array_search.push(a[1]+' '+a[2]+' 20'+a[3]);
+				o.array_search.push(a[1]+' '+a[2]+', 20'+a[3]);
+				o.array_search.push(a[1]+'. '+a[2]+' 20'+a[3]);
+				o.array_search.push(a[1]+'. '+a[2]+', 20'+a[3]);
+				
+				// feb 01 2018
+				o.array_search.push(a[2]+' '+a[1]+' 20'+a[3]);
+				o.array_search.push(a[2]+' '+a[1]+', 20'+a[3]);
+				o.array_search.push(a[2]+'. '+a[1]+' 20'+a[3]);
+				o.array_search.push(a[2]+'. '+a[1]+', 20'+a[3]);
+				
+				// 01/feb/2018
+				o.array_search.push(a[2]+'/'+a[1]+'/20'+a[3]);
+				o.array_search.push(a[1]+'/'+a[2]+'/20'+a[3]);
+				o.array_search.push(a[2]+'/'+a[1]+'/'+a[3]);
+				o.array_search.push(a[1]+'/'+a[2]+'/'+a[3]);
+				
+				// 2018
+				o.array_search.push('20'+a[3]);
+				
+				var months = {
+					Jan: 'January',
+					Feb: 'February',
+					Mar: 'March',
+					Apr: 'April',
+					May: 'May',
+					Jun: 'June',
+					Jul: 'July',
+					Aug: 'August',
+					Sep: 'September',
+					Oct: 'October',
+					Nov: 'November',
+					Dec: 'December',
+				}
+				if (months[a[2]]) {
+					var m = months[a[2]];
+					// 01 feb 2018
+					o.array_search.push(a[1]+' '+m+' 20'+a[3]);
+					o.array_search.push(a[1]+' '+m+', 20'+a[3]);
+					o.array_search.push(a[1]+'. '+m+' 20'+a[3]);
+					o.array_search.push(a[1]+'. '+m+', 20'+a[3]);
+					
+					// feb 01 2018
+					o.array_search.push(m+' '+a[1]+' 20'+a[3]);
+					o.array_search.push(m+' '+a[1]+', 20'+a[3]);
+					o.array_search.push(m+'. '+a[1]+' 20'+a[3]);
+					o.array_search.push(m+'. '+a[1]+', 20'+a[3]);
+				}
+			}
+			// Title
+			var tb = document.getElementsByTagName('table')[1];
+			var a = /<td><label>Headline:<\/label><\/td>\n			<td>([^<]+)<\/td>/.exec(tb.innerHTML);
+			if (a) {
+				o.title = a[1].trim();
+				
+				// 2018
+				o.array_search.push(o.title);
+			}
+			console.log(o);
 
 			
 			// scroll
@@ -11215,9 +11304,9 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			
 			var opts = {
-				//~ task: 'AMT__all_pages_util',
+				task: 'AMT__all_pages_util',
 				highlight_strings_in_page: {
-					strings: o.hl_strings
+					strings: o.array_search
 				},
 				//~ highlight_range_to_parent: true
 			}

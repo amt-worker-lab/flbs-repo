@@ -21527,6 +21527,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'AB2WW1DFMYT5F':true,  //The req. known as "Shopping" (doing receipts)
 		};
 		ignore_requesters = {
+			'Ibotta Turk':true,
 			'MONSE1':true,
 			'UX Research':true,
 			'Raihani Lab':true,
