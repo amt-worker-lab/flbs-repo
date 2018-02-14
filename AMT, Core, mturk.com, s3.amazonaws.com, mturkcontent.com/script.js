@@ -57050,6 +57050,14 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();return;
 	}
 	/**
+	 * Facebook person search
+	 * 
+	 * https://graph.facebook.com/search?q=alex%20alvarado,burnsville,%20minnesota&limit=10&type=user&_API_KEY_REDACTED_L20kVtbRMpJ7NEtElLCTZAZBveEo2xSxB6VFrQK49V92OZCaFqsfjKDGuxTScrHEj6PiGGa3tOq1iuk82p79sLgZD
+	 * 
+	 * Note: This API only exposes id,name of users.
+	 */
+	
+	/**
 	 * Facebook company search
 	 *  See https://developers.facebook.com/tools/accesstoken/ for 
 	 *  details on access tokens. The "user" token apparently returns
