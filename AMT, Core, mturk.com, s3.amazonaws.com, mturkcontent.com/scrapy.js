@@ -104,7 +104,8 @@ function init__scrapy() {
 				],
 				SKIP_SITES: {},
 				util_url: null,
-				try_autos: false, // Turn on and off as necessary. Default=false (off)
+				try_autos: true, // Turn on and off as necessary. Default=false (off)
+				try_autos_str: '^(finaid|financialaid|fin_aid|financial_aid|fin\.aid|financial\.aid)@'
 				//~ auto_emails: ['info','contact','contactus','mail'],
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
@@ -192,7 +193,7 @@ function init__scrapy() {
 				var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(ssite + ' ("financial aid" OR "finaid" OR "financial" OR financial aid) (email OR e-mail OR contact OR mail)') + opts,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(ssite + ' ("financialaid@'+o.sd_allowed_domains[0]+'" OR "finaid@'+o.sd_allowed_domains[0]+'" OR "financial aid" OR "finaid" OR "financial" OR financial aid) (email OR e-mail OR contact OR mail)') + opts,
 					callback_function: sp,
 					host: MT___host
 				});
@@ -303,7 +304,7 @@ function init__scrapy() {
 											var mt = callback_obj.matches;
 											var reg = new RegExp(
 												//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-												'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+												o.try_autos_str +
 												__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 												'i'
 											);
