@@ -11133,13 +11133,15 @@ Laurens Hammond, Chicago, Ill.**/
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea,div {margin:0 !important;padding:0 !important;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {width:100% !important;}');
+			GM_addStyle('.container {width:100% !important;margin-top:20px;}');
 			// Task specific
 			//~ GM_addStyle('.row.col-xs-12.col-md-10 {width:100% !important;}');
 			//~ GM_addStyle('.col-xs-8.col-md-10.col-md-offset-1 {width:100% !important;}');
 			GM_addStyle('label {border:1px solid #a2a2a2;cursor:pointer;height:40px;vertical-align:middle;}');
 			GM_addStyle('label:hover {border:1px solid #a2a2a2;background-color:#ecbbec;}');
-			GM_addStyle('#submitButton {width:100%;height:300px;}');//position:absolute;top:400px;
+			GM_addStyle('#submitButton {width:100%;height:80px;position:absolute;top:0px;left:0;}');
+			GM_addStyle('textarea {height:200px;}');
+			GM_addStyle('radio {zoom:4;}');
 			var a = document.getElementsByTagName('a');
 			var o = {
 				url: a[1].innerText.trim(),
@@ -11161,7 +11163,7 @@ Laurens Hammond, Chicago, Ill.**/
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:40px;left:20%;width:79%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:80px;left:0%;width:20%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -11177,13 +11179,19 @@ Laurens Hammond, Chicago, Ill.**/
 					var rs = options.response.responseText;
 					if (options.response.status != 200) return;
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var n = '';
 					try {
 						var m = dom.getElementById('main');
-						o.q[4].value = m.innerText.trim();
+						o.q[4].value = m.innerText.trim()
+							.replace(/\t/g, '')
+							.replace(/\n +/g, '\n')
+							.replace(/\n\n+/g, '\n\n');
+						n = m.innerText.trim();
 					} catch(e) {
 						document.body.style.backgroundColor = 'aqua';
 					}
 					// Make buttons of years and "Months / seasons"
+					d1.appendChild(document.createElement('hr')); // add some space
 					var strs = []
 					strs.push('january');
 					strs.push('februray');
@@ -11201,7 +11209,36 @@ Laurens Hammond, Chicago, Ill.**/
 					strs.push('summer');
 					strs.push('winter');
 					strs.push('fall');
-					
+					var regex = new RegExp('('+strs.join('|')+')', 'gi');
+					var m;
+					var matches = {};
+					while (m = regex.exec(n)) {
+						if (matches[m[1]]) continue; // only show first occurrence
+						else matches[m[1]] = true;
+						var b = document.createElement('input');
+						b.type = 'button';
+						b.value = m[1];
+						d1.appendChild(b);
+						b.onclick = function() {
+							this.style.backgroundColor = 'lightgreen';
+							o.q[3].value = this.value;
+						}
+					}
+					d1.appendChild(document.createElement('hr'));
+					var m;
+					var regex = /(19|20)\d{2}/g;
+					while (m = regex.exec(n)) {
+						if (matches[m[0]]) continue; // only show first occurrence
+						else matches[m[0]] = true;
+						var b = document.createElement('input');
+						b.value = m[0];
+						b.type = 'button';
+						d1.appendChild(b);
+						b.onclick = function() {
+							this.style.backgroundColor = 'lightgreen';
+							o.q[2].value = this.value;
+						}
+					}
 				}
 			});
 			console.log(o);
@@ -11231,7 +11268,7 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			var strs = [];
 			for (var i=1900; i<=2025; i++) {
-				strs.push(String i);
+				strs.push(String (i));
 			}
 			strs.push('Philanthropy magazine');
 			strs.push('Philanthropy');
