@@ -11123,6 +11123,150 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	
+	// Justin Farrell
+	// Copy/Paste text from a Website & input the year
+	// 
+	// 
+	s = '<p style="text-align: center;"><strong><span style="color:#FF0000;">Article is from <em>Philanthropy</em> Magazine?</span> </strong>(look at the top and bottom of page to see this)&nbsp; &nbsp;&nbsp;<input name="Magazine" type="radio" value="Yes"> Yes &nbsp; &nbsp;<input name="Magazine" type="radio" value="No"> No</p>\n\n<p style="text-align: center;"><b><span style="color:#FF0000;">Year published</span></b><span style="color:#FF0000;">: </span><input name="Year" placeholder="Year" type="text"></p>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea,div {margin:0 !important;padding:0 !important;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {width:100% !important;}');
+			// Task specific
+			//~ GM_addStyle('.row.col-xs-12.col-md-10 {width:100% !important;}');
+			//~ GM_addStyle('.col-xs-8.col-md-10.col-md-offset-1 {width:100% !important;}');
+			GM_addStyle('label {border:1px solid #a2a2a2;cursor:pointer;height:40px;vertical-align:middle;}');
+			GM_addStyle('label:hover {border:1px solid #a2a2a2;background-color:#ecbbec;}');
+			GM_addStyle('#submitButton {width:100%;height:300px;}');//position:absolute;top:400px;
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[1].innerText.trim(),
+				//~ title: null,
+				//~ date: null,
+				//~ author: null,
+				//~ array_search: [],
+				q: [
+					document.getElementsByName('Magazine')[0],
+					document.getElementsByName('Magazine')[1],
+					document.getElementsByName('Year')[0],
+					document.getElementsByName('Month')[0],
+					document.getElementsByName('comments')[0],
+				],
+			}
+			// check first one
+			o.q[0].click(); // simulate, to be sure...
+			o.q[0].checked = true;
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:40px;left:20%;width:79%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.url,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return false;
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return;
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					try {
+						var m = dom.getElementById('main');
+						o.q[4].value = m.innerText.trim();
+					} catch(e) {
+						document.body.style.backgroundColor = 'aqua';
+					}
+					// Make buttons of years and "Months / seasons"
+					var strs = []
+					strs.push('january');
+					strs.push('februray');
+					strs.push('march');
+					strs.push('april');
+					strs.push('may');
+					strs.push('june');
+					strs.push('july');
+					strs.push('august');
+					strs.push('september');
+					strs.push('october');
+					strs.push('november');
+					strs.push('december');
+					strs.push('spring');
+					strs.push('summer');
+					strs.push('winter');
+					strs.push('fall');
+					
+				}
+			});
+			console.log(o);
+
+			
+			//~ // scroll
+			//~ document.getElementsByClassName('panel-primary')[0].scrollIntoView();
+			//~ document.getElementsByClassName('table table-condensed table-bordered')[1].scrollIntoView();
+			//~ console.log(o);
+			//~ o.q.focus();
+			//~ o.q.style.lineHeight = '44px';
+			//~ o.q.style.size = '44px';
+			//~ o.q.style.fontSize = '44px';
+			//~ document.body.ondblclick = function() {
+				//~ if(o.q.value == '') {
+					//~ o.q.value = 'no text';
+					//~ doSubmit();
+				//~ }
+			//~ }
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+				
+			}
+			var strs = [];
+			for (var i=1900; i<=2025; i++) {
+				strs.push(String i);
+			}
+			strs.push('Philanthropy magazine');
+			strs.push('Philanthropy');
+			strs.push('magazine');
+			strs.push('january');
+			strs.push('februray');
+			strs.push('march');
+			strs.push('april');
+			strs.push('may');
+			strs.push('june');
+			strs.push('july');
+			strs.push('august');
+			strs.push('september');
+			strs.push('october');
+			strs.push('november');
+			strs.push('december');
+			strs.push('spring');
+			strs.push('summer');
+			strs.push('winter');
+			strs.push('fall');
+			var opts = {
+				task: 'AMT__all_pages_util',
+				highlight_strings_in_page: {
+					strings: strs
+				},
+				//~ highlight_range_to_parent: true
+			}
+			AMT__setUtilityTabs([{
+				url: o.url,
+				options: opts
+			}]);
+		}
+		new run().f();
+	}
+	
 	// Bruno Miranda
 	// Do the fields provided match the content in original article link?
 	// 
