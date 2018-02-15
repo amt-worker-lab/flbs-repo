@@ -132017,15 +132017,16 @@ qatar,80
 	 * Damon
 	 * Christopher Diaz
 	 * Jacob Rosen
-	 * 
+	 * Michael Alksninis Jr
 	 * 
 	 * 
 	 */
+	// Michael Alksninis Jr
+	// Find the Main Phone Number for a Business
+
 	// 
 	// 
-	// 
-	// 
-	s = '<ol>\n	<li>Location of its headquarters (country). If headquartered in the USA, also write the state</li>\n	<li>Industry category. For example, "medical devices" or "chemical"</li>\n</ol>';
+	s = '<li>Find the main phone number for the listed companies</li>\n	<li>Phone number must be a valid/active phone number for the business</li>\n	<li>Ensure the phone number is for the correct business <strong>Location as indicated by City/State/Zip</strong></li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {};
@@ -132046,14 +132047,15 @@ qatar,80
 			
 			var t = document.getElementsByTagName('td');
 			var o = {
-				comp: t[1].innerText.trim(),
-				//city: t[3].innerText.trim(),
+				comp: t[3].innerText.trim(),
+				locn: t[7].innerText.trim()+', '+t[9].innerText.trim(),
+				zip: t[11].innerText.trim(),
 				//~ state: t[3].innerText.trim().stateAbbrToFull(),
-				//~ zip: t[5].innerText.trim(),
 				q: [
-					document.getElementById('WritingTexts'),
+					document.getElementById('web_url'),
 				]
 			}
+			o.zip = o.zip.replace(/^(\d{5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
 			dx1.setAttribute('style','position:absolute;top:158px;left:0%;width:99%;height:600px;border:1px dashed blue;');
@@ -132061,7 +132063,7 @@ qatar,80
 			var dx2 = document.createElement('textarea');
 			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:58%;height:40px;');
 			document.body.appendChild(dx2);
-			dx2.value = o.comp;
+			dx2.value = o.comp +', '+o.locn+' '+o.zip ;
 			//~ dx2.value = o.comp;
 			var dx3 = document.createElement('input'); // info div
 			dx3.value = 'N/A';
@@ -132134,14 +132136,19 @@ qatar,80
 					//~ state_abbr: o.q[1],
 				},
 				onclick_callback: function(opts) { // (opts)
-					console.log(opts);
-					document.body.style.backgroundColor = '';
+					//~ console.log(opts);
+					//~ document.body.style.backgroundColor = '';
 					//~ if (opts.o.final_location.phone == null || 
 						//~ opts.o.final_location.state_abbr == null ) {
 						//~ document.body.style.backgroundColor = 'blue';
 						//~ return;
 					//~ }
-					// Convert phone to three fields
+					// Convert phone to just numbers
+					opts.o.final_location.phone = opts.o.final_location.phone.replace(/[^\d]/g, '');
+					o.q[0].value = opts.o.final_location.phone;
+					if (o.q[0].value.length == 10) {
+						doSubmit();
+					}
 					//~ var sbm = true;
 					//~ opts.o.final_location.phone = opts.o.final_location.phone.replace(/[^\d]/g, '');
 					//~ var x = /^(\d{3})(\d{3})(\d{4})$/.exec(opts.o.final_location.phone);
