@@ -14069,8 +14069,7 @@ Laurens Hammond, Chicago, Ill.**/
 	//
 	// Visual Search Requester
 	// Identify Cellphone Cases
-	s='Visual Search RequesterVisual Search RequesterVisual Search RequesterVisual Search RequesterVisual Search RequesterVisual Search Requester'
-	if(ih.indexOf(s) != -1) {
+	if (0 == 1) {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td,fieldset,img,table {margin:0 !important;padding:0 !important;font-size:12px !important;}');
