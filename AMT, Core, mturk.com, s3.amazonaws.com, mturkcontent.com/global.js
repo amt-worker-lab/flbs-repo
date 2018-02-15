@@ -20490,7 +20490,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.hide_show2 = true;
 				var dv = document.createElement('div');
 				dv.setAttribute('style',
-					'white-space: nowrap;display:none;max-height: 180px;overflow-y: auto;overflow-x:hidden;padding:0 12px 0 0;border: 1px solid #a4a4a4;'
+					'white-space: nowrap;\
+					display:none;\
+					max-height: 180px;\
+					overflow-y: auto;\
+					overflow-x:hidden;\
+					padding:0 12px 0 0;\
+					border: 1px solid #a4a4a4;'
 				); // Add overflow only to Y-axis, no X-axis. Add padding to right side to avoid hiding the text.
 				var dates = row.distinct_dates; //NOT DOING THIS:+ ',' + row.distinct_dates2; //NOT DOING THIS:Combine these. Dates OLD Ascending + Dates NEW Ascending
 				dates = dates.split(','); // Split by comma
