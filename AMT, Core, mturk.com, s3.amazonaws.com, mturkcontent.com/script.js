@@ -68645,61 +68645,11 @@ Laurens Hammond, Chicago, Ill.**/
 				GM_addStyle('h3:hover {background-color:aqua;}');
 				GM_addStyle('h3 {width:40%;}');
 				
-				// ENDS HERE.........
-				//
-				//~ return;
-				
-				
-				//~ var x = document.getElementsByTagName('h3')[0];
-				//~ x.innerText = x.innerText.replace(/\n/g, ' ');
-				
-				//...
-				// This will change occasionally.
-				// Sometimes the first <b> on the page will be
-				// a note rather than the name!
-				//~ var b		= document.getElementsByTagName('b');
-				//~ var name	= b[0].innerText.trim();
-				//~ var addr	= b[1].innerText.trim();
-				//~ var btns	= document.getElementsByTagName('button');
-				//~ // Is this one with b[1] b[2]?
-				//~ if (b[1].parentNode.innerText.indexOf('Address:') == -1) {
-					//~ name = b[1].innerText.trim();
-					//~ addr = b[2].innerText.trim();
-				//~ }
-				
 				// vars
 				var o = {
-					//~ lat: null,
-					//~ lon: null,
-					//~ centerMapLat: this.value.match(/^[^;]+/)[0],
-					//~ centerMapLng: this.value.match(/[^;]+$/)[0],
-					//~ name: name,
-					//~ addr: addr,
-					//~ button_cannot_find: btns[0],
-					//~ max_streetview_height: 600, // default=600
-					//~ curr_map_view: null, // For Z hotkey
 					q: document.getElementById('polygon'),
 					
 				};
-				//~ console.log(o);
-				//~ if(o.name.toLowerCase() == 'marshalls') {
-					//~ document.body.style.backgroundColor = 'green';
-				//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
-					//~ document.body.style.backgroundColor = 'pink';
-				//~ }
-				
-				// Only add user decision if not running @ dev.
-				//~ if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-					//~ AMT___addUserDecision('Chios Polygon - Quality Control',
-						//~ function() {
-							//~ return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
-						//~ },
-						//~ [
-							//~ 'Id(polygon)',
-							//~ 'Id(reasons)'
-						//~ ]
-					//~ );
-				//~ }
 				// hide Ps
 				var p = document.getElementsByTagName('p');
 				var i,x;
