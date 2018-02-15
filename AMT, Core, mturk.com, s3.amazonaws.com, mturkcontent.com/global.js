@@ -19988,11 +19988,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		interval_update_timers();
 	}
 	
-	
-	
-	
 	/**
-	 * function interval_update_timers()
+	 * interval_update_timers()
 	 * 
 	 * Sets interval for time since posted timers.
 	 * Sets interval for pause timer.
@@ -20128,7 +20125,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 //~ */
 	
 	/**
-	 * function last_update_check_host
+	 * last_update_check_host
 	 */
 	function last_update_check_host(response) {
 		if (response.status != 200) {
@@ -20149,7 +20146,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		return true;
 	}
 	/**
-	 * function MT___page1_async_last_update()
+	 * MT___page1_async_last_update()
 	 * 
 	 * When was the last DB update?
 	 * 
@@ -20225,7 +20222,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	
 	/**
-	 * function has_new_alertable()
+	 * has_new_alertable()
 	 * 
 	 * 
 	 * @param	rs, 
@@ -20283,7 +20280,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	
 	/**
-	 * function rate_show_hide_button()
+	 * rate_show_hide_button()
 	 * 
 	 * @param	event
 	 */
@@ -20347,6 +20344,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		// Xhr
 		// Returns {...requesterIds...: {...row details...}}
+		//////////
+		// TODO: Are there many requester IDs here?
+		//////////
 		var obj = {
 			requesterIDs: [ tr.db_obj.requester_id ]
 		};
@@ -20363,6 +20363,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
+				console.log(rs);
 				
 				// Add table
 				new tasks_obj.ro_extended().table({
@@ -20395,13 +20396,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'Title',
 			'Qualifications',
 			'RWD',
-			'Time Allotted',
+			'Time', // Allotted
 			'Description',
 			'# Dup.',
-			'Requester ID',
-			'Requester Name',
-			'Group/Hash ID',
-			'Distinct Dates'
+			'ID', // Requester  ID
+			'Name', // Requester Name
+			'GID/HID', // Group/Hash ID
+			'Dates' // Distinct Dates
 		];
 		var thead = document.createElement('thead');
 		tb.appendChild(thead);
