@@ -11158,6 +11158,12 @@ Laurens Hammond, Chicago, Ill.**/
 				o.url = 'http://'+o.url;
 			}
 			o.domain = o.url.replace(/^https?:\/\/(www\.|)/gi, '');
+			// form reset button
+			o.q[3].ondblclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = '';
+				}
+			}
 			// check first one
 			//~ o.q[0].click(); // simulate, to be sure...
 			//~ o.q[0].checked = true;
@@ -11235,6 +11241,8 @@ Laurens Hammond, Chicago, Ill.**/
 							return;
 						}
 						rs = rs.toLowerCase();
+						rs = rs.replace(/president's day/gi, ''); // ignore!
+						rs = rs.replace(/presidents' day/gi, ''); // ignore!
 						if (
 							rs.indexOf('ceo') == -1 &&
 							rs.indexOf('president') == -1 &&
@@ -11278,15 +11286,15 @@ Laurens Hammond, Chicago, Ill.**/
 										// auto-fill if there is a space.
 										if (r.indexOf(' ') != -1) {
 											r = r.split(' ');
-											o.q[0].value = r[0];
-											o.q[1].value = r[r.length-1];
+											o.q[0].value = r[0].replace(/,$/,'');
+											o.q[1].value = r[r.length-1].replace(/,$/,'');
 										} else {
-											o.q[0].value = r;
+											o.q[0].value = r.replace(/,$/,'');
 										}
 									} else if (o.q[1].value == '') {
-										o.q[1].value = response.data.text_range.trim();
+										o.q[1].value = response.data.text_range.trim().replace(/,$/,'');
 									} else { // else always overwrite
-										o.q[2].value = response.data.text_range.trim();
+										o.q[2].value = response.data.text_range.trim().replace(/,$/,'');
 									}
 									o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
 								}
