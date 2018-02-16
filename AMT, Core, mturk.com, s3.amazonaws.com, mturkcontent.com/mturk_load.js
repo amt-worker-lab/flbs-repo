@@ -344,13 +344,14 @@ function mturk_load()
 		 * And do float/skip if desired
 		 * (If job is unaccepted + top window)
 		**/
-		var s,t,u,w;
-		s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
-		t=/you were viewing could not be accepted/; // Not accepted
-		//u=/The HIT you were viewing has expired/; //XXNot accepted
-		w=/Want to work on this HIT/; // Not accepted
+		var s=/In order to accept your next HIT, please type this word into the text box below/, // Captcha
+			t=/you were viewing could not be accepted/, // Not accepted
+			//u=/The HIT you were viewing has expired/, //XXNot accepted
+			w=/Want to work on this HIT/, // Not accepted
+			y='You must accept this Requester\'s HIT before working on it.', // Not accepted
+			z=document.body.innerText;
 		if  (
-				s.exec(ih) || t.exec(ih) || w.exec(ih)
+				s.exec(ih) || t.exec(ih) || w.exec(ih) || z.indexOf(y)
 			)
 		{
 			AMT__Global_Vars.isPreview = true;

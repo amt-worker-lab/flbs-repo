@@ -205090,24 +205090,30 @@ qatar,80
  */
  
 function top_window(okay_to_run) {
-	var s, s2, s3;
+	var s, s2, s3,
+		login_str = '<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ';
 	/**
 	 * Check job is accepted;
 	 * Check no captcha;
 	 * Check signed in;
 	 */
+	// Log some output to validate top window (Feb2018).
+	console.log('GM_getValue(\'mt_captcha\')',	GM_getValue('mt_captcha'));
+	console.log('AMT__Global_Vars.isPreview',	AMT__Global_Vars.isPreview);
+	console.log('AMT__Global_Vars',				AMT__Global_Vars);
+	console.log('ih.indexOf(login_str)',		ih.indexOf(login_str));
 	if  (
 		GM_getValue('mt_captcha') != '0' ||
 		AMT__Global_Vars.isPreview ||
 		//~ ih.indexOf('Want to work on this') != -1 ||
-		ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ') != -1
+		ih.indexOf(login_str) != -1
 		)
 	{
 		if  (// Is not captcha, is preview, is signed in
 			GM_getValue('mt_captcha') != '1' &&
 			AMT__Global_Vars.isPreview &&
 			//~ ih.indexOf('Want to work on this') == -1 &&
-			ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ') == -1 &&
+			ih.indexOf(login_str) == -1 &&
 			okay_to_run
 			)
 		{
