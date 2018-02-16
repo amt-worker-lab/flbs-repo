@@ -20422,19 +20422,48 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			for (var dbr in rs[rid]) {
 				// id, title, requester_id, requester_name, qualifications, groupId, reward, time_allotted, description
 				var row = rs[rid][dbr];
-				var short_desc = row.description.substr(0, 34).trim();
-				short_desc += (short_desc != row.description) ? '...' : '';
 				row.groupId = row.groupId == '' ? 'N/A' : row.groupId;
-				row.qualifications = row.qualifications.replace(/^ *\| */, '').replace(/ \| /g, '\n'); // Remove initial |, Break into new lines
-				var short_qual = row.qualifications.substr(0, 34).trim();
-				short_qual += (short_qual != row.qualifications) ? '...' : '';
+				// Old ellipsis
+				//~ var short_desc = row.description.substr(0, 34).trim();
+				//~ short_desc += (short_desc != row.description) ? '...' : '';
+				//~ row.qualifications = row.qualifications.replace(/^ *\| */, '').replace(/ \| /g, '\n'); // Remove initial |, Break into new lines
+				//~ var short_qual = row.qualifications.substr(0, 34).trim();
+				//~ short_qual += (short_qual != row.qualifications) ? '...' : '';
 				// ...
 				var short_desc = row.description,
-					short_qual = row.qualifications
+					short_qual = row.qualifications;
+				//=====================
+				// TR extra info.
+				//=====================
+				var tr2 = document.createElement('tr');
+				//~ tr2.className = 'ro-extended-tb-tr';
+				tr2.setAttribute('style','display:none;');
+				// TD
+				var td = document.createElement('td');
+				tr2.appendChild(td);
+				td.setAttribute('style', 'width: 50%;\
+					overflow: ;\
+					text-overflow: ;\
+					white-space: ;');
+				td.innerText = 'ID:\n\
+					Title:\n\
+					Qual.:\n\
+					Reward:\n\
+					Time:\n\
+					Dupl.:\n\
+					Req. ID:\n\
+					Reg. Name:\n\
+					Group ID:\n\
+					Hash ID:\n\
+					Dates Posted:';
+				tb.appendChild(tr2);
+				//=====================
 				// TR
+				//=====================
 				var tr = document.createElement('tr');
 				tr.className = 'ro-extended-tb-tr';
-				tr.onclick = toggle_td_display;
+				tr.addEventListener('click', toggle_td_display, false);
+				tr.extra_info = tr2;
 				tb.appendChild(tr);
 				// TD
 				var td = document.createElement('td');
@@ -20470,7 +20499,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				var td = document.createElement('td');
 				td.innerText = row.time_allotted;
 				tr.appendChild(td);
-				td.setAttribute('style', 'width: 2%;\
+				td.setAttribute('style', 'width: 6%;\
 					text-overflow: !important;');
 				// TD
 				var td = document.createElement('td');
@@ -20528,10 +20557,21 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.div = dv;
 				td.appendChild(dv);
 				tr.appendChild(td);
+				
 			}
 			GM_addStyle('.ro-extended-tb-tr td {max-width:0;white-space: nowrap;overflow: hidden; text-overflow: ellipsis;}');
 		}
 		function toggle_td_display(e) {
+			var ei = this.extra_info.style.display;
+			if (ei == 'none') { // hide
+				this.extra_info.style.display = '';
+				this.style.display = 'none';
+			} else { // show
+				this.extra_info.style.display = 'none';
+				this.style.display = '';
+			}
+			
+			return;
 			var tds = this.getElementsByTagName('td');
 			for (var i in tds) {
 				if (i == 'length') break;
