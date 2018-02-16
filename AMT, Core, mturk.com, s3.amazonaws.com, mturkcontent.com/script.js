@@ -11123,6 +11123,194 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	
+	// Brecht
+	// Find the President and Other Contact Data for Each Bank
+	// 
+	// 
+	s = '<li>The bank name must be an exact match.</li>\n	<li>The search links are provided to help you search faster but do not have to be the only resource you use.</li>\n	<li><b>Do NOT include vice presidents or chairman or other titles - only President or CEO</b>.</li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea,div {margin:0 !important;padding:0 !important;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {width:100% !important;margin-top:20px;}');
+			// Task specific
+			//~ GM_addStyle('.row.col-xs-12.col-md-10 {width:100% !important;}');
+			//~ GM_addStyle('.col-xs-8.col-md-10.col-md-offset-1 {width:100% !important;}');
+			//~ GM_addStyle('label {border:1px solid #a2a2a2;cursor:pointer;height:40px;vertical-align:middle;}');
+			//~ GM_addStyle('label:hover {border:1px solid #a2a2a2;background-color:#ecbbec;}');
+			GM_addStyle('#submitButton {width:100%;height:80px;position:absolute;top:0px;left:0;}');
+			//~ GM_addStyle('textarea {height:200px;}');
+			//~ GM_addStyle('radio {zoom:4;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: td[5].innerText.trim(),
+				domain: null,
+				q: [
+					document.getElementById('first-name'),
+					document.getElementById('last-name'),
+					document.getElementById('title'),
+					document.getElementById('source-url'),
+				],
+			}
+			o.domain = o.url.replace(/^https?:\/\/(www\.|)/gi, '');
+			// check first one
+			//~ o.q[0].click(); // simulate, to be sure...
+			//~ o.q[0].checked = true;
+			/* BEGIN ITEMS */
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style',
+				//~ 'position:absolute;top:80px;left:0%;width:20%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			//~ );
+			//~ document.body.appendChild(d1);
+			/* END ITEMS */
+			
+			// search for ceo, president
+			var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' +
+					encodeURIComponent(o.domain + ' ("president" OR "ceo" OR "chief executive officer")') + opts,
+				callback_function: sp,
+				host: MT___host
+			});
+			// SP
+			function sp(response_obj) {
+				//o.sd_start_urls
+				//o.sd_allowed_domains
+				var rs = response_obj;
+				if (!rs.length) {
+					// Try checking the front page for "ceo" or "president"
+					//
+					//
+					//
+					console.log('no results');
+					o.to_check.push(o.url);
+					return;
+				}
+				// Make sure ceo/pres is on the page.
+				// If so, the open util.
+				var num = 0;
+				o.to_check = [];
+				for (var i in rs) {
+					o.to_check.push(rs[i][0]);
+				}
+				// Init
+				check();
+			}
+			function check() {
+				if (!o.to_check.length) {
+					// none found.
+					// r&a
+					new AMT___core_factory().
+						iframe2parent__postMessage(
+							{
+								action: 'return_and_accept'
+							}
+						);
+					return;
+				}
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.to_check.shift(), // remove first
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							check();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							check();
+							return;
+						}
+						rs = rs.toLowerCase();
+						if (
+							rs.indexOf('ceo') == -1 &&
+							rs.indexOf('president') == -1 &&
+							rs.indexOf('c.e.o') == -1
+							)
+						{
+							check();
+							return;
+						}
+						var opts = {
+							task: 'AMT__all_pages_util',
+							highlight_strings_in_page: {
+								strings: ['president','pres','ceo','c.e.o.','chief executive officer',]
+							},
+							highlight_range_to_parent: true
+						}
+						//~ AMT__setUtilityTabs([{
+							//~ url: o.url,
+							//~ options: opts
+						//~ }]);
+						AMT__setUtilityTabs(
+							[{
+								url: o.url,
+								options: opts
+							}],
+							null,
+							{backgroundColor:'pink'},
+							true,
+							function(response) {
+								console.log(response);
+								if  (
+									response.hasOwnProperty('data') &&
+									response.data.hasOwnProperty('text_range')
+									)
+								{
+									console.log(response.data.text_range);
+									if (o.q[0].value == '') {
+										o.q[0].value = response.data.text_range.trim();
+									} else if (o.q[1].value == '') {
+										o.q[1].value = response.data.text_range.trim();
+									} else { // else always overwrite
+										o.q[2].value = response.data.text_range.trim();
+									}
+									o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
+								}
+								else if(response.removeThisUtilityTab) {
+									o.killTabCounter++;
+									o.finishedLoadingCounter++;
+									if(o.killTabCounter == numToExpect) {
+										document.body.style.backgroundColor = 'silver';
+										AMT___Floater.skip();
+									}
+								}
+								else if(response.found) {
+									o.finishedLoadingCounter++;
+								}
+								
+								if(o.finishedLoadingCounter == numToExpect && o.killTabCounter != numToExpect) {
+									document.body.style.backgroundColor = 'white';
+									AMT___Floater.accept();
+								}
+							}
+						);
+					}
+				});
+			}
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();
+	}
+	
 	// Justin Farrell
 	// Copy/Paste text from a Website & input the year
 	// 

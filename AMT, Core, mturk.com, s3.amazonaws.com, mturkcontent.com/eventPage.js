@@ -597,8 +597,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//console.log(sender.tab.window);
 		//console.log(sender.window);
 		chrome.windows.getLastFocused({}, function(window) {
-			console.log(window);
-			chrome.windows.update(window.id, {state:'fullscreen'});
+			// Disable fullscreen on load, Feb2018.
+			// Change {} to {state:'fullscreen'} for fullscreen.
+			chrome.windows.update(window.id, {});
 			localStorage['UTILITY_WINDOW'] = window.id;
 			sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
 		});
