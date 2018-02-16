@@ -20386,7 +20386,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var rs = obj.result_set;
 		var tb = document.createElement('table');
 		tb.setAttribute('style',
-			'max-width:100%;border:0;'
+			'width:100%;border:0;'
 		);
 		tb.className = 'ro-extended-tb';
 		obj.parent_td.appendChild(tb); // Append to parent_td
@@ -20440,6 +20440,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				var td = document.createElement('td');
 				td.innerText = row.id;
 				tr.appendChild(td);
+				td.setAttribute('style', 'width: 6%;\
+					overflow: ;\
+					text-overflow: ;\
+					white-space: nowrap;');
 				// TD
 				var td = document.createElement('td');
 				td.innerText = row.title;
@@ -20461,10 +20465,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				var td = document.createElement('td');
 				td.innerText = row.reward;
 				tr.appendChild(td);
+				td.setAttribute('style', 'text-overflow:;');
 				// TD
 				var td = document.createElement('td');
 				td.innerText = row.time_allotted;
 				tr.appendChild(td);
+				td.setAttribute('style', 'width: 2%;\
+					text-overflow: !important;');
 				// TD
 				var td = document.createElement('td');
 				td.innerText = short_desc;
@@ -20522,7 +20529,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.appendChild(dv);
 				tr.appendChild(td);
 			}
-			GM_addStyle('.ro-extended-tb-tr td {width:0;white-space: nowrap;}');
+			GM_addStyle('.ro-extended-tb-tr td {max-width:0;white-space: nowrap;overflow: hidden; text-overflow: ellipsis;}');
 		}
 		function toggle_td_display(e) {
 			var tds = this.getElementsByTagName('td');
