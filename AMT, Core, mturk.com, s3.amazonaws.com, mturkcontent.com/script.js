@@ -11160,6 +11160,15 @@ Laurens Hammond, Chicago, Ill.**/
 			if (!/^https?:\/\//i.exec(o.url)) {
 				o.url = 'http://'+o.url;
 			}
+			if (o.url == '' || o.url.toLowerCase() == 'null') {
+				new AMT___core_factory().
+					iframe2parent__postMessage(
+						{
+							action: 'return_and_accept'
+						}
+					);
+				return;
+			}
 			o.domain = o.url.replace(/^https?:\/\/(www\.|)/gi, '');
 			// form reset button
 			o.q[3].ondblclick = function() {
@@ -11288,7 +11297,13 @@ Laurens Hammond, Chicago, Ill.**/
 									var r = response.data.text_range.trim();
 									if (o.q[0].value == '') {
 										// auto-fill if there is a space.
-										if (r.indexOf(' ') != -1) {
+										if (/^\w+ \w+[,\n]/.exec(r)) {
+											var x = /(^\w+) (\w+)[,\n]([\d\D]+)/.exec(r);
+											o.q[0].value = x[1];
+											o.q[1].value = x[2];
+											o.q[2].value = x[3].trim().replace(/[,\.]$/,'');
+										}
+										else if (r.indexOf(' ') != -1) {
 											r = r.split(' ');
 											o.q[0].value = r[0].replace(/,$/,'');
 											o.q[1].value = r[r.length-1].replace(/,$/,'');
