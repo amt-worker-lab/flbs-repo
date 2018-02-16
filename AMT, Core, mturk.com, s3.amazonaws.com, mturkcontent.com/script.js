@@ -129080,8 +129080,95 @@ qatar,80
 	 * HealthIT Reboot
 	 * Frederick W. Taylor
 	 * 
+	 * Docs:
+	 * 		User: https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/user-object
 	 * 
 	 */
+	// The Wharton School
+	// Identify the race of a Twitter user
+	// twitter_oauth_user
+	// 
+	s = '<p>Please use the&nbsp;provided Twitter username to answer the below question about the individual\'s race.&nbsp;</p>\n\n<p>These are all public figures so the information is readily available. In the case that a username is an organization (and not a person), please just select "No".</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
+			// Task specific
+			GM_addStyle('input[type="radio"] {zoom:4;cursor:pointer;}');
+			GM_addStyle('img {border:1px solid teal;min-width:200px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				// Remove leading if not account, just in case...
+				//~ user: td[1].innerText.trim().replace(/https?:\/\/w*\.*twitter\.com\//i, ''),
+				user: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Race')[0],
+					document.getElementsByName('Race')[1],
+				]
+			}
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			o.q[0].onclick = o.q[1].onclick = function(e) {
+				if (this.checked) {
+					doSubmit();
+				}
+			}
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?twitter_oauth_user='+encodeURIComponent(JSON.stringify({user: o.user})),
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) {
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					console.log(rs);
+					var r = JSON.parse(rs);
+					
+					// float text div, then float all images.
+					// float all images, plus border 1px
+					var d = ''.div({style:'float:left;'})
+					d.innerText = r.name+'\n'+
+						r.name+'\n'+
+						r.screen_name+'\n'+
+						'locn: '+r.location+'\n'+
+						'desc: '+r.description+'\n'+
+						'verified: '+r.verified+'\n'+
+						'lang: '+r.name;
+					d1.appendChild(d);
+					
+					var im = document.createElement('img');
+					im.src = r.profile_background_image_url_https;
+					d1.appendChild(im);
+					var im = document.createElement('img');
+					im.src = r.profile_banner_url;
+					d1.appendChild(im);
+					if (!r.default_profile_image) { // try if no default
+						var im = document.createElement('img');
+						im.src = r.profile_image_url_https;
+						d1.appendChild(im);
+					}
+					
+					
+					
+					//~ console.log(r);
+					//~ if (r && r.statuses_count && /^\d+$/.exec(r.statuses_count)) {
+						//~ o.q[0].value = r.statuses_count;
+						//~ doSubmit();
+					//~ } else {
+						//~ document.body.style.backgroundColor = 'blue';
+					//~ }
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// organic query #2
 	// 
 	// 
