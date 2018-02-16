@@ -11142,6 +11142,9 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('#submitButton {width:100%;height:80px;position:absolute;top:0px;left:0;}');
 			//~ GM_addStyle('textarea {height:200px;}');
 			//~ GM_addStyle('radio {zoom:4;}');
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '1');
+			AMT__Global_Vars.scriptVars['EnableTabsQ'] = 1;//??
+			new AMT___core_factory().nextTab();// nextTab to do queue b/c of chrome bug
 			var td = document.getElementsByTagName('td');
 			var o = {
 				url: td[5].innerText.trim().toLowerCase(),
@@ -11253,6 +11256,7 @@ Laurens Hammond, Chicago, Ill.**/
 							return;
 						}
 						// Success
+						addToTabsQ();
 						document.body.style.backgroundColor = 'LightGreen';
 						var opts = {
 							task: 'AMT__all_pages_util',
