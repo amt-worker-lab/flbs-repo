@@ -351,7 +351,7 @@ function mturk_load()
 			y='You must accept this Requester\'s HIT before working on it.', // Not accepted
 			z=document.body.innerText;
 		if  (
-				s.exec(ih) || t.exec(ih) || w.exec(ih) || z.indexOf(y)
+				s.exec(ih) || t.exec(ih) || w.exec(ih) || z.indexOf(y) != -1
 			)
 		{
 			AMT__Global_Vars.isPreview = true;
