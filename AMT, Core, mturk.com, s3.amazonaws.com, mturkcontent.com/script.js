@@ -132205,7 +132205,6 @@ qatar,80
 	 */
 	// Michael Alksninis Jr
 	// Find the Main Phone Number for a Business
-
 	// 
 	// 
 	s = '<li>Find the main phone number for the listed companies</li>\n	<li>Phone number must be a valid/active phone number for the business</li>\n	<li>Ensure the phone number is for the correct business <strong>Location as indicated by City/State/Zip</strong></li>';
@@ -132226,7 +132225,7 @@ qatar,80
 			GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			GM_addStyle('#workContent {position:absolute;top:0;left:0;}'); // MOVE THIS DOWN
 			//~ GM_addStyle('#full_address {position:absolute !important;top:-130px;left:0px;width:600px !important;}'); // MOVE STATE UP // -130?
-			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var t = document.getElementsByTagName('td');
 			var o = {
 				comp: t[3].innerText.trim(),
@@ -132234,7 +132233,7 @@ qatar,80
 				zip: t[11].innerText.trim(),
 				//~ state: t[3].innerText.trim().stateAbbrToFull(),
 				q: [
-					document.getElementById('web_url'),
+					document.getElementById('Phone'),
 				]
 			}
 			o.zip = o.zip.replace(/^(\d{5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
