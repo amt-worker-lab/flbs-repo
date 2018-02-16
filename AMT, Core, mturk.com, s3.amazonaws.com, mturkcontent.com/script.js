@@ -205078,17 +205078,15 @@ qatar,80
 
 
 /**
- * function top_window
- * TOP_WINDOW
+ * top_window
  * This is a collection of tasks that run in the top window of AMT.
- * By top window it is meant the non-iframe window on the page.
  * 
+ * Description: By top window it is meant the non-iframe window on the page.
  * 
  * @param okay_to_run
  * 
  * @returns ...
  */
- 
 function top_window(okay_to_run) {
 	var s, s2, s3,
 		login_str = '<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ';
