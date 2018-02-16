@@ -19955,7 +19955,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tasks_obj.div_container.setAttribute('style',
 			'position:absolute;'+
 			'top:40px;'+
-			'width:99%;'+
+			'max-width:99%;'+
 			'background-color:none;'+
 			'z-index:10000;'+ //Jan2018
 			'margin:0 0.5% 0 0;'
@@ -20374,7 +20374,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		});
 	}
 	/**
-	 * function o.ro_extended().table()
+	 * o.ro_extended().table()
 	 * 
 	 * @param obj, obj.result_set, obj.parent_td
 	 * 
@@ -20386,7 +20386,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var rs = obj.result_set;
 		var tb = document.createElement('table');
 		tb.setAttribute('style',
-			'width:100%;border:0;'
+			'max-width:100%;border:0;'
 		);
 		tb.className = 'ro-extended-tb';
 		obj.parent_td.appendChild(tb); // Append to parent_td
@@ -20428,6 +20428,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				row.qualifications = row.qualifications.replace(/^ *\| */, '').replace(/ \| /g, '\n'); // Remove initial |, Break into new lines
 				var short_qual = row.qualifications.substr(0, 34).trim();
 				short_qual += (short_qual != row.qualifications) ? '...' : '';
+				// ...
+				var short_desc = row.description,
+					short_qual = row.qualifications
 				// TR
 				var tr = document.createElement('tr');
 				tr.className = 'ro-extended-tb-tr';
@@ -20441,14 +20444,19 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				var td = document.createElement('td');
 				td.innerText = row.title;
 				tr.appendChild(td);
+				td.setAttribute('style', 'width: 40%;\
+					overflow: hidden;\
+					text-overflow: ellipsis;\
+					white-space: nowrap;');
 				// TD
 				var td = document.createElement('td');
 				td.innerText = short_qual;
 				td.hide_show3 = [short_qual, row.qualifications];
 				tr.appendChild(td);
-				//~ var td = document.createElement('td');
-				//~ td.innerText = row.qualifications.replace(/^ *\| */, '').replace(/ \| /g, '\n'); 
-				//~ tr.appendChild(td);
+				td.setAttribute('style', 'width: 20%;\
+					overflow: hidden;\
+					text-overflow: ellipsis;\
+					white-space: nowrap;');
 				// TD
 				var td = document.createElement('td');
 				td.innerText = row.reward;
@@ -20462,6 +20470,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.innerText = short_desc;
 				td.hide_show3 = [short_desc, row.description];
 				tr.appendChild(td);
+				td.setAttribute('style', 'width: 20%;\
+					overflow: hidden;\
+					text-overflow: ellipsis;\
+					white-space: nowrap;');
 				// TD
 				var td = document.createElement('td');
 				td.innerText = row.id_duplicate_jobs;
@@ -20500,13 +20512,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				); // Add overflow only to Y-axis, no X-axis. Add padding to right side to avoid hiding the text.
 				var dates = row.distinct_dates; //NOT DOING THIS:+ ',' + row.distinct_dates2; //NOT DOING THIS:Combine these. Dates OLD Ascending + Dates NEW Ascending
 				dates = dates.split(','); // Split by comma
-				dates.reverse(); // ! Reverse the order of the dates (latest first), from db is 2013 before 2014. So, e.g. 2014 before 2013.
+				// Reverse the order of the dates (latest first)!
+				// From db is, e.g., 2013 before 2014. Change to e.g.
+				// 2014 before 2013.
+				dates.reverse();
 				dates = dates.join('\n'); // Join by new line
 				dv.innerText = dates;
 				td.div = dv;
 				td.appendChild(dv);
 				tr.appendChild(td);
 			}
+			GM_addStyle('.ro-extended-tb-tr td {width:0;white-space: nowrap;}');
 		}
 		function toggle_td_display(e) {
 			var tds = this.getElementsByTagName('td');
@@ -20515,8 +20531,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				if (tds[i].hasOwnProperty('hide_show3')) { // This is for the description column. Switch between two values.
 					if (tds[i].innerText == tds[i].hide_show3[0]) {
 						tds[i].innerText = tds[i].hide_show3[1];
+						tds[i].style.whiteSpace = '';
 					} else {
 						tds[i].innerText = tds[i].hide_show3[0];
+						tds[i].style.whiteSpace = 'nowrap';
 					}
 					continue;
 				}
@@ -20530,8 +20548,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				if (!tds[i].hasOwnProperty('hide_show')) continue;
 				if (tds[i].innerText == '') {
 					tds[i].innerText = tds[i].hide_show;
+					tds[i].style.whiteSpace = '';
 				} else {
 					tds[i].innerText = '';
+					tds[i].style.whiteSpace = 'nowrap';
 				}
 			}
 		}
