@@ -11144,14 +11144,18 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ GM_addStyle('radio {zoom:4;}');
 			var td = document.getElementsByTagName('td');
 			var o = {
-				url: td[5].innerText.trim(),
+				url: td[5].innerText.trim().toLowerCase(),
 				domain: null,
+				to_check: [], // list of urls to check for pres/ceo 
 				q: [
 					document.getElementById('first-name'),
 					document.getElementById('last-name'),
 					document.getElementById('title'),
 					document.getElementById('source-url'),
 				],
+			}
+			if (!/^https?:\/\//i.exec(o.url)) {
+				o.url = 'http://'+o.url;
 			}
 			o.domain = o.url.replace(/^https?:\/\/(www\.|)/gi, '');
 			// check first one
@@ -11170,7 +11174,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				startPage: true,
 				url: 'https://startpage.com/do/metasearch.pl?query=' +
-					encodeURIComponent(o.domain + ' ("president" OR "ceo" OR "chief executive officer")') + opts,
+					encodeURIComponent('site:'+o.domain + ' ("president" OR "ceo" OR "chief executive officer" OR "president\'s message" OR "ceo\'s message")') + opts,
 				callback_function: sp,
 				host: MT___host
 			});
@@ -11178,7 +11182,7 @@ Laurens Hammond, Chicago, Ill.**/
 			function sp(response_obj) {
 				//o.sd_start_urls
 				//o.sd_allowed_domains
-				var rs = response_obj;
+				var rs = response_obj;console.log(rs);
 				if (!rs.length) {
 					// Try checking the front page for "ceo" or "president"
 					//
@@ -11186,12 +11190,12 @@ Laurens Hammond, Chicago, Ill.**/
 					//
 					console.log('no results');
 					o.to_check.push(o.url);
+					check();
 					return;
 				}
 				// Make sure ceo/pres is on the page.
 				// If so, the open util.
 				var num = 0;
-				o.to_check = [];
 				for (var i in rs) {
 					o.to_check.push(rs[i][0]);
 				}
@@ -11199,7 +11203,7 @@ Laurens Hammond, Chicago, Ill.**/
 				check();
 			}
 			function check() {
-				if (!o.to_check.length) {
+				if (!o.to_check.length) {console.log('no more');
 					// none found.
 					// r&a
 					new AMT___core_factory().
@@ -11210,9 +11214,12 @@ Laurens Hammond, Chicago, Ill.**/
 						);
 					return;
 				}
+				// next url
+				var chkUrl = o.to_check.shift();
+				console.log('checking', chkUrl);
 				// xhr
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: o.to_check.shift(), // remove first
+					URL: chkUrl,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
@@ -11237,6 +11244,8 @@ Laurens Hammond, Chicago, Ill.**/
 							check();
 							return;
 						}
+						// Success
+						document.body.style.backgroundColor = 'LightGreen';
 						var opts = {
 							task: 'AMT__all_pages_util',
 							highlight_strings_in_page: {
@@ -11250,7 +11259,7 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ }]);
 						AMT__setUtilityTabs(
 							[{
-								url: o.url,
+								url: chkUrl,
 								options: opts
 							}],
 							null,
@@ -11264,8 +11273,16 @@ Laurens Hammond, Chicago, Ill.**/
 									)
 								{
 									console.log(response.data.text_range);
+									var r = response.data.text_range.trim();
 									if (o.q[0].value == '') {
-										o.q[0].value = response.data.text_range.trim();
+										// auto-fill if there is a space.
+										if (r.indexOf(' ') != -1) {
+											r = r.split(' ');
+											o.q[0].value = r[0];
+											o.q[1].value = r[r.length-1];
+										} else {
+											o.q[0].value = r;
+										}
 									} else if (o.q[1].value == '') {
 										o.q[1].value = response.data.text_range.trim();
 									} else { // else always overwrite
@@ -11273,22 +11290,22 @@ Laurens Hammond, Chicago, Ill.**/
 									}
 									o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
 								}
-								else if(response.removeThisUtilityTab) {
-									o.killTabCounter++;
-									o.finishedLoadingCounter++;
-									if(o.killTabCounter == numToExpect) {
-										document.body.style.backgroundColor = 'silver';
-										AMT___Floater.skip();
-									}
-								}
-								else if(response.found) {
-									o.finishedLoadingCounter++;
-								}
+								//~ else if(response.removeThisUtilityTab) {
+									//~ o.killTabCounter++;
+									//~ o.finishedLoadingCounter++;
+									//~ if(o.killTabCounter == numToExpect) {
+										//~ document.body.style.backgroundColor = 'silver';
+										//~ AMT___Floater.skip();
+									//~ }
+								//~ }
+								//~ else if(response.found) {
+									//~ o.finishedLoadingCounter++;
+								//~ }
 								
-								if(o.finishedLoadingCounter == numToExpect && o.killTabCounter != numToExpect) {
-									document.body.style.backgroundColor = 'white';
-									AMT___Floater.accept();
-								}
+								//~ if(o.finishedLoadingCounter == numToExpect && o.killTabCounter != numToExpect) {
+									//~ document.body.style.backgroundColor = 'white';
+									//~ AMT___Floater.accept();
+								//~ }
 							}
 						);
 					}
