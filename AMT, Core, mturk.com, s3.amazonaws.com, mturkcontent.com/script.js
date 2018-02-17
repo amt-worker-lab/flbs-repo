@@ -142430,8 +142430,8 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.trim().string_to_mixed_case().replace(/^ndt\//, ''),	// comp
-				field2: td[3].innerText.trim().string_to_mixed_case(),	// comp
-				field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				field2: td[3].innerText.trim().string_to_mixed_case().replace(/\d+(-\d+|), Us$/, ''),	// comp
+				field3: td[5].innerText.trim().string_to_mixed_case().replace(/^1-/, '').replace(/-/g, ' '),	// comp
 				//~ field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
 				//~ lname: td[5].innerText.trim().string_to_mixed_case(),	// comp
 				//~ degree: td[7].innerText.trim().string_to_mixed_case(),	// industry
@@ -142482,7 +142482,7 @@ qatar,80
 				searches:[ // comp, comp+location, comp+industry
 					o.comp,
 					o.comp+' '+o.field2,
-					o.comp+' '+o.field3
+					'"'+o.field3+'"' // exact phone
 				],
 				search_results: {
 					//~ use_domain_only: true,
