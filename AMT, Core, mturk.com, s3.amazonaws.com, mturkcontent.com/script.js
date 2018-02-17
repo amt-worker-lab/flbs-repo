@@ -142408,11 +142408,119 @@ qatar,80
 	 * Iain Goodridge
 	 * Matthew Mesher
 	 * Guillaume De Sa
-	 * 
+	 * Liam Oliver
 	 * 
 	 * 
 	 * 
 	 */
+	// Liam Oliver
+	// Find the Website Address for Businesses
+	var s = '<div class="panel-body">\n<p>Use the business name, address, and phone number to find the website address for this restaurant.</p>\n\n<ul>\n	<li>Enter the website address for the <strong>official website </strong>of the restaurant.</li>\n	<li>Include the full address, e.g. http://www.thecheesecakefactory.com.</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch, GrubHub or Facebook.</li>\n	<li>Enter N/A if you\'re unable to find the website.&nbsp;</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			// Elements
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim().string_to_mixed_case().replace(/^ndt\//, ''),	// comp
+				field2: td[3].innerText.trim().string_to_mixed_case(),	// comp
+				field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				//~ field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				//~ lname: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				//~ degree: td[7].innerText.trim().string_to_mixed_case(),	// industry
+				//~ city: td[9].innerText.trim().string_to_mixed_case(),
+				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
+				boldArray: [],
+				//~ boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('web_url'),
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			//~ if (o.comp.indexOf(o.field2) == -1 && o.field2.length > 0) {
+				//~ o.spaced = o.comp + ' ' + o.field2;
+			//~ } else {
+				//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			//~ }
+			console.log(o);
+			//~ AMT___addUserDecision(
+				//~ 'patmoore,2018', function() {
+					//~ return o.comp;
+				//~ }, ['Name(oid1)[0]']
+			//~ )
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				search: {
+					//~ str_add_to_searches_hidden: ' site:linkedin.com/', //
+					//~ use_duckduckgo_search_engine: true,
+				},
+				searches:[ // comp, comp+location, comp+industry
+					o.comp,
+					o.comp+' '+o.field2,
+					o.comp+' '+o.field3
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+						//~ // Add trailing slash
+						//~ if (url[url.length-1] != '/')
+							//~ url += '/';
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (/\/dir\//.exec(obj.url)) {
+							//~ // ignore .../dir/...
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Raphael Varieras
 	// Collect the website address of a company on the Internet
 	var s = '<li><strong>Enter </strong>the website address for the <strong>official website </strong>of the company.</li>\n	<li><strong>Include </strong>the website address, e.g. http://www.thecompanyname.com&nbsp;</li>\n	<li>Skip the assignment if you CANNOT find the website</li>\n	<li><strong>Do NOT&nbsp;</strong>include URLs to city guides and other listings like Citysearch.</li>';
