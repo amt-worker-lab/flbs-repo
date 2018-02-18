@@ -206648,7 +206648,12 @@ function top_window(okay_to_run) {
 				//					iframe_url: urls[0],
 				//					site_code: 'ss',
 				//				});
-
+				
+				// Clean the title and remove most offending content.
+				// e.g. &#153;
+				result_obj.title = __js_clean_html_str(result_obj.title);
+				result_obj.title = result_obj.title.replace(/[®™©]/g, '');
+				
 				// Add a result button
 				var btn = document.createElement('input');
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
