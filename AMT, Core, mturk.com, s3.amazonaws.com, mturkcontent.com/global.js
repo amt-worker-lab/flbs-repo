@@ -12419,7 +12419,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .onclick_check_site_is200						BOOLEAN
  * .onclick_check_site_is200_err_callback			Function()
  * .search											Object
- * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
+ * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com". (Feature: Display "debug" message showing this.)
  * .hide_search_fields BOOLEAN
  * .AmtRecordAndSubmit								Use AMT__recordAndSubmit rather than doSubmit
  * 
@@ -12533,12 +12533,13 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				document.getElementById('naButtonForDashboardFindUrl').click();
 		}
 	});
-
 	//
 	var inp_top = document.createElement('input');
 	inp_top.setAttribute('type','input');
 	inp_top.setAttribute('style','width:80%;height:20px;');
 	options_object.parent.appendChild(inp_top);
+	// show debug on load
+	inp_top.value = (options_object.search.str_add_to_searches_hidden != '') ? '+' + options_object.search.str_add_to_searches_hidden : '';
 	// textareas
 	var d3 = document.createElement('textarea');
 	d3.setAttribute('style','float:left;width:33%;height:50px;');
