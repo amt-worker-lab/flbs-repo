@@ -142507,6 +142507,7 @@ qatar,80
 						new AMT___core_factory().nextTab();
 						// Scrape.
 						scrape_li(this, o);
+						return false;
 					},
 					//~ url_modifier_callback: function(url) { // Add @ symbol
 						//~ url = '@' + url;
@@ -142534,14 +142535,89 @@ qatar,80
 				AutoReturnAcceptIfZero: true,
 			});
 			function scrape_li(button, global_o) {
+				// 
+				// INIT _PROXY_REDACTED_
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: button.full_url,
+					headers_array: [
+					
+					],
+					//~ //catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+					catch_include_array: [
+						'999'
+					],
+					//~ seed: {
+						//~ companyId: companyId,
+						//~ count: count
+					//~ },
+					//~ return_init_object: true,
+					callback_function: function(rs) { // responseText
+						//var rs = response.responseText;
+						if (/^\d{3}$/.exec(rs)) { // If status code is returned
+							// Display output
+							//d2.innerText = 'START ERROR='+rs;
+							document.body.style.backgroundColor = 'red';
+							// ...
+							return;
+						}
+						var r = /Size<\/h3><p class="">([\d,\w\.]+-[\d,\w\.]+) employees?<\/p>/;
+						r = r.exec(rs);
+						if (r && r[1]) {
+							o.q[0].value = r[1];
+							//doSubmit();
+						}
+						
+						
+						
+						//~ // ...
+						//~ /*<li class="founded">
+						//~ <h4>Founded</h4>
+						//~ <p>2009</p>
+						//~ </li>*/
+						//~ // Parse
+						//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+						//~ var f = dom.getElementsByClassName('founded');
+						//~ if (!f || !f[0] || !f[0].innerText) {
+							//~ if (rs.indexOf('Founded') == -1) {
+								//~ out_field.value = 'N/A';
+								//~ try_sbm();
+							//~ }
+							//~ return;
+						//~ }
+						//~ var p = f[0].getElementsByTagName('p');
+						//~ if (!p || !p[0] || !p[0].innerText) {
+							//~ // This must be some unknown issue. Raise an alert.
+							//~ alert('p is missing......');
+							//~ return;
+						//~ }
+						//~ p = p[0].innerText.trim();
+						//~ if (/^\d+$/.exec(p)) {
+							//~ out_field.value = p;
+							//~ try_sbm();
+						//~ } else {
+							//~ // ??
+							//~ return;
+						//~ }
+					},
+					
+				});
+				
+				
+				return;
+				/*BELOW HERE NOT IMPLEMENTED*/
+				
+				
+				
+				
+				
+				
 				var opts = {
 					url: button.full_url,
 					do_not_save_to_file: false,
 					//~ cookie_filename: o.cookie_filename,
 					_PROXY_REDACTED__use_proxy: true,
 					change_proxy_strings: [ // Change proxy!
-						'To minimize abuse of the information available in this directory, procedures are in place to identify and halt suspicious use.', // ??
-						'There are several possible ways this could have happened including problems with connections, information being sent to the page, browser issues, etc.' // ??
+						// NOT YET IMPLEMENTED
 					]
 				}
 				opts = JSON.stringify(opts);
@@ -142553,7 +142629,7 @@ qatar,80
 						var rs = response.responseText;
 						if (/^\d{3}$/.exec(rs)) { // If status code is returned
 							// Display output
-							d2.innerText = 'START ERROR='+rs;
+							//d2.innerText = 'START ERROR='+rs;
 							document.body.style.backgroundColor = 'red';
 							// ...
 							return;

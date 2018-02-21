@@ -12987,8 +12987,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						var_skip_sites: SKIP_SITES, 
 						callback_function: false,
 						callback_if_ignore:
-							(options_object.hasOwnProperty('onclick_success')) ?
-							options_object.onclick_success :
+							(options_object.search_results.hasOwnProperty('onclick_success')) ?
+							options_object.search_results.onclick_success :
 							click_success,
 						full_url: link
 					}
@@ -13111,8 +13111,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			
 			// Onclick
 			//
-			txa.onclick = (options_object.hasOwnProperty('onclick_success')) ?
-				options_object.onclick_success :
+			txa.onclick =
+				(options_object.search_results.hasOwnProperty('onclick_success')) ?
+				options_object.search_results.onclick_success :
 				click_success;
 				
 			////////////////////////////////////
