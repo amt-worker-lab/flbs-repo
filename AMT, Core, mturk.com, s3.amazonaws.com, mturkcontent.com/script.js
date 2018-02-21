@@ -15912,7 +15912,10 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ GM_addStyle('img {cursor:pointer;}');
 			//~ GM_addStyle('.radio>label {font-size:2em !important;}');
 			//~ GM_addStyle('input[type="radio"] {zoom:1.4;}');
-			
+			// task specific
+			GM_addStyle('#d2b span {font-size:1.4em !important;}');
+			GM_addStyle('li {list-style-type: circle !important;}');
+			// vars
 			var a = document.getElementsByTagName('a');
 			var o = {
 				u: a[1].href,
@@ -15922,7 +15925,7 @@ Laurens Hammond, Chicago, Ill.**/
 					details: null,
 					images: null
 				},
-				bold: ['flea','fleas','tick','ticks','itch','eggs'],
+				bold: ['flea','fleas','tick','ticks','itch','eggs',],
 				q:[
 					//~ document.getElementsByName('classification')[0],// Single
 					//~ document.getElementsByName('classification')[1],//
@@ -15958,7 +15961,8 @@ Laurens Hammond, Chicago, Ill.**/
 			d2a.setAttribute('style','position:absolute;top:60px;width:60%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
 			document.body.appendChild(d2a);
 			var d2b = document.createElement('div'); // make small if unnecessary
-			d2b.setAttribute('style','position:absolute;top:60px;width:20%;height:500px;background-color:#eee;border:1px solid black;left:80%;overflow:auto;font-size:1.2em !important;');
+			d2b.setAttribute('style','position:absolute;top:60px;width:20%;height:500px;background-color:#eee;border:1px solid black;left:80%;overflow:auto;font-size:1.4em !important;');
+			d2b.id = 'd2b';
 			document.body.appendChild(d2b);
 			//~ o.q[0].onclick = o.q[1].onclick = function() {
 				//~ console.log(this.checked)
@@ -16001,8 +16005,16 @@ Laurens Hammond, Chicago, Ill.**/
 							// Add UL containing product info.
 							// a-unordered-list a-vertical a-spacing-none
 							var pi = dom.getElementsByClassName('a-unordered-list a-vertical a-spacing-none');
-							if (pi && pi.length)
+							if (pi && pi.length) {
+								// The list of <li>
+								var li = pi[0].getElementsByTagName('li');
+								if (li) {
+									for (var i=0; i<li.length; i++) {
+										li[i].innerHTML = MT__bold(li[i].innerHTML, o.bold);
+									}
+								}
 								d2b.appendChild(pi[0]);
+							}
 							
 							// Images.
 							// 
