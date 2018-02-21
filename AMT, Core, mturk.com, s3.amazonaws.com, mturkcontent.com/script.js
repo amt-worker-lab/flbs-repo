@@ -151283,9 +151283,9 @@ qatar,80
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[3].innerText.trim(),
-				phone: td[1].innerText.trim(),
-				addr: td[5].innerText.trim(),
+				comp: td[1].innerText.trim(),
+				//phone: td[1].innerText.trim(),
+				addr: td[3].innerText.trim(),
 				q: [
 					document.getElementById('web_url')
 				]
@@ -151320,11 +151320,12 @@ qatar,80
 			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.comp.clean_string_to_array() .concat(o.phone.clean_string_to_array()) .concat(o.addr.clean_string_to_array()),
+				bold_array: o.comp.clean_string_to_array()
+					.concat(o.addr.clean_string_to_array()),
 				searches:[
 					o.comp,
-					o.comp+' '+o.phone,
-					o.comp+' '+o.addr
+					o.comp+' '+o.addr,
+					o.comp+' '+o.addr+' company'
 				],
 				//~ load_success_callback: function() {
 					//~ addToTabsQ(); // Add to tabs queue.
