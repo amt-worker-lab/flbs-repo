@@ -18149,36 +18149,33 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			short_filename += '&' + i + '=' + this.obj_vars.post_request[i];
 		}
 		short_filename = encodeURIComponent(short_filename);
-		
+		// Header array
 		var header_array = (this.obj_vars.hasOwnProperty('headers_array')) ?
 				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
 				'';
+		// Cookie
+		var use_cookie_file = (this.obj_vars.hasOwnProperty('use_cookie_file')) ?
+				'&use_cookie_file=1' : '';
 		
 		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
-			o.local_URL_init		= 
+			o.local_URL_init = 
 				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
 				'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
 				'&short_filename='+short_filename+
 				'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
-				header_array;
+				header_array+use_cookie_file;
 		} else {
-			o.local_URL_init		= 
+			o.local_URL_init = 
 				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
 				'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
 				'&short_filename='+short_filename+
 				'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
-				header_array;
+				header_array+use_cookie_file;
 		}
 		
-		o.local_URL_complete	= 
-						'/mturk/.scripts/google/get-page.php?v='+short_filename;
-		
-		//
-		
-		//~ console.log(value);//remove later
-		//~ this.obj_vars.post_request = 'Yahoo! - 999 Unable to process request at this time -- error 999';
+		o.local_URL_complete = 
+			'/mturk/.scripts/google/get-page.php?v='+short_filename;
 	}
-	
 	// GET REQUEST
 	else
 	{

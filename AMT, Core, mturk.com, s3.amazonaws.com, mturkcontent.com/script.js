@@ -142539,8 +142539,14 @@ qatar,80
 				// INIT _PROXY_REDACTED_
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					url: button.full_url,
+					use_cookie_file: true, // Comment out if not using.
 					headers_array: [
-					
+						'accept-encoding: gzip, deflate, br',
+						'accept-language: en-US,en;q=0.9',
+						'upgrade-insecure-requests: 1',
+						'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',
+						'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+						'authority: www.linkedin.com',
 					],
 					//~ //catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
 					catch_include_array: [
