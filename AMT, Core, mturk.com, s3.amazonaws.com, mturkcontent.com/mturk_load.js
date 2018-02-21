@@ -316,7 +316,10 @@ function mturk_load()
 		 * Only continue on from here if on a job page.
 		 * https://worker.mturk.com/projects/.../tasks...
 		 */
-		if (!/^https?:\/\/(worker\.|)mturk\.com\/projects\/[A-Z0-9]+\/tasks/i.exec(l)) {
+		if (!/^https?:\/\/(worker\.|)mturk\.com\/projects\/[A-Z0-9]+\/tasks/i.exec(l) &&
+			!/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(document.location.href) &&
+			!/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(document.location.href)
+			) {
 			return;
 		}
 		
@@ -665,11 +668,12 @@ function mturk_load()
 		
 		// Return
 		// Continue if on localhost!
-		if  (
-			!/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(document.location.href) &&
-			!/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(document.location.href)
-			)
-			return;
+		//~ if  (
+			//~ !/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(document.location.href) &&
+			//~ !/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(document.location.href)
+			//~ )
+			//~ return;
+		//console.log('AMT__Global_Vars.core.is_running_on_local_dev');
 	}
 	
 	// Still here?
@@ -686,8 +690,12 @@ function mturk_load()
 	AMT__Global_Vars.initializeTabId();
 	AMT__Global_Vars.initializeHitId();
 	AMT__Global_Vars.core.is_running_on_local_dev = rl; // Boolean, True or False.
+	//console.log(AMT__Global_Vars.core.is_running_on_local_dev);
 	
-	// This is running at mturkcontent.com or amazonaws.com or http://localhost/mturk/.dev/HITs/
+	// This is running at mturkcontent.com or amazonaws.com
+	// or http://localhost/mturk/.dev/HITs/*
+	// or http://192.168.1.2/mturk/.dev/HITs/*
+	//
 	// If top window or job is ... then always run.
 	// ADDED TO DESCRIPTION: http://localhost/mturk/.dev/HITs/
 	//

@@ -15592,7 +15592,8 @@ Laurens Hammond, Chicago, Ill.**/
 	 * This is based on Grocery ROI.
 	 * 
 	 * Veronica Alvarado (includes secondary site scrape)
-	 * Amazon Requester Inc. - Tax Engine
+	 * Amazon Requester Inc. - Tax Engine - FORM (+FLEA/TICK)
+	 * Amazon Requester Inc. - Tax Engine - dietary supplement
 	 * 
 	 * 
 	 
@@ -15898,6 +15899,7 @@ Laurens Hammond, Chicago, Ill.**/
 	}
 	// Amazon Requester Inc. - Tax Engine
 	// In what form are these items consumed?
+	// AND FLEA/TICK
 	var s = '<div class="well"><span style="background-color: rgb(255, 255, 255);">Pick the correct category for the item from link. See the </span><strong style="background-color: rgb(255, 255, 255);">Selection Criteria</strong><span style="background-color: rgb(255, 255, 255);"> above for more details.</span></div>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -15920,6 +15922,7 @@ Laurens Hammond, Chicago, Ill.**/
 					details: null,
 					images: null
 				},
+				bold: ['flea','fleas','tick','ticks','itch','eggs'],
 				q:[
 					//~ document.getElementsByName('classification')[0],// Single
 					//~ document.getElementsByName('classification')[1],//
@@ -15952,10 +15955,10 @@ Laurens Hammond, Chicago, Ill.**/
 			d1a.setAttribute('style','position:absolute;top:0px;width:50%;height:60px;left:20%;font-size:2em;background-color:#eee;border:1px solid black;font-size:1.4em !important;overflow:auto;')
 			document.body.appendChild(d1a);
 			var d2a = document.createElement('div');
-			d2a.setAttribute('style','position:absolute;top:60px;width:70%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
+			d2a.setAttribute('style','position:absolute;top:60px;width:60%;height:500px;background-color:#eee;border:1px solid black;left:20%;overflow:auto;');
 			document.body.appendChild(d2a);
 			var d2b = document.createElement('div'); // make small if unnecessary
-			d2b.setAttribute('style','position:absolute;top:60px;width:30%;height:500px;background-color:#eee;border:1px solid black;left:90%;overflow:auto;');
+			d2b.setAttribute('style','position:absolute;top:60px;width:20%;height:500px;background-color:#eee;border:1px solid black;left:80%;overflow:auto;font-size:1.2em !important;');
 			document.body.appendChild(d2b);
 			//~ o.q[0].onclick = o.q[1].onclick = function() {
 				//~ console.log(this.checked)
@@ -16000,7 +16003,6 @@ Laurens Hammond, Chicago, Ill.**/
 							var pi = dom.getElementsByClassName('a-unordered-list a-vertical a-spacing-none');
 							if (pi && pi.length)
 								d2b.appendChild(pi[0]);
-							
 							
 							// Images.
 							// 
@@ -142420,6 +142422,7 @@ qatar,80
 	// Joel Davis
 	// Find the organization size and website for companies on LinkedIn
 	// linkedin comp. search + scrape
+	// utilizes _PROXY_REDACTED_(...)
 	var s = '<p>Given a large company&nbsp;name and headquarters location:</p>\n\n<ul>\n	<li>Find its&nbsp;number of employees range&nbsp;in Linkedin -&nbsp;website where you found the data is required. NOTE: Don\'t paste the number of users in Linkedin, but the employee range (eg. 101-500, 501-1000, 1001-5000, 5001-10,000&nbsp;10,001+, etc.)</li>\n	<li>To reiterate, answers should not just be a number, but should be the employee range given by LinkedIn. If you can\'t find this value immediately on the LinkedIn company page, you may have to press "See More".</li>\n	<li>If the company can not be found, please return "Company Not Found"</li>';
 	if (ih.indexOf(s) != -1)
 	{
