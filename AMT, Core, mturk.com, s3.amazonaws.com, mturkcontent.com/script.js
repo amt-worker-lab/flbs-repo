@@ -5788,8 +5788,98 @@ function MT__RUN() {
 	 * pdfocr
 	 * 
 	 * Viren Kapadia
+	 * Wilfried Haferland
 	 */
 	
+	// Wilfried Haferland
+	// Collect data from PDFs
+	//
+	// 
+	var s = '<li>click the link to download PDF</li>\n	<li>copy &amp; paste the following information if it\'s available and work your way down from top to bottom</li>\n	<li>example: <a href="https://alpinestock.com/mturk/sample.pdf" target="_blank">https://alpinestock.com/mturk/sample.pdf</a></li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('body {background-color:#eeffee;}');
+			//~ GM_addStyle('#mturk_form {margin-top:1000px;}');
+			//~ GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
+			//~ GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
+			//~ GM_addStyle('.panel-primary {position:absolute !important;top:1400px !important;}');
+			
+			// gm
+			//~ GM_addStyle('.wellName {width:96%;text-align:right;}');
+			//~ GM_addStyle('#submitButton {width:100%;height:600px;cursor:pointer;}');
+			//~ GM_addStyle('body {height:2000px;}');
+			
+			var x = document.getElementsByTagName('a');
+			var o = {
+				p: x[2].href,
+				//~ min_x: null, // to be set
+				//~ main_image: null, // to be set, contains main image that is used in canvas to make other mini-images
+				//~ df: null, // to be set, the disk file api for word matching
+				q: [
+					document.getElementById('acft'),
+					document.getElementById('time'),
+					document.getElementById('ops'),
+					document.getElementById('cust'),
+					document.getElementById('fuel'),
+					document.getElementById('oil'),
+					document.getElementById('rep'),
+					document.getElementById('hang'),
+					document.getElementById('hotel'),
+					document.getElementById('rst'),
+				],
+			}
+			/*BEGIN ITEMS*/
+			// Button to reset well names and min_x.
+			// Instead, just reload the page.
+			//~ var d1 = document.createElement('input');
+			//~ d1.type = 'button';
+			//~ d1.setAttribute('style', 'position:absolute;top:0px;left:0px;width:60px;');
+			//~ d1.value = 'reset page';
+			//~ document.body.appendChild(d1);
+			//~ d1.onclick = function() {
+				//~ document.location.href = document.location.href;
+			//~ }
+			//~ var d2 = document.createElement('input');
+			//~ d2.type = 'text';
+			//~ d2.setAttribute('style', 'position:absolute;top:0px;left:60px;width:100px;height:20px;');
+			//~ document.body.appendChild(d2);
+			//~ var d3 = document.createElement('textarea');
+			//~ d3.setAttribute('style', 'position:absolute;top:0px;left:160px;width:20px;height:20px;');
+			//~ document.body.appendChild(d3);
+			//~ var d4 = document.createElement('input');
+			//~ d4.type = 'button'
+			//~ d4.setAttribute('style', 'position:absolute;top:0px;left:180px;width:100px;height:20px;');
+			//~ document.body.appendChild(d4);
+			//~ if (localStorage['virenda-el'] == undefined) { // default = bottom
+				//~ localStorage['virenda-el'] = 'bottom';	
+			//~ }
+			//~ d4.value = localStorage['virenda-el'];
+			//~ d4.onclick = function() {
+				//~ if (this.value == 'bottom') {
+					//~ this.value = 'top';
+					//~ localStorage['virenda-el'] = 'top';
+				//~ } else {
+					//~ this.value = 'bottom';
+					//~ localStorage['virenda-el'] = 'bottom';
+				//~ }
+			//~ }
+			/*END ITEMS*/
+			// open the pdf for debugging
+			//~ x[0].onclick = function() {
+				//~ window.open(x[0].src);
+			//~ }
+			var n = new AMT___requests_factory().pdfocr({
+				url: o.p,
+				callback: success,
+				//goodchars_file: 'goodchars_VKapadia',
+				//psm: 6//11//5,
+			});
+		}
+		new run().f();
+	}
 	// Viren Kapadia
 	// Copy a table of data (20 rows x 6 columns) from an image
 	//

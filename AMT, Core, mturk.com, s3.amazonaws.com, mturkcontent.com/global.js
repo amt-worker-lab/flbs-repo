@@ -3017,6 +3017,15 @@ function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
+ * pdftotext
+ * Calls command line pdftotext.
+ * 
+ * Note that this is different from pdfocr (tesseract) and pdfimages.
+ */
+AMT___requests_factory.prototype.pdftotext = function(options) {
+	
+}
+/**
  * function pdfocr
  * 
  * options				Object.
