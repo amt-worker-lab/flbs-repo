@@ -5884,8 +5884,33 @@ function MT__RUN() {
 			});
 			function success(response) {
 				console.log(response);
-				var rs = response.rs;
+				var rs = response.rs.trim();
 				console.log(rs);
+				// 
+				
+				
+				//~ return;
+				
+				//~ var r = /^Heubach\n{2}([A-Z]{4})\n{2}([^\n]+)*/.exec(rs);
+				// Split by double-space, then have us edit.
+				rs = rs.split('\n\n');
+				var inp = 0;
+				var labels = {
+					'Heubach':true,
+					'ACFT':true,
+					'':true,
+					'':true,
+					'':true,
+					'':true,
+				}
+				for (var i in rs) {
+					rs[i] = rs[i].trim();
+					if (i==0) continue; // skip first
+					if (i==1) o.q[0].value = rs[i];
+					
+					o.q[inp].value = rs[i].trim();
+					inp++;
+				}
 			}
 		}
 		new run().f();
