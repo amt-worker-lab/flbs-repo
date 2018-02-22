@@ -15914,7 +15914,7 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ GM_addStyle('input[type="radio"] {zoom:1.4;}');
 			// task specific
 			GM_addStyle('#d2b span {font-size:1.4em !important;}');
-			GM_addStyle('li {list-style-type: circle !important;}');
+			GM_addStyle('li {list-style-type: circle !important;}'); // does not take effect.
 			// vars
 			var a = document.getElementsByTagName('a');
 			var o = {
