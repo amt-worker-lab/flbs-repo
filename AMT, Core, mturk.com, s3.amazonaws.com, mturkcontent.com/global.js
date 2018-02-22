@@ -3030,7 +3030,7 @@ AMT___requests_factory.prototype.pdftotext = function(options) {
 	var f = new AMT___requests_factory().md5(options.url);
 	// pdftotext
 	var opts = {
-		filename: f,
+		short_filename: f+'.pdf',
 		headers_array: [
 		],
 		//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
@@ -3054,7 +3054,7 @@ AMT___requests_factory.prototype.pdftotext = function(options) {
 				return
 			}
 			new AMT___requests_factory().io__command_line_request({
-				filename: f,
+				filename: f+'.pdf',
 				command: 'pdftotext',
 				callback: options.callback
 			});

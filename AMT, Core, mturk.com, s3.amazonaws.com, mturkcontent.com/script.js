@@ -5882,8 +5882,10 @@ function MT__RUN() {
 				url: o.url,
 				callback: success
 			});
-			function success(body) {
-				console.log(body);
+			function success(response) {
+				console.log(response);
+				var rs = response.rs;
+				console.log(rs);
 			}
 		}
 		new run().f();
