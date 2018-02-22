@@ -46,6 +46,13 @@ function MT__RUN() {
 				]
 			}
 			console.log(o);
+			// sbm form
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: o.u,
@@ -75,16 +82,19 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'blue';
 						return;
 					}
-					if (se.length != 1) {
+					if ((se.length != 1&&se.length != 2) ||
+						se[0].innerHTML.indexOf('social-fb') != -1) {
 						console.log(se);
 						document.body.style.backgroundColor = 'orange';
 						return;
 					}
 					var sbm = true;
+					// https://s3.amazonaws.com/mturk_bulk/hits/303178857/7_iWDw0yKbadwjQLt4Dplg.html?assignmentId=3YGXWBAF70IPOOSY3XQ616GDP7D4C1&hitId=39TX062QX1OPM7NV4DC8HVDWCMRX3J&workerId=_REDACTED_3_&turkSubmitTo=https%3A%2F%2Fwww.mturk.com
 					//em
 					var emlink = se[0].getElementsByClassName('email-link');
 					if (emlink) {
 						o.q[0].value = emlink[0].href.replace(/^mailto:/i, '');
+						//o.q[0].value = o.q[0].value.replace(/^https:\/\/s3\.amazonaws\.com\/mturk_bulk\/hits\/\d+\//i, ''); // watch out for relative url!
 						if (/mailto:/.exec(o.q[0].value)) { // validate
 							sbm = false;
 						}
@@ -95,17 +105,30 @@ function MT__RUN() {
 						o.q[0].value = 'N/A';
 					}
 					//web
+					// when blank it is the full url:
+					//rOHAqQ_1keshLyYa5SMR5Q.html?assignmentId=3IHR8NYAM728ID1282CCL6FKOQTP41&hitId=3S1L4CQSFX5866VVDYLWYWRVEROFA7&workerId=_REDACTED_3_&turkSubmitTo=https%3A%2F%2Fwww.mturk.com
 					var wslink = se[0].getElementsByClassName('web-site-link');
 					if (wslink) {
-						o.q[1].value = wslink.href;
+						o.q[1].value = wslink[0].href;
+						//o.q[1].value = o.q[1].value.replace(/^https:\/\/s3\.amazonaws\.com\/mturk_bulk\/hits\/\d+\//i, ''); // watch out for relative url!
 					} else if (/(https\/\/|http:\/\/)/i.exec(se[0].innerText)) {
 						sbm = false;
 					} else {
 						o.q[1].value = 'N/A';
 					}
 					//sbm
-					if (sbm)
+					if (sbm) {
+						if (o.q[0].value.indexOf('undefined') != -1)
+							return;
+						if (o.q[1].value.indexOf('undefined') != -1)
+							return;
+						// submit these manually!
+						if (o.q[0].value.indexOf('s3.amazonaws.com') != -1)
+							return;
+						if (o.q[1].value.indexOf('s3.amazonaws.com') != -1)
+							return;
 						doSubmit();
+					}
 				}
 			});
 		}
