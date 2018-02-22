@@ -1996,7 +1996,9 @@ String.prototype.getNameSynonyms = function() {
  *  .style		String; Default='';
  *  .innerHTML	Default=false;
  *  .ce			Default='div'; createElement. E.g. 'br'.
- *  .a			AppendTo: Default=false; An HTML element. If provided then it appends DIV to this item.
+ *  .a			AppendTo: Default=None. An HTML element, or True.
+ * 				If element, then it appends DIV to this item.
+ * 				If True, then appends this element to document.body.
  * 	.class
  */
 String.prototype.div = function(opts) {

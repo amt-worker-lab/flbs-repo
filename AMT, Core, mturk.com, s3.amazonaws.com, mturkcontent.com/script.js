@@ -5804,7 +5804,7 @@ function MT__RUN() {
 			GM_addStyle('body {background-color:#eeffee;}');
 			//~ GM_addStyle('#mturk_form {margin-top:1000px;}');
 			//~ GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
-			//~ GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
 			//~ GM_addStyle('.panel-primary {position:absolute !important;top:1400px !important;}');
 			
 			// gm
@@ -5819,6 +5819,8 @@ function MT__RUN() {
 				//~ main_image: null, // to be set, contains main image that is used in canvas to make other mini-images
 				//~ df: null, // to be set, the disk file api for word matching
 				q: [
+					document.getElementById('4-letter-code'),
+					document.getElementById('address'),
 					document.getElementById('acft'),
 					document.getElementById('time'),
 					document.getElementById('ops'),
@@ -5834,38 +5836,9 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			// Button to reset well names and min_x.
 			// Instead, just reload the page.
-			//~ var d1 = document.createElement('input');
-			//~ d1.type = 'button';
-			//~ d1.setAttribute('style', 'position:absolute;top:0px;left:0px;width:60px;');
-			//~ d1.value = 'reset page';
-			//~ document.body.appendChild(d1);
-			//~ d1.onclick = function() {
-				//~ document.location.href = document.location.href;
-			//~ }
-			//~ var d2 = document.createElement('input');
-			//~ d2.type = 'text';
-			//~ d2.setAttribute('style', 'position:absolute;top:0px;left:60px;width:100px;height:20px;');
-			//~ document.body.appendChild(d2);
-			//~ var d3 = document.createElement('textarea');
-			//~ d3.setAttribute('style', 'position:absolute;top:0px;left:160px;width:20px;height:20px;');
-			//~ document.body.appendChild(d3);
-			//~ var d4 = document.createElement('input');
-			//~ d4.type = 'button'
-			//~ d4.setAttribute('style', 'position:absolute;top:0px;left:180px;width:100px;height:20px;');
-			//~ document.body.appendChild(d4);
-			//~ if (localStorage['virenda-el'] == undefined) { // default = bottom
-				//~ localStorage['virenda-el'] = 'bottom';	
-			//~ }
-			//~ d4.value = localStorage['virenda-el'];
-			//~ d4.onclick = function() {
-				//~ if (this.value == 'bottom') {
-					//~ this.value = 'top';
-					//~ localStorage['virenda-el'] = 'top';
-				//~ } else {
-					//~ this.value = 'bottom';
-					//~ localStorage['virenda-el'] = 'bottom';
-				//~ }
-			//~ }
+			var d1 = ''.div(
+				{style:'position:absolute;top:0px;left:0px;height:200px;', a: true}
+			);
 			/*END ITEMS*/
 			// open the pdf for debugging
 			//~ x[0].onclick = function() {
@@ -5896,20 +5869,44 @@ function MT__RUN() {
 				rs = rs.split('\n\n');
 				var inp = 0;
 				var labels = {
-					'Heubach':true,
-					'ACFT':true,
-					'':true,
-					'':true,
-					'':true,
-					'':true,
+					//'Heubach':true, 
+					'ACFT': o.q[2],
+					'TIME': o.q[3],
+					'OPS':  o.q[4],
+					'CUST':  o.q[5],
+					'FUEL': o.q[6],
+					'OIL':  o.q[7],
+					'REP':  o.q[8],
+					'HANG':o.q[9],
+					'HOTEL':o.q[10],
+					'RST':  o.q[11],
 				}
+				var next = null;
 				for (var i in rs) {
 					rs[i] = rs[i].trim();
+					//console.log('line:',rs[i]);
+					//console.log('"next" is:',next);
 					if (i==0) continue; // skip first
-					if (i==1) o.q[0].value = rs[i];
-					
-					o.q[inp].value = rs[i].trim();
-					inp++;
+					if (i==1) { //code
+						o.q[0].value = rs[i].replace(/\n/g, ' ');
+						continue;
+					}
+					if (i==2) { //addr
+						o.q[1].value = rs[i].replace(/\n/g, ' ');
+						continue;
+					}
+					if (labels[rs[i]]) {
+						console.log('matches label:',labels[rs[i]]);
+						next = labels[rs[i]];
+					} else if (next) {
+						console.log('filling label with:',rs[i]);
+						next.value = rs[i].replace(/\n/g, ' ');
+						next = null;
+					} else {
+						// This is an "unknown" field (unexpected output)
+						// all others, track!
+						next = null;
+					}
 				}
 			}
 		}
