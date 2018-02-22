@@ -27,6 +27,91 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// garrett grohman
+	// Given Exhibitor Page, Provide Email and Website
+	// 
+	var s = '<li>The email and website will be located on the bottom right of the exhibitor page under "Get in Touch Online"</li>\n	<li>Email can be found by right clickcing the button that says&nbsp;"Send an Email" and Website by right clicking the&nbsp;"Visit Website" button.&nbsp;</li>\n	<li>A select few companies may not have an email or website. Please fill the blank with N/A if that is the case</li>\n	<li>Have an awesome day and thanks for the help!</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			var a = document.getElementsByTagName('td');
+			var o = {
+				u: a[3].innerText.trim(),
+				q: [
+					document.getElementsByName('Email')[0],
+					document.getElementsByName('Website')[0],
+				]
+			}
+			console.log(o);
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					// social-exhibitors
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var se = dom.getElementsByClassName('social-exhibitors');
+					if (!se) {
+						//
+						console.log(se);
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					if (se.length != 1) {
+						console.log(se);
+						document.body.style.backgroundColor = 'orange';
+						return;
+					}
+					var sbm = true;
+					//em
+					var emlink = se[0].getElementsByClassName('email-link');
+					if (emlink) {
+						o.q[0].value = emlink[0].href.replace(/^mailto:/i, '');
+						if (/mailto:/.exec(o.q[0].value)) { // validate
+							sbm = false;
+						}
+					} else if (	se[0].innerText.indexOf('@') != -1 ||
+								/(e-mail|email)/i.exec(se[0].innerText)) {
+						sbm = false;
+					} else {
+						o.q[0].value = 'N/A';
+					}
+					//web
+					var wslink = se[0].getElementsByClassName('web-site-link');
+					if (wslink) {
+						o.q[1].value = wslink.href;
+					} else if (/(https\/\/|http:\/\/)/i.exec(se[0].innerText)) {
+						sbm = false;
+					} else {
+						o.q[1].value = 'N/A';
+					}
+					//sbm
+					if (sbm)
+						doSubmit();
+				}
+			});
+		}
+		new run().f();
+	}
+	
 	// Guo Xu
 	// Collect data from website
 	// Scrape of mca.gov.in/mcafoportal/viewDirectorMasterData.do
@@ -5793,7 +5878,7 @@ function MT__RUN() {
 	
 	// Wilfried Haferland
 	// Collect data from PDFs
-	//
+	// A3K27VAP4UKBGF
 	// 
 	var s = '<li>click the link to download PDF</li>\n	<li>copy &amp; paste the following information if it\'s available and work your way down from top to bottom</li>\n	<li>example: <a href="https://alpinestock.com/mturk/sample.pdf" target="_blank">https://alpinestock.com/mturk/sample.pdf</a></li>';
 	if (ih.indexOf(s) != -1) {
@@ -5804,7 +5889,7 @@ function MT__RUN() {
 			GM_addStyle('body {background-color:#eeffee;}');
 			//~ GM_addStyle('#mturk_form {margin-top:1000px;}');
 			//~ GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
-			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:200px !important;}');
 			//~ GM_addStyle('.panel-primary {position:absolute !important;top:1400px !important;}');
 			
 			// gm
@@ -5836,9 +5921,9 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			// Button to reset well names and min_x.
 			// Instead, just reload the page.
-			var d1 = ''.div(
-				{style:'position:absolute;top:0px;left:0px;height:200px;', a: true}
-			);
+			var d1 = ''.div({
+				style: 'position:absolute;top:0px;left:0px;width:100%;height:200px;background-color:#eee;border:1px solid blue;',
+				a: true});
 			/*END ITEMS*/
 			// open the pdf for debugging
 			//~ x[0].onclick = function() {
@@ -5859,8 +5944,10 @@ function MT__RUN() {
 				console.log(response);
 				var rs = response.rs.trim();
 				console.log(rs);
-				// 
-				
+				// replace ending
+				rs = rs
+					.replace(/\d+\.\d+\.\d+\n+Flight Planner \d+\.\d+\.\d+ - \d+\.\d+\.\d+ \d+:\d+:\d+ - Wilfried Haferland - [\w\d\-]+/, '')
+					.trim();
 				
 				//~ return;
 				
@@ -5882,6 +5969,7 @@ function MT__RUN() {
 					'RST':  o.q[11],
 				}
 				var next = null;
+				var sbm = true;
 				for (var i in rs) {
 					rs[i] = rs[i].trim();
 					//console.log('line:',rs[i]);
@@ -5906,7 +5994,16 @@ function MT__RUN() {
 						// This is an "unknown" field (unexpected output)
 						// all others, track!
 						next = null;
+						sbm = false; // Turn off auto.
+						(rs[i]).div({
+							a: d1,
+							innerText: true,
+							style: 'border-bottom:1px solid teal;'});
 					}
+				}
+				// No more?
+				if (sbm) {
+					doSubmit();
 				}
 			}
 		}
