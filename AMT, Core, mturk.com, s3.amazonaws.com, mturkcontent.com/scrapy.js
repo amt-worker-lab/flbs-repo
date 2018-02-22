@@ -670,7 +670,7 @@ function init__scrapy() {
 	}
 	// chuck wells
 	// Given URL, find Contact information
-	// try_autos is *FALSE*.
+	// try_autos is *TRUE*.
 	//~ var s = '<p>2. Try and find a contact email on the site</p>\n\n<p><span style="line-height: 1.6em;">Place Email address in this box</span></p>\n\n<p><input id="Q1Url" name="Q2Url" size="100" type="text"></p>';
 	//~ var s = '<p>2. Try and find a contact email on the site (if no email is found, add contact form pls)</p>\n\n<p><span style="line-height: 1.6em;">Place Email address (or contact form if no email found)&nbsp;in this box</span></p>';
 	var s = '<p>2. Try and find a contact email on the site</p>\n\n<p><span style="line-height: 1.6em;">Place Email address in this box</span></p>';
@@ -705,7 +705,8 @@ function init__scrapy() {
 				],
 				SKIP_SITES: {},
 				util_url: null,
-				try_autos: false, // Turn on and off as necessary. Default=false (off)
+				try_autos: true, // Turn on and off as necessary. Default=false (off)
+				try_autos_str: '^(info|information|contact|contactus|inquiry|support|help|communication|office)@'
 				//~ auto_emails: ['info','contact','contactus','mail'],
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
@@ -900,7 +901,7 @@ function init__scrapy() {
 											var mt = callback_obj.matches;
 											var reg = new RegExp(
 												//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-												'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+												o.try_autos_str +
 												__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 												'i'
 											);
