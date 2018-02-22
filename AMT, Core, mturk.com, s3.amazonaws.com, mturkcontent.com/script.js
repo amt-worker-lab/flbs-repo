@@ -5814,7 +5814,7 @@ function MT__RUN() {
 			
 			var x = document.getElementsByTagName('a');
 			var o = {
-				p: x[2].href,
+				url: x[2].href,
 				//~ min_x: null, // to be set
 				//~ main_image: null, // to be set, contains main image that is used in canvas to make other mini-images
 				//~ df: null, // to be set, the disk file api for word matching
@@ -5871,12 +5871,20 @@ function MT__RUN() {
 			//~ x[0].onclick = function() {
 				//~ window.open(x[0].src);
 			//~ }
-			var n = new AMT___requests_factory().pdfocr({
-				url: o.p,
-				callback: success,
-				//goodchars_file: 'goodchars_VKapadia',
-				//psm: 6//11//5,
+			//~ var n = new AMT___requests_factory().pdfocr({
+				//~ url: o.p,
+				//~ callback: success,
+				//~ //goodchars_file: 'goodchars_VKapadia',
+				//~ //psm: 6//11//5,
+			//~ });
+			
+			new AMT___requests_factory().pdftotext({
+				url: o.url,
+				callback: success
 			});
+			function success(body) {
+				console.log(body);
+			}
 		}
 		new run().f();
 	}

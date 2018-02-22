@@ -3021,8 +3021,45 @@ function AMT___requests_factory(obj_vars) {
  * Calls command line pdftotext.
  * 
  * Note that this is different from pdfocr (tesseract) and pdfimages.
+ * 
+ * @param options.url
+ * @param options.callback
  */
 AMT___requests_factory.prototype.pdftotext = function(options) {
+	// filename
+	var f = new AMT___requests_factory().md5(options.url);
+	// pdftotext
+	var opts = {
+		filename: f,
+		headers_array: [
+		],
+		//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+		//~ post_object_as_str: '{"params":"query='+encodeURIComponent(d2.value)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
+	};
+	var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+		encodeURIComponent(options.url) +
+		'&AMT__output_html_from_URL__options=' +
+		encodeURIComponent(JSON.stringify(
+			opts
+		));
+	// Init
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: u,
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				// TODO: @param options.onerror
+				alert('@1.AMT___requests_factory.prototype.pdftotext');
+				return
+			}
+			new AMT___requests_factory().io__command_line_request({
+				filename: f,
+				command: 'pdftotext',
+				callback: options.callback
+			});
+		}
+	});
 	
 }
 /**
