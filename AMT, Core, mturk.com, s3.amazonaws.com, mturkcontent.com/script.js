@@ -94152,7 +94152,7 @@ Laurens Hammond, Chicago, Ill.**/
 	 * Brendan
 	 * "Becky" (fork chios) (aka "Brendan")
 	 * 2 Becky's??
-	 * Whitney Gosden
+	 * Whitney Gosden (fork Becky)s
 	 * 
 	 */
 	// Whitney Gosden
@@ -94277,7 +94277,7 @@ Laurens Hammond, Chicago, Ill.**/
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr;
-			d2c.value = o.comp_original; // Original name
+			//~ d2c.value = o.comp_original; // Original name
 			//
 			d2.onblur = d2b.onblur = function() {
 				yelp();
@@ -94338,9 +94338,14 @@ Laurens Hammond, Chicago, Ill.**/
 			 *
 			 * e.g. http://api.yelp.com/v2/search/?term=home depot&location=San Francisco, CA&limit=10&radius_filter=30000
 			 * TODO: Error message for 25,000 API limit?
+			 * 
+			 * NOTE: UPDATE FOR FEB. 22.
+			 * 		Script was not working, solution was https!
+			 * 		Btw, apparently V2 is ending Jun. 2018.
 			 */
 			function yelp() {
-				 var auth = {
+				var auth = {
+					// new
 					consumer_API_KEY_REDACTED_,
 					consumer_API_KEY_REDACTED_,
 					access_API_KEY_REDACTED_,
@@ -94356,29 +94361,42 @@ Laurens Hammond, Chicago, Ill.**/
 					tokenSecret : auth.accessTokenSecret
 				};
 				parameters = [];
-				parameters.push(['term', terms]);
 				parameters.push(['location', near]);
 				parameters.push(['oauth_consumer_key', auth.consumerKey]);
 				parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
 				parameters.push(['oauth_token', auth.accessToken]);
 				parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+				parameters.push(['term', terms]);
 				var message = {
-					'action' : 'http://api.yelp.com/v2/search',
+					'action' : 'https://api.yelp.com/v2/search',
 					'method' : 'GET',
 					'parameters' : parameters
 				};
 				OAuth.setTimestampAndNonce(message);
 				OAuth.SignatureMethod.sign(message, accessor);
 				var parameterMap = OAuth.getParameterMap(message.parameters);
-				var p = [];
-				for (var i in parameterMap) {
-					p.push(i + '=' + encodeURIComponent(parameterMap[i]));
-				}
-				p = '?' + p.join('&');
+				console.log(parameterMap);
+				//~ var p = [];
+				//~ for (var i in parameterMap) {
+					//~ p.push(i + '=' + encodeURIComponent(parameterMap[i]));
+				//~ }
+				//~ p = '&' + p.join('&');
+				//~ p = '?' + p.join('&');
+				// key,secret,nonce,sig method,timestamp,token,term
+				// "Invalid signature. Expected signature base string: GET&https%3A%2F%2Fapi.yelp.com%2Fv2%2Fsearch&location%3D321%2520Main%2520St%252C%2520El%2520Segundo%2520CA%26oauth_consumer_key%3DjH4j2x4Om5K8JasTVw4dQg%26oauth_consumer_secret%3DpSPCWbafW8-4LrQvUIpIPufvlrw%26oauth_nonce%3D7AWrNd%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1519340833%26oauth_token%3DBIhiKrLfZAVUVTj64kZkLo3Ven3G6Ej_%26term%3DTwo%2520Guns%2520Espresso"
+				var p = '?location='+encodeURIComponent(parameterMap['location'])
+					+'&oauth_consumer_key='+encodeURIComponent(parameterMap['oauth_consumer_key'])
+					+'&oauth_consumer_secret='+encodeURIComponent(parameterMap['oauth_consumer_secret'])
+					+'&oauth_nonce='+encodeURIComponent(parameterMap['oauth_nonce'])
+					+'&oauth_signature_method='+encodeURIComponent(parameterMap['oauth_signature_method'])
+					+'&oauth_signature='+encodeURIComponent(parameterMap['oauth_signature'])
+					+'&oauth_timestamp='+encodeURIComponent(parameterMap['oauth_timestamp'])
+					+'&oauth_token='+encodeURIComponent(parameterMap['oauth_token'])
+					+'&term='+encodeURIComponent(parameterMap['term']);
 				
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'http://api.yelp.com/v2/search' + p,
-					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search|' + d2.value + '|' + d2b.value), // Static file name
+					URL: 'https://api.yelp.com/v2/search' + p,
+					filename: new AMT___requests_factory().md5('https://api.yelp.com/v2/search|' + d2.value + '|' + d2b.value), // Static file name
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if  (
@@ -94416,7 +94434,7 @@ Laurens Hammond, Chicago, Ill.**/
 					parameters.push(['oauth_token', auth.accessToken]);
 					parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
 					var message = {
-						'action' : 'http://api.yelp.com/v2/search',
+						'action' : 'https://api.yelp.com/v2/search',
 						'method' : 'GET',
 						'parameters' : parameters
 					};
@@ -94429,7 +94447,7 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					p = '?' + p.join('&');
 					new AMT___requests_factory().xhr_with_disk_cache({
-						URL: 'http://api.yelp.com/v2/search' + p,
+						URL: 'https://api.yelp.com/v2/search' + p,
 						filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search||' + d2b.value), // Static file name
 						check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 							var rs = options.response.responseText;
@@ -95011,7 +95029,8 @@ Laurens Hammond, Chicago, Ill.**/
 			 * TODO: Error message for 25,000 API limit?
 			 */
 			function yelp() {
-				 var auth = {
+				var auth = {
+					// new
 					consumer_API_KEY_REDACTED_,
 					consumer_API_KEY_REDACTED_,
 					access_API_KEY_REDACTED_,
@@ -95676,7 +95695,8 @@ Laurens Hammond, Chicago, Ill.**/
 			 * TODO: Error message for 25,000 API limit?
 			 */
 			function yelp() {
-				 var auth = {
+				var auth = {
+					// new
 					consumer_API_KEY_REDACTED_,
 					consumer_API_KEY_REDACTED_,
 					access_API_KEY_REDACTED_,
@@ -96366,7 +96386,8 @@ Laurens Hammond, Chicago, Ill.**/
 			 * TODO: Error message for 25,000 API limit?
 			 */
 			function yelp() {
-				 var auth = {
+				var auth = {
+					// new
 					consumer_API_KEY_REDACTED_,
 					consumer_API_KEY_REDACTED_,
 					access_API_KEY_REDACTED_,
@@ -96965,9 +96986,7 @@ Laurens Hammond, Chicago, Ill.**/
 			 */
 			function yelp() {
 				 var auth = {
-					//
-					// Update with your auth tokens.
-					//
+					// new
 					consumer_API_KEY_REDACTED_,
 					consumer_API_KEY_REDACTED_,
 					access_API_KEY_REDACTED_,
@@ -113579,10 +113598,8 @@ qatar,80
 			 * Uses ll.lat and ll.lng
 			 */
 			function yelp_api() {
-				 var auth = {
-					//
-					// Update with your auth tokens.
-					//
+				var auth = {
+					// new
 					consumer_API_KEY_REDACTED_,
 					consumer_API_KEY_REDACTED_,
 					access_API_KEY_REDACTED_,
@@ -113800,10 +113817,8 @@ qatar,80
 				});
 			}
 			function sp_yelp_success(biz) { // e.g. http://api.yelp.com/v2/business/yelp-san-francisco
-				 var auth = {
-					//
-					// Update with your auth tokens.
-					//
+				var auth = {
+					// new
 					consumer_API_KEY_REDACTED_,
 					consumer_API_KEY_REDACTED_,
 					access_API_KEY_REDACTED_,
