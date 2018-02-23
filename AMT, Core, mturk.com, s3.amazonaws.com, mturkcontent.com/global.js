@@ -20459,19 +20459,31 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var year = null;
 		var arr_days = [];
 		for (var day in obj_hw) {
-			// Iterate to retrieve the first 
-			// convert to array
-			var p = day.split('-'); // dmy: 1-31, 1-12, YYYY
+			// Iterate, in order to retrieve the first and last day.
+			// Convert object to a days array.
+			// TODO: Probably possible to get first/last from an object.
+			//		I.e., unnecessary to convert to array first.
+			var p = day.split('-'); // dmy: 1-31, 1-12, YYYY // NO // ACTUALLY IT IS: yyyy-mm-dd
 			arr_days.push({
 				day: day,
-				num: obj_hw[day],
-				yyyy: parseInt(p[2]),
+				num: parseInt(obj_hw[day]),
+				yyyy: parseInt(p[0]),
 				mm: parseInt(p[1]),
-				dd: parseInt(p[0]),
+				dd: parseInt(p[2]),
 			});
 		}
-		var first_year = arr_days[arr_days.length - 1].yyyy;
-		var last_year  = arr_days[0].yyyy;
+		var last_year = arr_days[arr_days.length - 1].yyyy;
+		var first_year = arr_days[0].yyyy;
+		//~ console.log(arr_days);
+		//~ console.log(first_year);
+		//~ console.log(last_year);
+		var gm = new Date().getMonth()+1;
+		var gd = new Date().getDate();
+		gm = (gm<10) ? '0'+gm : gm;
+		gd = (gd<10) ? '0'+gd : gd;
+		var today = new Date().getFullYear() + '-' + 
+			(gm) + '-' +
+			gd;
 		for (var i=first_year; i<=last_year; i++) {
 			// All days
 			// i.e. 365.
@@ -20482,18 +20494,35 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					labels.push(''); // show blank
 				}
 				var tdate = new Date(i, '', j);
+				var gm = tdate.getMonth()+1;
+				var gd = tdate.getDate();
+				gm = (gm<10) ? '0'+gm : gm;
+				gd = (gd<10) ? '0'+gd : gd;
 				var dstr = 
-					tdate.getDate() + '-' // 1-31
-					+(tdate.getMonth()+1) + '-' // 0-11, convert to 1-12
-					+i;
+					i + '-' // 1-31
+					+(gm) + '-' // 0-11, convert to 1-12
+					+gd;
+					//~ tdate.getDate() + '-' // 1-31
+					//~ +(tdate.getMonth()+1) + '-' // 0-11, convert to 1-12
+					//~ +i;
+				//~ console.log('check day:',dstr);
+				//~ console.log('check day:',dstr,'against day:',today);
 				if (obj_hw.hasOwnProperty(dstr)) {
+					console.log('match day',dstr);
+					console.log('+tasks',obj_hw[dstr]);
 					// Where obj_hw[dstr] is num tasks on day "dstr".
 					num_tasks.push(obj_hw[dstr]);
 				} else {
 					num_tasks.push(0);
 				}
+				if (dstr == today) break; // Only part of the current year.
+			//~ var fmtdate = new Date().getFullYear() + '-' + 
+				//~ (new Date().getMonth()+1) + '-' +
+				//~ new Date().getDate();
 			}
 		}
+		//~ console.log(labels);
+		//~ console.log(num_tasks);
 		// Data
 		var data = {
 			labels: labels,
@@ -20523,7 +20552,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		chart.setAttribute('style',
 			'width:100%;height:20px;background-color:white;cursor:pointer;'
 		);
-		chart.height = '100';
+		chart.height = '200';
 		// div container
 		var divcont = document.createElement('div');
 		divcont.appendChild(chart);
