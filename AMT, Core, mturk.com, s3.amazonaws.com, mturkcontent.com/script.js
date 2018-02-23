@@ -33,8 +33,7 @@ function MT__RUN() {
 	 * Jorge Mejia
 	 */
 	// Jorge Mejia
-	// Find the Abstract for a Research Paper
-
+	// Find the Abstract for a Research Papert
 	// 
 	var s = '<li><strong>Open</strong> the link for the research paper in a new tab or window of your browser</li>\n	<li><strong>Copy</strong> the abstract of the research paper</li>\n	<li><strong>Paste</strong> the abstract of the&nbsp;research paper on the text box below</li>';
 	if (ih.indexOf(s) != -1)
@@ -16232,13 +16231,14 @@ Laurens Hammond, Chicago, Ill.**/
 	// In what form are these items consumed?
 	// AND FLEA/TICK
 	var s = '<div class="well"><span style="background-color: rgb(255, 255, 255);">Pick the correct category for the item from link. See the </span><strong style="background-color: rgb(255, 255, 255);">Selection Criteria</strong><span style="background-color: rgb(255, 255, 255);"> above for more details.</span></div>';
-	if (ih.indexOf(s) != -1) {
+	var s2= '<h6 style="font-family: Verdana, Geneva, sans-serif;"><span style="font-family:tahoma,geneva,sans-serif;">Click on the product link below and review the item\'s label and packaging to determine if the item is in&nbsp;<strong>liquid or powdered form.</strong></span></h6>'
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td,fieldset {margin:0 !important;padding:0 !important;font-size:12px !important;}');
 			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;top:2000px}'); // width:1100px=default
-			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:1000px}');
 			//~ GM_addStyle('img {cursor:pointer;}');
 			//~ GM_addStyle('.radio>label {font-size:2em !important;}');
@@ -16249,14 +16249,16 @@ Laurens Hammond, Chicago, Ill.**/
 			// vars
 			var a = document.getElementsByTagName('a');
 			var o = {
-				u: a[1].href,
+				u: a[0].href,
 				amScrape: {
 					title: null,
 					maker: null,
 					details: null,
 					images: null
 				},
-				bold: ['flea','fleas','tick','ticks','itch','eggs',],
+				bold: ['flea','fleas','tick','ticks','itch','eggs',
+					'powder','mix','concentrate','syrup','liquid','enhancer'
+					],
 				q:[
 					//~ document.getElementsByName('classification')[0],// Single
 					//~ document.getElementsByName('classification')[1],//
@@ -16264,6 +16266,9 @@ Laurens Hammond, Chicago, Ill.**/
 					//~ document.getElementsByName('name_suggest')[0],	// Yes
 					//~ document.getElementsByName('name_suggest')[1]	// No
 				]
+			}
+			if (!/^https?:\/\/www\.amazon\.com\/dp\//i.exec(o.u)) {
+				o.u = a[1].href;
 			}
 			//~ var n = document.getElementsByName('categories');
 			var n = document.getElementsByClassName('btn btn-default');
