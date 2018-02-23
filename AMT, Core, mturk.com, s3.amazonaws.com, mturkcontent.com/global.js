@@ -20506,24 +20506,23 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					text-overflow: ;\
 					white-space: ;');
 				//td.append();
-				//~ var d = {
-					//~ db_id:				rs[0][i],
-					//~ on_page_number:		rs[1][i],
-					//~ title:				rs[2][i],
-					//~ requester_name:		rs[3][i],
-					//~ hits_available:		rs[4][i],
-					//~ time_since_posted:	rs[5][i],
-					//~ requester_id:		rs[6][i],
-					//~ group_id:			rs[7][i],
-					//~ history_id:			(rs[8]) ? rs[8][i]	: null,
-					//~ reward:				(rs[9]) ? rs[9][i]	: null,
-					//~ task_comment:		(rs[10]) ? rs[10][i] : null,
-					//~ comment_last_mod:	(rs[11]) ? rs[11][i] : 0
-					//title_ratings: null,
-					//title_comments: null,
-					//requester_ratings: null,
-					//requester_comments: null
-				//~ };
+				
+				// response:
+				//~ description
+				//~ distinct_dates: "2018-02-23"
+				//~ groupId:"3MKP0VNPM29ZW7PS7ALMFEVUMKFRJT"
+				//~ hash_id:"4b94071f527d847c97a998c47cbfa2e1"
+				//~ high_water_marks:
+				//~ {2017-07-11: "61", 2017-07-13: "1746", 2017-08-09: "1859", ...}
+				//~ id:"263655"
+				//~ id_duplicate_jobs:"0"
+				//~ qualifications:"Total approved HITs GreaterThan 1000| ..."
+				//~ requester_id:"A12X3HTZ5M8C1P"
+				//~ requester_name:"Guillaume Bouchard"
+				//~ reward:"0.6"
+				//~ time_allotted:"900"
+				//~ title:"Generate Question-Answer Pairs for Legal Data"
+				
 				// Title: Show full (no hide)
 				'Title:'.div({style:'width:10%;float:left;', a:td});
 				(row.title).div({style:'width:88%;float:left;', a:td});
