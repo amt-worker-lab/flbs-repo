@@ -27,6 +27,95 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	/**
+	 * simple utility window task
+	 * 
+	 * Jorge Mejia
+	 */
+	// Jorge Mejia
+	// Find the Abstract for a Research Paper
+
+	// 
+	var s = '<li><strong>Open</strong> the link for the research paper in a new tab or window of your browser</li>\n	<li><strong>Copy</strong> the abstract of the research paper</li>\n	<li><strong>Paste</strong> the abstract of the&nbsp;research paper on the text box below</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				q: [document.getElementById('Abstract')]
+			}
+			// utility window
+			var opts = {
+				task: 'AMT__all_pages_util',
+				//~ highlight_strings_in_page: {
+					//~ strings: ['president','pres','ceo','c.e.o.','chief executive officer',]
+				//~ },
+				highlight_range_to_parent: true
+			}
+			//~ AMT__setUtilityTabs([{
+				//~ url: o.url,
+				//~ options: opts
+			//~ }]);
+			AMT__setUtilityTabs(
+				[{
+					url: a[1].href,
+					options: opts
+				}],
+				null,
+				{backgroundColor:'pink'},
+				true,
+				function(response) {
+					console.log(response);
+					if  (
+						response.hasOwnProperty('data') &&
+						response.data.hasOwnProperty('text_range')
+						)
+					{
+						console.log(response.data.text_range);
+						var r = response.data.text_range.trim();
+						o.q[0].value = r;
+						//~ if (o.q[0].value == '') {
+							//~ // auto-fill if there is a space.
+							//~ if (/^\w+ \w+[,\n]/.exec(r)) {
+								//~ var x = /(^\w+) (\w+)[,\n]([\d\D]+)/.exec(r);
+								//~ o.q[0].value = x[1];
+								//~ o.q[1].value = x[2];
+								//~ o.q[2].value = x[3].trim().replace(/[,\.]$/,'');
+							//~ }
+							//~ else if (r.indexOf(' ') != -1) {
+								//~ r = r.split(' ');
+								//~ o.q[0].value = r[0].replace(/,$/,'');
+								//~ o.q[1].value = r[r.length-1].replace(/,$/,'');
+							//~ } else {
+								//~ o.q[0].value = r.replace(/,$/,'');
+							//~ }
+						//~ } else if (o.q[1].value == '') {
+							//~ o.q[1].value = response.data.text_range.trim().replace(/,$/,'');
+						//~ } else { // else always overwrite
+							//~ o.q[2].value = response.data.text_range.trim().replace(/,$/,'');
+						//~ }
+						//~ o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
+					}
+				}
+			)
+			//~ AMT__setUtilityTabs([
+				//~ {
+					//~ url: a[1].href
+				//~ }
+			//~ ]);
+			// sbm form
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();
+	}
 	// garrett grohman
 	// Given Exhibitor Page, Provide Email and Website
 	// 
