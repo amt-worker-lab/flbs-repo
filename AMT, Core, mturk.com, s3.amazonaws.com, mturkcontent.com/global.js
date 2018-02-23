@@ -20457,127 +20457,100 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var labels = [];
 		var num_tasks = [];
 		var year = null;
+		var arr_days = [];
 		for (var day in obj_hw) {
-			var dateParts = day.split('-');
-			var day = days_of_week[ new Date().getDay() ]; // y, m, d
+			// Iterate to retrieve the first 
+			// convert to array
+			var p = day.split('-'); // dmy: 1-31, 1-12, YYYY
+			arr_days.push({
+				day: day,
+				num: obj_hw[day],
+				yyyy: parseInt(p[2]),
+				mm: parseInt(p[1]),
+				dd: parseInt(p[0]),
+			});
 		}
-			
-			
-			
-			
-			// Is longer than 24 hours?
-			// Newest - Oldest
-			var time_span = rows[rows.length - 1]['d']*1 - rows[0]['d']*1;
-			
-			// By day
-			if (time_span > 86400) {
-			
-				var last_day = null;
-				for (var i in rows) {
-					
-					var time	= rows[i]['d']; // date
-					var nt		= rows[i]['h']; // num tasks
-					
-					var day = days_of_week[ new Date(time * 1000).getDay() ];
-					
-					if (last_day != day) {
-						labels.push(day);
-						last_day = day;
-					} else {
-						labels.push('');
-					}
-					
-					num_tasks.push(nt);
-				}
-			}
-			// By hour
-			else {
-				
-				var last_hour = null;
-				for (var i in rows) {
-					
-					var time	= rows[i]['d']; // date
-					var nt		= rows[i]['h']; // num tasks
-					
-					var hour = new Date(time * 1000).getHours();
-					
-					if (hour == 0)
-						hour = '12a'
-					else if (hour < 12)
-						hour += 'a';
-					else if (hour == 12)
-						hour += 'p'
-					else
-						hour = (hour*1 - 12) + 'p';
-					
-					
-					
-					if (last_hour != hour) {
-						labels.push(hour);
-						last_hour = hour;
-					} else {
-						labels.push('');
-					}
-					
-					num_tasks.push(nt);
-				}
-			}
-			
-			
-			// Data
-			var data = {
-				labels: labels,
-				datasets: [
-					{
-						label: "X",
-						fillColor: "rgba(151,187,205,0.2)",
-						strokeColor: "rgba(151,187,205,1)",
-						pointColor: "rgba(151,187,205,1)",
-						pointStrokeColor: "#fff",
-						pointHighlightFill: "#fff",
-						pointHighlightStroke: "rgba(151,187,205,1)",
-						data: num_tasks
-					}
-				]
-			}
-			
-			// Options
-			var options = {
-				bezierCurve: false,
-				scaleShowGridLines: false,
-				pointDot: false,
-			}
-			
-			// Canvas & TD
-			var chart = document.createElement('canvas');
-			chart.setAttribute('style',
-				'width:100%;height:20px;background-color:white;cursor:pointer;'
-			);
-			chart.height = '100';
-			// div container
-			var divcont = document.createElement('div');
-			divcont.appendChild(chart);
-			divcont.style.border = '1px solid #a2a2a2';
-			chart.divcont = divcont;
-			chart_td.innerHTML = ''; // Reset
-			chart_td.appendChild(divcont);
-			
-			// onclick, hide and show
-			chart.onclick = function() {
-				if (this.divcont.style.overflow == 'hidden') {
-					this.divcont.style.overflow = '';
-					this.divcont.style.height = '';
-					this.divcont.style.width = '';
+		var first_year = arr_days[arr_days.length - 1].yyyy;
+		var last_year  = arr_days[0].yyyy;
+		for (var i=first_year; i<=last_year; i++) {
+			// All days
+			// i.e. 365.
+			for (var j=0; j<366; j++) { //0-365??
+				if (j == 1) {
+					labels.push(i); // show year
 				} else {
-					this.divcont.style.overflow = 'hidden';
-					this.divcont.style.height = '10px';
-					this.divcont.style.width = '10px';
+					labels.push(''); // show blank
+				}
+				var tdate = new Date(i, '', j);
+				var dstr = 
+					tdate.getDate() + '-' // 1-31
+					+(tdate.getMonth()+1) + '-' // 0-11, convert to 1-12
+					+i;
+				if (obj_hw.hasOwnProperty(dstr)) {
+					// Where obj_hw[dstr] is num tasks on day "dstr".
+					num_tasks.push(obj_hw[dstr]);
+				} else {
+					num_tasks.push(0);
 				}
 			}
-			
-			// ...
-			var context = chart.getContext("2d");
-			var myNewChart = new Chart(context).Line(data, options);
+		}
+		// Data
+		var data = {
+			labels: labels,
+			datasets: [
+				{
+					label: "X",
+					fillColor: "rgba(151,187,205,0.2)",
+					strokeColor: "rgba(151,187,205,1)",
+					pointColor: "rgba(151,187,205,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(151,187,205,1)",
+					data: num_tasks
+				}
+			]
+		}
+		
+		// Options
+		var options = {
+			bezierCurve: false,
+			scaleShowGridLines: false,
+			pointDot: false,
+		}
+		
+		// Canvas & TD
+		var chart = document.createElement('canvas');
+		chart.setAttribute('style',
+			'width:100%;height:20px;background-color:white;cursor:pointer;'
+		);
+		chart.height = '100';
+		// div container
+		var divcont = document.createElement('div');
+		divcont.appendChild(chart);
+		divcont.style.border = '1px solid #a2a2a2';
+		chart.divcont = divcont;
+		
+		// APPEND TO TD
+		// Make blank first?
+		td.innerHTML = ''; 
+		td.appendChild(divcont);
+		
+		// onclick, hide and show
+		chart.onclick = function() {
+			if (this.divcont.style.overflow == 'hidden') {
+				this.divcont.style.overflow = '';
+				this.divcont.style.height = '';
+				this.divcont.style.width = '';
+			} else {
+				this.divcont.style.overflow = 'hidden';
+				this.divcont.style.height = '10px';
+				this.divcont.style.width = '10px';
+			}
+		}
+		
+		// ...
+		var context = chart.getContext("2d");
+		var myNewChart = new Chart(context).Line(data, options);
 	}
 	/**
 	 * o.ro_extended().table()
