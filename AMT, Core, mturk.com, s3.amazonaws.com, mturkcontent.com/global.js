@@ -20433,6 +20433,153 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		});
 	}
 	/**
+	 * time_to_diplay
+	 * Change seconds to readable time.
+	 * 
+	 * @param	s	Number of seconds
+	 */
+	function time_to_display(s) {
+		var t;
+		if (s < 60) {
+			return s+' seconds';
+		} else if (s<3600) {
+			t = Math.round(s/60);
+			return t + ' minute' + (t != 1) ? 's' : '';
+		} else if (s<86400) {
+			t = Math.round(s/3600);
+			return t + ' hour' + (t != 1) ? 's' : '';
+		} else { // n days
+			t = Math.round(s/86400);
+			return t + ' day' + (t != 1) ? 's' : '';
+		}
+	}
+	function make_hw_chart(obj_hw, td) {
+		var labels = [];
+		var num_tasks = [];
+		var year = null;
+		for (var day in obj_hw) {
+			var dateParts = day.split('-');
+			var day = days_of_week[ new Date().getDay() ]; // y, m, d
+		}
+			
+			
+			
+			
+			// Is longer than 24 hours?
+			// Newest - Oldest
+			var time_span = rows[rows.length - 1]['d']*1 - rows[0]['d']*1;
+			
+			// By day
+			if (time_span > 86400) {
+			
+				var last_day = null;
+				for (var i in rows) {
+					
+					var time	= rows[i]['d']; // date
+					var nt		= rows[i]['h']; // num tasks
+					
+					var day = days_of_week[ new Date(time * 1000).getDay() ];
+					
+					if (last_day != day) {
+						labels.push(day);
+						last_day = day;
+					} else {
+						labels.push('');
+					}
+					
+					num_tasks.push(nt);
+				}
+			}
+			// By hour
+			else {
+				
+				var last_hour = null;
+				for (var i in rows) {
+					
+					var time	= rows[i]['d']; // date
+					var nt		= rows[i]['h']; // num tasks
+					
+					var hour = new Date(time * 1000).getHours();
+					
+					if (hour == 0)
+						hour = '12a'
+					else if (hour < 12)
+						hour += 'a';
+					else if (hour == 12)
+						hour += 'p'
+					else
+						hour = (hour*1 - 12) + 'p';
+					
+					
+					
+					if (last_hour != hour) {
+						labels.push(hour);
+						last_hour = hour;
+					} else {
+						labels.push('');
+					}
+					
+					num_tasks.push(nt);
+				}
+			}
+			
+			
+			// Data
+			var data = {
+				labels: labels,
+				datasets: [
+					{
+						label: "X",
+						fillColor: "rgba(151,187,205,0.2)",
+						strokeColor: "rgba(151,187,205,1)",
+						pointColor: "rgba(151,187,205,1)",
+						pointStrokeColor: "#fff",
+						pointHighlightFill: "#fff",
+						pointHighlightStroke: "rgba(151,187,205,1)",
+						data: num_tasks
+					}
+				]
+			}
+			
+			// Options
+			var options = {
+				bezierCurve: false,
+				scaleShowGridLines: false,
+				pointDot: false,
+			}
+			
+			// Canvas & TD
+			var chart = document.createElement('canvas');
+			chart.setAttribute('style',
+				'width:100%;height:20px;background-color:white;cursor:pointer;'
+			);
+			chart.height = '100';
+			// div container
+			var divcont = document.createElement('div');
+			divcont.appendChild(chart);
+			divcont.style.border = '1px solid #a2a2a2';
+			chart.divcont = divcont;
+			chart_td.innerHTML = ''; // Reset
+			chart_td.appendChild(divcont);
+			
+			// onclick, hide and show
+			chart.onclick = function() {
+				if (this.divcont.style.overflow == 'hidden') {
+					this.divcont.style.overflow = '';
+					this.divcont.style.height = '';
+					this.divcont.style.width = '';
+				} else {
+					this.divcont.style.overflow = 'hidden';
+					this.divcont.style.height = '10px';
+					this.divcont.style.width = '10px';
+				}
+			}
+			
+			// ...
+			var context = chart.getContext("2d");
+			var myNewChart = new Chart(context).Line(data, options);
+	}
+	/**
 	 * o.ro_extended().table()
 	 * 
 	 * @param obj, obj.result_set, obj.parent_td
@@ -20501,12 +20648,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// TD
 				var td = document.createElement('td');
 				tr2.appendChild(td);
-				td.setAttribute('style', 'width: 50%;\
+				td.colSpan = 6; // 11 total
+				td.setAttribute('style', ';\
 					overflow: ;\
 					text-overflow: ;\
 					white-space: ;');
 				//td.append();
-				
 				// response:
 				//~ description
 				//~ distinct_dates: "2018-02-23"
@@ -20531,22 +20678,64 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				'Name:'.div({style:'width:10%;float:left;', a:td});
 				(row.requester_name).div({style:'width:88%;float:left;', a:td});
 				''.div({style:'clear:both;', a:td});
-				// Name
-				'Name:'.div({style:'width:10%;float:left;', a:td});
-				(row.requester_name).div({style:'width:88%;float:left;', a:td});
+				// RID
+				'RID:'.div({style:'width:10%;float:left;', a:td});
+				(row.requester_id).div({style:'width:88%;float:left;', a:td});
 				''.div({style:'clear:both;', a:td});
+				// Reward
+				'Rewd.:'.div({style:'width:10%;float:left;', a:td});
+				('$'+row.reward).div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// Qual (o:auto)
+				'Qual.:'.div({style:'width:10%;float:left;', a:td});
+				(row.qualifications).div({style:'width:88%;float:left;height:20px;overflow:auto;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// Time
+				var t = time_to_display(row.time_allotted);
+				'Time:'.div({style:'width:10%;float:left;', a:td});
+				(t).div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// Dup.
+				'Dupl.:'.div({style:'width:10%;float:left;', a:td});
+				(row.id_duplicate_jobs).div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// GID (o:hidden)
+				'GID:'.div({style:'width:10%;float:left;', a:td});
+				(row.groupId).div({style:'width:88%;float:left;height:20px;overflow:hidden;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// HID (o:hidden)
+				'HID:'.div({style:'width:10%;float:left;', a:td});
+				(row.hash_id).div({style:'width:88%;float:left;height:20px;overflow:hidden;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// 
+				'LastDay:'.div({style:'width:10%;float:left;', a:td});
+				('row.high_water_marks ...')
+					.div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// 
+				'#Days:'.div({style:'width:10%;float:left;', a:td});
+				(Object.keys(row.high_water_marks).length+'')
+					.div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				
 				// Basic layout:
 				//~ td.innerText = 'ID:\n\
 					//~ Title:\n\
 					//~ Req. Name:\n\
-					//~ Qual.:\n\
+					//~ Req. ID:\n\
 					//~ Reward:\n\
+					//~ Qual.:\n\
 					//~ Time:\n\
 					//~ Dupl.:\n\
-					//~ Req. ID:\n\
 					//~ Group ID:\n\
 					//~ Hash ID:\n\
 					//~ Dates Posted:';
+				tb.appendChild(tr2);
+				// Chart for high water marks
+				var td = document.createElement('td');
+				td.colSpan = 5; // 5+6=11
+				make_hw_chart(row.high_water_marks, td);
+				tr2.appendChild(td);
 				tb.appendChild(tr2);
 				//=====================
 				// TR
@@ -20713,10 +20902,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * TODO: After X minutes if the row has been removed (HITs available=='----') then...remove the row?
 	 */
 	function makeRow(row, isIgnored) {
-		
+		//////
 		// TR
-		//
-		//
+		//////
 		var tr = document.createElement('tr');
 		tr.setAttribute('style',
 			''
@@ -21008,9 +21196,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tr.hidden_tr = hidden_tr;
 		
 		// Set initial SV
-		//
-		//
-		//
 		tr.f.check_sv_hide(); // 
 		
 		// Return
@@ -21064,7 +21249,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var data =  'graph='+encodeURIComponent(obj)+'&'+Math.random();
 		
 		var days_of_week = [
-			'Su','M','Tu','W','Th','F','Sa'
+			'SU','M','TU','W','TH','F','SA'
 		];
 		
 		GM_xmlhttpRequest({
