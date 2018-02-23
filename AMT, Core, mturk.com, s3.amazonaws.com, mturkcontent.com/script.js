@@ -16257,7 +16257,7 @@ Laurens Hammond, Chicago, Ill.**/
 					images: null
 				},
 				bold: ['flea','fleas','tick','ticks','itch','eggs',
-					'powder','mix','concentrate','syrup','liquid','enhancer'
+					'powder','mix','concentrate','syrup','liquid','enhancer','creamer'
 					],
 				q:[
 					//~ document.getElementsByName('classification')[0],// Single
@@ -16335,8 +16335,7 @@ Laurens Hammond, Chicago, Ill.**/
 							if(title) {
 								title = title.innerText;
 							}
-							//~ var maker = dom.getElementById('brand').innerText;
-							d1a.innerHTML = title;// + '<span style="color:blue">' + maker +'</span>';
+							d1a.innerHTML = MT__bold(title,o.bold);
 							
 							// Add UL containing product info.
 							// a-unordered-list a-vertical a-spacing-none
