@@ -20440,17 +20440,19 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 */
 	function time_to_display(s) {
 		var t;
+		if (/[^\d]/.exec(s)) return s; // Check if already formatted.
+		s = parseInt(s);
 		if (s < 60) {
 			return s+' seconds';
 		} else if (s<3600) {
 			t = Math.round(s/60);
-			return t + ' minute' + (t != 1) ? 's' : '';
+			return t + ' minute' + ((t != 1) ? 's' : '');
 		} else if (s<86400) {
 			t = Math.round(s/3600);
-			return t + ' hour' + (t != 1) ? 's' : '';
+			return t + ' hour' + ((t != 1) ? 's' : '');
 		} else { // n days
 			t = Math.round(s/86400);
-			return t + ' day' + (t != 1) ? 's' : '';
+			return t + ' day' + ((t != 1) ? 's' : '');
 		}
 	}
 	function make_hw_chart(obj_hw, td) {
@@ -20512,8 +20514,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					//~ +(tdate.getMonth()+1) + '-' // 0-11, convert to 1-12
 					//~ +i;
 				if (obj_hw.hasOwnProperty(dstr)) {
-					console.log('match day',dstr);
-					console.log('+tasks',obj_hw[dstr]);
 					// Where obj_hw[dstr] is num tasks on day "dstr".
 					num_tasks.push(obj_hw[dstr]);
 				} else {
@@ -20608,13 +20608,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var headers = [
 			'ID',
 			'Title',
-			'Qualifications',
+			'Qual.',
 			'RWD',
 			'Time', // Allotted
-			'Description',
+			'Desc.',
 			'# Dup.',
-			'ID', // Requester  ID
-			'Name', // Requester Name
+			'# Days', // Requester  ID
+			'Last Day', // Requester Name
 			'GID/HID', // Group/Hash ID
 			'Dates' // Distinct Dates
 		];
@@ -20647,10 +20647,20 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				var short_desc = row.description,
 					short_qual = row.qualifications;
 				//=====================
+				// TR Requester Overview
+				// Req names (list?)
+				// num tasks posted
+				// dollars posted total 
+				// last post
+				// [ chart of all posts, high water marks ]
+				// [ pie chart of all tasks, with each "slice" being total ** dollars posted ** ]
+				// [ pie chart of all tasks, with each "slice" being total ** tasks ** ]
+				//=====================
+				
+				//=====================
 				// TR extra info.
 				//=====================
 				var tr2 = document.createElement('tr');
-				//~ tr2.className = 'ro-extended-tb-tr';
 				tr2.setAttribute('style','display:none;');
 				// TD
 				var td = document.createElement('td');
@@ -20660,7 +20670,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					overflow: ;\
 					text-overflow: ;\
 					white-space: ;');
-				//td.append();
 				// response:
 				//~ description
 				//~ distinct_dates: "2018-02-23"
@@ -20684,6 +20693,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// Name
 				'Name:'.div({style:'width:10%;float:left;', a:td});
 				(row.requester_name).div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// Desc
+				'Desc.:'.div({style:'width:10%;float:left;', a:td});
+				(row.description).div({style:'width:88%;float:left;height:20px;overflow:auto;', a:td});
 				''.div({style:'clear:both;', a:td});
 				// RID
 				'RID:'.div({style:'width:10%;float:left;', a:td});
@@ -20741,8 +20754,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// Chart for high water marks
 				var td = document.createElement('td');
 				td.colSpan = 5; // 5+6=11
-				make_hw_chart(row.high_water_marks, td);
+				td.hw = row.high_water_marks; // This will be utilized when td is expanded!
+				//~ make_hw_chart(row.high_water_marks, td);
 				tr2.appendChild(td);
+				tr2.chart_td = td; // set "chart_td" field.
 				tb.appendChild(tr2);
 				//=====================
 				// TR
@@ -20781,10 +20796,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				var td = document.createElement('td');
 				td.innerText = row.reward;
 				tr.appendChild(td);
-				td.setAttribute('style', 'text-overflow:;');
+				td.setAttribute('style', 'width: 4%;\
+					text-overflow: !important;');
 				// TD
 				var td = document.createElement('td');
-				td.innerText = row.time_allotted;
+				td.innerText = time_to_display(row.time_allotted);
 				tr.appendChild(td);
 				td.setAttribute('style', 'width: 6%;\
 					text-overflow: !important;');
@@ -20804,12 +20820,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				//~ var td = document.createElement('td');
 				//~ td.innerText = row.description;
 				//~ tr.appendChild(td);
-				// TD
+				// TD days
 				var td = document.createElement('td');
-				td.innerHTML = '';
-				td.hide_show = row.requester_id;
+				td.innerText = Object.keys(row.high_water_marks).length;
+				//td.setAttribute('style', 'width: 20%;\
+					//~ overflow: hidden;\
+					//~ text-overflow: ellipsis;\
+					//~ white-space: nowrap;');
+				//~ td.hide_show = row.requester_id;
 				tr.appendChild(td);
-				// TD
+				// TD last day
 				var td = document.createElement('td');
 				td.innerText = '';
 				td.hide_show = row.requester_name;
@@ -20853,6 +20873,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			if (ei == 'none') { // hide
 				this.extra_info.style.display = '';
 				this.style.display = 'none';
+				make_hw_chart(this.extra_info.chart_td.hw, this.extra_info.chart_td);
 			} else { // show
 				this.extra_info.style.display = 'none';
 				this.style.display = '';
