@@ -20484,16 +20484,22 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var today = new Date().getFullYear() + '-' + 
 			(gm) + '-' +
 			gd;
+		var monthNames = ['J','F','M','A','M','J','J','A','S','O','N','D',];
 		for (var i=first_year; i<=last_year; i++) {
 			// All days
 			// i.e. 365.
 			for (var j=0; j<366; j++) { //0-365??
+				var tdate = new Date(i, '', j);
 				if (j == 1) {
 					labels.push(i); // show year
 				} else {
-					labels.push(''); // show blank
+					// Also show months.
+					if (tdate.getDate() == 1) {
+						labels.push(monthNames[tdate.getMonth()]);
+					} else {// Show blank otherwise.
+						labels.push('');
+					}
 				}
-				var tdate = new Date(i, '', j);
 				var gm = tdate.getMonth()+1;
 				var gd = tdate.getDate();
 				gm = (gm<10) ? '0'+gm : gm;
@@ -20505,8 +20511,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					//~ tdate.getDate() + '-' // 1-31
 					//~ +(tdate.getMonth()+1) + '-' // 0-11, convert to 1-12
 					//~ +i;
-				//~ console.log('check day:',dstr);
-				//~ console.log('check day:',dstr,'against day:',today);
 				if (obj_hw.hasOwnProperty(dstr)) {
 					console.log('match day',dstr);
 					console.log('+tasks',obj_hw[dstr]);
@@ -20516,35 +20520,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					num_tasks.push(0);
 				}
 				if (dstr == today) break; // Only part of the current year.
-			//~ var fmtdate = new Date().getFullYear() + '-' + 
-				//~ (new Date().getMonth()+1) + '-' +
-				//~ new Date().getDate();
 			}
-		}
-		//~ console.log(labels);
-		//~ console.log(num_tasks);
-		// Data
-		var data = {
-			labels: labels,
-			datasets: [
-				{
-					label: "X",
-					fillColor: "rgba(151,187,205,0.2)",
-					strokeColor: "rgba(151,187,205,1)",
-					pointColor: "rgba(151,187,205,1)",
-					pointStrokeColor: "#fff",
-					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: num_tasks
-				}
-			]
-		}
-		
-		// Options
-		var options = {
-			bezierCurve: false,
-			scaleShowGridLines: false,
-			pointDot: false,
 		}
 		
 		// Canvas & TD
@@ -20577,9 +20553,38 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			}
 		}
 		
-		// ...
+		// Data
+		var data = {
+			type:'bar',
+			labels: labels,
+			datasets: [{
+					label: "X",
+					//~ fillColor: "rgba(151,187,205,0.2)",
+					//~ strokeColor: "rgba(151,187,205,1)",
+					//~ pointColor: "rgba(151,187,205,1)",
+					//~ pointStrokeColor: "#fff",
+					//~ pointHighlightFill: "#fff",
+					//~ pointHighlightStroke: "rgba(151,187,205,1)",
+					data: num_tasks,
+			}]
+		}
+		// Options
+		var options = {
+			//~ bezierCurve: false,
+			//~ scaleShowGridLines: false,
+			//~ pointDot: false,
+			barStrokeWidth: 0.2
+		}
 		var context = chart.getContext("2d");
-		var myNewChart = new Chart(context).Line(data, options);
+		//var myNewChart = new Chart(context).Line(data, options);
+		var myNewChart = new Chart(context).Bar(data, options);
+		// This is the "new" format for chart.js.
+		// Todo: Update chart.js and then uncomment this section.
+		// new Chart(context, {
+			// type:'bar',
+			// data:data,
+			// options:options
+		// });
 	}
 	/**
 	 * o.ro_extended().table()
