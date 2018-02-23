@@ -19856,35 +19856,49 @@ AMT___core_factory.prototype.setTimerNamespace = function(str) {
 
 
 /**
- * Page 1 mturk.com MT___page1_show_jobs
+ * amt_home_show_tasks
+ * Front page of mturk.com: Show tasks.
  * 
  * Move into core_factory, July 30 2014.
  * AMT___core_factory.prototype. = function() {
  * 
- * TODO: CLOSE btn
  * TODO: ratings
+ * 
+ * Jan2018:
+ * 		Old address was
+ * 		/^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	// Check if the page is currently at /mturk/findhits
-	//
-	//
-	var s = location.href;
-	//~ var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
-	var u = /^https:\/\/worker\.mturk\.com\/?$/;
-	if (!u.exec(s)) return;
+	if (!validate_location()) {
+		return false;
+	}
+	
+	/**
+	 * Check if the page is currently at /mturk/findhits
+	 */
+	function validate_location() {
+		var s = location.href,
+		u = /^https:\/\/worker\.mturk\.com\/?$/;
+		if (!u.exec(s)) return false;
+		else return true;
+	}
+	
 	// Create script var
 	new AMT___core_factory().createScriptVar('AMT Front Page Threshold (0+)', '100');
+	
 	// Globals...
-	var ignore_requesters__ids, ignore_requesters;
-	// Hosts
-	var MT___page1_hosts = [
-		MT___host+'/mturk/.scripts/AMT_Batch/g.php',
-		'http://www.sjshpack.com/AMT/g.php'
-	];
-	var MT___page1_host = MT___page1_hosts[0];
-	var MT___page1_host_num = 0;
-	// Timers intervals
-	var xint, xint2;
+	var ignore_requesters__ids,
+		ignore_requesters,
+		// Hosts
+		MT___page1_hosts = [
+			MT___host+'/mturk/.scripts/AMT_Batch/g.php',
+			'http://www.sjshpack.com/AMT/g.php'
+		],
+		MT___page1_host = MT___page1_hosts[0],
+		MT___page1_host_num = 0;
+		// Timers intervals
+		xint, xint2;
 	
 	/**
 	 * tasks_obj
@@ -19988,7 +20002,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	init();
 	
 	/**
-	 * function init
+	 * init
 	 */
 	function init() {
 		// Ignored
@@ -20244,8 +20258,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				 * 
 				 */
 				rs = JSON.parse(rs);
-				//~ console.log('Local time:'+tasks_obj.last_update);
-				//~ console.log('DB time:'+rs[0].h);
 				
 				// Does DB match local DB-updated timestamp?
 				//
@@ -20282,14 +20294,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var new_job = false;
 		for (var i = 0; i < rs[0].length; i++)
 		{
-			
 			var db_id = rs[0][i];
 			
 			if (tasks_obj.current_db_ids.hasOwnProperty(db_id)) {
 				continue; // Skip
 			}
-			
-			// on page number, hits avail, !ignore_
+			// on page number < 20, hits avail >= 80, !ignored
 			if  (
 				rs[1][i] <  20 &&
 				rs[4][i] >= 80 &&
@@ -20311,7 +20321,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tasks_obj.current_history_ids = [];
 		for (var i = 0; i < rs[0].length; i++)
 		{
-			
 			var db_id = rs[0][i];
 			tasks_obj.current_db_ids[db_id] = true;
 			
@@ -20355,11 +20364,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				one_open = true;
 			}
 			tr.hidden_tr.style.display = 'none';
-			//tr.hidden_tr.td.innerText = '';
-			
 		}
-		if (one_open)
-			tr_clicked.scrollIntoView();
+		// Disable scroll into view!
+		// Feb 2018.
+		//~ if (one_open)
+			//~ tr_clicked.scrollIntoView();
 	}
 	/**
 	 * function get_extended
@@ -20492,17 +20501,21 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					overflow: ;\
 					text-overflow: ;\
 					white-space: ;');
-				td.innerText = 'ID:\n\
-					Title:\n\
-					Qual.:\n\
-					Reward:\n\
-					Time:\n\
-					Dupl.:\n\
-					Req. ID:\n\
-					Reg. Name:\n\
-					Group ID:\n\
-					Hash ID:\n\
-					Dates Posted:';
+				//td.append();
+				'Title:'.div({style:'width:10%;float:left;', a:td});
+				(row.title).div({style:'width:88%;float:left;overflow:auto;', a:td});
+				// Basic layout:
+				//~ td.innerText = 'ID:\n\
+					//~ Title:\n\
+					//~ Qual.:\n\
+					//~ Reward:\n\
+					//~ Time:\n\
+					//~ Dupl.:\n\
+					//~ Req. ID:\n\
+					//~ Reg. Name:\n\
+					//~ Group ID:\n\
+					//~ Hash ID:\n\
+					//~ Dates Posted:';
 				tb.appendChild(tr2);
 				//=====================
 				// TR
