@@ -19896,7 +19896,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'http://www.sjshpack.com/AMT/g.php'
 		],
 		MT___page1_host = MT___page1_hosts[0],
-		MT___page1_host_num = 0;
+		MT___page1_host_num = 0,
 		// Timers intervals
 		xint, xint2;
 	
@@ -20010,6 +20010,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		// Add styles to page
 		add_styles();
+		
+		// Set audio volume bird variable.
+		new AMT___core_factory().createScriptVar('FrontPage:Volume(0.0-1.0)', '0.6');
 		
 		// Container
 		tasks_obj.div_container = document.createElement('div');
@@ -20440,6 +20443,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 */
 	tasks_obj.ro_extended.prototype.table = function(obj) {
 		var rs = obj.result_set;
+		console.log(rs);
 		var tb = document.createElement('table');
 		tb.setAttribute('style',
 			'width:100%;border:0;'
@@ -20502,17 +20506,45 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					text-overflow: ;\
 					white-space: ;');
 				//td.append();
+				//~ var d = {
+					//~ db_id:				rs[0][i],
+					//~ on_page_number:		rs[1][i],
+					//~ title:				rs[2][i],
+					//~ requester_name:		rs[3][i],
+					//~ hits_available:		rs[4][i],
+					//~ time_since_posted:	rs[5][i],
+					//~ requester_id:		rs[6][i],
+					//~ group_id:			rs[7][i],
+					//~ history_id:			(rs[8]) ? rs[8][i]	: null,
+					//~ reward:				(rs[9]) ? rs[9][i]	: null,
+					//~ task_comment:		(rs[10]) ? rs[10][i] : null,
+					//~ comment_last_mod:	(rs[11]) ? rs[11][i] : 0
+					//title_ratings: null,
+					//title_comments: null,
+					//requester_ratings: null,
+					//requester_comments: null
+				//~ };
+				// Title: Show full (no hide)
 				'Title:'.div({style:'width:10%;float:left;', a:td});
-				(row.title).div({style:'width:88%;float:left;overflow:auto;', a:td});
+				(row.title).div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// Name
+				'Name:'.div({style:'width:10%;float:left;', a:td});
+				(row.requester_name).div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
+				// Name
+				'Name:'.div({style:'width:10%;float:left;', a:td});
+				(row.requester_name).div({style:'width:88%;float:left;', a:td});
+				''.div({style:'clear:both;', a:td});
 				// Basic layout:
 				//~ td.innerText = 'ID:\n\
 					//~ Title:\n\
+					//~ Req. Name:\n\
 					//~ Qual.:\n\
 					//~ Reward:\n\
 					//~ Time:\n\
 					//~ Dupl.:\n\
 					//~ Req. ID:\n\
-					//~ Reg. Name:\n\
 					//~ Group ID:\n\
 					//~ Hash ID:\n\
 					//~ Dates Posted:';
@@ -21584,13 +21616,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	
 	/**
-	 * Function MT___page1_show_jobs_play_audio
+	 * MT___page1_show_jobs_play_audio
 	 * 
 	 * play_audio
 	 * 
 	 */
 	function play_audio() {
-		
 		// Remove old elements.
 		if (document.getElementById('MT___page1_show_jobs_play_audio'))
 			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
@@ -21607,6 +21638,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		c.setAttribute('src', MT___AUDIO_SNIPPET);
 		document.body.appendChild(c);
 		c = document.getElementById('MT___page1_show_jobs_play_audio');
+		// 1.0 = max (browser default), 0.0 = mute.
+		c.volume = AMT__Global_Vars.scriptVars['FrontPage:Volume(0.0-1.0)'];
 		c.play();
 		// Remove after 4 seconds
 		setTimeout(function() {
