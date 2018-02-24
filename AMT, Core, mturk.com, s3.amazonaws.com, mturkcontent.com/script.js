@@ -143696,6 +143696,7 @@ qatar,80
 	}
 	// KronoPin
 	// Find the Website Address for a Consumer Product
+	// FORK-AustinLoadSkips
 	var s = '<li>Include the full address, e.g. http://www.coca-cola.com.</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch.</li>\n	<li><strong>There are many tricky ones:</strong> For example, Traverse Bay WINE takes you to a website for https://cgtwines.com, the company that owns the wine brand</li>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -143762,8 +143763,9 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
-					str_add_to_searches_hidden:  ' (product OR products OR brand OR company OR food OR beverage OR )', //
+					str_add_to_searches_hidden:  ' (product OR products OR brand OR company OR food OR foods OR beverage OR )', //
 					//~ use_duckduckgo_search_engine: true,
+					fork_skips_file: true,
 				},
 				searches:[ // 
 					o.comp,

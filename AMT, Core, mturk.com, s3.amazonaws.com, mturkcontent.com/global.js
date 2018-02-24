@@ -12467,6 +12467,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .onclick_check_site_is200						BOOLEAN
  * .onclick_check_site_is200_err_callback			Function()
  * .search											Object
+ * .search.fork_skips_file							String, Filename for a fork of current skips file (austin_load_skips).
  * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com". (Feature: Display "debug" message showing this.)
  * .hide_search_fields BOOLEAN
  * .AmtRecordAndSubmit								Use AMT__recordAndSubmit rather than doSubmit
