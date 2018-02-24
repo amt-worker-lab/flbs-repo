@@ -5982,9 +5982,18 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 		}
 	});
 }
-// TRY #3
-// fs__load_skips2
-//
+/**
+ * fs__load_skips2
+ * 
+ * TRY #3
+ * 
+ * @param skips_key
+ * @param callback
+ * @param callback_err
+ * @param fork			String: Optional pre-existing skips file to fork
+ * 						(e.g. austin_load_skips).
+ */
+
 AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 {
 	var opts_obj = opts_obj;
@@ -6000,8 +6009,12 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 	if (!opts_obj.hasOwnProperty('callback_err')) {
 		opts_obj.callback_err = function() {};
 	}
+	if (!opts_obj.hasOwnProperty('fork')) {
+		opts_obj.fork = false;
+	}
 	var o = {
-		key: opts_obj.skips_key
+		key: opts_obj.skips_key,
+		fork: opts_obj.fork,
 	}
 	// Xhr
 	GM_xmlhttpRequest({
@@ -12463,7 +12476,8 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .onclick_check_site_is200						BOOLEAN
  * .onclick_check_site_is200_err_callback			Function()
  * .search											Object
- * .search.fork_skips_file							String, Filename for a fork of current skips file (austin_load_skips).
+ * .search.skips									Object: .fork:Filename, .key:New OR existing file name
+ * 														Fork skips file or use a pre-existing skips file.
  * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com". (Feature: Display "debug" message showing this.)
  * .hide_search_fields BOOLEAN
  * .AmtRecordAndSubmit								Use AMT__recordAndSubmit rather than doSubmit
@@ -12493,11 +12507,14 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	if (!options_object.hasOwnProperty('search')) {
 		options_object.search = {}
 	}
-	if (!options_object.search.hasOwnProperty('fork_skips_file')) {
+	if (!options_object.search.hasOwnProperty('skips')) {
 		/*TODO: IMPLEMENT THIS.
 		 * 	Feature: Use "fs load skips file 2" to implement.
 		 **/
-		options_object.search.fork_skips_file = false;
+		options_object.search.skips = {
+			fork: false,
+			key: 'austin_load_skips'.
+		}
 	}
 	if (!options_object.search.hasOwnProperty('use_duckduckgo_search_engine')) {
 		options_object.search.use_duckduckgo_search_engine = false; // Default = SP
@@ -12720,6 +12737,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	var SKIP_SITES;
 	// try_mt_host, Default=true
 	function company_URL__load_skips(try_other_host) {
+		
+		// options_object.search.fork_skips
+		
 		var tmp_host = MT___host;
 		if (try_other_host) {
 			tmp_host = 'http://'+AMT__Global_Vars.scriptVars['Server Location']; // E.g., change 192.168.1.2 to localhost
