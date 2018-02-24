@@ -6026,7 +6026,7 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 				opts_obj.callback_err();
 				return;
 			}
-			var x = rs.split("\n");//console.log(rs);
+			var x = rs.split("\n");
 			var SKIP_SITES = {}; // ASSOC.
 			// FULL
 			for (var i in x) {
@@ -12513,7 +12513,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		 **/
 		options_object.search.skips = {
 			fork: false,
-			key: 'austin_load_skips'.
+			key: 'austin_load_skips',
 		}
 	}
 	if (!options_object.search.hasOwnProperty('use_duckduckgo_search_engine')) {
@@ -12584,6 +12584,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		bad_regex_domain: [// This is an array of matches to domains to ignore, such as amfibi.directory
 		   /\.amfibi\.directory[\/]*$/
 		], 
+		SKIP_SITES: {}, // To be filled in.
 	}
 	options_object.o = o; // ...
 	/* BEGINS ITEMS */
@@ -12734,46 +12735,56 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	var TOTAL_CALLS = 0;
 	var ARRAY_FIRST_FINDS = [];
 	var NUM_FOUND_SEARCH = 0;
-	var SKIP_SITES;
+	//~ var SKIP_SITES;
+	
 	// try_mt_host, Default=true
 	function company_URL__load_skips(try_other_host) {
-		
 		// options_object.search.fork_skips
-		
 		var tmp_host = MT___host;
 		if (try_other_host) {
 			tmp_host = 'http://'+AMT__Global_Vars.scriptVars['Server Location']; // E.g., change 192.168.1.2 to localhost
 		}
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url: tmp_host+'/mturk/util.php?austin_load_skips=',
-			onerror: function(response) {
-				company_URL__load_skips(true); // Retry
-			},
-			onload: function (response) {
-				if (response.status != 200) {
-					company_URL__load_skips(true);
-					return;
-				}
-				company_URL__load_skips_success(response)
-			}
+		
+		//options_object.search.fork_skips
+		new AMT___requests_factory().fs__load_skips2({
+			skips_key: options_object.search.skips.key,
+			fork: options_object.search.skips.fork,
+			callback: company_URL__load_skips_success
 		});
+		
+		//~ GM_xmlhttpRequest({
+			//~ method: 'GET',
+			//~ url: tmp_host+'/mturk/util.php?austin_load_skips=',
+			//~ onerror: function(response) {
+				//~ company_URL__load_skips(true); // Retry
+			//~ },
+			//~ onload: function (response) {
+				//~ if (response.status != 200) {
+					//~ company_URL__load_skips(true);
+					//~ return;
+				//~ }
+				//~ company_URL__load_skips_success(response)
+			//~ }
+		//~ });
 	}
-	function company_URL__load_skips_success(response) {
-		var rs = response.responseText;
-		var x = rs.split("\n");
-		SKIP_SITES = {}; // ASSOC.
-		// FULL
-		for (var i in x) {
-			SKIP_SITES[x[i]] = true;
-		}
-		// SUBDOMAINS
-		for (var i in x) {
-			var y;
-			if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
-				SKIP_SITES[y[1]] = true;
-			}
-		}
+	function company_URL__load_skips_success(SKIP_SITES) {
+		//~ var rs = response.responseText;
+		//~ var x = rs.split("\n");
+		//~ SKIP_SITES = {}; // ASSOC.
+		//~ // FULL
+		//~ for (var i in x) {
+			//~ SKIP_SITES[x[i]] = true;
+		//~ }
+		//~ // SUBDOMAINS
+		//~ for (var i in x) {
+			//~ var y;
+			//~ if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+				//~ SKIP_SITES[y[1]] = true;
+			//~ }
+		//~ }
+		o.SKIP_SITES = SKIP_SITES;
+		
+		
 		// Init
 		// If SP
 		if (!options_object.search.use_duckduckgo_search_engine) {
@@ -13051,11 +13062,13 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			// SKIP BUTTON CREATE
 			// returns obj.el_button, obj.isSkip
 			var el_inp_skip2__obj = new AMT___items_factory().
-				create__input_skip_button2(
+				create__input_skip_button3(
+				//~ create__input_skip_button2( // Implement #3 version, Feb2018.
 					{
 						domain: x,
-						load_file: 'austin_load_skips', 
-						var_skip_sites: SKIP_SITES, 
+						load_file: options_object.search.skips.key, 
+						//~ load_file: 'austin_load_skips', 
+						var_skip_sites: o.SKIP_SITES, 
 						callback_function: false,
 						callback_if_ignore:
 							(options_object.search_results.hasOwnProperty('onclick_success')) ?
@@ -13109,6 +13122,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//
 			//
 			if (el_inp_skip2__obj.isSkip) {
+				//~ console.log(el_inp_skip2__obj);
+				//~ console.log(el_inp_skip2__obj.el_btn);
+				//~ console.log(typeof el_inp_skip2__obj.el_btn);
 				d.appendChild(el_inp_skip2__obj.el_btn);
 				d.appendChild(el_inp_skip2__obj.el_btn_choose);
 				continue; // END
@@ -17772,19 +17788,24 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
  * This is a fork of create__input_skip_button2.
  * Everything is the same but on read / write it utilizes new end-point ['fs_load_skips_file'].
  * 
- * domain: x,
- * load_file: 'austin_load_skips', 
- * var_skip_sites: SKIP_SITES, 
- * callback_function: false
+ * @param input_skips_object	Object
+ * @param ""	"".load_file
+ * 
+ * 		domain: x,
+ * 		load_file: 'austin_load_skips', 
+ * 		var_skip_sites: SKIP_SITES, 
+ * 		callback_function: false
  * 		
  * Returns an input element and bool()
- * 	{}.el_button,
+ * 	{}.el_button // This is deprecated - do not use! 
+ * 	{}.el_btn
+ *  {}.el_btn_choose
  * 	{}.isSkip
 **/
 AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_object) // X: pass reference
 {
-	var input_skips_object = input_skips_object;//console.log(input_skips_object);
-	
+	var input_skips_object = input_skips_object;
+	console.log(input_skips_object);
 	// ...
 	// regular = ^http://www.site.com$
 	// subdomains = [\.\/]site.com$
@@ -17823,7 +17844,7 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		input_skips_object.short_domain = input_skips_object.domain.trim();
 	}
 	// Debug
-	//~ console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
+	// console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
 	
 	// remove_skips
 	// 
@@ -17863,7 +17884,9 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 			key: input_skips_object.load_file,
 			add: input_skips_object.short_domain,
 		}
+		console.log(input_skips_object);
 		var url = MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(obj));
+		console.log(url);
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: url,
@@ -17883,6 +17906,16 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		el_inp.onclick = write_skips;
 		return el_inp;
 	}
+	function choose_if_ignored_button(url) {
+		var el_inp = document.createElement('input');
+		el_inp.setAttribute('style','width:auto;background-color:#eee;border:1px solid #0a0a0a;cursor:pointer;');
+		el_inp.setAttribute('type','button');
+		el_inp.value = ' + ';
+		el_inp._ignored_value = input_skips_object.domain;
+		el_inp.full_url = input_skips_object.full_url;
+		el_inp.onclick = input_skips_object.callback_if_ignore;
+		return el_inp;
+	}
 	function remove_button() { //url
 		var el_inp = document.createElement('input');
 		el_inp.setAttribute('style','width:auto;background-color:#eee;border:0;cursor:pointer;');
@@ -17900,13 +17933,16 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		)
 	{
 		return {
-			el_button: remove_button(),
+			el_button: remove_button(), // DEPECATED, DO NOT USE
+			el_btn: remove_button(),
+			el_btn_choose: choose_if_ignored_button(),
 			isSkip: true
 		};
 	}
 	// This is not a skip.
 	return {
-		el_button: add_button(),
+		el_btn: add_button(),
+		el_button: add_button(), // DEPECATED, DO NOT USE
 		isSkip: false
 	};
 }
@@ -17919,7 +17955,8 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
  * callback_function: false
  * 		
  * Returns an input element and bool()
- * 	{}.el_btn,
+ * 	{}.el_btn
+ *  {}.el_btn_choose
  * 	{}.isSkip
 **/
 AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_object) // X: pass reference
