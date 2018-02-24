@@ -143740,11 +143740,6 @@ qatar,80
 				o.search3 = '"' + o.comp.split(' ').join('" "');
 			}
 			console.log(o);
-			//~ AMT___addUserDecision(
-				//~ 'patmoore,2018', function() {
-					//~ return o.comp;
-				//~ }, ['Name(oid1)[0]']
-			//~ )
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
@@ -143762,6 +143757,24 @@ qatar,80
 				],
 				offset: 0 // offset top
 			});
+			AMT___addUserDecision(
+				'kronopin-findurl,2018', function() {
+					return o.comp+'|'+o.field2+'|'+o.field3;
+				}, ['Id(web_url)']
+			)
+			//
+			AMT___doPastBehavior('kronopin-findurl,2018',1, 'Do Not Submit', function (rslt) {
+				alert(rslt);
+				console.log(rslt);
+				//~ if(!rslt) {
+				//~ } else {
+					//~ console.log(rslt);
+					//~ if(rslt.outputs[1].value == 'Could not find company website') {
+						//~ dbug.value += "Website Unfound";
+						//~ document.body.style.backgroundColor = 'silver';
+					//~ }
+				//~ }
+			}, true);		
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
@@ -143809,7 +143822,7 @@ qatar,80
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
-				//~ AmtRecordAndSubmit: true,
+				AmtRecordAndSubmit: true,
 				AutoReturnAcceptIfZero: true,
 			});
 		}
