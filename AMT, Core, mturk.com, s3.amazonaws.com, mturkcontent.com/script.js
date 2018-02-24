@@ -143734,7 +143734,7 @@ qatar,80
 				o.search3 = o.comp + ' ' + o.field3;
 			} else {
 				o.search2 = o.comp + ' ' + o.field3;
-				o.search3 = '"' + o.comp.split(' ').join('" "') + '" company';
+				o.search3 = '"' + o.comp.split(' ').join('" "');
 			}
 			console.log(o);
 			//~ AMT___addUserDecision(
@@ -143762,7 +143762,7 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
-					//~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
+					str_add_to_searches_hidden:  ' (product OR products OR brand OR company OR food OR beverage OR )', //
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
