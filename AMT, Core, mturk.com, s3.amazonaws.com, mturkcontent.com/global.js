@@ -12497,6 +12497,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	if (!options_object.hasOwnProperty('search')) {
 		options_object.search = {}
 	}
+	if (!options_object.search.hasOwnProperty('fork_skips_file')) {
+		/*TODO: IMPLEMENT THIS.
+		 * 	Feature: Use "fs load skips file 2" to implement.
+		 **/
+		options_object.search.fork_skips_file = false;
+	}
 	if (!options_object.search.hasOwnProperty('use_duckduckgo_search_engine')) {
 		options_object.search.use_duckduckgo_search_engine = false; // Default = SP
 	}

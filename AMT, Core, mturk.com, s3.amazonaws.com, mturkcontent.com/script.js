@@ -143722,13 +143722,15 @@ qatar,80
 				//~ city: td[9].innerText.trim().string_to_mixed_case(),
 				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
 				boldArray: [],
-				//~ boldArray2: [],
+				boldArray2: [],
 				//~ boldArray3: [],
 				q: [
 					document.getElementById('web_url'),
 				],
 			}
 			o.boldArray = o.comp.clean_string_to_array();
+			o.boldArray2= o.field2.clean_string_to_array().concat(
+				o.field3.clean_string_to_array());
 			o.search2 = '';
 			if (o.field2 != '') {
 				o.search2 = o.comp + ' ' + o.field2;
@@ -143779,7 +143781,7 @@ qatar,80
 					//~ use_full_urls: true,
 					bold: {
 						black: o.boldArray,
-						//~ blue: o.boldArray2,
+						blue: o.boldArray2,
 						//~ brown: o.boldArray3,
 					},
 					//~ url_modifier_callback: function(url) { // Add @ symbol
