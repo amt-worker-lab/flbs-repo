@@ -323,14 +323,28 @@ AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
 AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
-		var groupIdReg = /<input type="hidden" name="groupId" value="([^"]*)">/;
-		var groupId = groupIdReg.exec(ih);
-		if(!groupId || groupId.length == 0)
-		{
-			//alert('Error initializing groupId');
+		// -------------------------------------------------------------
+		// UPDATE FEB 2018.
+		// There is a new group id.
+		// It is in the URL.
+		// Ex:		https://worker.mturk.com/projects/3BGEFHL0IGFMZG4SK1RWEFZA1HZJBJ/
+		// -------------------------------------------------------------
+		var x = /^https?:\/\/worker\.mturk\.com\/projects\/([A-Z0-9])+\//
+			.exec(document.location.href);
+		if (!x || !x.length || !x[1]) {
+			alert('AMT__Global_Vars.initializeGroupId: Missing group id!');
 			return;
-		} else groupId = groupId[1];
-		AMT__Global_Vars.groupId = groupId;		
+		}
+		AMT__Global_Vars.groupId = x[1];
+		// OLD GROUP ID.
+		//~ var groupIdReg = /<input type="hidden" name="groupId" value="([^"]*)">/;
+		//~ var groupId = groupIdReg.exec(ih);
+		//~ if(!groupId || groupId.length == 0)
+		//~ {
+			//~ //alert('Error initializing groupId');
+			//~ return;
+		//~ } else groupId = groupId[1];
+		//~ AMT__Global_Vars.groupId = groupId;		
 		
 		// Now that we have the groupId, listen for whether the child frame wants to learn it as well.
 		// OCT19 2014. In some cases top window does not have an iframe.
@@ -342,10 +356,6 @@ AMT__Global_Vars.initializeGroupId = function () {
 				this.removeEventListener('click',arguments.callee,false);
 			}, false);
 		}
-		// TESTING.........
-		//~ window.addEventListener('message', function(e) {
-			//~ console.log(e);
-		//~ }, false);
 	}
 	// Sep 18 2014
 	// Added window.top != window.self
@@ -353,21 +363,13 @@ AMT__Global_Vars.initializeGroupId = function () {
 	// setInterval would endlessly post message.
 	else if (window.top != window.self)
 	{
-		//~ console.log(window.top == window.self)
-		//~ if (window.top == window.self) { // Does not work
-			//~ alert('x');
-			//~ return; //?
-		//~ }
-		//~ return;
-		// Setting maxIntervals dnw when job is in preview
-		// mode in a new window (not in iframe).
-		//~ var maxIntervals = 30; // 30 * .2s ~= 6s
-		//~ if (!/^https?:\/\/(www\.|s3\.|)(mturk|mturkcontent|amazonaws)\.com/.exec(document.location.href)) return;
-		
-		var interval =  setInterval(function(){
-			parent.postMessage({groupIdRequest: true}, '*');
-		}, 200);
-		
+		// Set interval to check for group id.
+		var intervalChkGID =  window.setInterval(
+			function(){
+				parent.postMessage({groupIdRequest: true}, '*');
+			}, 200
+		);
+		// Add message listener.
 		window.addEventListener('message', function(e) {
 			if(!AMT__Global_Vars.groupId)
 			{
@@ -386,7 +388,7 @@ AMT__Global_Vars.initializeGroupId = function () {
 							//~ ''
 						//~ );
 					}
-					clearInterval(interval);					
+					clearInterval(intervalChkGID);					
 					this.removeEventListener('click',arguments.callee,false);
 				}
 			}
@@ -1075,7 +1077,11 @@ AMT___Floater.float = function() {
 	//Place in later code for 'Accept Condition'
 	
 	
-	/* Old useless code
+	/**
+	 * Hm. This is a quite useful example of getMatch behavior :)
+	 * 
+	 * 
+	 * 
 	if(AMT___Floater.skipOnReturnedHits)
 	{
 		AMT___getMatch('Skip Returns - ' + AMT__Global_Vars.groupId,
@@ -22566,16 +22572,25 @@ function AMT___returnAndAcceptButton() {
 	
 	// local
 	d1.addEventListener('click', function() {
-		if(AMT__Global_Vars.showPastReturnsContent) {
-			console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
-			AMT___addQuestionAnswer(
-				"ShowPastReturns",
-				AMT__Global_Vars.showPastReturnsContent,
-				[new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
-			return;
-		}
-		console.log(AMT__Global_Vars);
-		return;
+		// Update Feb2018: Add default save to DB on R&A!
+		AMT___addQuestionAnswer(
+			'ShowPastReturn:' + AMT__Global_Vars.groupId,
+			AMT__Global_Vars.hitId,
+		);
+		//~ AMT___addQuestionAnswer(
+			//~ 'ShowPastReturns',
+			//~ AMT__Global_Vars.showPastReturnsContent,
+			//~ [new OutputPair('Id(placeholderJustInCase)', 'placeholderJustInCase')]);
+		//~ if(AMT__Global_Vars.showPastReturnsContent) {
+			//~ console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
+			//~ AMT___addQuestionAnswer(
+				//~ "ShowPastReturns",
+				//~ AMT__Global_Vars.showPastReturnsContent,
+				//~ [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
+			//~ return;
+		//~ }
+		//~ console.log(AMT__Global_Vars);
+		//~ return;
 		
 		this.style.backgroundColor = '#9e9e9e';
 		//Record what tab we're returning on

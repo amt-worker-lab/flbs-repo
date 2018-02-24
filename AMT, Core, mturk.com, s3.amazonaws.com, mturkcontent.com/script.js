@@ -143764,10 +143764,10 @@ qatar,80
 			)
 			// STORE A RESULT IF RETURN AND ACCEPT!
 			//
-			AMT__Global_Vars.showPastReturnsContent = true;
+			//~ AMT__Global_Vars.showPastReturnsContent = true;
 			AMT___doPastBehavior('kronopin-findurl,2018',1, 'Do Not Submit', function (rslt) {
-				alert(rslt);
-				console.log(rslt);
+				//~ alert(rslt);
+				console.log(rslt); // obj
 				//~ if(!rslt) {
 				//~ } else {
 					//~ console.log(rslt);
@@ -143776,7 +143776,33 @@ qatar,80
 						//~ document.body.style.backgroundColor = 'silver';
 					//~ }
 				//~ }
-			}, true);		
+			}, true);
+			console.log(AMT__Global_Vars);
+			AMT___getMatch(
+				'Skip Returns:' + AMT__Global_Vars.groupId,
+				AMT__Global_Vars.hitId,
+				function(match, reference) {
+					if(match)
+					{
+						// R&A.
+						alert('Skipping - Already Been Here');
+						new AMT___core_factory().
+							iframe2parent__postMessage(
+								{
+									action: 'return_and_accept'
+								}
+							);
+						return;
+						//~ console.log('Testing the "AMT___Floater" in getMatch below: ')
+						//~ console.log(AMT___Floater);
+						//~ console.log('Is this AMT___getMatch?');
+						//~ alert('Skipping - Already Been Here');
+						//~ document.body.style.backgroundColor = 'LightGreen';
+						//~ reference.trySkip();
+					}
+				},
+				AMT___Floater
+			);
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
