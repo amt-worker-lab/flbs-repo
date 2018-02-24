@@ -143767,7 +143767,10 @@ qatar,80
 				search: {
 					str_add_to_searches_hidden:  ' (product OR products OR brand OR company OR food OR foods OR beverage OR )', //
 					//~ use_duckduckgo_search_engine: true,
-					fork_skips_file: true,
+					fork_skips: {
+						fork: 'austin_load_skips',
+						new_file: 'kronopin_skips',
+					}
 				},
 				searches:[ // 
 					o.comp,
