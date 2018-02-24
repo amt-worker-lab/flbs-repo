@@ -143762,7 +143762,9 @@ qatar,80
 					return o.comp+'|'+o.field2+'|'+o.field3;
 				}, ['Id(web_url)']
 			)
+			// STORE A RESULT IF RETURN AND ACCEPT!
 			//
+			AMT__Global_Vars.showPastReturnsContent = true;
 			AMT___doPastBehavior('kronopin-findurl,2018',1, 'Do Not Submit', function (rslt) {
 				alert(rslt);
 				console.log(rslt);

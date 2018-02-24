@@ -1422,11 +1422,14 @@ function AMT___record()
 
 function showPastReturns(matchString, callback) {
 	if(!AMT__Global_Vars.isTopWindow) {
-	
 		window.parent.postMessage({
 				action: 'ShowPastReturns',
 				matchString: matchString
-			}, 'https://www.mturk.com');
+			}, 'https://worker.mturk.com');
+			// OLD ADDRESS
+			// UPDATE: FEB. 2018
+			// 		Change to worker.mturk.com.
+			//~ }, 'https://www.mturk.com');
 		AMT___getMatch('ShowPastReturns', matchString, function(match, callback) {
 			if(callback) {
 				if(match)
@@ -22522,25 +22525,17 @@ function AMT___returnAndAcceptButton() {
 	MT__return_form.appendChild(x);
 	MT__return_form.target = x.name;
 	
+	//------------------------------------------------------------------
+	// Testing R&A
+	//------------------------------------------------------------------
 	// To try: Try send a request to old url + hitid ???
-	
-	//~ MT__return_form.action = MT__newtask_url;//.replace(/\?ref=w_pl_prvw/, '');
-	//~ MT__return_form.method = 'GET';
-	//~ var x = MT__return_form.getElementsByTagName('input');
-	//~ for (var i=0; i<x.length; i++) {
-		//~ if (x[i].name)
-			//~ MT__return_form_url += '&'+encodeURIComponent(x[i].name)
-				//~ +'='+encodeURIComponent(x[i].value);
-	//~ }
-	
+	//
 	//~ u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
-	
 	//~ var MT__url_returnaccept;
 	//~ MT__url_returnaccept = u;
 	//~ MT__url_returnaccept = MT__url_returnaccept.replace('<a href="', 'https://www.mturk.com');
 	//~ MT__url_returnaccept = __js_clean_html_str(MT__url_returnaccept);
 	//u = '';
-	
 	//<a href="/mturk/return?requesterId=AU06FWQZTTRD1&amp;hitId=33PPUNGG39GOP2WBVVLN4CROCUZRZ4&amp;signature=w7gq5x81cqAtP4ftfXGkA7pFN%2BY%3D&amp;groupId=3XCMB0010QC1BC9LPZSYHFBV3LL3PB&amp;canAccept=&amp;externalHit=true">
 	//~ var MT__gm_groupId;
 	//~ MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
@@ -22550,8 +22545,10 @@ function AMT___returnAndAcceptButton() {
 		//~ MT__gm_groupId = MT__gm_groupId[1];
 	//~ else
 		//~ return; // Quit here!
-		
 	//~ console.log('HERE');
+	//------------------------------------------------------------------
+	// End testing R&A
+	//------------------------------------------------------------------
 	
 	var d1 = document.createElement('input');
 	d1.setAttribute('id','MT__gm_returnaccept');
@@ -22575,7 +22572,11 @@ function AMT___returnAndAcceptButton() {
 				"ShowPastReturns",
 				AMT__Global_Vars.showPastReturnsContent,
 				[new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
+			return;
 		}
+		console.log(AMT__Global_Vars);
+		return;
+		
 		this.style.backgroundColor = '#9e9e9e';
 		//Record what tab we're returning on
 		recordReturn();
@@ -22598,6 +22599,19 @@ function AMT___returnAndAcceptButton() {
 		}
 		
 		function MT__RETURN_AND_ACCEPT(time_to_submit) {
+			// Strategy: Run the return immediately, then process timeout.
+			// 		This is an HTML submit so it may lag.
+			// 		Therefore, submit immediately!
+			//		Then, after timeout, load new task.
+			MT__return_form.submit();
+			setTimeout(function() {
+				window.location = MT__newtask_url;
+				
+			}, time_to_submit);
+			
+			//----------------------------------------------------------
+			// Testing R&A
+			//----------------------------------------------------------
 			// Try Do a post, then a get.
 			//		No.
 			// Try XHR header change
@@ -22618,7 +22632,6 @@ global.js:17177 Refused to set unsafe header "Cookie"
 			// Try PHP curl to check with exact curl, plus cookie, plus changed date in cookie to one that is greater than date in cookie.
 			//		No.
 			//		Note: The value changed between returning in cookie is: s_nr=(\d+)-Repeat
-			
 			
 			//~ var opts = {
 				//~ server_opts: {
@@ -22679,14 +22692,9 @@ global.js:17177 Refused to set unsafe header "Cookie"
 				//~ }
 			//~ });
 			
-			// Strategy: Run the return immediately, then process timeout.
-			// 		This is an HTML submit so it may lag.
-			// 		Therefore, submit immediately!
-			//		Then, after timeout, load new task.
-			MT__return_form.submit();
-			setTimeout(function() {
-				window.location = MT__newtask_url;
-				// OLD VERSION
+			////////////////
+			// OLD VERSION
+			////////////////
 				//~ GM_xmlhttpRequest({
 					//~ method: 'POST',
 					//~ url: MT__return_form_url, // url to return this HIT
@@ -22712,7 +22720,9 @@ global.js:17177 Refused to set unsafe header "Cookie"
 							//~ // 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
 					//~ }
 				//~ });
-			}, time_to_submit);
+			//------------------------------------------------------------------
+			// End testing R&A
+			//------------------------------------------------------------------
 		}
 		
 		// First doSubmit
