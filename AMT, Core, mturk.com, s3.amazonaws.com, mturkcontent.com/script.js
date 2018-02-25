@@ -143985,6 +143985,11 @@ qatar,80
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			
+			// FIX THIS.
+			alert('REQUESTER FEEDBACK: "Response provides the company\'s front page, not their environmental sustainability page"');
+			return;
+			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			// Elements
 			var td = document.getElementsByTagName('td');
