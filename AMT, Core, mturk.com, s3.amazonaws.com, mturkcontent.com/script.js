@@ -143988,8 +143988,8 @@ qatar,80
 			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
 			
-			var fix_query = 'select * from AMT_Alerts.tasks_accomplished\
-				where fk_amt_status = \'Rejected\'\
+			var fix_query = 'select * from AMT_Alerts.tasks_accomplished \
+				where fk_amt_status="Rejected" and fk_requesterUserId="A1G67KUAPUR9J5" \
 				order by id desc;';
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
@@ -144059,6 +144059,15 @@ qatar,80
 						black: o.boldArray,
 						//~ blue: o.boldArray2,
 						//~ brown: o.boldArray3,
+					},
+					onclick_success: function(e) {
+						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						// url
+						o.q[0].value = this.full_url;
+						// Goto next tab
+						new AMT___core_factory().nextTab();
+						// Scrape.
+						scrape_ha(this, o);
 					},
 					//~ url_modifier_callback: function(url) { // Add @ symbol
 						//~ url = '@' + url;
@@ -145528,7 +145537,8 @@ qatar,80
 							}
 						},
 					},
-					onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					onclick_success: function(e) {
+						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
 						// url
 						o.q[0].value = this.full_url;
 						// Goto next tab

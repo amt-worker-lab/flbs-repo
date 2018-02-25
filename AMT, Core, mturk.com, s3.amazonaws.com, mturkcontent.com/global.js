@@ -2347,8 +2347,6 @@ String.prototype.regexLastIndexOf = function(regex, startpos) {
  * 
  * 
  * 
- * 
- * 
 **/
 
 /**
@@ -3026,6 +3024,24 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * fix_rejected_tasks
+ * On {event}, sends corrected values to DB and gets next REJECTED task "HIT_ID".
+ * 
+ * @param	options		...
+ * 
+ * @Implementation:
+ * FIX REJECTED TASKS
+ * POSTS values TO database table AMT_Alerts.HIT_ids_to_correct.
+ * GETS NEXT task WHERE:
+ * 		stats='rejected' AND fk_requesterUserId = '___' AND amt_hit_id IS NOT IN
+ * 		( SELECT distinct(hit_id) FROM AMT_Alerts.HIT_ids_to_correct )
+ * 		That is, where status is rejected, reqUserId is ___, and hit_id
+ * 		has not yet been added to AMT_Alerts.HIT_ids_to_correct.
+ */
+AMT___items_factory.prototype.fix_rejected_tasks = function(options) {
+	
 }
 /**
  * pdftotext
@@ -13278,16 +13294,15 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	function click_success(e) {
 		if (options_object.clickIntoUtilityTabs) {
 			//Utility behavior: jump into utility tab
-			if(!this.utilityTabBtn) {
+			if (!this.utilityTabBtn) {
 				this.utilityTabBtn = addUtilityTab({
 						url: this.full_url,
 						options: options_object.clickIntoUtilityTabs 
 					}
-					);
-			}else {
+				);
+			} else {
 				//click on my associated utility tab
 				this.utilityTabBtn.click();
-				
 			}
 		}
 		else { //Standard behavior, put url in out_element
