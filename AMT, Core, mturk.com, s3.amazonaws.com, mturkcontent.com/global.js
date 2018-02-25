@@ -18170,6 +18170,8 @@ AMT___items_factory.prototype.create__input_skip_button = function(url, skips_ke
  * 
  * @ AMT___POPUP___PROXY_REDACTED_ XXXX, @ AMT___POPUP__initializeGlobals  **get the @ AMT___POPUP___PROXY_REDACTED_ value before continuing
  * 
+ * @TODO When response has loaded, make sure to only fire callback
+ * 		one time! (One time only callback!)
  * 
  */
 function AMT___xhr_PROXY_REDACTED_(obj_vars) {
@@ -18191,17 +18193,15 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		local_URL_complete: '',
 		obj_vars: null,
 		duckDuckGoSecondStage: null,
+		processed_callback: false, // Will be set to true to disallow mutliple callbacks
 	}
-	
 	var local_URL;
 	var array_startPage_results;
-	
 	this.obj_vars = (typeof obj_vars == 'object') ? obj_vars : {};
 	o.obj_vars = this.obj_vars;
 	
 	//~ if (!this.obj_vars.url) // URL REQUIRED
 		//~ return;
-		
 	if (!this.obj_vars.catch_include &&
 		!this.obj_vars.hasOwnProperty('catch_include_array')) {
 		if (this.obj_vars.hasOwnProperty('yahoo')) {
@@ -18618,11 +18618,22 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				url: o.local_URL_complete,
 				onload: function(response) {
 					var rs = response.responseText;
-					
 					if (rs.trim() != '') {
 						clearInterval(xint);
 					} else
 						return;
+					
+					// Only process callback once!
+					// Problem: Occasionally, Chrome-Bug occurs
+					// or server lags, leaving multiple callbacks
+					// stacking. Then, all at once, they come in.
+					// Sometimes they trickle in for up to a minute or
+					// two at a time!
+					// Solution: Only allow one callback to proceed.
+					if (o.processed_callback) {
+						return;
+					}
+					o.processed_callback = true;
 					
 					// yahoo
 					if (o.obj_vars.hasOwnProperty('yahoo_array')) {
