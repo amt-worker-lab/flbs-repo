@@ -17814,7 +17814,7 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
 AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_object) // X: pass reference
 {
 	var input_skips_object = input_skips_object;
-	console.log(input_skips_object);
+	//~ console.log(input_skips_object);
 	// ...
 	// regular = ^http://www.site.com$
 	// subdomains = [\.\/]site.com$
