@@ -143777,32 +143777,38 @@ qatar,80
 					//~ }
 				//~ }
 			}, true);
-			console.log(AMT__Global_Vars);
-			AMT___getMatch(
-				'Skip Returns:' + AMT__Global_Vars.groupId,
-				AMT__Global_Vars.hitId,
-				function(match, reference) {
-					if(match)
-					{
-						// R&A.
-						alert('Skipping - Already Been Here');
-						new AMT___core_factory().
-							iframe2parent__postMessage(
-								{
-									action: 'return_and_accept'
-								}
-							);
-						return;
-						//~ console.log('Testing the "AMT___Floater" in getMatch below: ')
-						//~ console.log(AMT___Floater);
-						//~ console.log('Is this AMT___getMatch?');
-						//~ alert('Skipping - Already Been Here');
-						//~ document.body.style.backgroundColor = 'LightGreen';
-						//~ reference.trySkip();
-					}
-				},
-				AMT___Floater
-			);
+			// Wait for gid to load.
+			// NOTE: GID takes a moment to come in.
+			// 		This is likely because it is being passed
+			//		from the parent frame to the child. Of course, there
+			//		is also the case where the task is in top window.
+			//		But that is another bridge to cross!
+			var waitGID = setInterval(function() {
+				if (AMT__Global_Vars.groupId) {
+					clearInterval(waitGID);
+					AMT___getMatch(
+						'ShowPastReturn:' + AMT__Global_Vars.groupId,
+						AMT__Global_Vars.hitId,
+						function(match, reference) {
+							if(match)
+							{
+								// R&A.
+								//~ alert('Skipping - Already Been Here');
+								new AMT___core_factory().
+									iframe2parent__postMessage(
+										{
+											action: 'return_and_accept'
+										}
+									);
+								return;
+							}
+						},
+						AMT___Floater
+					);
+				}
+			}, 100);
+			//~ console.log('logxx',AMT__Global_Vars.groupId);
+			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {

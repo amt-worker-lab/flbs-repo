@@ -329,7 +329,7 @@ AMT__Global_Vars.initializeGroupId = function () {
 		// It is in the URL.
 		// Ex:		https://worker.mturk.com/projects/3BGEFHL0IGFMZG4SK1RWEFZA1HZJBJ/
 		// -------------------------------------------------------------
-		var x = /^https?:\/\/worker\.mturk\.com\/projects\/([A-Z0-9])+\//
+		var x = /^https?:\/\/worker\.mturk\.com\/projects\/([A-Z0-9]+)\//
 			.exec(document.location.href);
 		if (!x || !x.length || !x[1]) {
 			alert('AMT__Global_Vars.initializeGroupId: Missing group id!');
