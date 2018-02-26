@@ -3041,7 +3041,21 @@ function AMT___requests_factory(obj_vars) {
  * 		has not yet been added to AMT_Alerts.HIT_ids_to_correct.
  */
 AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
+	// Hit ID
+	var hid = /hitId=([A-Z0-9]+)/.exec(document.location.href)[1];
+	// -----------------------------------------------------------------
+	// Example call
+	//~ // Success
+	//~ new AMT___requests_factory().fix_rejected_tasks({
+		//~ correct_value: [hid, o.comp_orignal, this.full_url],
+		//~ fk_requesterUserId: 'A1G67KUAPUR9J5',
+		//~ // callback: // Default callback loads next URL.
+	//~ });
+	// -----------------------------------------------------------------
 	
+	https://www.mturkcontent.com/dynamic/hit
+				// ?assignmentId=...
+				// &hitId=386659BNTLGJNTMDIC84SQZGWRJ10W
 }
 /**
  * pdftotext
