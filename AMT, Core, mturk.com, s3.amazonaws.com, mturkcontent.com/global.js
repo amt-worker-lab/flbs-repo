@@ -3053,15 +3053,22 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 	// });
 	// -----------------------------------------------------------------
 	
+// WRITE
 //~ @param options				Object.
 //~ * @param options.db			Object.
 //~ * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
 //~ * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
 //~ * @param	""	""	.type		String. "UPDATE" or "INSERT"
 //~ * @param	""	""	.columns	Array. e.g. ['id', ...]
-//~ * @param	""	""	.values		Array. e.g. ["to-encode-w/mysql-real-escape", ..., ...]
-//~ * @param	""	""	.filters
+//~ * @param	""	""	.values		Array. Objects{UPDATE} or Strings{INSERT}:
+//									e.g. ["to-encode-w/mysql-real-escape", ..., ...]
+//~ * @param	""	""	.filters	Array. Objects.
 
+// SELECT
+//~ * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
+//~ * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
+//~ * @param	""	""	.columns	Array. e.g. ['id', ''] or ['*'].
+//~ * @param	""	""	.filters
 
 	new AMT___requests_factory().database__write2({
 		db: {
@@ -3071,10 +3078,26 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 			columns: ['hit_id','correct_value'],
 			values: [hid, options.correct_value],
 		},
-		callback: write_complete,
+		callback: write_complete_HIT_ids_to_correct,
 	});
+	function write_complete_HIT_ids_to_correct(resp_options) {
+		new AMT___requests_factory().database__write2({
+			db: {
+				database: 'AMT_Alerts',
+				table: 'tasks_accomplished',
+				type: 'UPDATE',
+				values: [
+					{field:'FLBS_EDIT',operator:'=',value:'*',connector:'&&'}
+				],
+				filters: [
+					{field:'fk_requesterUserId',operator:'=',value:options.fk_requesterUserId,connector:'&&'},
+					{field:'FLBS_EDIT',operator:'=',value:'',connector:''},
+				]
+			},
+			callback: write_complete,
+		});
+	}
 	function write_complete(resp_options) { // Options is returned.
-		console.log(resp_options);return;
 		/**
 		 *	{
 				field: "XYZ", (0-9A-Za-z_)
@@ -3087,11 +3110,12 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 			db: {
 				database: 'AMT_Alerts',
 				table: 'tasks_accomplished',
-				columns: 'amt_hit_id',
+				columns: ['amt_hit_id'],
 				filters: [
 					{field:'fk_requesterUserId',operator:'=',value:options.fk_requesterUserId,connector:'&&'},
-					{field:'FLBS_EDIT',operator:'!=',value:'',connector:''},
-				]
+					{field:'FLBS_EDIT',operator:'=',value:'',connector:''},
+				],
+				limit: 1
 			},
 			callback: select_complete,
 		});
@@ -3105,14 +3129,6 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 				'&hitId='+rs[0].amt_hit_id;
 		}
 	}
-//~ * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
-//~ * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
-//~ * @param	""	""	.columns	Array. e.g. ['id', ''] or ['*'].
-//~ * @param	""	""	.filters
-	
-	//https://www.mturkcontent.com/dynamic/hit
-				// ?assignmentId=...
-				// &hitId=386659BNTLGJNTMDIC84SQZGWRJ10W
 }
 /**
  * pdftotext
@@ -5572,6 +5588,7 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 								}]
 								Note: "Connector" is what "follows" the field
 								in the query. E.g., `` XYZ="ABC" && ``.
+ * @param	""	""	.limit		Integer.
  * @param options.callback		Function.
  * 
  * @return
@@ -5596,8 +5613,9 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
 			console.log(rs);
 			if (rs == '') //
 				rs = '[]'; // blank!!
-				
-			options.responseObject = JSON.parse(rs);
+			// The results are stored at: (JSON.parse(rs)).results.
+			// Note that the "input object" is stored in (JSON.parse(rs)).input.
+			options.responseObject = (JSON.parse(rs)).results;
 			options.callback(options); // send this back!
 		}
 	});
