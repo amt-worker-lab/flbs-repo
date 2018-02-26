@@ -3040,7 +3040,7 @@ function AMT___requests_factory(obj_vars) {
  * 		That is, where status is rejected, reqUserId is ___, and hit_id
  * 		has not yet been added to AMT_Alerts.HIT_ids_to_correct.
  */
-AMT___items_factory.prototype.fix_rejected_tasks = function(options) {
+AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 	
 }
 /**

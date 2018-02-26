@@ -143988,15 +143988,12 @@ qatar,80
 			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
 			
-			var fix_query = 'select * from AMT_Alerts.tasks_accomplished \
-				where fk_amt_status="Rejected" and fk_requesterUserId="A1G67KUAPUR9J5" \
-				order by id desc;';
-			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			// Elements
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.trim().string_to_mixed_case(),
+				comp_orignal: td[1].innerText.trim(),
 				//~ field2: td[3].innerText.trim().string_to_mixed_case(),
 				//~ field3: td[5].innerText.trim().string_to_mixed_case(),
 				//~ field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
@@ -144064,10 +144061,33 @@ qatar,80
 						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
 						// url
 						o.q[0].value = this.full_url;
-						// Goto next tab
-						new AMT___core_factory().nextTab();
-						// Scrape.
-						scrape_ha(this, o);
+						
+						//
+						//var fix_query = 'select * from AMT_Alerts.tasks_accomplished 
+				//where fk_amt_status="Rejected" and fk_requesterUserId="A1G67KUAPUR9J5" 
+				//order by id desc;';
+				// https://www.mturkcontent.com/dynamic/hit
+				// ?assignmentId=...
+				// &hitId=386659BNTLGJNTMDIC84SQZGWRJ10W
+			//AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
+			//AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
+						// Hit ID
+						var hid = /hitId=([A-Z0-9]+)/.exec(document.location.href)[1];
+						// Success
+						new AMT___requests_factory().fix_rejected_tasks({
+							correct_value: [hid, o.comp_orignal, this.full_url],
+							fk_requesterUserId: 'A1G67KUAPUR9J5',
+							// callback: // Default callback loads next URL.
+						});
+							
+							
+						
+						
+						
+						//~ // Goto next tab
+						//~ new AMT___core_factory().nextTab();
+						//~ // Scrape.
+						//~ scrape_ha(this, o);
 					},
 					//~ url_modifier_callback: function(url) { // Add @ symbol
 						//~ url = '@' + url;
