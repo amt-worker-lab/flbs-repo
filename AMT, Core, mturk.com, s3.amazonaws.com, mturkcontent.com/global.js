@@ -20770,9 +20770,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		}
 		var last_year = arr_days[arr_days.length - 1].yyyy;
 		var first_year = arr_days[0].yyyy;
-		//~ console.log(arr_days);
-		//~ console.log(first_year);
-		//~ console.log(last_year);
 		var gm = new Date().getMonth()+1;
 		var gd = new Date().getDate();
 		gm = (gm<10) ? '0'+gm : gm;
@@ -20804,9 +20801,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					i + '-' // 1-31
 					+(gm) + '-' // 0-11, convert to 1-12
 					+gd;
-					//~ tdate.getDate() + '-' // 1-31
-					//~ +(tdate.getMonth()+1) + '-' // 0-11, convert to 1-12
-					//~ +i;
 				if (obj_hw.hasOwnProperty(dstr)) {
 					// Where obj_hw[dstr] is num tasks on day "dstr".
 					num_tasks.push(obj_hw[dstr]);
@@ -20860,6 +20854,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					//~ pointHighlightFill: "#fff",
 					//~ pointHighlightStroke: "rgba(151,187,205,1)",
 					data: num_tasks,
+					barStrokeWidth: 0.2
 			}]
 		}
 		// Options
@@ -22793,13 +22788,10 @@ function AMT___returnAndAcceptButton() {
 	// local
 	d1.addEventListener('click', function() {
 		// Update Feb2018: Add default save to DB on R&A!
-		console.log(AMT__Global_Vars.groupId);
-		console.log(AMT__Global_Vars.hitId);
 		AMT___addQuestionAnswer(
 			'ShowPastReturn:' + AMT__Global_Vars.groupId,
 			AMT__Global_Vars.hitId,
 		);
-		
 		this.style.backgroundColor = '#9e9e9e';
 		//Record what tab we're returning on
 		recordReturn();
