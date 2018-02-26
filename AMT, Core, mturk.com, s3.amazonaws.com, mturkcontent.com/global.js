@@ -5507,22 +5507,24 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
  * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
  * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
  * @param	""	""	.columns	Array. e.g. ['id', ''] or ['*'].
- * @param	""	""	.filters	Array. e.g. [{where:{field: XYZ, value: to-encode-w/mysql-real-escape}}]
+ * @param	""	""	.filters	Array. e.g. [{
+ *			 						where: {field: "XYZ", (0-9A-Za-z_)
+											value: "to-encode-w/mysql-real-escape",
+											operator: "", (<, >, =, LIKE, !=)
+											connector: "" (&&,||,"")
+									}
+								}]
+								Note: "Connector" is what "follows" the field
+								in the query. E.g., `` XYZ="ABC" && ``.
  * @param options.callback		Function.
  * 
  * @return
  */
-AMT___requests_factory.prototype.database__select = function(database_object, callback_function) //
+AMT___requests_factory.prototype.database__select2 = function(options) //
 {
-	var database_object = database_object;
-	var callback_function = callback_function;
-	
+	var database_object = options.db;
 	var u = '?AMT__database_select2='+
-		encodeURIComponent(JSON.stringify(database_object.query));
-			//~ '&AMT__database_select__query='+encodeURIComponent(database_object.query);
-	//~ if (database_object.encodeStrings)
-		//~ u +='&AMT__database_select__encodeStrings='+encodeURIComponent(JSON.stringify(database_object.encodeStrings));
-	
+		encodeURIComponent(JSON.stringify(database_object));
 	// Timeout?
 	//~ database_object.timeout = (database_object.hasOwnProperty('timeout')) ? database_object.timeout : 30000;
 	
@@ -5530,6 +5532,63 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php' + u,
+		timeout: 120000,
+		//~ timeout: database_object.timeout,
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) return;
+			//~ database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
+			
+			if (rs == '') //
+				rs = '[]'; // blank!!
+				
+			options.responseObject = JSON.parse(rs);
+			callback_function(options); // send this back!
+		}
+	});
+}
+/**
+ * database__write2
+ * 
+ * insert into ___.___ set { ___[=...]___, [&& ||, ...] }
+ * update ___.___ set { ___[=...]___, [&& ||, ...] } [ where ... ]
+ * 
+ * @param options				Object.
+ * @param options.db			Object.
+ * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
+ * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
+ * @param	""	""	.type		String. "UPDATE" or "INSERT"
+ * @param	""	""	.columns	Array. e.g. ['id', ...]
+ * @param	""	""	.values		Array. e.g. ["to-encode-w/mysql-real-escape", ..., ...]
+ * @param	""	""	.filters	Array. e.g. [{
+ *			 						where: {field: "XYZ", (0-9A-Za-z_)
+											value: "to-encode-w/mysql-real-escape",
+											operator: "", (<, >, =, LIKE, !=)
+											connector: "" (&&,||,"")
+									}
+								}]
+								Note: "Connector" is what "follows" the field
+								in the query. E.g., `` XYZ="ABC" && ``.
+ * @param options.callback		Function.
+ * 
+ * @return
+ */
+AMT___requests_factory.prototype.database__write2 = function(options) //
+{
+	var database_object = options.db;
+	var u = '?AMT__database_select2='+
+		encodeURIComponent(JSON.stringify(database_object));
+	// Timeout?
+	//~ database_object.timeout = (database_object.hasOwnProperty('timeout')) ? database_object.timeout : 30000;
+	
+	// xhr
+	GM_xmlhttpRequest({
+		method: "POST",
+		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+		data: u,
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
 		timeout: 120000,
 		//~ timeout: database_object.timeout,
 		onload: function(response) {
