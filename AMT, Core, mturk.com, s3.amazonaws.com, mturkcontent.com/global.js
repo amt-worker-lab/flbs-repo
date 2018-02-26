@@ -3087,11 +3087,12 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 				table: 'tasks_accomplished',
 				type: 'UPDATE',
 				values: [
-					{field:'FLBS_EDIT',operator:'=',value:'*',connector:'&&'}
+					{field:'FLBS_EDIT',operator:'=',value:'*'}
 				],
 				filters: [
 					{field:'fk_requesterUserId',operator:'=',value:options.fk_requesterUserId,connector:'&&'},
-					{field:'FLBS_EDIT',operator:'=',value:'',connector:''},
+					{field:'FLBS_EDIT',operator:'IS',value:'NULL',connector:'&&'},
+					{field:'amt_hit_id',operator:'=',value:hid,connector:''},
 				]
 			},
 			callback: write_complete,
@@ -3113,7 +3114,8 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 				columns: ['amt_hit_id'],
 				filters: [
 					{field:'fk_requesterUserId',operator:'=',value:options.fk_requesterUserId,connector:'&&'},
-					{field:'FLBS_EDIT',operator:'=',value:'',connector:''},
+					{field:'FLBS_EDIT',operator:'IS',value:'NULL',connector:'&&'},
+					{field:'fk_amt_status',operator:'=',value:'Rejected',connector:''},
 				],
 				limit: 1
 			},
@@ -3123,6 +3125,7 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 	function select_complete(response) {
 		// responseObject is an array of results.
 		var rs = response.responseObject;
+		console.log(response);
 		if (rs.length) {
 			document.location.href = 'https://www.mturkcontent.com/dynamic/hit'+
 				'?assignmentId='+
@@ -5632,10 +5635,12 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
  * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
  * @param	""	""	.type		String. "UPDATE" or "INSERT"
  * @param	""	""	.columns	Array. e.g. ['id', ...]
- * @param	""	""	.values		Array. e.g. ["to-encode-w/mysql-real-escape", ..., ...]
+ * @param	""	""	.values		Array. Objects{UPDATE} or Strings{INSERT}:
+ *									e.g. ["to-encode-w/mysql-real-esp", ..., ...]
+ * 									e.g. [{field:"XYZ",operater:"=",value:"to-encode-w/mysql-real-esp"},...]
  * @param	""	""	.filters	Array. e.g. [{
  *			 						where: {field: "XYZ", (0-9A-Za-z_)
-											value: "to-encode-w/mysql-real-escape",
+											value: "to-encode-w/mysql-real-esp",
 											operator: "", (<, >, =, LIKE, !=)
 											connector: "" (&&,||,"")
 									}
