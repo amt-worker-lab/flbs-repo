@@ -3047,12 +3047,10 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 	var hid = /hitId=([A-Z0-9]+)/.exec(document.location.href)[1];
 	// -----------------------------------------------------------------
 	// Example call
-	//~ // Success
-	//~ new AMT___requests_factory().fix_rejected_tasks({
-		//~ correct_value: [hid, o.comp_orignal, this.full_url],
-		//~ fk_requesterUserId: 'A1G67KUAPUR9J5',
-		//~ // callback: // Default callback loads next URL.
-	//~ });
+	// new AMT___requests_factory().fix_rejected_tasks({
+	//		correct_value: JSON.stringify([hid, o.comp_orignal, this.full_url]),
+	//		fk_requesterUserId: 'A1G67KUAPUR9J5',
+	// });
 	// -----------------------------------------------------------------
 	
 //~ @param options				Object.
@@ -3070,36 +3068,51 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 			database: 'AMT_Alerts',
 			table: 'HIT_ids_to_correct',
 			type: 'INSERT',
-			columns: ['correct_value'],
-			filters:,
-			filters:,
+			columns: ['hit_id','correct_value'],
+			values: [hid, options.correct_value],
 		},
 		callback: write_complete,
 	});
-	function write_complete() {
+	function write_complete(resp_options) { // Options is returned.
+		console.log(resp_options);return;
+		/**
+		 *	{
+				field: "XYZ", (0-9A-Za-z_)
+				value: "to-encode-w/mysql-real-escape",
+				operator: "", (<, >, =, LIKE, !=)
+				connector: "" (&&,||,"")
+			}
+		 */
 		new AMT___requests_factory().database__select2({
 			db: {
-				database:
-				table:
-				columns:
-				filters:
+				database: 'AMT_Alerts',
+				table: 'tasks_accomplished',
+				columns: 'amt_hit_id',
+				filters: [
+					{field:'fk_requesterUserId',operator:'=',value:options.fk_requesterUserId,connector:'&&'},
+					{field:'FLBS_EDIT',operator:'!=',value:'',connector:''},
+				]
 			},
-			callback: write_complete,
+			callback: select_complete,
 		});
 	}
-		
-		
- * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
- * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
- * @param	""	""	.columns	Array. e.g. ['id', ''] or ['*'].
- * @param	""	""	.filters
+	function select_complete(response) {
+		// responseObject is an array of results.
+		var rs = response.responseObject;
+		if (rs.length) {
+			document.location.href = 'https://www.mturkcontent.com/dynamic/hit'+
+				'?assignmentId='+
+				'&hitId='+rs[0].amt_hit_id;
+		}
+	}
+//~ * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
+//~ * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
+//~ * @param	""	""	.columns	Array. e.g. ['id', ''] or ['*'].
+//~ * @param	""	""	.filters
 	
 	//https://www.mturkcontent.com/dynamic/hit
 				// ?assignmentId=...
 				// &hitId=386659BNTLGJNTMDIC84SQZGWRJ10W
-	//database__select2
-	//database__write2
-	
 }
 /**
  * pdftotext
@@ -5552,11 +5565,10 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
  * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
  * @param	""	""	.columns	Array. e.g. ['id', ''] or ['*'].
  * @param	""	""	.filters	Array. e.g. [{
- *			 						where: {field: "XYZ", (0-9A-Za-z_)
-											value: "to-encode-w/mysql-real-escape",
-											operator: "", (<, >, =, LIKE, !=)
-											connector: "" (&&,||,"")
-									}
+ *			 						field: "XYZ", (0-9A-Za-z_)
+									value: "to-encode-w/mysql-real-escape",
+									operator: "", (<, >, =, LIKE, !=)
+									connector: "" (&&,||,"")
 								}]
 								Note: "Connector" is what "follows" the field
 								in the query. E.g., `` XYZ="ABC" && ``.
@@ -5566,9 +5578,8 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
  */
 AMT___requests_factory.prototype.database__select2 = function(options) //
 {
-	var database_object = options.db;
 	var u = '?AMT__database_select2='+
-		encodeURIComponent(JSON.stringify(database_object));
+		encodeURIComponent(JSON.stringify(options.db));
 	// Timeout?
 	//~ database_object.timeout = (database_object.hasOwnProperty('timeout')) ? database_object.timeout : 30000;
 	
@@ -5582,7 +5593,7 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
 			var rs = response.responseText;
 			if (response.status != 200) return;
 			//~ database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
-			
+			console.log(rs);
 			if (rs == '') //
 				rs = '[]'; // blank!!
 				
@@ -5620,7 +5631,7 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
 AMT___requests_factory.prototype.database__write2 = function(options) //
 {
 	var database_object = options.db;
-	var u = '?AMT__database_write2='+
+	var u = 'AMT__database_write2='+
 		encodeURIComponent(JSON.stringify(database_object));
 	// Timeout?
 	//~ database_object.timeout = (database_object.hasOwnProperty('timeout')) ? database_object.timeout : 30000;
