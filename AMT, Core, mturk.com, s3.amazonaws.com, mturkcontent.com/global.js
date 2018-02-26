@@ -419,12 +419,15 @@ AMT__Global_Vars.initializeHitId = function () {
 		
 		if(!innerIframe || !hitId)
 		{	
-			var hitIdReg = /name="hitId" value="([^"]+)">///<input type="hidden" name="groupId" value="([^"]+)">/;
-			var hitId = hitIdReg.exec(ih)
-			if(!hitId)
-			{
-				//alert('Error initializing groupId');
-			} else hitId = hitId[1];
+			// Fix: update hitId, Feb2018
+			hitId = /^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks\/([A-Z0-9]+)/.exec(document.location.href);
+			if (hitId) hitId = hitId[1];
+			//~ var hitIdReg = /name="hitId" value="([^"]+)">///<input type="hidden" name="groupId" value="([^"]+)">/;
+			//~ var hitId = hitIdReg.exec(ih)
+			//~ if(!hitId)
+			//~ {
+				//~ //alert('Error initializing groupId');
+			//~ } else hitId = hitId[1];
 		}
 		AMT__Global_Vars.hitId = hitId;
 	}
@@ -22724,11 +22727,6 @@ function AMT___returnAndAcceptButton() {
 	var MT__return_form_url = MT__return_form.action;
 	console.log('return url:'+MT__return_form_url);
 	
-	 //~ else {
-		//~ // TEST!
-		//~ // https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/37ZQELHEQ0JVDRX1O2KJGEPLZJ1NMU?assignment_id=3V0Z7YWSIZLK0CZB6DTS060N2MHV2Z&ref=w_wp_rtrn_top
-	//~ }
-	
 	// Change the form's action to random new task, plus post to get:
 	//		Does not work.
 	
@@ -22795,6 +22793,8 @@ function AMT___returnAndAcceptButton() {
 	// local
 	d1.addEventListener('click', function() {
 		// Update Feb2018: Add default save to DB on R&A!
+		console.log(AMT__Global_Vars.groupId);
+		console.log(AMT__Global_Vars.hitId);
 		AMT___addQuestionAnswer(
 			'ShowPastReturn:' + AMT__Global_Vars.groupId,
 			AMT__Global_Vars.hitId,
