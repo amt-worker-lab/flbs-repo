@@ -2190,7 +2190,12 @@
 					bar.transition({
 						x : this.scale.calculateBarX(this.datasets.length, datasetIndex, index),
 						y : this.scale.calculateY(bar.value),
-						width : this.scale.calculateBarWidth(this.datasets.length)
+						//----------------------------------------------
+						// DIVIDE BY TEN HERE.
+						// HM.
+						// Feb. 2018.
+						//----------------------------------------------
+						width : this.scale.calculateBarWidth(this.datasets.length)/10
 					}, easingDecimal).draw();
 				},this);
 

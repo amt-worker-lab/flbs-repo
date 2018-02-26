@@ -20854,7 +20854,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					//~ pointHighlightFill: "#fff",
 					//~ pointHighlightStroke: "rgba(151,187,205,1)",
 					data: num_tasks,
-					barStrokeWidth: 0.2
+					barStrokeWidth: 0.2,
+					strokeWidth: 0.2,
 			}]
 		}
 		// Options
@@ -20862,7 +20863,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			//~ bezierCurve: false,
 			//~ scaleShowGridLines: false,
 			//~ pointDot: false,
-			barStrokeWidth: 0.2
+			barStrokeWidth: 0.2,
+			strokeWidth: 0.2,
 		}
 		var context = chart.getContext("2d");
 		//var myNewChart = new Chart(context).Line(data, options);
