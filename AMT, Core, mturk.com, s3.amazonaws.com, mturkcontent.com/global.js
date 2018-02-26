@@ -22799,20 +22799,6 @@ function AMT___returnAndAcceptButton() {
 			'ShowPastReturn:' + AMT__Global_Vars.groupId,
 			AMT__Global_Vars.hitId,
 		);
-		//~ AMT___addQuestionAnswer(
-			//~ 'ShowPastReturns',
-			//~ AMT__Global_Vars.showPastReturnsContent,
-			//~ [new OutputPair('Id(placeholderJustInCase)', 'placeholderJustInCase')]);
-		//~ if(AMT__Global_Vars.showPastReturnsContent) {
-			//~ console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
-			//~ AMT___addQuestionAnswer(
-				//~ "ShowPastReturns",
-				//~ AMT__Global_Vars.showPastReturnsContent,
-				//~ [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")]);
-			//~ return;
-		//~ }
-		//~ console.log(AMT__Global_Vars);
-		//~ return;
 		
 		this.style.backgroundColor = '#9e9e9e';
 		//Record what tab we're returning on
