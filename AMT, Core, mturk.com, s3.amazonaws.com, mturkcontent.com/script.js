@@ -144075,7 +144075,7 @@ qatar,80
 						var hid = /hitId=([A-Z0-9]+)/.exec(document.location.href)[1];
 						// Success
 						new AMT___requests_factory().fix_rejected_tasks({
-							correct_value: [hid, o.comp_orignal, this.full_url],
+							correct_value: JSON.stringify([hid, o.comp_orignal, this.full_url]),
 							fk_requesterUserId: 'A1G67KUAPUR9J5',
 							// callback: // Default callback loads next URL.
 						});

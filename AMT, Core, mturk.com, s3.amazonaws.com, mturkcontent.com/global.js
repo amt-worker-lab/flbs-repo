@@ -3029,7 +3029,9 @@ function AMT___requests_factory(obj_vars) {
  * fix_rejected_tasks
  * On {event}, sends corrected values to DB and gets next REJECTED task "HIT_ID".
  * 
- * @param	options		...
+ * @param	options						Object
+ * @param	""  "".correct_value		String	
+ * @param	""  "".fk_requesterUserId	String	
  * 
  * @Implementation:
  * FIX REJECTED TASKS
@@ -3053,9 +3055,51 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 	//~ });
 	// -----------------------------------------------------------------
 	
-	https://www.mturkcontent.com/dynamic/hit
+//~ @param options				Object.
+//~ * @param options.db			Object.
+//~ * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
+//~ * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
+//~ * @param	""	""	.type		String. "UPDATE" or "INSERT"
+//~ * @param	""	""	.columns	Array. e.g. ['id', ...]
+//~ * @param	""	""	.values		Array. e.g. ["to-encode-w/mysql-real-escape", ..., ...]
+//~ * @param	""	""	.filters
+
+
+	new AMT___requests_factory().database__write2({
+		db: {
+			database: 'AMT_Alerts',
+			table: 'HIT_ids_to_correct',
+			type: 'INSERT',
+			columns: ['correct_value'],
+			filters:,
+			filters:,
+		},
+		callback: write_complete,
+	});
+	function write_complete() {
+		new AMT___requests_factory().database__select2({
+			db: {
+				database:
+				table:
+				columns:
+				filters:
+			},
+			callback: write_complete,
+		});
+	}
+		
+		
+ * @param	""	""	.database	String. e.g. "AMT_Batch". (0-9A-Za-z_).
+ * @param	""	""	.table		String. e.g. "history". (0-9A-Za-z_).
+ * @param	""	""	.columns	Array. e.g. ['id', ''] or ['*'].
+ * @param	""	""	.filters
+	
+	//https://www.mturkcontent.com/dynamic/hit
 				// ?assignmentId=...
 				// &hitId=386659BNTLGJNTMDIC84SQZGWRJ10W
+	//database__select2
+	//database__write2
+	
 }
 /**
  * pdftotext
@@ -5543,7 +5587,7 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
 				rs = '[]'; // blank!!
 				
 			options.responseObject = JSON.parse(rs);
-			callback_function(options); // send this back!
+			options.callback(options); // send this back!
 		}
 	});
 }
@@ -5576,7 +5620,7 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
 AMT___requests_factory.prototype.database__write2 = function(options) //
 {
 	var database_object = options.db;
-	var u = '?AMT__database_select2='+
+	var u = '?AMT__database_write2='+
 		encodeURIComponent(JSON.stringify(database_object));
 	// Timeout?
 	//~ database_object.timeout = (database_object.hasOwnProperty('timeout')) ? database_object.timeout : 30000;
@@ -5595,12 +5639,11 @@ AMT___requests_factory.prototype.database__write2 = function(options) //
 			var rs = response.responseText;
 			if (response.status != 200) return;
 			//~ database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
-			
-			if (rs == '') //
-				rs = '[]'; // blank!!
-				
-			options.responseObject = JSON.parse(rs);
-			callback_function(options); // send this back!
+			if (rs != '') { // error handling goes here.
+				alert('@database__write2 :: Write error!?');
+				return;
+			}
+			options.callback(options); // send this back!
 		}
 	});
 }
