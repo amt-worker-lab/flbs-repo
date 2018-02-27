@@ -1956,6 +1956,9 @@ function MT__RUN() {
 			// font-family: Verdana, Geneva, sans-serif !important;
 			GM_addStyle('#email {position:absolute;top:0px;left:40%;}');
 			GM_addStyle('#submitButton {position:absolute;top:200px;left:40%;width:40%;height:40px;}');
+			// etq override
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			AMT__Global_Vars.scriptVars['EnableTabsQ'] = 0;//??
 			var d = document.getElementsByClassName('col-xs-12 col-md-8 col-md-offset-2 image');
 			var o = {
 				a: d[0].innerText.replace(/^Instagram Account name: /i, '').trim(),
