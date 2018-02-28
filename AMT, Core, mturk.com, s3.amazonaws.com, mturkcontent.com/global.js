@@ -20315,10 +20315,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'top:40px;'+
 			'max-width:99%;'+
 			'background-color:none;'+
-			'z-index:10000;'+ //Jan2018
+			'z-index:10000;'+ //Jan2018, bump up to 10,000.
 			'margin:0 0.5% 0 0;'
 		);
 		document.body.appendChild(tasks_obj.div_container);
+		
+		// Creates the Pause and Close buttons.
+		// Starts the update intervals.
+		// Adds to tasks_obj.div_container (not document.body).
+		interval_update_timers();
 		
 		// Tables
 		// Table 1 = jobs (minus ignored)
@@ -20341,9 +20346,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// INIT !
 		MT___page1_async_last_update();
 		
-		// Creates the Pause and Close buttons.
-		// Starts the update intervals.
-		interval_update_timers();
+		
 	}
 	
 	/**
@@ -20353,8 +20356,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * Sets interval for pause timer.
 	 * Creates the Pause and Close buttons.
 	 * Creates the "user" select field (tasks_obj.user_select)
+	 * 
+	 * Feb2018: Add to tasks_obj.div_container, not document.body.
 	 */
 	function interval_update_timers() {
+		// tasks_obj.div_container
+		
 		// timer
 		var d = document.createElement('input');
 		d.setAttribute('type','button');
@@ -20748,6 +20755,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			t = Math.round(s/86400);
 			return t + ' day' + ((t != 1) ? 's' : '');
 		}
+	}
+	function chart_all_tasks(obj_hw, td) {
+		
 	}
 	function make_hw_chart(obj_hw, td) {
 		var labels = [];
