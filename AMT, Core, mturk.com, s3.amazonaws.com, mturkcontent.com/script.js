@@ -9869,7 +9869,8 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ GM_addStyle('select {position:absolute;top:0;left:0%;width:99%;height:24px;}');
 			//~ GM_addStyle('option {float:left;border-left:2px solid #222;}');
 			//~ GM_addStyle('option:hover {background-color:aqua;cursor:pointer;}');
-			//~ return;
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '1');
+			//~ AMT__Global_Vars.scriptVars['EnableTabsQ'] = 1;//DOES NOT WORK
 			var td = document.getElementsByTagName('td');
 			var o = {
 				nm:			td[3].innerText.trim(),
@@ -10108,6 +10109,8 @@ Laurens Hammond, Chicago, Ill.**/
 				if (!r.profile || !r.profile.contactInfo || !r.profile.contactInfo.publicProfileUrl) {
 					sbm = false;
 					document.getElementById('web_url').style.border = '2px solid blue';
+					//~ document.body.style.backgroundColor = 'yellow !important';
+					document.body.setAttribute('style', 'background-color:yellow !important');
 				} else {
 					document.getElementById('web_url').value = r.profile.contactInfo.publicProfileUrl;
 					if (r.profile.contactInfo.publicProfileUrl.indexOf('linkedin.com/pub/') == -1 &&
@@ -10115,6 +10118,9 @@ Laurens Hammond, Chicago, Ill.**/
 					) {
 						sbm = false;
 						document.getElementById('web_url').style.border = '2px solid red';
+						//~ document.body.style.backgroundColor = 'orange !important';
+						document.body.setAttribute('style', 'background-color:orange !important');
+
 					}
 				}
 				// Show other
@@ -133311,12 +133317,10 @@ qatar,80
 		}
 	}
 	/**
-	 * Find the address, .create_dashboard_find_address()
-	 * 
-	 * +phone
+	 * create_dashboard_find_address()
+	 * Find the address (and/or phone).
 	 * 
 	 * @clients
-	 * 
 	 * Data Cleansing
 	 * Fiber Data
 	 * Pharm3r
