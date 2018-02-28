@@ -20312,11 +20312,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tasks_obj.div_container = document.createElement('div');
 		tasks_obj.div_container.setAttribute('style',
 			'position:absolute;'+
-			'top:40px;'+
+			'top:60px;'+
 			'max-width:99%;'+
-			'background-color:none;'+
+			'background-color:#acacac;'+
 			'z-index:10000;'+ //Jan2018, bump up to 10,000.
-			'margin:0 0.5% 0 0;'
+			//~ 'margin:0 0.5% 0 0;'+
+			'border-top: 2px solid blue;'
 		);
 		document.body.appendChild(tasks_obj.div_container);
 		
@@ -20365,26 +20366,33 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// timer
 		var d = document.createElement('input');
 		d.setAttribute('type','button');
-		d.setAttribute('style','position:absolute;top:0px;left:60px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;cursor:pointer;');
-		document.body.appendChild(d);
+		d.setAttribute('style','width:60px;height:32px;cursor:pointer;');
+		//~ document.body.appendChild(d);
+		tasks_obj.div_container.appendChild(d);
 		tasks_obj.timer_btn = d;
 		// Close button
 		var d = document.createElement('input');
 		d.setAttribute('type','button');
-		d.setAttribute('style','position:absolute;top:0px;left:0px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
-		document.body.appendChild(d);
+		d.setAttribute('style','width:60px;height:32px;cursor:pointer;');
+		//~ document.body.appendChild(d);
+		tasks_obj.div_container.appendChild(d);
 		tasks_obj.close_btn = d;
 		// tasks_obj.user_select
+		// Change box-sizing to content-box to  https://stackoverflow.com/questions/895904/select-inputs-and-text-inputs-in-html-best-way-to-make-equal-width
+		// And/or vertical align: top
+		// to make select field fall in line with other buttons.
 		var d = document.createElement('select');
-		d.setAttribute('style','position:absolute;top:0px;left:120px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
+		d.setAttribute('style','width:80px;height:32px;cursor:pointer;vertical-align:top;');
 		d.innerHTML = '<option value="Ben">Ben</option><option value="Dave">Dave</option><option value="Sora">Sora</option>';
-		document.body.appendChild(d);
+		//~ document.body.appendChild(d);
+		tasks_obj.div_container.appendChild(d);
 		tasks_obj.user_select = d;
 		// Show / Hide old tasks button!
 		var d = document.createElement('input');
 		d.setAttribute('type','button');
-		d.setAttribute('style','position:absolute;top:0px;left:180px;height:30px;width:120px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
-		document.body.appendChild(d);
+		d.setAttribute('style','width:160px;height:32px;cursor:pointer;');
+		//~ document.body.appendChild(d);
+		tasks_obj.div_container.appendChild(d);
 		tasks_obj.show_hide_btn = d;
 		
 		// timer_btn.value
