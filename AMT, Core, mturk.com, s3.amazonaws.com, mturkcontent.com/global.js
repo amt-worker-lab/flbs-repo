@@ -3094,7 +3094,7 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 				],
 				filters: [
 					{field:'fk_requesterUserId',operator:'=',value:options.fk_requesterUserId,connector:'&&'},
-					{field:'FLBS_EDIT',operator:'IS',value:'NULL',connector:'&&'},
+					{field:'FLBS_EDIT',operator:'=',value:'LOCKED',connector:'&&'},
 					{field:'amt_hit_id',operator:'=',value:hid,connector:''},
 				]
 			},
@@ -3130,11 +3130,39 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 		var rs = response.responseObject;
 		console.log(response);
 		if (rs.length) {
-			document.location.href = 'https://www.mturkcontent.com/dynamic/hit'+
-				'?assignmentId='+
-				'&hitId='+rs[0].amt_hit_id;
+			// Write LOCKED to DB as FLBS_EDIT column.
+			var hid = rs[0].amt_hit_id;
+			new AMT___requests_factory().database__write2({
+				db: {
+					database: 'AMT_Alerts',
+					table: 'tasks_accomplished',
+					type: 'UPDATE',
+					values: [
+						{field:'FLBS_EDIT',operator:'=',value:'LOCKED'}
+					],
+					filters: [
+						{field:'fk_requesterUserId',operator:'=',value:options.fk_requesterUserId,connector:'&&'},
+						{field:'FLBS_EDIT',operator:'IS',value:'NULL',connector:'&&'},
+						{field:'amt_hit_id',operator:'=',value:hid,connector:''},
+					]
+				},
+				callback: function() {
+					// Then open it.
+					document.location.href = 'https://www.mturkcontent.com/dynamic/hit'+
+						'?assignmentId='+
+						'&hitId='+rs[0].amt_hit_id;
+				},
+			});
+			
+			
 		}
 	}
+	//~ function write_lock_success() {
+		//~ // Then open it.
+		//~ document.location.href = 'https://www.mturkcontent.com/dynamic/hit'+
+			//~ '?assignmentId='+
+			//~ '&hitId='+rs[0].amt_hit_id;
+	//~ }
 }
 /**
  * pdftotext
@@ -13506,8 +13534,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		}
 		else { //Standard behavior, put url in out_element
 			this.style.backgroundColor = 'LightGreen';
-			//~ update_bgc_results_onclick(this.parentNode);
-			// Has CTRL key?
+			
+			// If NO ctrl key, then only use domain (this.value).
+			// Or, in fact, only whatever the "showing" value is
+			// of this textarea.
+			// However, if ctrl key is down, the use the "full url"
+			// value.
 			if (!e.ctrlKey) {
 				// If a skip ignore, then this value is not this.value.
 				if (this.value == ' + ') {

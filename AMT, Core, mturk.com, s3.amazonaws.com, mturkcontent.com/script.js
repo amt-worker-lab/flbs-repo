@@ -147584,6 +147584,8 @@ qatar,80
 				//~ field3: td[5].innerText.trim().string_to_mixed_case(),
 				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
 				//phone: td[5].innerText.trim(),
+				state_orig: td[1].innerText.trim(),
+				comp_orig: td[3].innerText.trim(),
 				boldArray: [],
 				boldArray2: [],
 				//~ boldArray3: [],
@@ -147591,10 +147593,17 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
+			var x = o.comp.state_full_to_abbr();
+			if (x != o.comp) {
+				// state or abbr
+				o.comp = '("'+o.comp+'" OR "'+x+'")';
+			} else {
+				o.comp = '"'+o.comp+'"';
+			}
 			o.boldArray = o.comp.clean_string_to_array();
 			o.boldArray2= o.field2.clean_string_to_array();
 			//~ o.boldArray3= o.field3.clean_string_to_array();
-			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			o.spaced = '"' + o.field2.split(' ').join('" "') + '" ';
 			console.log(o);
 			//~ AMT___addUserDecision(
 				//~ 'ocd,jan,2016', function() {
@@ -147627,7 +147636,7 @@ qatar,80
 					// Success
 					new AMT___requests_factory().fix_rejected_tasks({
 						// Remove brackets, so it is a CSV string.
-						correct_value: JSON.stringify([hid, o.comp, o.field2, 'N/A'])
+						correct_value: JSON.stringify([hid, o.state_orig, o.comp_orig, 'N/A'])
 							.replace(/(^\[|\]$)/g, ''),
 						fk_requesterUserId: 'A2IPD6UJKEXE46',
 						// callback: // Default callback loads next URL.
@@ -147635,8 +147644,8 @@ qatar,80
 				},
 				searches:[
 					o.comp + ', ' + o.field2,
-					o.comp + ', ' + o.field2.state_full_to_abbr(), // state country
-					o.spaced + ', ' + o.field2,
+					o.comp + ', ' + o.spaced,
+					o.comp + ', ' + o.field2 + ', (utilities OR utility)',
 				],
 				search_results: {
 					//~ use_domain_only: true,
@@ -147652,7 +147661,18 @@ qatar,80
 					onclick_success: function(e) {
 						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
 						// url
-						o.q[0].value = this.full_url;
+						//o.q[0].value = this.full_url;
+						
+						if (!e.ctrlKey) {
+							// If a skip ignore, then this value is not this.value.
+							if (this.value == ' + ') {
+								o.q[0].value = this._ignored_value;
+							} else {
+								o.q[0].value = this.value;
+							}
+						} else
+							o.q[0].value = this.full_url;
+							
 						this.style.backgroundColor = 'LightGreen';
 						// FIX REJECTED
 						// A2IPD6UJKEXE46Get the URL for the Utility
@@ -147661,7 +147681,7 @@ qatar,80
 						// Success
 						new AMT___requests_factory().fix_rejected_tasks({
 							// Remove brackets, so it is a CSV string.
-							correct_value: JSON.stringify([hid, o.comp, o.field2, this.full_url])
+							correct_value: JSON.stringify([hid, o.state_orig, o.comp_orig, o.q[0].value])
 								.replace(/(^\[|\]$)/g, ''),
 							fk_requesterUserId: 'A2IPD6UJKEXE46',
 							// callback: // Default callback loads next URL.
