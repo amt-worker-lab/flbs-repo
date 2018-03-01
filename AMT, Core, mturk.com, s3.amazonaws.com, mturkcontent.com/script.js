@@ -16247,7 +16247,7 @@ Laurens Hammond, Chicago, Ill.**/
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td,fieldset {margin:0 !important;padding:0 !important;font-size:12px !important;}');
 			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;top:2000px}'); // width:1100px=default
-			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:1000px}');
 			//~ GM_addStyle('img {cursor:pointer;}');
 			//~ GM_addStyle('.radio>label {font-size:2em !important;}');
@@ -16255,6 +16255,7 @@ Laurens Hammond, Chicago, Ill.**/
 			// task specific
 			GM_addStyle('#d2b span {font-size:1.4em !important;}');
 			GM_addStyle('li {list-style-type: circle !important;}'); // does not take effect.
+			GM_addStyle('#workContent {position:absolute; top:0;left:0;}'); // does not take effect.
 			// vars
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -16266,7 +16267,8 @@ Laurens Hammond, Chicago, Ill.**/
 					images: null
 				},
 				bold: ['flea','fleas','tick','ticks','itch','eggs',
-					'powder','mix','concentrate','syrup','liquid','enhancer','creamer'
+					'powder','mix','concentrate','syrup','liquid','enhancer','creamer',
+					'floss','tooth','toothbrush','mouthwash','mouth','dental','dentist','whiten','whitening','teeth','tongue','','',''
 					],
 				q:[
 					//~ document.getElementsByName('classification')[0],// Single
