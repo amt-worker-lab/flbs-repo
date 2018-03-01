@@ -16268,7 +16268,7 @@ Laurens Hammond, Chicago, Ill.**/
 				},
 				bold: ['flea','fleas','tick','ticks','itch','eggs',
 					'powder','mix','concentrate','syrup','liquid','enhancer','creamer',
-					'floss','tooth','toothbrush','mouthwash','mouth','dental','dentist','whiten','whitening','teeth','tongue','','',''
+					'floss','tooth','toothbrush','mouthwash','mouth','dental','dentist','whiten','whitening','teeth','tongue','toothpaste','',''
 					],
 				q:[
 					//~ document.getElementsByName('classification')[0],// Single
