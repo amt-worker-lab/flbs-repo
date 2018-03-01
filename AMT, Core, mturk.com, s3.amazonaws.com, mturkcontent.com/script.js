@@ -144093,7 +144093,8 @@ qatar,80
 							if(match)
 							{
 								// R&A.
-								//~ alert('Skipping - Already Been Here');
+								// Return and accept if this has previously
+								// been returned.
 								new AMT___core_factory().
 									iframe2parent__postMessage(
 										{
@@ -144107,7 +144108,6 @@ qatar,80
 					);
 				}
 			}, 100);
-			//~ console.log('logxx',AMT__Global_Vars.groupId);
 			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
@@ -147596,11 +147596,11 @@ qatar,80
 			//~ o.boldArray3= o.field3.clean_string_to_array();
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			console.log(o);
-			AMT___addUserDecision(
-				'ocd,jan,2016', function() {
-					return o.comp+','+o.field2;
-				}, ['Id(web_url)']
-			)
+			//~ AMT___addUserDecision(
+				//~ 'ocd,jan,2016', function() {
+					//~ return o.comp+','+o.field2;
+				//~ }, ['Id(web_url)']
+			//~ )
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
@@ -147621,6 +147621,18 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				//~ bold_array: o.boldArray,
+				na_callback: function() {
+					// Hit ID
+					var hid = /hitId=([A-Z0-9]+)/.exec(document.location.href)[1];
+					// Success
+					new AMT___requests_factory().fix_rejected_tasks({
+						// Remove brackets, so it is a CSV string.
+						correct_value: JSON.stringify([hid, o.comp, o.field2, 'N/A'])
+							.replace(/(^\[|\]$)/g, ''),
+						fk_requesterUserId: 'A2IPD6UJKEXE46',
+						// callback: // Default callback loads next URL.
+					});
+				},
 				searches:[
 					o.comp + ', ' + o.field2,
 					o.comp + ', ' + o.field2.state_full_to_abbr(), // state country
@@ -147637,11 +147649,29 @@ qatar,80
 						//~ url = '@' + url;
 						//~ return url;
 					//~ },
+					onclick_success: function(e) {
+						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						// url
+						o.q[0].value = this.full_url;
+						this.style.backgroundColor = 'LightGreen';
+						// FIX REJECTED
+						// A2IPD6UJKEXE46Get the URL for the Utility
+						// Hit ID
+						var hid = /hitId=([A-Z0-9]+)/.exec(document.location.href)[1];
+						// Success
+						new AMT___requests_factory().fix_rejected_tasks({
+							// Remove brackets, so it is a CSV string.
+							correct_value: JSON.stringify([hid, o.comp, o.field2, this.full_url])
+								.replace(/(^\[|\]$)/g, ''),
+							fk_requesterUserId: 'A2IPD6UJKEXE46',
+							// callback: // Default callback loads next URL.
+						});
+					},
 				},
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
-				AmtRecordAndSubmit: true,
+				//~ AmtRecordAndSubmit: true,
 				AutoReturnAcceptIfZero: true,
 			});
 		}
