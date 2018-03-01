@@ -3082,6 +3082,7 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 			values: [hid, options.correct_value],
 		},
 		callback: write_complete_HIT_ids_to_correct,
+		onerror: write_complete_HIT_ids_to_correct,
 	});
 	function write_complete_HIT_ids_to_correct(resp_options) {
 		new AMT___requests_factory().database__write2({
@@ -3150,7 +3151,7 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
 					// Then open it.
 					document.location.href = 'https://www.mturkcontent.com/dynamic/hit'+
 						'?assignmentId='+
-						'&hitId='+rs[0].amt_hit_id;
+						'&hitId='+hid
 				},
 			});
 			
@@ -5705,7 +5706,10 @@ AMT___requests_factory.prototype.database__write2 = function(options) //
 			if (response.status != 200) return;
 			//~ database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
 			if (rs != '') { // error handling goes here.
-				alert('@database__write2 :: Write error!?');
+				if (options.onerror) {
+					options.onerror(options)
+				} else
+					alert('@database__write2 :: Write error!?');
 				return;
 			}
 			options.callback(options); // send this back!
