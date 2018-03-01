@@ -115,6 +115,89 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	// Turk
+	// Search box auto-suggest data collection
+	// 
+	var s = '<div class="panel-body" id="instructionBody">\n<ul>\n	<li>Visit Singlecare.com</li>\n	<li>In the search box, search for <strong>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('drugname'),
+					document.getElementById('drugpage'),
+				]
+			}
+			console.log(o);
+			AMT___addUserDecision(
+				'"Turk"SingleCare.com,2018', function() {
+					return o.u;
+				}, ['Id(drugname)', 'Id(drugpage)']
+			)
+			// sbm form
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				//~ doSubmit();
+				return false;
+			}
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://webapi.singlecare.com/api/elasticsearch/queryOrdered',
+				data: 'Indexes=prescriptions%2Creasons%2Cproviders%2Clocations&Lat=44.6995&Lon=-73.4529&MaxResults=5&Query='+encodeURIComponent(o.u),
+				method: 'post',
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'red';
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'orange';
+						return;
+					}
+					var r = JSON.parse(rs);console.log(r);return;
+					if (!r.length && rs == '[]') {
+						o.q[0].value = 'no result';
+						AMT___recordAndSubmit();
+						return;
+					} else if (!r.length || rs == '[]') {
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					// Result
+					r = r[0];
+					try {
+						if (r.hit_type == 'prescription') {
+							if (!r.display_name || r.display_name.length < 2) {
+								document.body.style.backgroundColor = 'blue';
+							} else {
+								o.q[0].value = r.display_name;
+								//ceftin?q=Ceftin
+								o.q[1].value = 'https://www.singlecare.com/prescription/'+
+									r.seo_name+
+									'?q='+encodeURIComponent(r.display_name);
+							}
+						}
+					} catch (e) {
+						
+					}
+					//AMT___recordAndSubmit();
+				}
+			});
+		}
+		new run().f();
+	}
 	// garrett grohman
 	// Given Exhibitor Page, Provide Email and Website
 	// 
