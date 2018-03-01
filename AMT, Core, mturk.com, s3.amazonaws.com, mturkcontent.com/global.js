@@ -15192,15 +15192,14 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	match_o = match_o.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
 	
 	// ...
-	d2.onblur = function() {
+	d2.init = function() {
 		this.value = this.value.trim();
 		FB_addr();
 		hoovers_addr();
 		google_addr();
 		bbb_addr();
-		
-		//~ businessweek_addr(false);
 	}
+	d2.onblur = d2.init;
 	
 	// ...
 	var ef = new AMT___events_factory();

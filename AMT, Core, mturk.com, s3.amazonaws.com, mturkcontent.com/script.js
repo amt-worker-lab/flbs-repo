@@ -134088,9 +134088,12 @@ qatar,80
 							}
 						}
 						if (/\d+$/.exec(dx2.value)) {
-							dx2.value = dx2.value.replace(/\d+$/, '');
-							dx2.focus();
-							dx2.blur();
+							dx2.value = dx2.value.replace(/\d+$/, '').trim();
+							//~ dx2.click();
+							//~ dx2.focus();
+							//~ dx2.blur();
+							// Method added by dashboard.
+							dx2.init();
 						}
 					}
 				},
