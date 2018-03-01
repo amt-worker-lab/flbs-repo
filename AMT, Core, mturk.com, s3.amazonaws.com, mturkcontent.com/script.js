@@ -143,14 +143,18 @@ function MT__RUN() {
 			document.getElementById('mturk_form').onsubmit = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				//~ doSubmit();
+				console.log('x');
+				console.log(e);
+				AMT___recordAndSubmit();
 				return false;
 			}
+			//~ var url = 'Indexes=prescriptions%2Creasons%2Cproviders%2Clocations&Lat=44.6995&Lon=-73.4529&MaxResults=5&Query='+encodeURIComponent(o.u);
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: 'https://webapi.singlecare.com/api/elasticsearch/queryOrdered',
 				data: 'Indexes=prescriptions%2Creasons%2Cproviders%2Clocations&Lat=44.6995&Lon=-73.4529&MaxResults=5&Query='+encodeURIComponent(o.u),
 				method: 'post',
+				filename: new AMT___requests_factory().md5(o.u), // unique filename
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
@@ -166,7 +170,7 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'orange';
 						return;
 					}
-					var r = JSON.parse(rs);console.log(r);return;
+					var r = JSON.parse(rs);
 					if (!r.length && rs == '[]') {
 						o.q[0].value = 'no result';
 						AMT___recordAndSubmit();
@@ -177,18 +181,23 @@ function MT__RUN() {
 					}
 					// Result
 					r = r[0];
-					try {
-						if (r.hit_type == 'prescription') {
-							if (!r.display_name || r.display_name.length < 2) {
-								document.body.style.backgroundColor = 'blue';
-							} else {
-								o.q[0].value = r.display_name;
-								//ceftin?q=Ceftin
-								o.q[1].value = 'https://www.singlecare.com/prescription/'+
-									r.seo_name+
-									'?q='+encodeURIComponent(r.display_name);
-							}
+					console.log(r);
+					if (r.hit_type == 'prescription') {
+						if (!r.display_name || r.display_name.length < 2) {
+							document.body.style.backgroundColor = 'grey';
+						} else if (!r.seo_name || r.seo_name.length < 2) {
+							document.body.style.backgroundColor = 'blue';
+						} else {
+							o.q[0].value = r.display_name;
+							//e.g. ceftin?q=Ceftin
+							o.q[1].value =
+								'https://www.singlecare.com/prescription/'+
+								r.seo_name+
+								'?q='+encodeURIComponent(r.display_name);
 						}
+					}
+					try {
+						
 					} catch (e) {
 						
 					}
@@ -147724,6 +147733,8 @@ qatar,80
 						fk_requesterUserId: 'A2IPD6UJKEXE46',
 						// callback: // Default callback loads next URL.
 					});
+					// nextTab
+					new AMT___core_factory().nextTab();
 				},
 				searches:[
 					o.comp + ', ' + o.field2,
@@ -147769,6 +147780,9 @@ qatar,80
 							fk_requesterUserId: 'A2IPD6UJKEXE46',
 							// callback: // Default callback loads next URL.
 						});
+						
+						// nextTab
+						new AMT___core_factory().nextTab();
 					},
 				},
 				out_element: o.q[0],
