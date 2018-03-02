@@ -232,8 +232,8 @@ function MT__RUN() {
 							// add non-submit button
 							var dx = document.createElement('input');
 							dx.type = 'button';
-							dx.value = ' + ';
-							dx.setAttribute('style','border:1px solid black;');
+							dx.value = '  +  ';
+							dx.setAttribute('style','border:1px solid black;font-size:0.8em;width:30px;');
 							dx.compName = r.name;
 							d.appendChild(dx);
 							dx.onclick = function(e) {
@@ -247,16 +247,17 @@ function MT__RUN() {
 							// add colon submit
 							var dx = document.createElement('input');
 							dx.type = 'button';
-							dx.value = ' + ';
-							dx.setAttribute('style','border:1px solid black;');
+							dx.value = '  :  ';
+							dx.setAttribute('style','border:1px solid black;font-size:0.8em;width:30px;');
 							dx.compName = r.name;
 							d.appendChild(dx);
 							dx.onclick = function(e) {
 								e.stopPropagation();
 								e.preventDefault();
 								this.style.backgroundColor = 'orange';
-								o.q[0].value = this.compName.trim();
-								o.q[0].focus();
+								o.q[0].value = this.compName.replace(/:[\d\D]*/, '').trim();
+								if (o.q[0].value.length > 4)
+									AMT___recordAndSubmit();
 								return false;
 							}
 						}
