@@ -44,89 +44,154 @@ function MT__RUN() {
 	{
 		var run = function() {}
 		run.prototype.f = function() {
-			console.log('x');
+			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific
+			GM_addStyle('.exe {border-bottom:1px solid teal;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
 			var td = document.getElementsByTagName('td');
 			var o = {
 				addr: td[1].innerText.trim(),
+				bold: null,
 				q: [
 					document.getElementById('Field1')
 				]
 			}
-			//
-			var x = 'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
-				'query='+encodeURIComponent(o.addr)+
-				'&key=_GOOGLE_API_KEY_REDACTED_';
-			// xhr
-			
-			
-			
-			
-			// utility window
-			var opts = {
-				task: 'AMT__all_pages_util',
-				//~ highlight_strings_in_page: {
-					//~ strings: ['president','pres','ceo','c.e.o.','chief executive officer',]
-				//~ },
-				highlight_range_to_parent: true
-			}
-			//~ AMT__setUtilityTabs([{
-				//~ url: o.url,
-				//~ options: opts
-			//~ }]);
-			AMT__setUtilityTabs(
-				[{
-					url: a[1].href,
-					options: opts
-				}],
-				null,
-				{backgroundColor:'pink'},
-				true,
-				function(response) {
-					console.log(response);
-					if  (
-						response.hasOwnProperty('data') &&
-						response.data.hasOwnProperty('text_range')
-						)
-					{
-						console.log(response.data.text_range);
-						var r = response.data.text_range.trim();
-						o.q[0].value = r;
-						//~ if (o.q[0].value == '') {
-							//~ // auto-fill if there is a space.
-							//~ if (/^\w+ \w+[,\n]/.exec(r)) {
-								//~ var x = /(^\w+) (\w+)[,\n]([\d\D]+)/.exec(r);
-								//~ o.q[0].value = x[1];
-								//~ o.q[1].value = x[2];
-								//~ o.q[2].value = x[3].trim().replace(/[,\.]$/,'');
-							//~ }
-							//~ else if (r.indexOf(' ') != -1) {
-								//~ r = r.split(' ');
-								//~ o.q[0].value = r[0].replace(/,$/,'');
-								//~ o.q[1].value = r[r.length-1].replace(/,$/,'');
-							//~ } else {
-								//~ o.q[0].value = r.replace(/,$/,'');
-							//~ }
-						//~ } else if (o.q[1].value == '') {
-							//~ o.q[1].value = response.data.text_range.trim().replace(/,$/,'');
-						//~ } else { // else always overwrite
-							//~ o.q[2].value = response.data.text_range.trim().replace(/,$/,'');
-						//~ }
-						//~ o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
-					}
-				}
+			o.bold = o.addr.clean_string_to_array();
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:40px;\
+				left:0%;width:99%;height:600px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style',
+				'position:absolute;top:0px;\
+				left:0%;width:99%;height:38px;'
+			);
+			document.body.appendChild(d2);
+			d2.value = o.addr.replace(/ *NULL/gi, ''); // remove "NULL"
+			/*END ITEMS*/
+			AMT___addUserDecision(
+				'Jacquelyn Fiske,2018', function() {
+					return o.addr;
+				}, ['Id(Field1)']
 			)
-			//~ AMT__setUtilityTabs([
-				//~ {
-					//~ url: a[1].href
-				//~ }
-			//~ ]);
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [d2],
+				blur_element: true,
+				remove_whitespace: true,
+			});
+			d2.onblur = function() {
+				init();
+			}
 			// sbm form
-			document.getElementById('mturk_form').onsubmit = function(e) {
-				e.stopPropagation();
-				e.preventDefault();
-				doSubmit();
-				return false;
+			//~ document.getElementById('mturk_form').onsubmit = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ console.log('x');
+				//~ console.log(e);
+				
+			init();
+			function init() {
+				//
+				var x = 'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+					'query='+encodeURIComponent(d2.value)+
+					'&key=_GOOGLE_API_KEY_REDACTED_';
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: x,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d1.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d1.style.backgroundColor = 'blue';
+							return;
+						}
+						// Use the first result
+						d1.innerText = o.addr + '\n';
+						rs = JSON.parse(rs);
+						if (rs.results.length == 0) {
+							d1.innerText += 'No address match!';
+							return;
+						}
+						d1.innerText += '('+rs.results[0].formatted_address+')\n';
+						d1.appendChild(''.div({style:'width:100%;border-bottom:2px solid teal;'}));
+						nearby(rs.results[0].geometry.location);
+						//~ try {
+							
+						//~ } catch(e) {
+							
+						//~ }
+					}
+				});
+			}
+			function nearby(ll) {
+				// URL + Make sure ll is clean
+				var x= 'https://maps.googleapis.com/maps/api/place/nearbysearch/'+
+					'json?location='+
+					(ll.lat+'').replace(/[^\d\.\-]/g, '')+','+(ll.lng+'').replace(/[^\d\.\-]/g, '')+
+					'&radius=50&type=*&keyword=*&key=_GOOGLE_API_KEY_REDACTED_';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: x,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d1.style.backgroundColor = 'red';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d1.style.backgroundColor = 'red';
+							return;
+						}
+						// Use the first result
+						rs = JSON.parse(rs);
+						// Make divs + Auto-Match?
+						console.log(rs);
+						//
+						for (var i in rs.results) {
+							var r = rs.results[i];
+							var d = (r.name +'<br>'+ MT__bold(r.vicinity,o.bold))
+								.div({
+									style:'',
+									innerHTML:true});
+							d1.appendChild(d);
+							d.className = 'exe';
+							d.compName = r.name;
+							d.onclick = function(e) {
+								this.style.backgroundColor = 'orange';
+								o.q[0].value = this.compName.trim();
+								if (o.q[0].value.length > 4)
+									AMT___recordAndSubmit();
+								//doSubmit();
+								//
+							}
+						}
+						// add spacer
+						d1.appendChild(''.div({style:'height:2400px;'}));
+					}
+				});
 			}
 		}
 		new run().f();
