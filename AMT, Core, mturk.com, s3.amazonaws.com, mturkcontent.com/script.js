@@ -51,13 +51,18 @@ function MT__RUN() {
 			// Task specific
 			GM_addStyle('.exe,.exe2 {border-bottom:1px solid teal;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
+			GM_addStyle('.exe2 {padding-left:60px;}');
 			GM_addStyle('.exe2:hover {background-color:#99ffff !important;cursor:pointer;}');
+			GM_addStyle('table {width:100% !important;}');
+			GM_addStyle('#Field1 {width:100% !important;}');
+			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var td = document.getElementsByTagName('td');
 			var o = {
 				addr: td[1].innerText.trim(),
 				bold: null,
-				results: [],
+				results_biz: [],
+				results_people: [],
 				q: [
 					document.getElementById('Field1')
 				]
@@ -101,11 +106,12 @@ function MT__RUN() {
 				init();
 			}
 			// sbm form
-			//~ document.getElementById('mturk_form').onsubmit = function(e) {
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ console.log('x');
-				//~ console.log(e);
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				AMT___recordAndSubmit();
+				return false;
+			};
 				
 			init();
 			function init() {
@@ -197,7 +203,10 @@ function MT__RUN() {
 							var r = rs.results[i];
 							// Skip results where the vicinity is a
 							// single word, such as "Philadelphia".
-							if (r.vicinity.indexOf(' ') == -1) continue;
+							// Skip double words as well, such as "witchita falls".
+							var num_words = r.vicinity.split(' ');
+							if (num_words.length <= 2) continue;
+							//~ if (r.vicinity.indexOf(' ') == -1) continue;
 							var mb = MT__bold(r.vicinity, o.bold, {percent_matched:true});
 							var txt = r.name.replace(/ ([A-Z\.]{0,4})$/, ' <b style="color:red;">$1</b>')+
 								'<br>'+ mb.bold_string;
@@ -207,8 +216,10 @@ function MT__RUN() {
 							if (/ ([A-Z\.]{1,4})$/.exec(r.name)) {
 								d.style.backgroundColor = '#ccffff';
 								d.className = 'exe2';
+								o.results_people.push(d);
 							} else {
 								d.className = 'exe';
+								o.results_biz.push(d);
 							}
 							d.compName = r.name;
 							d.pct = mb.pm.percent_matched;
@@ -218,7 +229,21 @@ function MT__RUN() {
 								if (o.q[0].value.length > 4)
 									AMT___recordAndSubmit();
 							}
-							o.results.push(d);
+							// add non-submit button
+							var dx = document.createElement('input');
+							dx.type = 'button';
+							dx.value = ' + ';
+							dx.setAttribute('style','border:1px solid black;');
+							dx.compName = r.name;
+							d.appendChild(dx);
+							dx.onclick = function(e) {
+								e.stopPropagation();
+								e.preventDefault();
+								this.style.backgroundColor = 'orange';
+								o.q[0].value = this.compName.trim();
+								o.q[0].focus();
+								return false;
+							}
 						}
 						// Second run?
 						// If first run and there are more than 20
@@ -233,26 +258,18 @@ function MT__RUN() {
 						}
 						
 						// Sort all results by pm desc
-						o.results.sort(function(p1,p2) {
+						o.results_biz.sort(function(p1,p2) {
 							return p2.pct - p1.pct;
 						});
-						for (var i in o.results) {
-							d1b.appendChild(o.results[i]);
+						o.results_people.sort(function(p1,p2) {
+							return p2.pct - p1.pct;
+						});
+						for (var i in o.results_biz) {
+							d1b.appendChild(o.results_biz[i]);
 						}
-						
-						//~ lv1 = MT__bold(rs[i].text, o.uarr, {percent_matched:true});
-						//~ var lv2 = gf.levensht(short, o.ulwr);
-						//~ scoresArr1[rs[i].text] = lv1.pm.percent_matched;
-						//~ scoresArr2[rs[i].text] = lv2;
-						//~ allScores[rs[i].text] = {
-							//~ text: rs[i].text,
-							//~ bold_string: lv1.bold_string,
-							//~ id: rs[i].id,
-							//~ score1: Math.round(lv1.pm.percent_matched*1000)/10,
-							//~ score2: lv2
-						//~ }
-						
-						
+						for (var i in o.results_people) {
+							d1b.appendChild(o.results_people[i]);
+						}
 						// add spacer
 						d1b.appendChild(''.div({style:'height:2400px;'}));
 					}
