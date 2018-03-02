@@ -46,15 +46,18 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('x');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-			var a = document.getElementsByTagName('a');
+			var td = document.getElementsByTagName('td');
 			var o = {
-				
+				addr: td[1].innerText.trim(),
 				q: [
 					document.getElementById('Field1')
 				]
 			}
 			//
-			
+			var x = 'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+				'query='+encodeURIComponent(o.addr)+
+				'&key=_GOOGLE_API_KEY_REDACTED_';
+			// xhr
 			
 			
 			
