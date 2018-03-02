@@ -71,14 +71,14 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:40px;\
+				'position:absolute;top:20px;\
 				left:0%;width:99%;height:40px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
-				'position:absolute;top:80px;\
+				'position:absolute;top:60px;\
 				left:0%;width:99%;height:600px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
@@ -86,7 +86,7 @@ function MT__RUN() {
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style',
 				'position:absolute;top:0px;\
-				left:0%;width:99%;height:38px;'
+				left:0%;width:99%;height:18px;'
 			);
 			document.body.appendChild(d2);
 			d2.value = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case(); // remove "NULL"
@@ -141,7 +141,10 @@ function MT__RUN() {
 						}
 						// Use the first result
 						//~ d1.innerHTML = MT__bold(o.addr, [], ) + '<br>';
-						var tmp_addr = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case(); // remove "NULL"
+						var tmp_addr = o.addr
+							.replace(/ *NULL/gi, '').trim() // remove "NULL"
+							.replace(/ +[A-Z]{2} +\d+$/i, '').trim() // remove state+zip
+							.string_to_mixed_case(); 
 						d1.innerHTML = MT__bold(
 							tmp_addr,
 							['suite','ste','#','rm','floor','flr','fl','apt'],
@@ -211,16 +214,25 @@ function MT__RUN() {
 							var num_words = r.vicinity.split(' ');
 							if (num_words.length <= 2) continue;
 							//~ if (r.vicinity.indexOf(' ') == -1) continue;
-							var mb = MT__bold(r.vicinity, o.bold, {percent_matched:true});
+							var mb = MT__bold(
+								r.vicinity.replace(/ +[A-Z]{2} +\d+/i, '').trim(), // remove state+zip
+								o.bold,
+								{percent_matched:true});
 							var txt = r.name.replace(/ ([A-Z\.]{0,4})$/, ' <b style="color:red;">$1</b>')+
 								'<br>'+ mb.bold_string;
 							var d = txt.div({
 								style:'',
 								innerHTML:true});
+							// Which type is it?
+							// Biz or person?
+							// And then: Does addr start with BOLD?
 							if (/ ([A-Z\.]{1,4})$/.exec(r.name)) {
 								d.style.backgroundColor = '#ccffff';
 								d.className = 'exe2';
 								o.results_people.push(d);
+								if (d.innerHTML.indexOf('<b') == -1) {
+									
+								}
 							} else {
 								d.className = 'exe';
 								o.results_biz.push(d);
