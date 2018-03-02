@@ -244,6 +244,21 @@ function MT__RUN() {
 								o.q[0].focus();
 								return false;
 							}
+							// add colon submit
+							var dx = document.createElement('input');
+							dx.type = 'button';
+							dx.value = ' + ';
+							dx.setAttribute('style','border:1px solid black;');
+							dx.compName = r.name;
+							d.appendChild(dx);
+							dx.onclick = function(e) {
+								e.stopPropagation();
+								e.preventDefault();
+								this.style.backgroundColor = 'orange';
+								o.q[0].value = this.compName.trim();
+								o.q[0].focus();
+								return false;
+							}
 						}
 						// Second run?
 						// If first run and there are more than 20
