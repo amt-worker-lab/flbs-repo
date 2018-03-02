@@ -89,7 +89,7 @@ function MT__RUN() {
 				left:0%;width:99%;height:38px;'
 			);
 			document.body.appendChild(d2);
-			d2.value = o.addr.replace(/ *NULL/gi, ''); // remove "NULL"
+			d2.value = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case(); // remove "NULL"
 			/*END ITEMS*/
 			AMT___addUserDecision(
 				'Jacquelyn Fiske,2018', function() {
@@ -141,11 +141,15 @@ function MT__RUN() {
 						}
 						// Use the first result
 						//~ d1.innerHTML = MT__bold(o.addr, [], ) + '<br>';
+						var tmp_addr = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case(); // remove "NULL"
 						d1.innerHTML = MT__bold(
-							o.addr,
+							tmp_addr,
 							['suite','ste','#','rm','floor','flr','fl','apt'],
 							{style: 'color:#cc3333;text-decoration:underline;'}).bold_string
 							+'<br>';
+						if (/( suite | ste | rm | flr | fl | apt )/i.exec(o.addr)) {
+							d1.style.backgroundColor = 'yellow';
+						}
 						rs = JSON.parse(rs);
 						if (rs.results.length == 0) {
 							d1.innerHTML += 'No address match!';
