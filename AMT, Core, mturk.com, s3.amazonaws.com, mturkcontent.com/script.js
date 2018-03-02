@@ -146,7 +146,7 @@ function MT__RUN() {
 				var x= 'https://maps.googleapis.com/maps/api/place/nearbysearch/'+
 					'json?location='+
 					(ll.lat+'').replace(/[^\d\.\-]/g, '')+','+(ll.lng+'').replace(/[^\d\.\-]/g, '')+
-					'&radius=50&type=*&keyword=*&key=_GOOGLE_API_KEY_REDACTED_';
+					'&radius=100&type=*&keyword=*&key=_GOOGLE_API_KEY_REDACTED_';
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: x,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -170,15 +170,18 @@ function MT__RUN() {
 						// Make divs + Auto-Match?
 						console.log(rs);
 						//
+						var result_divs = [];
 						for (var i in rs.results) {
 							var r = rs.results[i];
-							var d = (r.name +'<br>'+ MT__bold(r.vicinity,o.bold))
+							var mb = MT__bold(r.vicinity, o.bold, {percent_matched:true});
+							var d = (r.name +'<br>'+ mb.bold_string)
 								.div({
 									style:'',
 									innerHTML:true});
-							d1.appendChild(d);
+							//d1.appendChild(d);
 							d.className = 'exe';
 							d.compName = r.name;
+							d.pct = mb.pm.percent_matched;
 							d.onclick = function(e) {
 								this.style.backgroundColor = 'orange';
 								o.q[0].value = this.compName.trim();
@@ -187,7 +190,29 @@ function MT__RUN() {
 								//doSubmit();
 								//
 							}
+							result_divs.push(d);
 						}
+						// Sort by pm desc
+						result_divs.sort(function(p1,p2) {
+							return p2.pct - p1.pct;
+						});
+						for (var i in result_divs) {
+							d1.appendChild(result_divs[i]);
+						}
+						
+						//~ lv1 = MT__bold(rs[i].text, o.uarr, {percent_matched:true});
+						//~ var lv2 = gf.levensht(short, o.ulwr);
+						//~ scoresArr1[rs[i].text] = lv1.pm.percent_matched;
+						//~ scoresArr2[rs[i].text] = lv2;
+						//~ allScores[rs[i].text] = {
+							//~ text: rs[i].text,
+							//~ bold_string: lv1.bold_string,
+							//~ id: rs[i].id,
+							//~ score1: Math.round(lv1.pm.percent_matched*1000)/10,
+							//~ score2: lv2
+						//~ }
+						
+						
 						// add spacer
 						d1.appendChild(''.div({style:'height:2400px;'}));
 					}
