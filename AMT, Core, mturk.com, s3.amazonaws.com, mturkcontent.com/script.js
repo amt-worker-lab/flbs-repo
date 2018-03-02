@@ -49,8 +49,9 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
 			// Task specific
-			GM_addStyle('.exe {border-bottom:1px solid teal;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.exe,.exe2 {border-bottom:1px solid teal;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
+			GM_addStyle('.exe2:hover {background-color:#99ffff !important;cursor:pointer;}');
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -136,7 +137,7 @@ function MT__RUN() {
 						//~ d1.innerHTML = MT__bold(o.addr, [], ) + '<br>';
 						d1.innerHTML = MT__bold(
 							o.addr,
-							['suite','ste','#','rm','floor','flr','fl'],
+							['suite','ste','#','rm','floor','flr','fl','apt'],
 							{style: 'color:#cc3333;text-decoration:underline;'}).bold_string
 							+'<br>';
 						rs = JSON.parse(rs);
@@ -198,12 +199,17 @@ function MT__RUN() {
 							// single word, such as "Philadelphia".
 							if (r.vicinity.indexOf(' ') == -1) continue;
 							var mb = MT__bold(r.vicinity, o.bold, {percent_matched:true});
-							var d = (r.name +'<br>'+ mb.bold_string)
-								.div({
-									style:'',
-									innerHTML:true});
-							//d1.appendChild(d);
-							d.className = 'exe';
+							var txt = r.name.replace(/ ([A-Z\.]{0,4})$/, ' <b style="color:red;">$1</b>')+
+								'<br>'+ mb.bold_string;
+							var d = txt.div({
+								style:'',
+								innerHTML:true});
+							if (/ ([A-Z\.]{1,4})$/.exec(r.name)) {
+								d.style.backgroundColor = '#ccffff';
+								d.className = 'exe2';
+							} else {
+								d.className = 'exe';
+							}
 							d.compName = r.name;
 							d.pct = mb.pm.percent_matched;
 							d.onclick = function(e) {
