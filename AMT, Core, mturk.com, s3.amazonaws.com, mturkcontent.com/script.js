@@ -51,7 +51,7 @@ function MT__RUN() {
 			// Task specific
 			GM_addStyle('.exe {border-bottom:1px solid teal;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var td = document.getElementsByTagName('td');
 			var o = {
 				addr: td[1].innerText.trim(),
@@ -65,10 +65,17 @@ function MT__RUN() {
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
 				'position:absolute;top:40px;\
-				left:0%;width:99%;height:600px;overflow:auto;\
+				left:0%;width:99%;height:40px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:80px;\
+				left:0%;width:99%;height:600px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1b);
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style',
 				'position:absolute;top:0px;\
@@ -104,6 +111,7 @@ function MT__RUN() {
 				var x = 'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
 					'query='+encodeURIComponent(d2.value)+
 					'&key=_GOOGLE_API_KEY_REDACTED_';
+				console.log(x); // DEBUG
 				// xhr
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: x,
@@ -146,7 +154,11 @@ function MT__RUN() {
 				var x= 'https://maps.googleapis.com/maps/api/place/nearbysearch/'+
 					'json?location='+
 					(ll.lat+'').replace(/[^\d\.\-]/g, '')+','+(ll.lng+'').replace(/[^\d\.\-]/g, '')+
-					'&radius=100&type=*&keyword=*&key=_GOOGLE_API_KEY_REDACTED_';
+					'&radius=100&key=_GOOGLE_API_KEY_REDACTED_'+
+					'';
+					//~ '&type=establishment&rankby=distance'; // dist. requires name, keyword, or type.
+					//~ '&rankby=distance&name=*'; // Try "distance" rather than "prominence" (default)
+				console.log(x); // DEBUG
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: x,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -197,7 +209,7 @@ function MT__RUN() {
 							return p2.pct - p1.pct;
 						});
 						for (var i in result_divs) {
-							d1.appendChild(result_divs[i]);
+							d1b.appendChild(result_divs[i]);
 						}
 						
 						//~ lv1 = MT__bold(rs[i].text, o.uarr, {percent_matched:true});
@@ -214,7 +226,7 @@ function MT__RUN() {
 						
 						
 						// add spacer
-						d1.appendChild(''.div({style:'height:2400px;'}));
+						d1b.appendChild(''.div({style:'height:2400px;'}));
 					}
 				});
 			}
