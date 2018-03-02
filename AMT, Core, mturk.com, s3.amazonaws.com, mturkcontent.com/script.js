@@ -117,7 +117,9 @@ function MT__RUN() {
 	}
 	// Turk
 	// Search box auto-suggest data collection
-	// 
+	// This task is added to FLOAT
+	// 		case '31QOF9ABMO7FZU3C5N4CRBMM2JP1L4'
+	//		Because until fixed, let's test the rate limit of site (and pre-cache results).
 	var s = '<div class="panel-body" id="instructionBody">\n<ul>\n	<li>Visit Singlecare.com</li>\n	<li>In the search box, search for <strong>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -179,6 +181,8 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'pink';
 						return;
 					}
+					// SKIP WHILE TASK IS "BROKEN"
+					AMT___Floater.skip();return;
 					// Result
 					r = r[0];
 					console.log(r);

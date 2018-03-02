@@ -386,6 +386,7 @@ function mturk_load()
 			switch(AMT__Global_Vars.groupId)
 			{
 				//Each case is groupId
+				case '31QOF9ABMO7FZU3C5N4CRBMM2JP1L4': // "Turk", Search box auto-suggest data collection
 				case '2C4PHMVHVKCOKJWBOEVJI9KQ36235K':
 				case '2C4PHMVHVKCOKJWBOEVJI9KQ36935R':
 				case '3FQJF6D1R11V8N3Q284CY8YBHMM299':
