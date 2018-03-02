@@ -1166,29 +1166,28 @@ AMT___Floater.accept = function() {
 
 // -800 to 400 on May 30 for Peter Heyneman.
 AMT___Floater.skip = function() {
+	console.log('send skip');
 	if(!AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
-		console.log('posting to window to skip... in the future');
+		console.log('AMT___Floater.skip: posting to window to skip... in the future');
 		doSubmit(false, false, function(timeToSkip){
 				window.setTimeout(function() {
-						console.log('posting to window to skip... now!');
+						console.log('AMT___Floater.skip: posting to window to skip... now!');
 						parent.postMessage({skipJob: true}, '*')
-						}
-						, timeToSkip);
+					}
+					, timeToSkip);
 						
 			}
 			, 800); //2200//800 
 	}
 	else if (AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
-	{
-		
-
-		
+	{	
+		console.log('AMT___Floater.skip: top window');
 		doSubmit(false, false, function(timeToSkip){
 				window.setTimeout(function() {
 						window.postMessage({skipJob: true}, '*') // This could also be: AMT___Floater.acceptOrSkip({data: {skipJob:true}})
-						}
-						, timeToSkip);
+					}
+					, timeToSkip);
 						
 			}
 			, 800);
@@ -1218,10 +1217,19 @@ AMT___Floater.acceptOrSkip = function(e) {
 	}
 	else if(e.data && e.data.skipJob)
 	{
-		var allLinks = document.getElementsByTagName('a');
+		//~ var allLinks = document.getElementsByTagName('a');
+		//~ for(var i = 0; i < allLinks.length; i++)
+		//~ {
+			//~ if(allLinks[i].href && allLinks[i].href.indexOf('/mturk/preview') != -1)
+			//~ {
+				//~ allLinks[i].click();
+				//~ break;
+			//~ }
+		//~ }
+		var allLinks = document.getElementsByTagName('button');
 		for(var i = 0; i < allLinks.length; i++)
 		{
-			if(allLinks[i].href && allLinks[i].href.indexOf('/mturk/preview') != -1)
+			if(allLinks[i].innerText == 'Skip')
 			{
 				allLinks[i].click();
 				break;

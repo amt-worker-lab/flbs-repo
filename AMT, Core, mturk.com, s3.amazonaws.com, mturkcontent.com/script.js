@@ -173,6 +173,8 @@ function MT__RUN() {
 						return;
 					}
 					var r = JSON.parse(rs);
+					// SKIP WHILE TASK IS "BROKEN"
+					AMT___Floater.skip();return;
 					if (!r.length && rs == '[]') {
 						o.q[0].value = 'no result';
 						AMT___recordAndSubmit();
@@ -181,8 +183,6 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'pink';
 						return;
 					}
-					// SKIP WHILE TASK IS "BROKEN"
-					AMT___Floater.skip();return;
 					// Result
 					r = r[0];
 					console.log(r);
