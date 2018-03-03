@@ -63,6 +63,7 @@ function MT__RUN() {
 				bold: null,
 				results_biz: [],
 				results_people: [],
+				suite: null,
 				q: [
 					document.getElementById('Field1')
 				]
@@ -148,11 +149,23 @@ function MT__RUN() {
 						d1.innerHTML = MT__bold(
 							tmp_addr,
 							['suite','ste','#','rm','floor','flr','fl','apt'],
-							{style: 'color:#cc3333;text-decoration:underline;'}).bold_string
-							+'<br>';
-						if (/( suite | ste | rm | flr | fl | apt )/i.exec(o.addr)) {
+							{style: 'color:#cc3333;text-decoration:underline;'}).bold_string;
+							//~ +'<br>';
+						if (/( suite | ste | rm | flr | fl | apt |#)/i.exec(tmp_addr)) {
 							d1.style.backgroundColor = 'yellow';
 						}
+						// Try to determine a suite
+						// o.suite.
+						var x = /( suite | ste | rm | flr | fl | apt |#|# )([^ ]{2,})/i.exec(tmp_addr);
+						if (x) {
+							o.suite = x[2].trim();
+							d1.appendChild(('[suite:'+o.suite+']').div({
+								style: 'display:inline;text-decoration:underline;font-weight:bold;',
+								innerText: true,
+							}));
+						}
+						
+						// parse
 						rs = JSON.parse(rs);
 						if (rs.results.length == 0) {
 							d1.innerHTML += 'No address match!';
@@ -237,9 +250,17 @@ function MT__RUN() {
 								{percent_matched:true});
 							var txt = r.name.replace(/ ([A-Z\.]{0,4})$/, ' <b style="color:red;">$1</b>')+
 								'<br>'+ mb.bold_string;
+							if (o.suite) {
+								txt = txt.replace( // Bold suite.
+									new RegExp('('+o.suite+')','gi'),
+									'<b style="color:blue;font-size:1.4em;">$1</b>');
+							} else {
+								
+							}
 							var d = txt.div({
 								style:'',
 								innerHTML:true});
+							d.txt = txt; // Add txt attribute.
 							// Which type is it?
 							// Biz or person?
 							// And then: Does addr start with BOLD?
@@ -316,6 +337,20 @@ function MT__RUN() {
 						});
 						o.results_people.sort(function(p1,p2) {
 							return p2.pct - p1.pct;
+						});
+						o.results_biz.sort(function(p1,p2) {
+							if (o.suite)
+								return p2.txt.toLowerCase().indexOf(o.suite.toLowerCase()) -
+									p1.txt.toLowerCase().indexOf(o.suite.toLowerCase());
+							else
+								return 0;
+						});
+						o.results_people.sort(function(p1,p2) {
+							if (o.suite)
+								return p2.txt.toLowerCase().indexOf(o.suite.toLowerCase()) -
+									p1.txt.toLowerCase().indexOf(o.suite.toLowerCase());
+							else
+								return 0;
 						});
 						for (var i in o.results_biz) {
 							d1b.appendChild(o.results_biz[i]);
