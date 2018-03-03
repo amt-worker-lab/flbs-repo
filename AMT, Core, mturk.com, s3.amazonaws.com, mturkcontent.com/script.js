@@ -31,8 +31,9 @@ function MT__RUN() {
 	
 							
 	/**
+	 * Reverse addr search
 	 * 
-	 * 
+	 * @clients
 	 * Jacquelyn Fiske
 	 * 
 	 */
@@ -72,25 +73,47 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:20px;\
-				left:0%;width:99%;height:40px;overflow:auto;\
+				'position:absolute;top:30px;\
+				left:0%;width:30%;height:40px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
 				'position:absolute;top:60px;\
-				left:0%;width:99%;height:600px;overflow:auto;\
+				left:0%;width:30%;height:600px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1b);
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style',
+				'position:absolute;top:30px;\
+				left:30%;width:69%;height:640px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1c);
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style',
 				'position:absolute;top:0px;\
-				left:0%;width:99%;height:18px;'
+				left:0%;width:30%;height:28px;'
 			);
 			document.body.appendChild(d2);
 			d2.value = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case(); // remove "NULL"
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style',
+				'position:absolute;top:0px;\
+				left:30%;width:69%;height:28px;'
+			);
+			document.body.appendChild(d2b);
+			d2b.value = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case().trim(); // remove "NULL"
+			d2b.value = d2b.value.replace(/ \d+$/gi, '').trim();
+			d2b.value = d2b.value.replace(/ \d+$/gi, '').trim();
+			d2b.value = d2b.value.replace(/ ([a-z]{2})$/i,
+				function(p1,p2) {
+					return ', '+p2.stateAbbrToFull(); 
+				}
+			);
+			d2b.value = d2b.value.replace(/( suite | ste | rm | flr | fl | apt |#|# )([^ ]{2,})/gi, '').trim();
 			/*END ITEMS*/
 			AMT___addUserDecision(
 				'Jacquelyn Fiske,2018', function() {
@@ -113,8 +136,42 @@ function MT__RUN() {
 				AMT___recordAndSubmit();
 				return false;
 			};
-				
+			// Start
 			init();
+			
+			//
+			var opts = {
+				parent: d1c,
+				parent_controller_el: d2b,
+				output_elements: {
+					name: o.q[0],
+					//~ street2: o.q[1],
+					//~ city: o.q[2],
+					//~ state: o.q[3],
+					//~ zip: o.q[4],
+				},
+				onclick_callback: function(opts) { // (opts) // STATE
+					console.log(opts);
+					//~ console.log(o);
+					// Reset display stuff.
+					//~ document.body.style.backgroundColor = ''; // Reset bg color
+					//~ for (var i in o.q) {
+						//~ o.q[i].style.border = '';
+					//~ }
+					//~ // Callback for string_to_mixed_case.
+					//~ var cb = function (is_changed) { // is_changed: Will be true or false
+						//~ if (is_changed) {
+							//~ document.body.style.backgroundColor = 'orange';
+						//~ } else {
+							//~ // Do nothing.
+						//~ }
+					//~ }
+					
+				}
+			};
+			// Init create_dashboard_find_address
+			new AMT___items_factory().create_dashboard_find_address(opts);
+			
 			function init() {
 				//
 				var x = 'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
