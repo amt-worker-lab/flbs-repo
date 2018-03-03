@@ -70,6 +70,12 @@ function MT__RUN() {
 				]
 			}
 			o.bold = o.addr.clean_string_to_array();
+			// Try to determine a suite
+			// o.suite.
+			var x = /( suite | ste | rm | flr | fl | apt |#|# )([^ ]{1,})/i.exec(o.addr);
+			if (x) {
+				o.suite = x[2].trim();
+			}
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
@@ -113,7 +119,10 @@ function MT__RUN() {
 					return ', '+p2.stateAbbrToFull(); 
 				}
 			);
-			d2b.value = d2b.value.replace(/( suite | ste | rm | flr | fl | apt |#|# )([^ ]{2,})/gi, '').trim();
+			d2b.value = d2b.value.replace(/( suite | ste | rm | flr | fl | apt |#|# )([^ ]{1,})/gi, '').trim();
+			if (o.suite) {
+				d2b.value += ', '+o.suite;
+			}
 			/*END ITEMS*/
 			AMT___addUserDecision(
 				'Jacquelyn Fiske,2018', function() {
@@ -152,6 +161,9 @@ function MT__RUN() {
 				},
 				onclick_callback: function(opts) { // (opts) // STATE
 					console.log(opts);
+					if (o.q[0].value.length>=2 != '') {
+						AMT___recordAndSubmit();
+					}
 					//~ console.log(o);
 					// Reset display stuff.
 					//~ document.body.style.backgroundColor = ''; // Reset bg color
@@ -211,11 +223,7 @@ function MT__RUN() {
 						if (/( suite | ste | rm | flr | fl | apt |#)/i.exec(tmp_addr)) {
 							d1.style.backgroundColor = 'yellow';
 						}
-						// Try to determine a suite
-						// o.suite.
-						var x = /( suite | ste | rm | flr | fl | apt |#|# )([^ ]{2,})/i.exec(tmp_addr);
-						if (x) {
-							o.suite = x[2].trim();
+						if (o.suite) {
 							d1.appendChild(('[suite:'+o.suite+']').div({
 								style: 'display:inline;text-decoration:underline;font-weight:bold;',
 								innerText: true,
@@ -285,6 +293,7 @@ function MT__RUN() {
 						// onmouseover: show establishments
 						for (var i in rs.results) {
 							var r = rs.results[i];
+							if (!r.vicinity) continue;
 							// Skip results where the vicinity is a
 							// single word, such as "Philadelphia".
 							// Skip double words as well, such as "witchita falls".
@@ -307,7 +316,7 @@ function MT__RUN() {
 								{percent_matched:true});
 							var txt = r.name.replace(/ ([A-Z\.]{0,4})$/, ' <b style="color:red;">$1</b>')+
 								'<br>'+ mb.bold_string;
-							if (o.suite) {
+							if (o.suite && o.suite.length > 1) {
 								txt = txt.replace( // Bold suite.
 									new RegExp('('+o.suite+')','gi'),
 									'<b style="color:blue;font-size:1.4em;">$1</b>');
