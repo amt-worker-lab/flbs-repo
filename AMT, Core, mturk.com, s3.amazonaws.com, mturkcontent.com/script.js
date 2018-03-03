@@ -51,7 +51,7 @@ function MT__RUN() {
 			// Task specific
 			GM_addStyle('.exe,.exe2 {border-bottom:1px solid teal;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
-			GM_addStyle('.exe2 {padding-left:60px;}');
+			//~ GM_addStyle('.exe2 {padding-left:60px;}');
 			GM_addStyle('.exe2:hover {background-color:#99ffff !important;cursor:pointer;}');
 			GM_addStyle('table {width:100% !important;}');
 			GM_addStyle('#Field1 {width:100% !important;}');
@@ -158,8 +158,11 @@ function MT__RUN() {
 							d1.innerHTML += 'No address match!';
 							return;
 						}
-						d1.innerHTML += '('+rs.results[0].formatted_address+')';
-						d1.appendChild(''.div({style:'width:100%;border-bottom:2px solid teal;'}));
+						//////////////////////////////////////
+						// This would append the Maps result.
+						//~ d1.innerHTML += '('+rs.results[0].formatted_address+')';
+						//~ d1.appendChild(''.div({style:'width:100%;border-bottom:2px solid teal;'}));
+						//////////////////////////////////////
 						nearby(rs.results[0].geometry.location, false, false);
 					}
 				});
@@ -213,7 +216,8 @@ function MT__RUN() {
 							// Skip double words as well, such as "witchita falls".
 							var num_words = r.vicinity.split(' ');
 							if (num_words.length <= 2) continue;
-							//~ if (r.vicinity.indexOf(' ') == -1) continue;
+							// Capture has_addr_start_match.
+							var has_addr_start_match = MT__bold(r.vicinity, o.bold).indexOf('<b');
 							var mb = MT__bold(
 								r.vicinity.replace(/ +[A-Z]{2} +\d+/i, '').trim(), // remove state+zip
 								o.bold,
@@ -230,12 +234,16 @@ function MT__RUN() {
 								d.style.backgroundColor = '#ccffff';
 								d.className = 'exe2';
 								o.results_people.push(d);
-								if (d.innerHTML.indexOf('<b') == -1) {
-									
+								console.log(d.innerHTML);
+								if (has_addr_start_match != 0) {
+									d.style.paddingLeft = '60px';
 								}
 							} else {
 								d.className = 'exe';
 								o.results_biz.push(d);
+								if (has_addr_start_match != 0) {
+									d.style.paddingLeft = '60px';
+								}
 							}
 							d.compName = r.name;
 							d.pct = mb.pm.percent_matched;
@@ -299,6 +307,7 @@ function MT__RUN() {
 						for (var i in o.results_biz) {
 							d1b.appendChild(o.results_biz[i]);
 						}
+						d1b.appendChild(''.div({style:'border-bottom:2px solid blue;width:100%;'})); //hr
 						for (var i in o.results_people) {
 							d1b.appendChild(o.results_people[i]);
 						}
