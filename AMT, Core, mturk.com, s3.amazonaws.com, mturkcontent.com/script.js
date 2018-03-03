@@ -171,19 +171,23 @@ function MT__RUN() {
 				var second_run = second_run,
 					ll = ll;
 				// where second run is about like......... https://maps.googleapis.com/maps/api/place/nearbysearch/json?page_API_KEY_REDACTED_Z81FL1c6Z3bWGbQxoAW74k2lnZqj6oVaKgxaArM7_8AzmtKhC77tYkr1IwvWSl_SwgVZpZwwhxuesHmktXx_LFXPr7tkjSFgdy3cBqkG0hCNl4v0n9kOsVFxFzlw1CHiXjtfwEJiKZNWRXnu-CdHC4MOUp3SuFoVM4_TYk-hH5yP8P7ie53vuVz2n5TM4r2Sw1MPPFckQOREuswM4WDKizNRnk1cJn81BW2vqEBvlIg3_XjmBR4lqiBe-IOmtlVo7iEhAjd4C61hyS0X3dIqAfDB5GGhTWA19gYV-2O00jZCXWfadsSM23wA&key=_GOOGLE_API_KEY_REDACTED_
+				
+				var x = 'https://maps.googleapis.com/maps/api/place/nearbysearch/'+
+					'json?location='+
+					(ll.lat+'').replace(/[^\d\.\-]/g, '')+','+(ll.lng+'').replace(/[^\d\.\-]/g, '')+
+					'&radius=100&key=_GOOGLE_API_KEY_REDACTED_'+
+					'';
+					
 				if (!second_run) {
 					// URL + Make sure ll is clean
-					var x= 'https://maps.googleapis.com/maps/api/place/nearbysearch/'+
-						'json?location='+
-						(ll.lat+'').replace(/[^\d\.\-]/g, '')+','+(ll.lng+'').replace(/[^\d\.\-]/g, '')+
-						'&radius=100&key=_GOOGLE_API_KEY_REDACTED_'+
-						'';
+					
 						//~ '&type=establishment&rankby=distance'; // dist. requires name, keyword, or type.
 						//~ '&rankby=distance&name=*'; // Try "distance" rather than "prominence" (default)
 				} else {
-					var x= 'https://maps.googleapis.com/maps/api/place/nearbysearch/'+
-						'json?pagetoken='+encodeURIComponent(next_page_token)+
-						'&key=_GOOGLE_API_KEY_REDACTED_';
+					x += '&pagetoken='+encodeURIComponent(next_page_token); 
+					//~ var x= 'https://maps.googleapis.com/maps/api/place/nearbysearch/'+
+						//~ 'json?pagetoken='+encodeURIComponent(next_page_token)+
+						//~ '&key=_GOOGLE_API_KEY_REDACTED_';
 				}
 				console.log(x); // DEBUG
 				new AMT___requests_factory().xhr_with_disk_cache({
