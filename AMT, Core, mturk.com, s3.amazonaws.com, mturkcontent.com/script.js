@@ -65,6 +65,7 @@ function MT__RUN() {
 				results_biz: [],
 				results_people: [],
 				suite: null,
+				first_number: null,
 				q: [
 					document.getElementById('Field1')
 				]
@@ -75,6 +76,11 @@ function MT__RUN() {
 			var x = /( suite | ste | rm | flr | fl | apt |#|# )([^ ]{1,})/i.exec(o.addr);
 			if (x) {
 				o.suite = x[2].trim();
+			}
+			// first #
+			var x = /^([^ ]+)/.exec(o.addr);
+			if (x) {
+				o.first_number = x[0].trim();
 			}
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -149,9 +155,17 @@ function MT__RUN() {
 			init();
 			
 			//
+			var b = [];
+			if (o.suite) {
+				b.push(o.suite);
+			}
+			if (o.first_number) {
+				b.push(o.first_number);
+			}
 			var opts = {
 				parent: d1c,
 				parent_controller_el: d2b,
+				bold_locn_array: b,
 				output_elements: {
 					name: o.q[0],
 					//~ street2: o.q[1],
