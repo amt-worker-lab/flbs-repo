@@ -218,6 +218,15 @@ function MT__RUN() {
 							if (num_words.length <= 2) continue;
 							// Capture has_addr_start_match.
 							var has_addr_start_match = MT__bold(r.vicinity, o.bold).indexOf('<b');
+							if (has_addr_start_match != 0) {
+								// Check for single digit starting.
+								// If it is a match, then set
+								// has_addr_start_match to 0.
+								var x = r.vicinity.split(' ')[0];
+								if (o.addr.indexOf(x+' ') == 0) {
+									has_addr_start_match = 0;
+								}
+							}
 							var mb = MT__bold(
 								r.vicinity.replace(/ +[A-Z]{2} +\d+/i, '').trim(), // remove state+zip
 								o.bold,
