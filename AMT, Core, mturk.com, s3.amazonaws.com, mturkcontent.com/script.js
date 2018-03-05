@@ -144628,7 +144628,7 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
-					str_add_to_searches_hidden:  ' (product OR products OR brand OR company OR food OR foods OR beverage OR )', //
+					str_add_to_searches_hidden:  ' (product OR products OR brand OR brands OR company OR food OR foods OR beverage OR )', //
 					//~ use_duckduckgo_search_engine: true,
 					skips: {
 						fork: 'austin_load_skips',
