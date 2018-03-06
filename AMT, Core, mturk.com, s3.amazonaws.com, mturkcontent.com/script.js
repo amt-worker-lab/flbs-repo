@@ -144313,11 +144313,11 @@ qatar,80
 			//~ }
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			console.log(o);
-			//~ AMT___addUserDecision(
-				//~ 'patmoore,2018', function() {
-					//~ return o.comp;
-				//~ }, ['Name(oid1)[0]']
-			//~ )
+			AMT___addUserDecision(
+				'Mturk Leadfeeder,2018', function() {
+					return o.comp;
+				}, ['Id(web_url)']
+			)
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
@@ -144378,7 +144378,7 @@ qatar,80
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
-				//~ AmtRecordAndSubmit: true,
+				AmtRecordAndSubmit: true,
 				AutoReturnAcceptIfZero: true,
 			});
 		}
