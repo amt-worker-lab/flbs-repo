@@ -91,13 +91,18 @@ function MT__RUN() {
 				o.addr = o.addr.replace(o.name, '');
 			} else {
 				var x = o.addr.split(' ');
-				for (var i in x) {
+				// Search in reverse direction.
+				for (var i=x.length-1; i>=0; i--) {
+				// regular: for (var i in x) {
 					if (x[i].state_abbr_is_valid()) {
+						// Note that using RegExp, double-backslash
+						// is necessary for wildcards, rather than single!
 						//var y = / ([A-Z]{2}) ([\d\D]+)$/.exec(o.addr);
-						var y = new RegExp(x[i] + ' ([\d\D]+)$', '');
+						var y = new RegExp(x[i] + ' ([\\d\\D]+)$', '');
+						console.log(y);
 						o.name = y.exec(o.addr)[1];
 						o.addr = o.addr.replace(
-							new RegExp(x[i] + ' ([\d\D]+)$', ''),
+							new RegExp(x[i] + ' ([\\d\\D]+)$', ''),
 							'');
 						break;
 					}
@@ -289,6 +294,9 @@ function MT__RUN() {
 							d1.innerHTML += 'No address match!';
 							return;
 						}
+						// clear d1b
+						d1b.innerText = '';
+						
 						//////////////////////////////////////
 						// This would append the Maps result.
 						//~ d1.innerHTML += '('+rs.results[0].formatted_address+')';
