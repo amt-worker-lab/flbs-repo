@@ -15196,6 +15196,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			lng: null,
 			full_address: null,
 			//~ full_address_2: null // No zip
+			
+			// new Mar 2018
+			category: null,
 		},
 		first_fb_or_google_us: null // First FB or Google result is in US
 	}
@@ -16381,64 +16384,72 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						opts.profile_url = i.link;
 						// ...
 						if (i.location) {
-							i = i.location;
-							if(i.zip) {
-								i.zip = i.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+							var x = i.location;
+							if (x.zip) {
+								x.zip = x.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
 							}
-							if(i.street) {
-								i.street = i.street.replace(/\s+/g, ' ');
+							if (x.street) {
+								x.street = x.street.replace(/\s+/g, ' ');
 							}
 							var location = [];
 							
-							if (i.street && opts.output_elements.hasOwnProperty('street')) {
-								opts.output_elements.street.value = i.street;
-								opts.o.final_location.street = i.street;
+							if (x.street && opts.output_elements.hasOwnProperty('street')) {
+								opts.output_elements.street.value = x.street;
+								opts.o.final_location.street = x.street;
 							}
-							if (i.city && opts.output_elements.hasOwnProperty('city')) {
-								opts.output_elements.city.value = i.city;
-								opts.o.final_location.city = i.city;
+							if (x.city && opts.output_elements.hasOwnProperty('city')) {
+								opts.output_elements.city.value = x.city;
+								opts.o.final_location.city = x.city;
 							}
-							if (i.state && opts.output_elements.hasOwnProperty('state')) {
-								opts.output_elements.state.value = i.state;
-								opts.o.final_location.state = i.state;
+							if (x.state && opts.output_elements.hasOwnProperty('state')) {
+								opts.output_elements.state.value = x.state;
+								opts.o.final_location.state = x.state;
 							}
-							else if (i.state && opts.output_elements.hasOwnProperty('state_abbr')) {
-								opts.output_elements.state_abbr.value = i.state;
-								opts.o.final_location.state_abbr = i.state;
+							else if (x.state && opts.output_elements.hasOwnProperty('state_abbr')) {
+								opts.output_elements.state_abbr.value = x.state;
+								opts.o.final_location.state_abbr = x.state;
 							}
-							if (i.zip && opts.output_elements.hasOwnProperty('zip')) {
-								opts.output_elements.zip.value = i.zip;
-								opts.o.final_location.zip = i.zip;
+							if (x.zip && opts.output_elements.hasOwnProperty('zip')) {
+								opts.output_elements.zip.value = x.zip;
+								opts.o.final_location.zip = x.zip;
 							}
-							if (i.country && opts.output_elements.hasOwnProperty('country')) {
-								opts.output_elements.country.value = i.country;
-								opts.o.final_location.country = i.country;
+							if (x.country && opts.output_elements.hasOwnProperty('country')) {
+								opts.output_elements.country.value = x.country;
+								opts.o.final_location.country = x.country;
 							}
 							if (opts.output_elements.hasOwnProperty('lat') && opts.output_elements.hasOwnProperty('lng')) {
-								if (i.latitude && i.longitude) {
-									opts.output_elements.lat.value = i.latitude;
-									opts.output_elements.lng.value = i.longitude;
-									opts.o.final_location.lat = i.latitude;
-									opts.o.final_location.lng = i.longitude;
+								if (x.latitude && x.longitude) {
+									opts.output_elements.lat.value = x.latitude;
+									opts.output_elements.lng.value = x.longitude;
+									opts.o.final_location.lat = x.latitude;
+									opts.o.final_location.lng = x.longitude;
 								} else {
 									is_geocoding = true;
-									var location =  (i.street ? i.street + ", ": "") +
-													(i.city ? i.city + ", ": "") +
-													(i.zip ? i.zip + ", ": "") +
-													(i.country ? i.country : "");
+									var location =  (x.street ? x.street + ", ": "") +
+													(x.city ? x.city + ", ": "") +
+													(x.zip ? x.zip + ", ": "") +
+													(x.country ? x.country : "");
 									location = location.replace(/, $/,'');		   
 									geocode(location);
 								}
 							}
 							// Full address
 							if (opts.output_elements.hasOwnProperty('full_address')) {
-								if (i.street && i.street != '') location.push(i.street);
-								if (i.city && i.city != '') location.push(i.city);
-								if (i.state && i.state != '') location.push(i.state);
-								if (i.country && i.country != '') location.push(i.country);
-								if (i.zip && i.zip != '') location.push(i.zip);
+								if (x.street && x.street != '') location.push(x.street);
+								if (x.city && x.city != '') location.push(x.city);
+								if (x.state && x.state != '') location.push(x.state);
+								if (x.country && x.country != '') location.push(x.country);
+								if (x.zip && x.zip != '') location.push(x.zip);
 								opts.output_elements.full_address.value = location.join(', ');
 								opts.o.final_location.full_address = location.join(', ');
+							}
+							// category
+							//~ console.log(i);
+							if (i.category) {
+								opts.o.final_location.category = i.category;
+								if (opts.output_elements.hasOwnProperty('category')) {
+									opts.output_elements.full_address.value = i.category;
+								}
 							}
 						}
 						// onclick_callback
@@ -16510,7 +16521,17 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					
 					if (r[i].website && opts.output_elements.hasOwnProperty('website')) {
 						div.appendChild(('W:'+r[i].website).div());
-					}		
+					}
+					// Add an extra button
+					// e.g. J. Fiske.
+					if (opts.hasOwnProperty('add_button')) {
+						var b = document.createElement('input');
+						b.type = 'button';
+						b.value = opts.add_button.value;
+						b.json_object = r[i];
+						b.onclick = opts.add_button.callback;
+						div.appendChild(b);
+					}
 					// Append
 					d1.appendChild(div);
 					c++; // Increment

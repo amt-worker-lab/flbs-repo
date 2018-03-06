@@ -89,6 +89,25 @@ function MT__RUN() {
 			if (x) {
 				o.name = x[1];
 				o.addr = o.addr.replace(o.name, '');
+			} else {
+				var x = o.addr.split(' ');
+				for (var i in x) {
+					if (x[i].state_abbr_is_valid()) {
+						//var y = / ([A-Z]{2}) ([\d\D]+)$/.exec(o.addr);
+						var y = new RegExp(x[i] + ' ([\d\D]+)$', '');
+						o.name = y.exec(o.addr)[1];
+						o.addr = o.addr.replace(
+							new RegExp(x[i] + ' ([\d\D]+)$', ''),
+							'');
+						break;
+					}
+				}
+				//~ var x = / ([A-Z]{2}) ([\d\D]+)$/.exec(o.addr);
+				//~ if (x && x[1].state_abbr_is_valid()) {
+					//~ // Must be a valid state as well.
+					//~ o.name = x[2];
+					//~ o.addr = o.addr.replace(o.name, '');
+				//~ }
 			}
 			/* BEGIN ITEMS */
 			// main debug box
@@ -181,6 +200,8 @@ function MT__RUN() {
 				bold_locn_array: b,
 				output_elements: {
 					name: o.q[0],
+					//~ category: null,
+					
 					//~ street2: o.q[1],
 					//~ city: o.q[2],
 					//~ state: o.q[3],
@@ -188,10 +209,23 @@ function MT__RUN() {
 				},
 				onclick_callback: function(opts) { // (opts) // STATE
 					console.log(opts);
-					if (o.q[0].value.length>=2 != '') {
+					if (o.q[0].value.length >= 2) {
 						AMT___recordAndSubmit();
 					}
-				}
+				},
+				add_button: {
+					callback: function(e) {
+						// this.json_object
+						this.style.backgroundColor = 'lightgreen';
+						var x = this.json_object;
+						o.q[0].value = x.name + ', ' + x.category;
+						if (o.q[0].value.length >= 2 &&
+							o.q[0].value.indexOf('undefined') == -1) {
+							AMT___recordAndSubmit();
+						}
+					},
+					value: 'Name+Category',
+				},
 			};
 			// Init create_dashboard_find_address
 			new AMT___items_factory().create_dashboard_find_address(opts);
@@ -236,7 +270,7 @@ function MT__RUN() {
 							d1.style.backgroundColor = 'yellow';
 						}
 						if (o.suite) {
-							d1.appendChild(('[ste:'+o.suite+']').div({
+							d1.appendChild(('[st:'+o.suite+']').div({
 								style: 'display:inline;text-decoration:underline;font-weight:bold;',
 								innerText: true,
 							}));
