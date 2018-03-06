@@ -18720,7 +18720,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function array_duckDuckGo_results(rs) {
 		var r = /if\s+\(nrn\)\s+nrn\('d',([^\r\n]+)/.exec(rs);
 		var arr = [];
-		console.log(rs);
+		console.log('@array_duckDuckGo_results:rs',rs);
 		if (!r) {
 			// No results?
 			r = /(\{"en":[\d\D]+)/.exec(rs);
@@ -18821,7 +18821,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	//			process.
 	function duckDuckGoId(rs) {
 		var x = /vqd='(\d+)'/.exec(rs);
-		if (x && /\{"en":/.exec(rs)) {
+		if (x) {
 			// From
 			// 		https://duckduckgo.com/?q=site%3Ahomeadvisor.com+J+%26+W+Heating+%26+Air+Cond&ia=web
 			// To 
@@ -18865,6 +18865,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				var h = (o.obj_vars && o.obj_vars.host) ? o.obj_vars.host : AMT___POPUP___PROXY_REDACTED_;
 				o.local_URL_init		= h + o.local_URL_init;
 				o.local_URL_complete	= h + o.local_URL_complete;
+				console.log('@proxy_init: start URL:',o.local_URL_init);
 				// Xhr
 				GM_xmlhttpRequest({ // init
 					method: "GET",
@@ -18906,6 +18907,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 						return;
 					}
 					o.processed_callback = true;
+					//~ console.log('rs',rs);
+					console.log('o.duckDuckGoSecondStage:',o.duckDuckGoSecondStage);
 					
 					// yahoo
 					if (o.obj_vars.hasOwnProperty('yahoo_array')) {
@@ -18917,19 +18920,24 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					}
 					// duckDuckGo
 					else if(o.obj_vars.hasOwnProperty('duckDuckGo_array')) {
+						console.log('@proxy_waitComplete: duckDuckGo_array');
 						// First stage.
 						if (o.duckDuckGoSecondStage == null) {
+							console.log('@proxy_waitComplete: run first stage');
 							o.duckDuckGoSecondStage = true;
-							// update catch include string
-							o.obj_vars.catch_success = 'DDG'; // probably good enough
 							if (duckDuckGoId(rs) == null) {
 								// Are these good results?
+								console.log('@proxy_waitComplete: duckDuckGoId is null');
 								rs = array_duckDuckGo_results2(rs);
 								// Continue...
-								//return false;
+								return false;
 							}
 							else {
 								// Load second page, then quit.
+								console.log('@proxy_waitComplete: starting stage 2 duckDuckGo');
+								// update catch include string
+								// "DDG" probably good enough
+								o.obj_vars.catch_success = 'DDG';
 								generateLocalURL(); // Regenerate local url
 								proxy_init();
 								proxy_waitComplete(
@@ -18938,6 +18946,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 								return;
 							}
 						} else { // Second stage.
+							console.log('@proxy_waitComplete: second stage complete');
 							rs = array_duckDuckGo_results(rs);
 						}
 					}
