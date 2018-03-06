@@ -41,6 +41,7 @@ function MT__RUN() {
 	// Find the organization name for address provided
 	// 
 	var s = '<p>Go to Google. Copy this link directly into your browser: google.com</p>\n\n<p>In the Google search form, please enter the provided&nbsp;<strong>address.&nbsp;&nbsp;</strong>The address includes&nbsp;street address, city, state, and zip code seperated by spaces.</p>';
+	var s = '<p>In the Google search form, please enter the provided&nbsp;<strong>address &amp; name.&nbsp;&nbsp;</strong>The address &amp; name includes&nbsp;street address, city, state, zip code &amp; physician name seperated by spaces.</p>\n\n<p><strong>Click Enter</strong></p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -61,6 +62,7 @@ function MT__RUN() {
 			var td = document.getElementsByTagName('td');
 			var o = {
 				addr: td[1].innerText.trim(),
+				name: null,
 				bold: null,
 				results_biz: [],
 				results_people: [],
@@ -82,7 +84,14 @@ function MT__RUN() {
 			if (x) {
 				o.first_number = x[0].trim();
 			}
+			// Try to find name
+			var x = / [A-Z]{2} \d{5} ([\d\D]+)$/.exec(o.addr);
+			if (x) {
+				o.name = x[1];
+				o.addr = o.addr.replace(o.name, '');
+			}
 			/* BEGIN ITEMS */
+			// main debug box
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
 				'position:absolute;top:30px;\
@@ -90,6 +99,7 @@ function MT__RUN() {
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			// main result
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
 				'position:absolute;top:60px;\
@@ -97,6 +107,7 @@ function MT__RUN() {
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1b);
+			// dashboard container
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
 				'position:absolute;top:30px;\
@@ -104,12 +115,14 @@ function MT__RUN() {
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1c);
+			// left controller
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style',
 				'position:absolute;top:0px;\
 				left:0%;width:30%;height:28px;'
 			);
 			document.body.appendChild(d2);
+			// right controller
 			d2.value = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case(); // remove "NULL"
 			var d2b = document.createElement('textarea');
 			d2b.setAttribute('style',
@@ -178,21 +191,6 @@ function MT__RUN() {
 					if (o.q[0].value.length>=2 != '') {
 						AMT___recordAndSubmit();
 					}
-					//~ console.log(o);
-					// Reset display stuff.
-					//~ document.body.style.backgroundColor = ''; // Reset bg color
-					//~ for (var i in o.q) {
-						//~ o.q[i].style.border = '';
-					//~ }
-					//~ // Callback for string_to_mixed_case.
-					//~ var cb = function (is_changed) { // is_changed: Will be true or false
-						//~ if (is_changed) {
-							//~ document.body.style.backgroundColor = 'orange';
-						//~ } else {
-							//~ // Do nothing.
-						//~ }
-					//~ }
-					
 				}
 			};
 			// Init create_dashboard_find_address
@@ -238,7 +236,14 @@ function MT__RUN() {
 							d1.style.backgroundColor = 'yellow';
 						}
 						if (o.suite) {
-							d1.appendChild(('[suite:'+o.suite+']').div({
+							d1.appendChild(('[ste:'+o.suite+']').div({
+								style: 'display:inline;text-decoration:underline;font-weight:bold;',
+								innerText: true,
+							}));
+						}
+						// Add name if not null?
+						if (o.name) {
+							d1.appendChild(('['+o.name+']').div({
 								style: 'display:inline;text-decoration:underline;font-weight:bold;',
 								innerText: true,
 							}));
