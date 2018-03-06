@@ -18720,54 +18720,58 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function array_duckDuckGo_results(rs) {
 		var r = /if\s+\(nrn\)\s+nrn\('d',([^\r\n]+)/.exec(rs);
 		var arr = [];
+		console.log(rs);
 		if (!r) {
 			// No results?
+			r = /(\{"en":[\d\D]+)/.exec(rs);
+			if (!r) {
+				console.log('none',rs);
+				return [];
+			}
+		}
+		// Here?
+		// Remove
+		//		);
+		// Or in another case, remove:
+		//		);DDG.page.showMessage("safeSearch");"
+		console.log(r);
+		r = r[1];
+		// Case 1
+		r = r.trim().replace(/\);DDG\.page\.showMessage\("safeSearch"\);$/, '');
+		// Case 2
+		r = r.trim().replace(/\);$/, '');
+		// Try to parse
+		try {
+			r = JSON.parse(r);
+		} catch(e) {
+			alert('parse error:array_duckDuckGo_results');
 			return arr;
 		}
-		else {
-			// Remove
-			//		);
-			// Or in another case, remove:
-			//		);DDG.page.showMessage("safeSearch");"
-			console.log(r);
-			r = r[1];
-			// Case 1
-			r = r.trim().replace(/\);DDG\.page\.showMessage\("safeSearch"\);$/, '');
-			// Case 2
-			r = r.trim().replace(/\);$/, '');
-			// Try to parse
-			try {
-				r = JSON.parse(r);
-			} catch(e) {
-				alert('parse error:array_duckDuckGo_results');
-				return arr;
+		// Each element is a search result.
+		// There are typically 30 results.
+		// Then there is one final element of the array
+		// which is an object with only one key, the value of this
+		// key being a url reference to the search api.
+		for (var i in r) {
+			var x = r[i];
+			if (!x.hasOwnProperty('c') ||
+				!x.hasOwnProperty('t') ||
+				!x.hasOwnProperty('a')
+				) { // Skip the final element, a non-result.
+					continue;
 			}
-			// Each element is a search result.
-			// There are typically 30 results.
-			// Then there is one final element of the array
-			// which is an object with only one key, the value of this
-			// key being a url reference to the search api.
-			for (var i in r) {
-				var x = r[i];
-				if (!x.hasOwnProperty('c') ||
-					!x.hasOwnProperty('t') ||
-					!x.hasOwnProperty('a')
-					) { // Skip the final element, a non-result.
-						continue;
-				}
-				if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
-					// Works?
-					// http at start, to - -
-					x.a = x.a.replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-					// www at start, to - -
-					x.a = x.a.replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-				}
-				arr.push([ // Make body Title + br + Body.
-					x.c, x.t + '<br>' + x.a
-				]);
+			if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+				// Works?
+				// http at start, to - -
+				x.a = x.a.replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+				// www at start, to - -
+				x.a = x.a.replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
 			}
-			return arr;
+			arr.push([ // Make body Title + br + Body.
+				x.c, x.t + '<br>' + x.a
+			]);
 		}
+		return arr;
 	}
 	this.array_duckDuckGo_results = array_duckDuckGo_results;
 	/**
@@ -18777,8 +18781,12 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		var dom = new DOMParser().parseFromString(rs, 'text/html');
 		var r = dom.getElementsByClassName('result__body'); //result__snippet, result__title
 		var arr = [];
-		if (!r || !r.length)
+		console.log('array_duckDuckGo_results2');
+		if (!r || !r.length) {
+			// Try other?
+			//~ return array_duckDuckGo_results(rs)
 			return arr;
+		}
 		for (var i=0; i<r.length; i++) {
 			var r_title = r[i].getElementsByClassName('result__title');
 			var r_body  = r[i].getElementsByClassName('result__snippet');
@@ -18813,17 +18821,19 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	//			process.
 	function duckDuckGoId(rs) {
 		var x = /vqd='(\d+)'/.exec(rs);
-		if (x) {
+		if (x && /\{"en":/.exec(rs)) {
 			// From
-			// https://duckduckgo.com/?q=site%3Ahomeadvisor.com+J+%26+W+Heating+%26+Air+Cond&ia=web
+			// 		https://duckduckgo.com/?q=site%3Ahomeadvisor.com+J+%26+W+Heating+%26+Air+Cond&ia=web
 			// To 
-			// https://duckduckgo.com/d.js?q=site%3Ahomeadvisor.com%20J%20%26%20W%20Heating%20%26%20Air%20Cond&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us&vqd=16257625418438011941123358502275599272&yhs=1&sp=1
+			//		https://duckduckgo.com/d.js?q=
+			//		site%3Ahomeadvisor.com%20J%20%26%20W%20Heating%20%26%20Air%20Cond
+			//		&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us&vqd=16257625418438011941123358502275599272&yhs=1&sp=1
 			var y = /q=([^&]+)/.exec(o.obj_vars.url);
 			o.obj_vars.url = 'https://duckduckgo.com/d.js'+
 				'?q='+y[1]+
 				'&l=us-en&p=1&s=0&dl=en&ct=US&ss_mkt=us'+
 				'&vqd='+x[1]+'&yhs=1&sp=1';
-			console.log('===========================');	
+			console.log('o.obj_vars.url',o.obj_vars.url);	
 			return true;
 		} else {
 			// In this case, a result is:
