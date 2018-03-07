@@ -17607,7 +17607,12 @@ AMT___items_factory.prototype.startJobTimer = function() {
  * @param seed_object.contexts_bold_array // Jan2018
  */
 // switch select field of d1
-AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
+AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts =
+function(
+	results_array,
+	out_div,
+	seed_object)
+{
 	var old_divs = out_div.getElementsByTagName('div');
 	for (var i = old_divs.length - 1; i>=0; i--) {
 		old_divs[i].parentNode.removeChild(old_divs[i]);
@@ -17617,16 +17622,20 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	var email = results_array.email_email;
 	var url = results_array.url;
 	
-	var el_div = document.createElement('div');
-	el_div.setAttribute('style','width:100%;height:40px;overflow:auto;border:1px solid #a2a2a2;');
+	// Make a container div
+	var ctdiv = ''.div({style:'float:left;width:49%;'});
+	out_div.appendChild(ctdiv);
 	
+	// Full URL of result plus a link (<a>) to open it.
+	var el_div = document.createElement('div');
+	el_div.setAttribute('style','width:100%;height:30px;overflow:auto;border:1px solid #a2a2a2;');
 	var el_a = document.createElement('a');
 	el_a.href = url;
 	el_a.target = '_blank';
 	el_a.innerText = url;
 	el_div.appendChild(el_a);
-
-	out_div.appendChild(el_div);
+	//~ out_div.appendChild(el_div);
+	ctdiv.appendChild(el_div);
 	
 	// ...
 	var input_send_success =
@@ -17649,11 +17658,13 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 			seed_object.do_submit_next_tab :
 			false;
 	
-	var do_submit_add_to_tabs_queue	= (seed_object.do_submit_add_to_tabs_queue)	? seed_object.do_submit_add_to_tabs_queue : false;
+	var do_submit_add_to_tabs_queue	=
+		(seed_object.do_submit_add_to_tabs_queue) ?
+			seed_object.do_submit_add_to_tabs_queue :
+			false;
 	
 	// default ds
 	function default__doSubmit(next_tab, add_to_tabs_queue) {
-		
 		if (next_tab)
 		{
 			//~ new AMT___core_factory().nextTab();
@@ -17737,12 +17748,14 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		{
 			el_div.onclick = input_onclick_callback;
 		}
-		out_div.appendChild(el_div);
+		//~ out_div.appendChild(el_div);
+		ctdiv.appendChild(el_div);
 	}
 	//extend page
 	var el_div = document.createElement('div');
 	el_div.setAttribute('style','height:1400px;');
-	out_div.appendChild(el_div);
+	ctdiv.appendChild(el_div);
+	//~ out_div.appendChild(el_div);
 }
 /**
  * .create_dashboard__powers_v2
@@ -17890,7 +17903,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// matches select
 	var el_select = document.createElement('select');
 	out_div.appendChild(el_select);
-	el_select.setAttribute('style','float:left;width:20%;height:600px;');//display:inline;
+	el_select.setAttribute('style','float:left;width:25%;height:600px;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
@@ -17910,16 +17923,16 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// urls on right select, for email-on-page
 	var el_select3 = document.createElement('select');
 	out_div.appendChild(el_select3);
-	el_select3.setAttribute('style','float:left;width:20%;height:600px;');//display:inline;
+	el_select3.setAttribute('style','float:left;width:25%;height:600px;');//display:inline;
 	el_select3.multiple = 'multiple';
 	// urls select
 	var el_select2 = document.createElement('select');
 	out_div.appendChild(el_select2);
-	el_select2.setAttribute('style','width:20%;height:40px;');
+	el_select2.setAttribute('style','width:49%;height:40px;');
 	el_select2.multiple = 'multiple';
 	el_select2.onclick = function() {
-		if (this.value == '') return;
-		window.open(this.value,'new');
+		//~ if (this.value == '') return;
+		//~ window.open(this.value,'new');
 	}
 	for (var i in object_response.matches) {
 		rslt = object_response.matches[i];
@@ -17954,6 +17967,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 					x[i].style.backgroundColor = 'LightGreen';
 			}
 			this.field_selector.style.backgroundColor = 'SkyBlue';
+			//~ this.field_selector.scrollIntoView(true);
 			//~ this.parentNode.value = '9999';
 			//~ this.selected = true;
 			//~ this.field_selector.parentNode.value='9999';
@@ -17999,26 +18013,26 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 					x[i].style.backgroundColor = 'LightGreen';
 			}
 		}
-		// add option sel2
-		el_option = document.createElement('option');
-		el_option.value = '';
-		el_option.innerText = '';
-		el_select.appendChild(el_option);
-		el_option.el_select2 = el_select2;
-		el_option.onmouseover = function(e) { // Reset all bg color
-			var x = this.parentNode.getElementsByTagName('option');
-			for (var i=0; i<x.length; i++) {
-				x[i].style.backgroundColor = '';
-				if (x[i].is_facebook)
-					x[i].style.backgroundColor = 'LightGreen';
-			}
-			var x = this.el_select2.getElementsByTagName('option');
-			for (var i=0; i<x.length; i++) {
-				x[i].style.backgroundColor = '';
-				if (x[i].is_facebook)
-					x[i].style.backgroundColor = 'LightGreen';
-			}
-		}
+		//~ // add option sel2
+		//~ el_option = document.createElement('option');
+		//~ el_option.value = '';
+		//~ el_option.innerText = '';
+		//~ el_select.appendChild(el_option);
+		//~ el_option.el_select2 = el_select2;
+		//~ el_option.onmouseover = function(e) { // Reset all bg color
+			//~ var x = this.parentNode.getElementsByTagName('option');
+			//~ for (var i=0; i<x.length; i++) {
+				//~ x[i].style.backgroundColor = '';
+				//~ if (x[i].is_facebook)
+					//~ x[i].style.backgroundColor = 'LightGreen';
+			//~ }
+			//~ var x = this.el_select2.getElementsByTagName('option');
+			//~ for (var i=0; i<x.length; i++) {
+				//~ x[i].style.backgroundColor = '';
+				//~ if (x[i].is_facebook)
+					//~ x[i].style.backgroundColor = 'LightGreen';
+			//~ }
+		//~ }
 	}
 	for (var i in object_response.urls.complete_high_to_low) {
 		var rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
