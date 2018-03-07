@@ -26,10 +26,115 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
+	/**
+	 * TASKS
+	 * 
+	 */
 	
-	
-	
-							
+	// Kourosh Bakhtvar
+	// Collect property address & status from a webpage
+	// crexi.com
+	// utilize https://api.crexi.com/assets/65985
+	var s = '<p>Click the link below to review the property listing. Collect the address and listing status information below.</p>\n\n<p>Address Availability: If&nbsp;address unavailable, mark "Not Avaialble" and leave the address fields blank.</p>\n\n<p>Listing Status: "Property is no longer for sale" - choose this option when the link does not produce any information on the listing.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[1].innerText.trim(),
+				id: null,
+				q: [
+					document.getElementById('Field1')
+				]
+			}
+			o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			AMT___addUserDecision(
+				'KouroshBakhtvar,2018', function() {
+					return o.id;
+				}, ['Id(addressLine1)'] 
+			)
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://api.crexi.com/assets/'+o.id,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						//d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					// 
+					var sbm = true;
+					var r = JSON.parse(rs);
+					if (r.Locations && r.Locations.length) {
+						var x = r.Locations[0]; // Take first.
+						document.getElementById('addressLine1').value =
+							x.Address;
+						//~ document.getElementById('addressLine2').value =
+							//~ x.Address;
+						document.getElementById('city').value =
+							x.City;
+						document.getElementById('state').value =
+							x.State.Code;
+						document.getElementById('zip').value =
+							x.Zip;
+						// Has seven keys?
+						var size = Object.keys(x).length;
+						if (size != 7 || x.hasOwnProperty('AptNumber')) {
+							document.getElementById('addressLine2').style.border = '2px solid blue';
+							document.getElementById('addressLine2').value =
+								x.AptNumber;
+							sbm = false;
+						}
+						// Ste or Flr or Apt or Unit or # or Suite or Apartment or Floor
+						if (/ (ste|flr|apt|unit|#|suite|apartment|floor)\.? /i
+							.exec(x.Address)) {
+							sbm = false;
+						}
+						// "Address Availability"
+						// Refers to whether or not the address is valid
+						// and is shown on the page.
+						document.getElementsByName('Accessibility')[0].checked = true;
+					}
+					if (r.HideAddress == true) {
+						document.body.style.backgroundColor = 'red';
+						sbm = true;
+					}
+					if (r.Status == 'Active') {
+						document.getElementsByName('Listing Status')[0].checked = true;
+					} else {
+						// no sbm
+						document.body.style.backgroundColor = 'yellow';
+						sbm = false;
+					}
+					if (sbm) {
+						AMT___recordAndSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+	}
 	/**
 	 * Reverse addr search
 	 * 
