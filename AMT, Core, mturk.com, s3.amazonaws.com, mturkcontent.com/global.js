@@ -2514,7 +2514,8 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 		// Set element heights.
 		// options.elements
 		// options.offset
-		var new_height = (v.innerHeight*1 - options.offset - 14) + 'px';
+		// CHANGE FROM 14PX TO 40PX
+		var new_height = (v.innerHeight*1 - options.offset - 40) + 'px';
 		//~ console.log(options);
 		var els = options.elements;
 		for (var i in els) {
@@ -17895,7 +17896,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 				}
 				return score2-score1;
 			});
-			//~ console.log(new Date().getTime());
 		}
 	}
 	
@@ -17903,7 +17903,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// matches select
 	var el_select = document.createElement('select');
 	out_div.appendChild(el_select);
-	el_select.setAttribute('style','float:left;width:25%;height:600px;');//display:inline;
+	el_select.setAttribute('style','float:left;width:25%;height:100%;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
@@ -17923,7 +17923,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// urls on right select, for email-on-page
 	var el_select3 = document.createElement('select');
 	out_div.appendChild(el_select3);
-	el_select3.setAttribute('style','float:left;width:25%;height:600px;');//display:inline;
+	el_select3.setAttribute('style','float:left;width:25%;height:100%;');//display:inline;
 	el_select3.multiple = 'multiple';
 	// urls select
 	var el_select2 = document.createElement('select');
