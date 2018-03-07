@@ -62,7 +62,8 @@ function MT__RUN() {
 			var td = document.getElementsByTagName('td');
 			var o = {
 				addr: td[1].innerText.trim(),
-				name: null,
+				name: null, // to fill
+				state: null, // to fill
 				bold: null,
 				results_biz: [],
 				results_people: [],
@@ -85,10 +86,11 @@ function MT__RUN() {
 				o.first_number = x[0].trim();
 			}
 			// Try to find name
-			var x = / [A-Z]{2} \d{5} ([\d\D]+)$/.exec(o.addr);
+			var x = / ([A-Z]{2}) \d{5} ([\d\D]+)$/.exec(o.addr);
 			if (x) {
-				o.name = x[1];
+				o.name = x[2];
 				o.addr = o.addr.replace(o.name, '');
+				o.state = x[1].stateAbbrToFull();
 			} else {
 				var x = o.addr.split(' ');
 				// Search in reverse direction.
@@ -99,8 +101,8 @@ function MT__RUN() {
 						// is necessary for wildcards, rather than single!
 						//var y = / ([A-Z]{2}) ([\d\D]+)$/.exec(o.addr);
 						var y = new RegExp(x[i] + ' ([\\d\\D]+)$', '');
-						console.log(y);
 						o.name = y.exec(o.addr)[1];
+						o.state = x[i].stateAbbrToFull();
 						o.addr = o.addr.replace(
 							new RegExp(x[i] + ' ([\\d\\D]+)$', ''),
 							'');
@@ -131,14 +133,22 @@ function MT__RUN() {
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1b);
-			// dashboard container
+			// dashboard container 1
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
 				'position:absolute;top:30px;\
-				left:30%;width:69%;height:640px;overflow:auto;\
+				left:30%;width:35%;height:640px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1c);
+			// dashboard container 2
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style',
+				'position:absolute;top:30px;\
+				left:65%;width:35%;height:640px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1d);
 			// left controller
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style',
@@ -146,12 +156,12 @@ function MT__RUN() {
 				left:0%;width:30%;height:28px;'
 			);
 			document.body.appendChild(d2);
-			// right controller
+			// middle controller
 			d2.value = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case(); // remove "NULL"
 			var d2b = document.createElement('textarea');
 			d2b.setAttribute('style',
 				'position:absolute;top:0px;\
-				left:30%;width:69%;height:28px;'
+				left:30%;width:35%;height:28px;'
 			);
 			document.body.appendChild(d2b);
 			d2b.value = o.addr.replace(/ *NULL/gi, '').string_to_mixed_case().trim(); // remove "NULL"
@@ -162,11 +172,28 @@ function MT__RUN() {
 					return ', '+p2.stateAbbrToFull(); 
 				}
 			);
-			d2b.value = d2b.value.replace(/( suite | ste | rm | flr | fl | apt |#|# )([^ ]{1,})/gi, '').trim();
+			d2b.value = d2b.value.replace(
+					/( suite | ste | rm | flr | fl | apt |#|# )([^ ]{1,})/gi,
+					''
+				).trim();
 			if (o.suite) {
 				d2b.value += ', '+o.suite;
 			}
+			// right controller
+			var d2c = document.createElement('textarea');
+			d2c.setAttribute('style',
+				'position:absolute;top:0px;\
+				left:65%;width:35%;height:28px;'
+			);
+			if (o.name && o.state) {
+				d2c.value = o.name +', '+ o.state;
+			}
+			document.body.appendChild(d2c);
 			/*END ITEMS*/
+			//////////////
+			// debug
+			console.log(o); 
+			//////////////
 			AMT___addUserDecision(
 				'Jacquelyn Fiske,2018', function() {
 					return o.addr;
@@ -199,14 +226,18 @@ function MT__RUN() {
 			if (o.first_number) {
 				b.push(o.first_number);
 			}
+			// Dash 1
 			var opts = {
 				parent: d1c,
 				parent_controller_el: d2b,
 				bold_locn_array: b,
+				columns: {
+					fb: true,
+					google: true,
+				},
 				output_elements: {
 					name: o.q[0],
 					//~ category: null,
-					
 					//~ street2: o.q[1],
 					//~ city: o.q[2],
 					//~ state: o.q[3],
@@ -234,7 +265,46 @@ function MT__RUN() {
 			};
 			// Init create_dashboard_find_address
 			new AMT___items_factory().create_dashboard_find_address(opts);
-			
+			// Dash 2
+			var opts = {
+				parent: d1d,
+				parent_controller_el: d2c,
+				bold_locn_array: b,
+				columns: {
+					fb: true,
+					google: true,
+				},
+				output_elements: {
+					name: o.q[0],
+					//~ category: null,
+					//~ street2: o.q[1],
+					//~ city: o.q[2],
+					//~ state: o.q[3],
+					//~ zip: o.q[4],
+				},
+				onclick_callback: function(opts) { // (opts) // STATE
+					console.log(opts);
+					if (o.q[0].value.length >= 2) {
+						AMT___recordAndSubmit();
+					}
+				},
+				add_button: {
+					callback: function(e) {
+						// this.json_object
+						this.style.backgroundColor = 'lightgreen';
+						var x = this.json_object;
+						o.q[0].value = x.name + ', ' + x.category;
+						if (o.q[0].value.length >= 2 &&
+							o.q[0].value.indexOf('undefined') == -1) {
+							AMT___recordAndSubmit();
+						}
+					},
+					value: 'Name+Category',
+				},
+			};
+			// Init create_dashboard_find_address
+			new AMT___items_factory().create_dashboard_find_address(opts);
+			// Init
 			function init() {
 				//
 				var x = 'https://maps.googleapis.com/maps/api/place/textsearch/json?'+

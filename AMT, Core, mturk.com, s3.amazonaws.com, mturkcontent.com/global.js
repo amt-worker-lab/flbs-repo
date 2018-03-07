@@ -15200,10 +15200,17 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			// new Mar 2018
 			category: null,
 		},
-		first_fb_or_google_us: null // First FB or Google result is in US
+		first_fb_or_google_us: null, // First FB or Google result is in US
+		num_cols: 4, // default
 	}
 	opts.o = o;// Set opts.o
-	
+	//columns
+	if (opts.hasOwnProperty('columns')) {
+		// keys length
+		o.num_cols = Object.keys(opts.columns).length;
+	}
+	// dynamic width of cols
+	o.col_width = 99/o.num_cols;
 	/* BEGIN ITEMS */
 	if (!opts.hasOwnProperty('parent_controller_el')) {
 		var d2 = document.createElement('textarea');
@@ -15218,20 +15225,34 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	opts.parent.appendChild(dv_debug);
 	//
 	var d1 = document.createElement('div');
-	d1.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	d1.setAttribute('style','float:left;width:'+o.col_width+'%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
 	opts.parent.appendChild(d1);
 	var d1b = document.createElement('div');
-	d1b.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	d1b.setAttribute('style','float:left;width:'+o.col_width+'%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
 	opts.parent.appendChild(d1b);
 	var d1c = document.createElement('div');
-	d1c.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	d1c.setAttribute('style','float:left;width:'+o.col_width+'%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
 	opts.parent.appendChild(d1c);
 	var d1d = document.createElement('div');
-	d1d.setAttribute('style','float:left;width:24%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	d1d.setAttribute('style','float:left;width:'+o.col_width+'%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
 	opts.parent.appendChild(d1d);
 	var x = document.createElement('br');
 	x.setAttribute('style','clear:both;');
 	opts.parent.appendChild(x);
+	if (opts.hasOwnProperty('columns')) {
+		if (!opts.columns.hasOwnProperty('fb') || !opts.columns.fb) {
+			d1.style.display = 'none';
+		}
+		if (!opts.columns.hasOwnProperty('hoovers') || !opts.columns.hoovers) {
+			d1b.style.display = 'none';
+		}
+		if (!opts.columns.hasOwnProperty('bbb') || !opts.columns.bbb) {
+			d1c.style.display = 'none';
+		}
+		if (!opts.columns.hasOwnProperty('google') || !opts.columns.google) {
+			d1d.style.display = 'none';
+		}
+	}
 	/* END ITEMS */
 	
 	// ...
@@ -15246,10 +15267,18 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	// ...
 	d2.init = function() {
 		this.value = this.value.trim();
-		FB_addr();
-		hoovers_addr();
-		google_addr();
-		bbb_addr();
+		if (opts.columns.hasOwnProperty('fb') && opts.columns.fb) {
+			FB_addr();
+		}
+		if (opts.columns.hasOwnProperty('hoovers') && opts.columns.hoovers) {
+			hoovers_addr();
+		}
+		if (opts.columns.hasOwnProperty('bbb') && opts.columns.bbb) {
+			bbb_addr();
+		}
+		if (opts.columns.hasOwnProperty('google') && opts.columns.google) {
+			google_addr();
+		}
 	}
 	d2.onblur = d2.init;
 	
@@ -15279,10 +15308,11 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	
 	// function Fiber_Data_Co_find_company_addr__init
 	function addr__init() {
-		FB_addr();
-		hoovers_addr();
-		google_addr();
-		bbb_addr();
+		d2.init();
+		//~ FB_addr();
+		//~ hoovers_addr();
+		//~ google_addr();
+		//~ bbb_addr();
 		
 		//~ businessweek_addr(false); // initial
 	}
@@ -16530,6 +16560,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						b.value = opts.add_button.value;
 						b.json_object = r[i];
 						b.onclick = opts.add_button.callback;
+						div.appendChild(''.div()); // add br
 						div.appendChild(b);
 					}
 					// Append
