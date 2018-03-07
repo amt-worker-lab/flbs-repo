@@ -17629,13 +17629,25 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	out_div.appendChild(el_div);
 	
 	// ...
-	var input_send_success		= (seed_object.input_send_success)		? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
+	var input_send_success =
+		(seed_object.input_send_success) ?
+			seed_object.input_send_success :
+			document.getElementById('Q1Url'); // default Q1Url
 	
-	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : default__doSubmit;
+	var do_submit_callback =
+		(seed_object.do_submit_callback) ?
+			seed_object.do_submit_callback :
+			default__doSubmit;
 	
-	var input_onclick_callback	= (seed_object.input_onclick_callback)	? seed_object.input_onclick_callback : false;
+	var input_onclick_callback =
+		(seed_object.input_onclick_callback) ?
+			seed_object.input_onclick_callback :
+			false;
 	
-	var do_submit_next_tab			= (seed_object.do_submit_next_tab)			? seed_object.do_submit_next_tab : false;
+	var do_submit_next_tab =
+		(seed_object.do_submit_next_tab) ?
+			seed_object.do_submit_next_tab :
+			false;
 	
 	var do_submit_add_to_tabs_queue	= (seed_object.do_submit_add_to_tabs_queue)	? seed_object.do_submit_add_to_tabs_queue : false;
 	
@@ -17870,8 +17882,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 				}
 				return score2-score1;
 			});
-			console.log('finishing sort');
-			console.log(new Date().getTime());
+			//~ console.log(new Date().getTime());
 		}
 	}
 	
@@ -17879,7 +17890,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// matches select
 	var el_select = document.createElement('select');
 	out_div.appendChild(el_select);
-	el_select.setAttribute('style','float:left;width:60%;height:200px;');//display:inline;
+	el_select.setAttribute('style','float:left;width:20%;height:600px;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
@@ -17899,12 +17910,12 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// urls on right select, for email-on-page
 	var el_select3 = document.createElement('select');
 	out_div.appendChild(el_select3);
-	el_select3.setAttribute('style','float:left;width:39%;height:200px;');//display:inline;
+	el_select3.setAttribute('style','float:left;width:20%;height:600px;');//display:inline;
 	el_select3.multiple = 'multiple';
 	// urls select
 	var el_select2 = document.createElement('select');
 	out_div.appendChild(el_select2);
-	el_select2.setAttribute('style','width:60%;height:40px;');
+	el_select2.setAttribute('style','width:20%;height:40px;');
 	el_select2.multiple = 'multiple';
 	el_select2.onclick = function() {
 		if (this.value == '') return;
@@ -17966,8 +17977,9 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		// Set option1 to point to option2 .onclick
 		el_option.field_selector = el_option2;
 	}
-	for (var i = 0; i<60; i++) { // Append blank lines to #1!
-		// add option
+	// Append blank lines
+	for (var i = 0; i<60; i++) {
+		// add option sel3
 		el_option = document.createElement('option');
 		el_option.value = '';
 		el_option.innerText = '';
@@ -17987,11 +17999,29 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 					x[i].style.backgroundColor = 'LightGreen';
 			}
 		}
+		// add option sel2
+		el_option = document.createElement('option');
+		el_option.value = '';
+		el_option.innerText = '';
+		el_select.appendChild(el_option);
+		el_option.el_select2 = el_select2;
+		el_option.onmouseover = function(e) { // Reset all bg color
+			var x = this.parentNode.getElementsByTagName('option');
+			for (var i=0; i<x.length; i++) {
+				x[i].style.backgroundColor = '';
+				if (x[i].is_facebook)
+					x[i].style.backgroundColor = 'LightGreen';
+			}
+			var x = this.el_select2.getElementsByTagName('option');
+			for (var i=0; i<x.length; i++) {
+				x[i].style.backgroundColor = '';
+				if (x[i].is_facebook)
+					x[i].style.backgroundColor = 'LightGreen';
+			}
+		}
 	}
 	for (var i in object_response.urls.complete_high_to_low) {
-		
-		rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
-		
+		var rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
 		// add option
 		el_option = document.createElement('option');
 		el_option.value = rslt.url;
@@ -18015,13 +18045,13 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		el_option.setAttribute('style', 'background-color:'+bg+';');
 		el_select2.appendChild(el_option);
 	}
-	for (var i = 0; i<20; i++) {// append blank lines!
-		// add option
-		el_option = document.createElement('option');
-		el_option.value = '';
-		el_option.innerText = '';
-		el_select2.appendChild(el_option);
-	}
+	//~ for (var i = 0; i<20; i++) {// append blank lines!
+		//~ // add option
+		//~ el_option = document.createElement('option');
+		//~ el_option.value = '';
+		//~ el_option.innerText = '';
+		//~ el_select2.appendChild(el_option);
+	//~ }
 	
 	// auto-click first email
 	if (object_response.matches.length > 0) {
