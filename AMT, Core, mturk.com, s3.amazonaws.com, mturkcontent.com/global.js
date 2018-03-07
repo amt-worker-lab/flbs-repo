@@ -15265,18 +15265,30 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	match_o = match_o.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
 	
 	// ...
-	d2.init = function() {
-		this.value = this.value.trim();
-		if (opts.columns.hasOwnProperty('fb') && opts.columns.fb) {
+	d2.init = function(e) {
+		// Note that "this" is going to be different based on the caller.
+		// Where caller is either d2.init() or d2.onclick().
+		//this.value = this.value.trim();
+		d2.value = d2.value.trim();
+		if (opts.hasOwnProperty('columns')) {
+			// Columns are specified.
+			if (opts.columns.hasOwnProperty('fb') && opts.columns.fb) {
+				FB_addr();
+			}
+			if (opts.columns.hasOwnProperty('hoovers') && opts.columns.hoovers) {
+				hoovers_addr();
+			}
+			if (opts.columns.hasOwnProperty('bbb') && opts.columns.bbb) {
+				bbb_addr();
+			}
+			if (opts.columns.hasOwnProperty('google') && opts.columns.google) {
+				google_addr();
+			}
+		} else {
+			// Columns are not specified, so do all.
 			FB_addr();
-		}
-		if (opts.columns.hasOwnProperty('hoovers') && opts.columns.hoovers) {
 			hoovers_addr();
-		}
-		if (opts.columns.hasOwnProperty('bbb') && opts.columns.bbb) {
 			bbb_addr();
-		}
-		if (opts.columns.hasOwnProperty('google') && opts.columns.google) {
 			google_addr();
 		}
 	}
