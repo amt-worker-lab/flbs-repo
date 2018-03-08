@@ -31,6 +31,73 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// Bill Frischling
+	// Collect Square Footage Data From a Website
+	// 
+	// 
+	var s = '<div class="panel-body" id="instructionBody">\n<p>Please click the link below to go to that page. We are looking for the square footage of the apartment or condo listed on that page. Example screen shots are below. It is usually labeled as "<span font-size:="" sans="" source="" style="color: rgb(26, 31, 44); font-family: ">ft²". Please include the numbers only in the form.</span></p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[1].innerText.trim(),
+				id: null,
+				q: [
+					document.getElementById('companyName'),
+				]
+			}
+			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			AMT___addUserDecision(
+				'BillFrischling,2018', function() {
+					return o.url;
+				}, ['Id(companyName)'] 
+			)
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.url,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						//d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					console.log(rs);
+					var r = /([\d,]+) ft²[\r\n\t\s]+<hr\/>/i;
+					//~ var r = /<hr\/>[\r\n\t\s]+([\d,]+) ft²[\r\n\t\s]+<hr\/>/gi;
+					if (rs.match(r)) {
+						r = r.exec(rs)[1].replace(/,/g, '');
+						o.q[0].value = r;
+						if (r.length > 0) {
+							AMT___recordAndSubmit();
+						}
+					}
+				}
+			});
+		}
+		new run().f();
+	}	
 	// Kourosh Bakhtvar
 	// Collect property address & status from a webpage
 	// crexi.com
