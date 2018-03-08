@@ -201399,7 +201399,7 @@ qatar,80
 	//~ s = '<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>';
 	s = '<li>Open <a href="https://taxdelinquent.cookcountyclerk.com"> Cook County Delinquent Tax Search</a></li>\n	<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>'
 	if  (
-		ih.indexOf(s) != -1 && 0 == 1
+		ih.indexOf(s) != -1
 		//~ ih.indexOf('http://www.cookcountyclerk.com') != -1 
 		)
 	{
@@ -201414,14 +201414,31 @@ qatar,80
 			b = b.replace(/^PIN: /, '').trim();
 			var o = {
 				pin: b,
+				filename: null,
 			}
+			o.filename = new AMT___requests_factory().md5(o.pin);
+			// debug
+			var d2 = ''.div({style: 'position:absolute;top:0;left:40%;height:40px;width:59%;background-color:#eee;'});
+			// Debug iframe
+			var d1 = document.createElement('iframe');
+			document.body.appendChild(d1);
+			d1.style.position='absolute';
+			d1.style.top='40px';
+			d1.style.left='40%';
+			d1.style.width='60%';
+			d1.style.height='600px';
+			d1.style.overflow='auto';
+			d1.style.border='1px solid blue';
+			d1.style.borderBottom='2px solid blue';
+			d1.style.backgroundColor='#eee';
+			d1.style.fontSize='8px';
 			
 			// XHR
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: 'https://taxdelinquent.cookcountyclerk.com/',
 				data: '__RequestVerificationToken=&Pin='+encodeURIComponent(o.pin),
 				method: 'post',
-				filename: new AMT___requests_factory().md5(o.u), // unique filename
+				filename: o.filename, // unique filename
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
@@ -201437,9 +201454,156 @@ qatar,80
 						document.body.style.backgroundColor = 'orange';
 						return;
 					}
+					// set iframe
+					d1.src = 'http://192.168.1.2/mturk/.cached/'+o.filename;
+					// pin
+					if (rs.indexOf(o.pin) == -1) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					if (dom.getElementsByClassName('panel-title') != 2) {
+						d2.innerText = 'num panels';
+						return;
+					}
+					else if (document.body.innerHTML.match(/delinquent/gi).length != 8) {
+						d2.innerText = 'num delinquent';
+						return;
+					}
+					//~ else if (document.body.innerHTML.match(/delinquent taxes/gi).length != 8) {
+						//~ d2.innerText = 'num delinquent';
+						//~ return;
+					//~ }
+					var panel = dom.getElementsByClassName('panel-title')[1];
+					if (panel.innerText.trim() != 'Sold Taxes') {
+						d2.innerText = 'sold taxes title?';
+						return;
+					}
+					var table = panel.parentNode.parentNode.getElementsByTagName('table');
+					if (table.length != 1) {
+						d2.innerText = 'sold taxes wrong #tables';
+						return;
+					}
+					var tr = table[0].getElementsByTagName('tr');
+					for (var i=0;i<tr.length;i++) {
+						var tds = tr[i].getElementsByTagName('td');
+						if (!fill_in(tds)) { // EXIT ON FAILURE.
+							return;
+						}
+					}
 				}
 			});
+			function fill_in(tds) {
+				/*<tr>
+					<td class="row1" style="text-align:left;">2012 Annual Sale</td>
+					<td class="row1" style="text-align:center;"></td>
+					<td class="row1 popup" style="text-align:center;">Redeemed</td>
+					<td class="row1 statusdocumentnumber" style="text-align:center;">R452885 </td>
+					<td class="row1" style="text-align:center;">11/25/2015 </td>
+					<td class="row1" style="text-align:center;">
+						
+					</td>
+				</tr>*/
+				var x = /^(\d+)( Annual Sale| Scavenger Sale| Special Assessment|)$/.exec(tds[0].innerText);
+				if (!x) {
+					d2.innerText = 'Bad sold taxes type?' + tds[0].innerText;
+					return false;
+				} else {
+					// Loop through all TR elements.
+					var type_sale = x[2];
+					var year = x[1];
+					var x = document.getElementsByTagName('tr'),
+						j, y,
+						pause = false,
+						occupancy = tds[2].innerText;
+					for (j in x) {
+						if (j == 'length') break;
+						if (!x[j].innerHTML) continue;
+						if (x[j].innerHTML.indexOf('name="Sold ') != -1 && !x[j].isSelected) {
+							x[j].isSelected = true;
+							found = true;
+							// Status field
+							y = x[j].getElementsByTagName('select')[0]; // 0 TO 1
+							switch (type_sale) {
+								case ' Annual Sale':
+									y.selectedIndex = 1;
+									if (y.value != 'Annual Sale') {
+										pause = true;
+										console.log('pause1.1a');
+									}
+									break;
+								case ' Scavenger Sale':
+									y.selectedIndex = 2;
+									if (y.value != 'Scavenger Sale') {
+										pause = true;
+										console.log('pause1.1b');
+									}
+									break;
+								case ' Special Assessment':
+									y.selectedIndex = 3;
+									if (y.value != 'Special Assessment') {
+										pause = true;
+										console.log('pause1.1c');
+									}
+									break;
+								default:
+									pause = true;
+									console.log('pause1.1');
+									break;
+							}
+							
+							y = x[j].getElementsByTagName('select')[1]; // 0 TO 1
+							if (occupancy == 'Sold') {
+								y.selectedIndex = 1;
+								if (y.value != 'Sold') {
+									pause = true;
+									console.log('pause1.2');
+								}
+							} else if (occupancy == 'Redeemed') {
+								y.selectedIndex = 2;
+								if (y.value != 'Redeemed') {
+									pause = true;
+									console.log('pause1.3');
+								}
+							} else if (occupancy == 'Vacated') {
+								y.selectedIndex = 3;
+								if (y.value != 'Vacated') {
+									pause = true;
+									console.log('pause1.4');
+								}
+							} else if (occupancy == 'Deeded') {
+								y.selectedIndex = 4;
+								if (y.value != 'Deeded') {
+									pause = true;
+									console.log('pause1.5');
+								}
+							} else {
+								pause = true;
+								console.log('pause1.6');
+							}
+							
+							y = x[j].getElementsByTagName('input');
+							y[0].value = parseInt(year);
+							y[1].value = tds[3].innerText;
+							y[2].value = tds[4].innerText;
+							if (parseInt(year) < 1996 || parseInt(year) > 2020) {
+								pause = true;
+								console.log('pause1.7');
+								return false;
+							}
+							
+							// STOP HERE!!
+							return true;
+							////////////
+							// No break
+							// break;
+							////////////
+						}
+					}
+				}
+			}
 		}
+		new run().f();
 	}
 	// Jordan A Gross
 	// newline financial
