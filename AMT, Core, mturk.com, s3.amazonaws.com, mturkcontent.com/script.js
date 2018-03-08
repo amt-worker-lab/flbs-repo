@@ -691,7 +691,163 @@ function MT__RUN() {
 	 * simple utility window task
 	 * 
 	 * Jorge Mejia
+	 * Steve Johnston
+	 * 
+	 * 
+	 * 
 	 */
+	// Steve Johnston
+	// Find USA Headquarters of International Company
+	// 
+	var s = '<p>Then name provided is a global company with corporate headquarters outside the United States. Please find the corporate address of the company\'s United States office. Utilize internet research techniques to find the US corporate address. Ideas include 1) go to the website and find the "Contact Us" or "Offices" page or 2) do a Google search for "[COMPANY NAME] US headquarters" or similar search. Enter the address information below.</p>\n\n<p>If any part of the address cannot be found place "NONE" in the field. If no address can be found at all place "NONE" in all fields.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				domain: td[3].innerText.trim(),
+				url: null,
+				q: [
+					document.getElementsByName('Address Line 1')[0],
+					document.getElementsByName('Address Line 2')[0],
+					document.getElementsByName('City/Town')[0],
+					document.getElementsByName('State')[0],
+					document.getElementsByName('Postal Code')[0],
+				]
+			}
+			if (!/^http/i.exec(o.domain)) {
+				o.url = 'http://'+o.domain;
+			} else {
+				o.url = o.domain;
+			}
+			o.domain = o.domain.replace(/^www\./i, '');
+			// search for ceo, president
+			var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' +
+					encodeURIComponent(
+						'site:'+o.domain + ' ("contact" OR "headquarters" OR "locations")'
+					) + opts,
+				callback_function: sp,
+				host: MT___host
+			});
+			// SP
+			function sp(response_obj) {
+				//o.sd_start_urls
+				//o.sd_allowed_domains
+				var rs = response_obj;//console.log(rs);
+				if (!rs.length) {
+					// Try checking the front page for "ceo" or "president"
+					//
+					//
+					//
+					//~ console.log('no results');
+					//~ o.to_check.push(o.url);
+					//~ check();
+					//~ open_ut();
+					//~ return;
+				} else {
+					// Set to first result.
+					o.url = rs[0][0];
+				}
+				open_ut();
+				//~ // Make sure ceo/pres is on the page.
+				//~ // If so, the open util.
+				//~ var num = 0;
+				//~ for (var i in rs) {
+					//~ //o.to_check.push(rs[i][0]);
+				//~ }
+				//~ // Init
+				//~ check();
+			}
+			function open_ut() {
+				// utility window
+				var opts = {
+					task: 'AMT__all_pages_util',
+					//~ highlight_strings_in_page: {
+						//~ strings: ['president','pres','ceo','c.e.o.','chief executive officer',]
+					//~ },
+					highlight_range_to_parent: true
+				}
+				//~ AMT__setUtilityTabs([{
+					//~ url: o.url,
+					//~ options: opts
+				//~ }]);
+				AMT__setUtilityTabs(
+					[{
+						url: o.url,
+						options: opts
+					}],
+					null,
+					{backgroundColor:'pink'},
+					true,
+					function(response) {
+						console.log(response);
+						if  (
+							response.hasOwnProperty('data') &&
+							response.data.hasOwnProperty('text_range')
+							)
+						{
+							console.log(response.data.text_range);
+							console.log(response.data.text_range.split("\n"));
+							//~ console.log(response.data.text_range.split('\n'));
+							var r = response.data.text_range.trim();
+							// Try \n
+							var x = r.split('\n');
+							console.log(x);
+							console.log(x.length);
+							//~ console.log(r.split("\n"));
+							//~ console.log(r.split('\n'));
+							if (x.length != 1) {
+								var count = 0
+								for (var i in x) {
+									o.q[count] = x[i].trim();
+									count++;
+									if (count == 1) { // Skip #1 field (address2)
+										count = 2;
+									}
+								}
+							}
+							//~ o.q[0].value = r;
+							//~ if (o.q[0].value == '') {
+								//~ // auto-fill if there is a space.
+								//~ if (/^\w+ \w+[,\n]/.exec(r)) {
+									//~ var x = /(^\w+) (\w+)[,\n]([\d\D]+)/.exec(r);
+									//~ o.q[0].value = x[1];
+									//~ o.q[1].value = x[2];
+									//~ o.q[2].value = x[3].trim().replace(/[,\.]$/,'');
+								//~ }
+								//~ else if (r.indexOf(' ') != -1) {
+									//~ r = r.split(' ');
+									//~ o.q[0].value = r[0].replace(/,$/,'');
+									//~ o.q[1].value = r[r.length-1].replace(/,$/,'');
+								//~ } else {
+									//~ o.q[0].value = r.replace(/,$/,'');
+								//~ }
+							//~ } else if (o.q[1].value == '') {
+								//~ o.q[1].value = response.data.text_range.trim().replace(/,$/,'');
+							//~ } else { // else always overwrite
+								//~ o.q[2].value = response.data.text_range.trim().replace(/,$/,'');
+							//~ }
+							//~ o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
+						}
+					}
+				);
+			}
+			// sbm form
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();
+	}
 	// Jorge Mejia
 	// Find the Abstract for a Research Papert
 	// 
@@ -760,11 +916,6 @@ function MT__RUN() {
 					}
 				}
 			)
-			//~ AMT__setUtilityTabs([
-				//~ {
-					//~ url: a[1].href
-				//~ }
-			//~ ]);
 			// sbm form
 			document.getElementById('mturk_form').onsubmit = function(e) {
 				e.stopPropagation();
@@ -12316,7 +12467,7 @@ Laurens Hammond, Chicago, Ill.**/
 				check();
 			}
 			function check() {
-				if (!o.to_check.length) {console.log('no more');
+				if (!o.to_check.length) {
 					// none found.
 					// r&a
 					new AMT___core_factory().
