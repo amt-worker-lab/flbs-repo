@@ -91322,7 +91322,7 @@ Laurens Hammond, Chicago, Ill.**/
 		var run = function(){}
 		run.prototype.f = function() {
 			console.log('');
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;margin-bottom:0;margin-top:0;}');
 			GM_addStyle('.highlight-box {position:absolute;top:2000px;left:0;}');
 			GM_addStyle('#submitButton {width:100%;height:80px;margin-top:10px;}');
 			GM_addStyle('input {width:96%;}');
@@ -91343,6 +91343,14 @@ Laurens Hammond, Chicago, Ill.**/
 				],
 			};
 			console.log(o);
+			// hide empty <P>
+			var p = document.getElementsByTagName('p');
+			for (var i=0; i<p.length; i++) {
+				if (p[i].innerHTML == '&nbsp;') {
+					p[i].parentNode.removeChild(p[i]);
+				}
+			}
+			
 			var counter = 0;
 			for (var i=1; i<=9; i+=2) {
 				MT___google_api_geocode(
@@ -91355,90 +91363,47 @@ Laurens Hammond, Chicago, Ill.**/
 			function zipcode(rs, initial_object) {
 				console.log(rs);
 				console.log(initial_object);
+				var io = initial_object.output;
+				//
+				if (!rs.hasOwnProperty('results') ||
+					rs.results.length < 1
+					) { // ReturnAndAccept
+					io.style.border = '4px solid blue';
+					//~ io.scrollIntoView();
+					return;
+				}
+				var r = rs.results[0];
+				if (!r.hasOwnProperty('address_components')) {
+					io.style.border = '2px solid red';
+					//~ io.scrollIntoView();
+					return;
+				}
+				for (var i in r.address_components) {
+					var x = r.address_components[i];
+					if (x.types && x.types[0] == 'postal_code') {
+						var z = /^(\d{5})/.exec(x.long_name);
+						if (z) {
+							io.value = z[1];
+							io.style.border = '1px solid #a2a2a2';
+							check_sbm();
+							break;
+						}
+					}
+				}
 			}
-			
-			
-			
-			//~ /*BEGIN ITEMS*/
-			//~ var d = document.createElement('input');
-			//~ d.setAttribute('id','d1');
-			//~ d.setAttribute('style','position:absolute;top:0;left:0;');
-			//~ document.body.appendChild(d);
-			//~ var d1 = document.getElementById('d1');
-			//~ d1.value = o.city + ',' + o.state + ',' + o.state_abbr;
-			//~ d1.onblur = function() {
-				//~ MT___google_api_geocode(this.value, zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
-			//~ }
-			//~ /*END ITEMS*/
-			//~ // Turn off button
-			//~ document.getElementById('submitButton').onclick = function(e) {
-				//~ e.preventDefault();
-				//~ e.stopPropagation();
-				//~ return false;
-			//~ }
-			//~ // Scriptvar
-			//~ new AMT___core_factory().createScriptVar('S.Hass Use Proxy', '1');
-			//~ o.use_proxy = (AMT__Global_Vars.scriptVars['S.Hass Use Proxy'] == '1') ? true : false;
-			//~ var firstRun = true;
-			//~ var num_tries = 0;
-			//~ MT___google_api_geocode(d1.value, zipcode, true, o.use_proxy); //(location, callback_function, return_complete_response, use_a_proxy)
-			//~ function zipcode_increment(rs) {
-				//~ if (num_tries == 0) {
-					//~ num_tries++;
-					//~ if (rs && rs.results[0] && rs.results[0].geometry.location.lat) { // Has Lat Lng!
-						//~ firstRun = false;
-						//~ MT___google_api_reverseGeocode( // (latlng, callback_function)
-							//~ rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
-							//~ zipcode,
-							//~ o.use_proxy
-						//~ );
-						//~ return;
-					//~ }
-				//~ }
-				//~ if (num_tries == 1) // Anything else?
-				//~ {
-					
-				//~ }
-				//~ else if (num_tries == 2)
-				//~ {
-				
-				//~ }
-			//~ }
-			//~ function zipcode(rs) {
-				//~ if (!firstRun) { // second run
-					//~ document.body.style.backgroundColor = '#883388';
-				//~ }
-				//~ if (!rs || !rs.hasOwnProperty('results') || !rs.results.length) {
-					//~ zipcode_increment();
-					//~ return;
-				//~ }
-				//~ // TRY ALL RESULTS
-				//~ for (var j in rs.results) {
-					//~ var rslt = rs.results[j];
-					//~ if (rslt.partial_match) {
-						//~ document.body.style.backgroundColor = '#a3dda3';
-					//~ }
-					//~ for (var i in rslt.address_components) {
-						//~ x = rslt.address_components[i];
-						//~ if  (
-								//~ (
-									//~ x.types[0] == 'postal_code' ||
-									//~ x.types[1] == 'postal_code'
-								//~ ) &&
-							//~ x.short_name.length >= 4 // &&
-							
-							//~ )
-						//~ {
-							
-							//~ o.q[0].value = x.short_name;
-							//~ doSubmit();
-							//~ return;
-						//~ }
-					//~ }
-				//~ }
-				//~ // Still here?
-				//~ zipcode_increment(rs);
-			//~ }
+			function check_sbm() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value.length != 5 ||
+						!/^\d{5}$/.exec(o.q[i].value)
+						) {
+						//~ o.q[i].style.border = '4px dashed red';
+						return false;
+					}
+				}
+				// Here?
+				doSubmit();
+			}
 		}
 		new run().f();
 		return;

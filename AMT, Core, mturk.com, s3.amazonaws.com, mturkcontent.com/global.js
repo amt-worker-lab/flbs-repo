@@ -23520,7 +23520,8 @@ function MT___google_api_geocode_parse(rs, callback_function, return_complete_re
 		!rs.results[0].geometry.location.lng
 		)
 	{
-		callback_function(false);
+		// March 8, Add @argument:input_object to callback_function.
+		callback_function(false, input_object);
 		return;
 	}
 	
@@ -23647,7 +23648,8 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 			//'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )
 			var ci_array = [
 				'"error_message" : "You have exceeded your daily request quota for this API."', // OLD // As of May 15, 2015.
-				' "error_message" : "You have exceeded your daily request quota for this API.', // NEW as of May 15, 2015.
+				'"error_message" : "You have exceeded your daily request quota for this API.', // NEW as of May 15, 2015.
+				'"error_message" : "You have exceeded your rate-limit for this API."', // NEW as of March, 2018.
 				'{ "results" : [], "status" : "UNKNOWN_ERROR" }'
 			];
 			if (use_a_proxy) {
