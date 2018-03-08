@@ -91347,7 +91347,8 @@ Laurens Hammond, Chicago, Ill.**/
 			var p = document.getElementsByTagName('p');
 			for (var i=0; i<p.length; i++) {
 				if (p[i].innerHTML == '&nbsp;') {
-					p[i].parentNode.removeChild(p[i]);
+					p[i].style.display = 'none';
+					//~ p[i].parentNode.removeChild(p[i]);
 				}
 			}
 			
@@ -91372,24 +91373,28 @@ Laurens Hammond, Chicago, Ill.**/
 					//~ io.scrollIntoView();
 					return;
 				}
-				var r = rs.results[0];
-				if (!r.hasOwnProperty('address_components')) {
-					io.style.border = '2px solid red';
-					//~ io.scrollIntoView();
-					return;
-				}
-				for (var i in r.address_components) {
-					var x = r.address_components[i];
-					if (x.types && x.types[0] == 'postal_code') {
-						var z = /^(\d{5})/.exec(x.long_name);
-						if (z) {
-							io.value = z[1];
-							io.style.border = '1px solid #a2a2a2';
-							check_sbm();
-							break;
+				for (var j in rs.results) {
+					var r = rs.results[j];
+					if (!r.hasOwnProperty('address_components')) {
+						io.style.border = '2px solid red';
+						continue;
+						//~ return;
+					}
+					for (var i in r.address_components) {
+						var x = r.address_components[i];
+						if (x.types && x.types[0] == 'postal_code') {
+							var z = /^(\d{5})/.exec(x.long_name);
+							if (z) {
+								io.value = z[1];
+								//~ io.style.border = '1px solid #a2a2a2'; // reset border
+								check_sbm();
+								return; // quit
+							}
 						}
 					}
 				}
+				// Still here?
+				io.style.border = '4px dashed blue';
 			}
 			function check_sbm() {
 				for (var i in o.q) {
