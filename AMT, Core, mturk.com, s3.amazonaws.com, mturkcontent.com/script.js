@@ -53,7 +53,11 @@ function MT__RUN() {
 				url: a[1].innerText.trim(),
 				id: null,
 				q: [
-					document.getElementById('Field1')
+					document.getElementById('addressLine1'),
+					document.getElementById('addressLine2'),
+					document.getElementById('city'),
+					document.getElementById('state'),
+					document.getElementById('zip'),
 				]
 			}
 			o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
@@ -86,6 +90,7 @@ function MT__RUN() {
 					// 
 					var sbm = true;
 					var r = JSON.parse(rs);
+					console.log(r);
 					if (r.Locations && r.Locations.length) {
 						var x = r.Locations[0]; // Take first.
 						document.getElementById('addressLine1').value =
@@ -100,7 +105,7 @@ function MT__RUN() {
 							x.Zip;
 						// Has seven keys?
 						var size = Object.keys(x).length;
-						if (size != 7 || x.hasOwnProperty('AptNumber')) {
+						if (x.hasOwnProperty('AptNumber')) {
 							document.getElementById('addressLine2').style.border = '2px solid blue';
 							document.getElementById('addressLine2').value =
 								x.AptNumber;
@@ -115,6 +120,15 @@ function MT__RUN() {
 						// Refers to whether or not the address is valid
 						// and is shown on the page.
 						document.getElementsByName('Accessibility')[0].checked = true;
+						// undefned
+						for (var i in o.q) {
+							o.q[i].value = o.q[i].value.trim();
+							if (o.q[i].value == 'undefined') {
+								sbm = false;
+							}
+						}
+					} else {
+						sbm = false;
 					}
 					if (r.HideAddress == true) {
 						document.body.style.backgroundColor = 'red';
@@ -122,6 +136,10 @@ function MT__RUN() {
 					}
 					if (r.Status == 'Active') {
 						document.getElementsByName('Listing Status')[0].checked = true;
+					} else if (r.Status == 'Under Contract') {
+						document.getElementsByName('Listing Status')[1].checked = true;
+					} else if (r.Status == 'Closed') {
+						document.getElementsByName('Listing Status')[2].checked = true;
 					} else {
 						// no sbm
 						document.body.style.backgroundColor = 'yellow';
