@@ -201419,6 +201419,7 @@ qatar,80
 			o.filename = new AMT___requests_factory().md5(o.pin);
 			// debug
 			var d2 = ''.div({style: 'position:absolute;top:0;left:40%;height:40px;width:59%;background-color:#eee;'});
+			document.body.appendChild(d2);
 			// Debug iframe
 			var d1 = document.createElement('iframe');
 			document.body.appendChild(d1);
@@ -201426,7 +201427,7 @@ qatar,80
 			d1.style.top='40px';
 			d1.style.left='40%';
 			d1.style.width='60%';
-			d1.style.height='600px';
+			d1.style.height='700px';
 			d1.style.overflow='auto';
 			d1.style.border='1px solid blue';
 			d1.style.borderBottom='2px solid blue';
@@ -201462,38 +201463,160 @@ qatar,80
 						return;
 					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					if (dom.getElementsByClassName('panel-title') != 2) {
-						d2.innerText = 'num panels';
+					if (dom.getElementsByClassName('panel-title').length != 2 &&
+						dom.getElementsByClassName('panel-title').length != 3) {
+						d2.innerText = 'num panels length:' + dom.getElementsByClassName('panel-title').length;
 						return;
 					}
 					else if (document.body.innerHTML.match(/delinquent/gi).length != 8) {
-						d2.innerText = 'num delinquent';
-						return;
+						//~ d2.innerText = 'num delinquent length:' + document.body.innerHTML.match(/delinquent/gi).length;
+						//~ return;
 					}
 					//~ else if (document.body.innerHTML.match(/delinquent taxes/gi).length != 8) {
 						//~ d2.innerText = 'num delinquent';
 						//~ return;
 					//~ }
+					//////////////
+					// sold table
+					//////////////
 					var panel = dom.getElementsByClassName('panel-title')[1];
 					if (panel.innerText.trim() != 'Sold Taxes') {
 						d2.innerText = 'sold taxes title?';
 						return;
 					}
+					console.log(panel);
 					var table = panel.parentNode.parentNode.getElementsByTagName('table');
 					if (table.length != 1) {
 						d2.innerText = 'sold taxes wrong #tables';
 						return;
 					}
+					console.log(table);
 					var tr = table[0].getElementsByTagName('tr');
 					for (var i=0;i<tr.length;i++) {
+						console.log(tr[i]);
+						if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
 						var tds = tr[i].getElementsByTagName('td');
-						if (!fill_in(tds)) { // EXIT ON FAILURE.
+						//~ console.log(tds.length); //0
+						if (!fill_in_sold(tds)) { // EXIT ON FAILURE.
+							d2.innerText = 'fill in returns false';
+							return;
+						}
+					}
+					//////////////////
+					// delinq. table
+					//////////////////
+					var panel = dom.getElementsByClassName('panel-title')[1];
+					if (panel.innerText.trim() != 'Delinquent Taxes') {
+						d2.innerText = 'del taxes title?';
+						return;
+					}
+					console.log(panel);
+					var table = panel.parentNode.parentNode.getElementsByTagName('table');
+					if (table.length != 1) {
+						d2.innerText = 'del taxes wrong #tables';
+						return;
+					}
+					console.log(table);
+					var tr = table[0].getElementsByTagName('tr');
+					for (var i=0;i<tr.length;i++) {
+						console.log(tr[i]);
+						if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
+						var tds = tr[i].getElementsByTagName('td');
+						//~ console.log(tds.length); //0
+						if (!fill_in_delq(tds)) { // EXIT ON FAILURE.
+							d2.innerText = 'fill in returns false';
 							return;
 						}
 					}
 				}
 			});
-			function fill_in(tds) {
+			function fill_in_delq(tds) {
+				/*<thead>
+					<tr>
+						<th>Tax Year</th>
+						<th>Status <a href="#" onclick="return OpenHelp(event,'taxStatusHelp');">?</a></th>
+						<th>Forfeit<br />Date</th>
+						<th>1st  Installment<br />Tax Balance</th>
+						<th>2nd  Installment<br />Tax Balance</th>
+						<th>Type</th>
+						<th>Warrant<br />Year <a href="#" onclick="return OpenHelp(event,'warrantYearHelp');">?</a></th>
+					</tr>
+				</thead>
+				<tbody>
+						<tr>
+							<td class="row1" style="text-align:center;">2015</td>
+							<td class="row1 popup" style="text-align:center;">
+								Open
+							</td>
+							<td class="row1" style="text-align:center;"></td>
+							<td class="row1" style="text-align:center;">$984.56
+							<td class="row1" style="text-align:center;">$614.21
+							<td class="row1 backtax" style="text-align:center;">
+							<td class="row1 warrantyear" style="text-align:center;">
+						</tr>
+						...
+						...
+				</tbody>
+				<tfoot>
+					<tr style="border-top:2px solid #000;font-weight:bold; padding:5px;">
+						<td class="row2 footer" colspan="2">Total Tax Balance Due*</td>
+						<td class="row2 footer"></td>
+						<td class="row2 footer">$1,949.66</td>
+						<td class="row2 footer">$1,439.21</td>
+						<td class="row2 footer"></td>
+						<td class="row2 footer"></td>
+					</tr>
+				</tfoot>*/
+				var year = /^(\d+)$/.exec(tds[0].innerText);
+				if (year) {
+					year = year[1];
+					// Non-static method.
+					x = document.getElementsByTagName('tr');
+					// Find an open row and input the data into in.
+					for (j in x) {
+						if (j == 'length') break;
+						if (!x[j].innerHTML) continue;
+						
+						if (x[j].innerHTML.indexOf('name="Delinquent ') != -1 &&
+							x[j].innerHTML.indexOf('Forfeited') != -1 &&
+							!x[j].isSelected) {
+							x[j].isSelected = true; // Set isSelected
+							found = true; // Set found
+							// Select field
+							y = x[j].getElementsByTagName('select')[0];
+							if (rs[i][2] == 'Open') {
+								y.selectedIndex = 1;
+								if (y.value != 'Open') {
+									pause = true
+									console.log('pause2.1')
+								}
+							} else if (rs[i][2] == 'Forfeited') {
+								y.selectedIndex = 2;
+								if (y.value != 'Forfeited') {
+									pause = true
+									console.log('pause2.2')
+								}
+							} else {
+								pause = true;
+								console.log('pause2.3')
+							}
+								
+							y = x[j].getElementsByTagName('input');
+							y[0].value = year;							// Tax year
+							y[1].value = tds[1].innerText.trim();						// Forfeit data
+							y[2].value = tds[3].innerText.trim().replace(/[\$,]/g,'');	// 1st installment
+							y[3].value = tds[4].innerText.trim().replace(/[\$,]/g,'');	// 2nd installment
+							
+							// success!
+							return true;
+							//break;
+						}
+					}
+					// RETURN FALSE 
+					d2.innerText = 'leftovers from delq?';
+					return false;
+			}
+			function fill_in_sold(tds) {
 				/*<tr>
 					<td class="row1" style="text-align:left;">2012 Annual Sale</td>
 					<td class="row1" style="text-align:center;"></td>
@@ -201516,6 +201639,7 @@ qatar,80
 						j, y,
 						pause = false,
 						occupancy = tds[2].innerText;
+					console.log(x);
 					for (j in x) {
 						if (j == 'length') break;
 						if (!x[j].innerHTML) continue;
@@ -201600,6 +201724,9 @@ qatar,80
 							////////////
 						}
 					}
+					// RETURN FALSE 
+					d2.innerText = 'leftovers from sold?';
+					return false;
 				}
 			}
 		}
