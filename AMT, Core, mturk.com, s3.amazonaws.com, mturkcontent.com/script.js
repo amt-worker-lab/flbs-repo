@@ -201392,15 +201392,64 @@ qatar,80
 		}
 	}
 	
+	// Jordan A Gross
+	// newline financial
+	// cookcountyclerk.com (LATEST, MAR 2018)
 	//
+	//~ s = '<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>';
+	s = '<li>Open <a href="https://taxdelinquent.cookcountyclerk.com"> Cook County Delinquent Tax Search</a></li>\n	<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>'
+	if  (
+		ih.indexOf(s) != -1 && 0 == 1
+		//~ ih.indexOf('http://www.cookcountyclerk.com') != -1 
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('body {width:40%;margin-top:20px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:800px;width:40%;left:0;}');
+			GM_addStyle('#submitButton {position:absolute;top:0px;left:0;width:60px;height:60px;}');
+			
+			var b = document.getElementsByTagName('b')[0].innerText;
+			b = b.replace(/^PIN: /, '').trim();
+			var o = {
+				pin: b,
+			}
+			
+			// XHR
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://taxdelinquent.cookcountyclerk.com/',
+				data: '__RequestVerificationToken=&Pin='+encodeURIComponent(o.pin),
+				method: 'post',
+				filename: new AMT___requests_factory().md5(o.u), // unique filename
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'red';
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'orange';
+						return;
+					}
+				}
+			});
+		}
+	}
 	// Jordan A Gross
 	// newline financial
 	// cookcountyclerk.com
 	//
-	s = '<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>';
+	//~ s = '<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>';
+	s = '<li>Open <a href="https://taxdelinquent.cookcountyclerk.com"> Cook County Delinquent Tax Search</a></li>\n	<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>'
 	if  (
-		ih.indexOf(s) != -1 &&
-		ih.indexOf('http://www.cookcountyclerk.com') != -1 
+		ih.indexOf(s) != -1 && 0 == 1
+		//~ ih.indexOf('http://www.cookcountyclerk.com') != -1 
 		)
 	{
 		var run = function() {};
