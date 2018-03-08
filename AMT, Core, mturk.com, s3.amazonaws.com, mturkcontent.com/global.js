@@ -23669,12 +23669,10 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 							url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
 							onload: function(response) {
 								var rs = response.responseText;
-								
 								if (rs.trim() != '') {
 									clearInterval(xint);
 								} else
 									return;
-									
 								MT___google_api_geocode_parse(rs, callback_function, return_complete_response, input_object);
 							}
 						});
