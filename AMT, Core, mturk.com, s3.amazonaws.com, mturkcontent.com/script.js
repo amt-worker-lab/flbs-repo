@@ -724,7 +724,13 @@ function MT__RUN() {
 				o.url = o.domain;
 			}
 			o.domain = o.domain.replace(/^www\./i, '');
-			// search for ceo, president
+			// clean
+			for (var i in o.q) {
+				o.q[i].onblur = function() {
+					this.value = this.value.replace(/[,\r\n\t\s]+$/g, '');
+				}
+			}
+			// search for ...
 			var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				startPage: true,
@@ -796,19 +802,42 @@ function MT__RUN() {
 							console.log(response.data.text_range.split("\n"));
 							//~ console.log(response.data.text_range.split('\n'));
 							var r = response.data.text_range.trim();
+							// Auto state+zip
+							var y = /,? ?([A-Z]{2}),? ([\d\-]+)$/.exec(r);
+							if (y) {
+								r = r.replace(y[0], '').trim();
+								o.q[3].value = y[1];
+								o.q[4].value = y[2];
+							}
+							// Auto zip
+							var y = /([\d\-]+)$/.exec(r);
+							if (y) {
+								r = r.replace(y[0], '').trim();
+								o.q[4].value = y[1];
+							}
+							// Auto suite / floor / unit / apt.
+							var y = /[\n ](suite |ste |rm |flr |fl |apt |#|# )([^ ]{1,})/i.exec(r);
+							if (y) {
+								o.q[1].value = y[1]+y[2];
+								r = r.replace(y[0], '');
+							}
 							// Try \n
 							var x = r.split('\n');
-							console.log(x);
-							console.log(x.length);
-							//~ console.log(r.split("\n"));
-							//~ console.log(r.split('\n'));
-							if (x.length != 1) {
+							if (x.length > 1) {
 								var count = 0
 								for (var i in x) {
-									o.q[count] = x[i].trim();
+									if (x[i].trim() == '') continue; // Skip any blanks.
+									o.q[count].value = x[i].trim();
 									count++;
 									if (count == 1) { // Skip #1 field (address2)
 										count = 2;
+									}
+								}
+							} else {
+								for (var i in o.q) {
+									if (o.q[i].value == '') {
+										o.q[i].value = r;
+										break;
 									}
 								}
 							}
