@@ -31,6 +31,70 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// Olivier Berger
+	// NOTE: kg Does not include address data. HRM.
+	// https://kgsearch.googleapis.com/v1/entities:search?query=taylor+swift&key=API_KEY&limit=1&indent=True
+	// 
+	var s = '<p>Hi Everyone, we\'re building a centralized&nbsp;repository&nbsp;of&nbsp;art galleries and museums around the world to help artists automate their resumes. We\'re based out of Toronto, Canada. Thank you for your contribution.</p>\n\n<p>Search "Gallery name and location" in Google.com&nbsp;</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				//~ id: null,
+				q: [
+					document.getElementById('galleryname'),
+					document.getElementById('galleryaddress'),
+				]
+			}
+			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			AMT___addUserDecision(
+				'OlivierBerger,2018', function() {
+					return o.comp;
+				}, ['Id(galleryname)', 'Id(galleryaddress)'] 
+			)
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://kgsearch.googleapis.com/v1/entities:search?query='+
+					encodeURIComponent(o.comp)+
+					'&key=_GOOGLE_API_KEY_REDACTED_&limit=1&indent=True',
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						//d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					var r = JSON.parse(rs);
+					//~ AMT___recordAndSubmit();
+					console.log(r);
+					
+				}
+			});
+		}
+		new run().f();
+	}
 	// Bill Frischling
 	// Collect Square Footage Data From a Website
 	// Note: Very unreliable site. Many times no sqft.
@@ -1118,11 +1182,84 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	/**
+	 * garrett grohman 2x 
+	 * 		#1: ...
+	 * 		#2: a2zinc
+	 */
 	// garrett grohman
 	// Given Exhibitor Page, Provide Email and Website
-	// 
+	// NOTE: NOT a2zinc VERSION
 	var s = '<li>The email and website will be located on the bottom right of the exhibitor page under "Get in Touch Online"</li>\n	<li>Email can be found by right clickcing the button that says&nbsp;"Send an Email" and Website by right clicking the&nbsp;"Visit Website" button.&nbsp;</li>\n	<li>A select few companies may not have an email or website. Please fill the blank with N/A if that is the case</li>\n	<li>Have an awesome day and thanks for the help!</li>';
-	if (ih.indexOf(s) != -1)
+	var s = '<li>The&nbsp;website will be located on the bottom name of the company&nbsp;</li>\n	<li>A select few companies may not have a website. Please fill the blank with N/A if that is the case</li>\n	<li>Have an awesome day and thanks for the help!</li>';
+	if (ih.indexOf(s) != -1 && ih.indexOf('a2zinc') != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[3].innerText.trim(),
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			console.log(o);
+			// sbm form
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+			AMT___addUserDecision(
+				'Jacquelyn Fiske,2018', function() {
+					return o.u;
+				}, ['Id(web_url)']
+			)
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = '1px solid blue';
+						d1.appendChild('!200'.div());
+						return;
+					}
+					// social-exhibitors
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var u = dom.getElementById('BoothContactUrl');
+					if (u) {
+						u = u.innerText;
+						o.q[0].value = u;
+						if (/^https?:\/\/[\d\D]{8,}/i.exec(u)) {
+							// at least 8
+							//~ doSubmit();
+							AMT___recordAndSubmit();
+						}
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// garrett grohman
+	// Given Exhibitor Page, Provide Email and Website
+	// NOTE: NOT a2zinc VERSION
+	var s = '<li>The email and website will be located on the bottom right of the exhibitor page under "Get in Touch Online"</li>\n	<li>Email can be found by right clickcing the button that says&nbsp;"Send an Email" and Website by right clicking the&nbsp;"Visit Website" button.&nbsp;</li>\n	<li>A select few companies may not have an email or website. Please fill the blank with N/A if that is the case</li>\n	<li>Have an awesome day and thanks for the help!</li>';
+	if (ih.indexOf(s) != -1 && ih.indexOf('a2zinc') == -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
