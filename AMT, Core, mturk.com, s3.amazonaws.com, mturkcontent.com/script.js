@@ -33,7 +33,7 @@ function MT__RUN() {
 	
 	// Bill Frischling
 	// Collect Square Footage Data From a Website
-	// 
+	// Note: Very unreliable site. Many times no sqft.
 	// 
 	var s = '<div class="panel-body" id="instructionBody">\n<p>Please click the link below to go to that page. We are looking for the square footage of the apartment or condo listed on that page. Example screen shots are below. It is usually labeled as "<span font-size:="" sans="" source="" style="color: rgb(26, 31, 44); font-family: ">ft²". Please include the numbers only in the form.</span></p>';
 	if (ih.indexOf(s) != -1)
@@ -83,7 +83,7 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'blue';
 						return;
 					}
-					console.log(rs);
+					//console.log(rs);
 					var r = /([\d,]+) ft²[\r\n\t\s]+<hr\/>/i;
 					//~ var r = /<hr\/>[\r\n\t\s]+([\d,]+) ft²[\r\n\t\s]+<hr\/>/gi;
 					if (rs.match(r)) {
