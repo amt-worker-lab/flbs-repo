@@ -201443,7 +201443,7 @@ qatar,80
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						document.body.style.backgroundColor = 'red';
+						d2_err('status!=200 [1]');
 						return false;
 					}
 					//
@@ -201452,20 +201452,20 @@ qatar,80
 				success_callback: function(options) {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						document.body.style.backgroundColor = 'orange';
+						d2_err('status!=200 [2]');
 						return;
 					}
 					// set iframe
 					d1.src = 'http://192.168.1.2/mturk/.cached/'+o.filename;
 					// pin
 					if (rs.indexOf(o.pin) == -1) {
-						document.body.style.backgroundColor = 'blue';
+						d2_err('pin number is missing from scraped document!');
 						return;
 					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					if (dom.getElementsByClassName('panel-title').length != 2 &&
 						dom.getElementsByClassName('panel-title').length != 3) {
-						d2.innerText = 'num panels length:' + dom.getElementsByClassName('panel-title').length;
+						d2_err('num panels length:' + dom.getElementsByClassName('panel-title').length);
 						return;
 					}
 					else if (document.body.innerHTML.match(/delinquent/gi).length != 8) {
@@ -201481,53 +201481,56 @@ qatar,80
 					//////////////
 					var panel = dom.getElementsByClassName('panel-title')[1];
 					if (panel.innerText.trim() != 'Sold Taxes') {
-						d2.innerText = 'sold taxes title?';
+						d2_err('sold taxes title?');
 						return;
 					}
-					console.log(panel);
 					var table = panel.parentNode.parentNode.getElementsByTagName('table');
 					if (table.length != 1) {
-						d2.innerText = 'sold taxes wrong #tables';
+						d2_err('sold taxes wrong #tables');
 						return;
 					}
-					console.log(table);
 					var tr = table[0].getElementsByTagName('tr');
 					for (var i=0;i<tr.length;i++) {
 						console.log(tr[i]);
 						if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
 						var tds = tr[i].getElementsByTagName('td');
-						//~ console.log(tds.length); //0
 						if (!fill_in_sold(tds)) { // EXIT ON FAILURE.
-							d2.innerText = 'fill in returns false';
+							d2_err('fill in returns false');
 							return;
 						}
 					}
 					//////////////////
 					// delinq. table
 					//////////////////
-					var panel = dom.getElementsByClassName('panel-title')[1];
-					if (panel.innerText.trim() != 'Delinquent Taxes') {
-						d2.innerText = 'del taxes title?';
-						return;
-					}
-					console.log(panel);
-					var table = panel.parentNode.parentNode.getElementsByTagName('table');
-					if (table.length != 1) {
-						d2.innerText = 'del taxes wrong #tables';
-						return;
-					}
-					console.log(table);
-					var tr = table[0].getElementsByTagName('tr');
-					for (var i=0;i<tr.length;i++) {
-						console.log(tr[i]);
-						if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
-						var tds = tr[i].getElementsByTagName('td');
-						//~ console.log(tds.length); //0
-						if (!fill_in_delq(tds)) { // EXIT ON FAILURE.
-							d2.innerText = 'fill in returns false';
+					if (dom.getElementsByClassName('panel-title').length == 3) {
+						var panel = dom.getElementsByClassName('panel-title')[2];
+						if (panel.innerText.trim() != 'Delinquent Taxes') {
+							d2_err('del taxes title?');
 							return;
 						}
+						console.log(panel);
+						var table = panel.parentNode.parentNode.getElementsByTagName('table');
+						if (table.length != 1) {
+							d2_err('del taxes wrong #tables');
+							return;
+						}
+						console.log(table);
+						var tr = table[0].getElementsByTagName('tr');
+						for (var i=0;i<tr.length;i++) {
+							console.log(tr[i]);
+							if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
+							var tds = tr[i].getElementsByTagName('td');
+							//~ console.log(tds.length); //0
+							if (!fill_in_delq(tds)) { // EXIT ON FAILURE.
+								d2_err('fill in returns false');
+								return;
+							}
+						}
 					}
+					// show sbm
+					document.body.style.backgroundColor = 'lightgreen';
+					// Well, sbm then.
+					doSubmit();
 				}
 			});
 			function fill_in_delq(tds) {
@@ -201555,6 +201558,17 @@ qatar,80
 							<td class="row1 warrantyear" style="text-align:center;">
 						</tr>
 						...
+						<tr>
+							<td class="row1" style="text-align:center;">2015</td>
+							<td class="row1 popup" style="text-align:center;">
+								Open
+							</td>
+							<td class="row1" style="text-align:center;">4/5/2017</td>
+							<td class="row1" style="text-align:center;">$976.99
+							<td class="row1" style="text-align:center;">$1,253.48
+							<td class="row1 backtax" style="text-align:center;">
+							<td class="row1 warrantyear" style="text-align:center;">
+						</tr>
 						...
 				</tbody>
 				<tfoot>
@@ -201568,6 +201582,7 @@ qatar,80
 					</tr>
 				</tfoot>*/
 				var year = /^(\d+)$/.exec(tds[0].innerText);
+				var pause = false;
 				if (year) {
 					year = year[1];
 					// Non-static method.
@@ -201584,13 +201599,13 @@ qatar,80
 							found = true; // Set found
 							// Select field
 							y = x[j].getElementsByTagName('select')[0];
-							if (rs[i][2] == 'Open') {
+							if (tds[1].innerText.trim() == 'Open') {
 								y.selectedIndex = 1;
 								if (y.value != 'Open') {
 									pause = true
 									console.log('pause2.1')
 								}
-							} else if (rs[i][2] == 'Forfeited') {
+							} else if (tds[1].innerText.trim() == 'Forfeited') {
 								y.selectedIndex = 2;
 								if (y.value != 'Forfeited') {
 									pause = true
@@ -201602,19 +201617,56 @@ qatar,80
 							}
 								
 							y = x[j].getElementsByTagName('input');
-							y[0].value = year;							// Tax year
-							y[1].value = tds[1].innerText.trim();						// Forfeit data
+							y[0].value = parseInt(year);								// Tax year
+							y[1].value = tds[2].innerText.trim();						// Forfeit data
 							y[2].value = tds[3].innerText.trim().replace(/[\$,]/g,'');	// 1st installment
 							y[3].value = tds[4].innerText.trim().replace(/[\$,]/g,'');	// 2nd installment
-							
+							if (pause) {
+								d2_err('delq pause');
+								return false;
+							}
 							// success!
 							return true;
 							//break;
 						}
 					}
 					// RETURN FALSE 
-					d2.innerText = 'leftovers from delq?';
+					d2_err('leftovers from delq?');
+					// DEBUG: ENSURE THAT THIS IS CHECKED
+					//		BEFORE ALLOWING AUTO.
+					document.getElementById('MoreDelinquentTaxCheckbox').checked = true;
 					return false;
+				}
+				else { // This is a footer.
+					document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value = tds[2].innerText.trim().replace(/[\$,]/g,'');
+					document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value = tds[3].innerText.trim().replace(/[\$,]/g,'');
+					// 0.00 not allowed!
+					if (tds[2].innerText.trim().replace(/[\$,]/g,'') == '0.00') {
+						document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value = '';
+					}
+					if (tds[3].innerText.trim().replace(/[\$,]/g,'') == '0.00') {
+						document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value = '';
+					}
+					
+					// Integrity check
+					// Input type=number. It must be valid!
+					//~ if (
+						//~ !document.getElementsByName('Delinquent 6 - 1st INST Total')[0].validity ||
+						//~ !document.getElementsByName('Delinquent 6 - 1st INST Total')[0].validity.valid ||
+						//~ !document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].validity ||
+						//~ !document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].validity.valid
+					//~ ) {
+						//~ d2_err('Check: Bad delq total?');
+						
+						//~ return false;
+					//~ }
+					return true;
+				}
+			}
+			function d2_err(msg) {
+				//~ d2.style.backgroundColor = 'red';
+				document.body.style.backgroundColor = 'red';
+				d2.innerText += ', '+msg;
 			}
 			function fill_in_sold(tds) {
 				/*<tr>
@@ -201629,7 +201681,7 @@ qatar,80
 				</tr>*/
 				var x = /^(\d+)( Annual Sale| Scavenger Sale| Special Assessment|)$/.exec(tds[0].innerText);
 				if (!x) {
-					d2.innerText = 'Bad sold taxes type?' + tds[0].innerText;
+					d2_err('Bad sold taxes type?' + tds[0].innerText);
 					return false;
 				} else {
 					// Loop through all TR elements.
@@ -201708,8 +201760,8 @@ qatar,80
 							
 							y = x[j].getElementsByTagName('input');
 							y[0].value = parseInt(year);
-							y[1].value = tds[3].innerText;
-							y[2].value = tds[4].innerText;
+							y[1].value = tds[3].innerText.trim();
+							y[2].value = tds[4].innerText.trim();
 							if (parseInt(year) < 1996 || parseInt(year) > 2020) {
 								pause = true;
 								console.log('pause1.7');
@@ -201725,7 +201777,10 @@ qatar,80
 						}
 					}
 					// RETURN FALSE 
-					d2.innerText = 'leftovers from sold?';
+					d2_err('leftovers from sold?');
+					// DEBUG: CHECK THAT THE ADD'L YEARS IS CHECKED
+					// 		CORRECTLY BEFORE ALLOWING AUTO.
+					document.getElementsByName('Sold - Additional Years')[0].checked = true;
 					return false;
 				}
 			}
