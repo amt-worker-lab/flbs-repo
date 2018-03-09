@@ -146548,6 +146548,9 @@ qatar,80
 				comp: td[1].innerText.trim().string_to_mixed_case(),	// comp
 				field2: td[3].innerText.trim().string_to_mixed_case(),	// comp
 				field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				field4: td[7].innerText.trim().string_to_mixed_case(),	// comp
+				field5: td[9].innerText.trim().string_to_mixed_case(),	// comp
+				field6: td[11].innerText.trim().string_to_mixed_case(),	// comp
 				//~ lname: td[5].innerText.trim().string_to_mixed_case(),	// comp
 				//~ degree: td[7].innerText.trim().string_to_mixed_case(),	// industry
 				//~ city: td[9].innerText.trim().string_to_mixed_case(),
@@ -146562,9 +146565,10 @@ qatar,80
 			}
 			o.boldArray = o.comp.clean_string_to_array();
 			if (o.comp.indexOf(o.field2) == -1 && o.field2.length > 0) {
-				o.spaced = o.comp + ' ' + o.field2;
+				o.spaced = o.comp + ' ' + o.field2 + ' (' + o.field4 + ' OR '+o.field4.stateAbbrToFull()+')'
 			} else {
 				o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+				
 			}
 			console.log(o);
 			o.q[1].value = 'Y'; // Always yes.
@@ -146597,9 +146601,9 @@ qatar,80
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // comp, comp+location, comp+industry
-					o.comp,
+					o.comp + ' (' + o.field4 + ' OR '+o.field4.stateAbbrToFull()+')',
 					o.spaced,
-					o.comp + ' ' + o.field3
+					o.comp + ' ' + o.field3 + ' (' + o.field4 + ' OR '+o.field4.stateAbbrToFull()+') ' + o.field5+' ('+o.field6.replace(/-/g, ' ')+' OR )'
 				],
 				search_results: {
 					//~ use_domain_only: true,
