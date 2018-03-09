@@ -145996,6 +145996,7 @@ qatar,80
 	}
 	// John Stockdale
 	// Find Contact Name and Website Psychiatrists
+	// or: Find Website for Psychiatrists
 	var s = '<p>Find Website&nbsp;for a given Psychiatry Practice</p>\n\n<ul>\n	<li>\n	<p>Search Google for <strong>first name, last name, city, </strong>and<strong> state</strong> to find <strong>website </strong>for listed psychiatrist. Start with "Google Search" and try other searches if needed.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -146063,8 +146064,8 @@ qatar,80
 				},
 				searches:[ // 
 					o.comp+' '+o.field2,
-					o.comp+' '+o.field2+' '+o.field3,
-					o.spaced+' '+o.field2+' '+o.field3, //exact
+					o.comp+' '+o.field2+' ('+o.field3+' OR '+o.field3.stateAbbrToFull()+')',
+					o.comp+' '+o.field2+' ('+o.field3+' OR '+o.field3.stateAbbrToFull()+') "email"', //exact
 				],
 				search_results: {
 					//~ use_domain_only: true,
