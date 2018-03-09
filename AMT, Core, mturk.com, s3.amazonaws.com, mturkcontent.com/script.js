@@ -934,7 +934,7 @@ function MT__RUN() {
 							//~ console.log(response.data.text_range.split('\n'));
 							var r = response.data.text_range.trim();
 							// Auto state+zip
-							var y = /,? ?([A-Z]{2}),? ([\d\-]+)$/.exec(r);
+							var y = /[\n ,]*([A-Z]{2})[, \n]+([\d\-]+)$/.exec(r);
 							if (y) {
 								r = r.replace(y[0], '').trim();
 								o.q[3].value = y[1];
@@ -947,7 +947,7 @@ function MT__RUN() {
 								o.q[4].value = y[1];
 							}
 							// Auto suite / floor / unit / apt.
-							var y = /[\n ](suite |ste |rm |flr |fl |apt |#|# )([^ \n]{1,})/i.exec(r);
+							var y = /[\n ](suite |ste\.? |rm\.? |flr\.? |fl\.? |apt\.? |#|# )([^ \n]{1,})/i.exec(r);
 							if (y) {
 								o.q[1].value = y[1]+y[2];
 								r = r.replace(y[0], '');
