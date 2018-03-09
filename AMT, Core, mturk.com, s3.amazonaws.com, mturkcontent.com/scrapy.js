@@ -989,10 +989,9 @@ function init__scrapy() {
 				sd_start_urls: [],
 				sd_allowed_domains: [],
 				search_str: '',
-				fname: td[1].innerText.trim(),
-				lname: td[3].innerText.trim(),
-				city:  td[5].innerText.trim(),
-				state: td[7].innerText.trim(),
+				name: td[1].innerText.trim(),
+				city:  td[3].innerText.trim(),
+				state: td[5].innerText.trim(),
 				//~ comp: td[1].innerText.trim(),
 				//~ name: td[1].innerText.trim(),
 				//~ firm: td[3].innerText.trim(),
@@ -1050,7 +1049,7 @@ function init__scrapy() {
 			//~ o.search_str = o.search_str.trim();
 			
 			// Exact name
-			o.search_str = o.fname+' '+o.lname+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+') (therapist OR doctor OR physician OR physchiatrist OR md OR)';
+			o.search_str = o.name+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+') (therapist OR doctor OR physician OR physchiatrist OR md OR)';
 			
 			o.q[0].value = '';
 			console.log(o);
@@ -1058,7 +1057,7 @@ function init__scrapy() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:240px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:440px;left:0%;width:99%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
@@ -1066,7 +1065,7 @@ function init__scrapy() {
 				'position:absolute;top:0px;left:0%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1b);
-			d1b.innerText = o.search_str ;
+			d1b.innerText = o.search_str;
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
 				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.2em !important;'
@@ -1074,10 +1073,9 @@ function init__scrapy() {
 			document.body.appendChild(d1c);
 			var d1d = document.createElement('div');
 			d1d.setAttribute('style',
-				'position:absolute;top:40px;left:0%;width:99%;height:200px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
+				'position:absolute;top:40px;left:0%;width:99%;height:400px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1d);
-			//~ d1c.innerText = (o.name != '') ? o.name : o.firm;
 			/* END ITEMS */
 			
 			// innerHeight
@@ -1088,7 +1086,7 @@ function init__scrapy() {
 				elements: [
 					d1
 				],
-				offset: 240 // offset top
+				offset: 440 // offset top
 			});
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
@@ -1121,7 +1119,7 @@ function init__scrapy() {
 			/**
 			 * find_url dashboard
 			 */
-			o.boldArray = o.comp.clean_string_to_array();
+			o.boldArray = o.name.clean_string_to_array();
 			//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			//~ console.log(o);
 			// create_dashboard_find_url
@@ -1131,9 +1129,9 @@ function init__scrapy() {
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
-					o.fname+' '+o.lname+' '+o.city,
-					o.fname+' '+o.lname+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+')',
-					o.fname+' '+o.lname+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+') "email"', //exact
+					o.name+' '+o.city,
+					o.name+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+')',
+					o.name+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+') "email"', //exact
 				],
 				search_results: {
 					//~ use_domain_only: true,
@@ -1164,7 +1162,7 @@ function init__scrapy() {
 				},
 				out_element: o.q[0],
 				parent: d1d,
-				offsetTop: 40,
+				//~ offsetTop: 40,
 				//~ AmtRecordAndSubmit: true,
 				AutoReturnAcceptIfZero: false,
 			});
@@ -1301,11 +1299,11 @@ function init__scrapy() {
 								skip_if_no_emails: true,
 								accept_if_emails: true,
 								contexts_bold_array: // array for contexts
-									[o.fname, o.lname],
+									o.name.split(' '),
 								sort_results: {
 									sarray: // sort
-										[o.fname, o.lname],
-									levensht: o.fname+''+o.lname, // A string to match levenshtein.
+										o.name.split(' '),
+									levensht: o.name, // A string to match levenshtein.
 								},
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) {
 									// RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
@@ -1384,7 +1382,7 @@ function init__scrapy() {
 										document.body.style.backgroundColor = 'orange';
 										o.q[0].value = this.url;//.replace(/^(https?:\/+[^\/]+)/i, '$1'); // Remove trailing
 										//~ o.q[1].value = this.email;
-										//~ doSubmit();
+										doSubmit();
 									}
 								},
 							}
