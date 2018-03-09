@@ -145002,8 +145002,8 @@ qatar,80
 	 * Brandon Tedder
 	 * Joel Davis (linkedin comp. search + scrape)
 	 * KronoPin
-	 * Amos Weiskopf
-	 * 
+	 * Amos Weiskopf (netflix, ddf)
+	 * Mturk Leadfeeder
 	 * 
 	 * 
 	 * 
@@ -145012,6 +145012,7 @@ qatar,80
 	 * 
 	 * 
 	 */
+	
 	// Amos Weiskopf
 	// Find the Netflix URL for a list of movies, using Google
 	var s = '<p>Find the Netflix page for this Movie.</p>\n\n<ul>\n	<li>Enter the website address for the <b>Netflix </b>page of the movie&nbsp;</li>\n	<li>Include the full address, e.g. https://www.netflix.com/aw/title/902003</li>';
