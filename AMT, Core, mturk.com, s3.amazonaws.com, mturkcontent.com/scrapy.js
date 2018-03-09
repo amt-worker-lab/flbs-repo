@@ -67,7 +67,7 @@ function init__scrapy() {
 	 * John Stockdale (feeling lucky, url+email)
 	 * Chris Richmond (fin aid dept.)
 	 * CR Media
-	 * 
+	 * John Stockdale, feeling lucky
 	 * 
 	 * 
 	 * 
@@ -950,6 +950,441 @@ function init__scrapy() {
 										document.body.style.backgroundColor = 'orange';
 										o.q[0].value = this.email;
 										doSubmit();
+									}
+								},
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+		return false;
+	}
+	// John Stockdale
+	// Find Website Psychiatrists
+	// NOTE: JUST WEBSITE
+	var s = '<p>Find Website&nbsp;for a given Psychiatry Practice</p>\n\n<ul>\n	<li>\n	<p>Search Google for <strong>first name, last name, city, </strong>and<strong> state</strong> to find <strong>website </strong>for listed psychiatrist. Start with "Google Search" and try other searches if needed.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() { console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Move container down the page so it is not hidden by our work screens.
+				GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');
+			//~ GM_addStyle('#workContent {float:right}');
+			/*GM_addStyle('input[type="text"],select {width:80% !important;}');*/
+			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
+			document.body.style.zoom = '0.5'; // This is default for "loading".
+			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
+			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '20');
+			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
+			// Call nextTab now...
+			new AMT___core_factory().nextTab();
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '1'); //meh
+			//
+			var td = document.getElementsByTagName('td');
+			var o = {
+				sd_start_urls: [],
+				sd_allowed_domains: [],
+				search_str: '',
+				fname: td[1].innerText.trim(),
+				lname: td[3].innerText.trim(),
+				city:  td[5].innerText.trim(),
+				state: td[7].innerText.trim(),
+				//~ comp: td[1].innerText.trim(),
+				//~ name: td[1].innerText.trim(),
+				//~ firm: td[3].innerText.trim(),
+				//~ website: td[15].innerText.trim(),
+				q: [
+					document.getElementById('web_url'),
+					//~ document.getElementById('email'),
+				],
+				SKIP_SITES: {},
+				util_url: null,
+				try_autos: false, // Turn on and off as necessary. Default=false (off)
+				//~ auto_emails: ['info','contact','contactus','mail'],
+			}
+			// If website
+			//~ if (td[15].innerText.trim() != '') {
+				//~ o.sd_start_urls.push(td[15].innerText.trim());
+				//~ o.sd_allowed_domains = [// Remove https & trailing / if present
+					//~ o.sd_start_urls[0].replace(
+						//~ /https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")
+				//~ ];
+				//~ // Add http if necessary.
+				//~ o.sd_start_urls[0] =
+					//~ (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ?
+						//~ 'http://'+ o.sd_start_urls[0] :
+						//~ o.sd_start_urls[0];
+			//~ } else {
+				//~ // ...
+			//~ }
+			// Build search string
+			// it is the odd TDs
+			// 1=doctor's name,3=firm name,5=street,7=city,9=state,
+			// 11=zip,13=phone,15=website
+			//~ for (var i=1; i<=13; i+=2) {
+				//~ console.log(td[i]);
+				//~ var x = td[i].innerText.trim();
+				//~ if (x == '') continue;
+				//~ if (x == 'NULL') continue;
+				//~ if (x == 'NA') continue;
+				//~ if (i == 5) continue; // skip exact street addr
+				//~ if (i == 11) continue; // skip zip
+				//~ if (i == 13) {// remove non-digits from phone for clean search
+					//~ continue; // or rather, just skip it instead.
+					//~ x = x.replace(/[\D]/g, ' ');
+					//~ x = x.replace(/\s+/g, ' ');
+					//~ //x = '('+x+' OR "")';
+				//~ }
+				//~ if (i == 1) { // exact name
+					//~ x = x.split(' ');
+					//~ if (x[0] == 'Dr.') x[0] = '';
+					//~ x = x.join('" "');
+					//~ x = '"'+x+'"';
+				//~ }
+				//~ o.search_str += ' '+x;
+			//~ }
+			//~ o.search_str = o.search_str.trim();
+			
+			// Exact name
+			o.search_str = o.fname+' '+o.lname+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+') (therapist OR doctor OR physician OR physchiatrist OR md OR)';
+			
+			o.q[0].value = '';
+			console.log(o);
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:240px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
+			);
+			document.body.appendChild(d1b);
+			d1b.innerText = o.search_str ;
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style',
+				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.2em !important;'
+			);
+			document.body.appendChild(d1c);
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style',
+				'position:absolute;top:40px;left:0%;width:99%;height:200px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
+			);
+			document.body.appendChild(d1d);
+			//~ d1c.innerText = (o.name != '') ? o.name : o.firm;
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 240 // offset top
+			});
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value.length < 6)
+					return false;
+				//~ if (o.q[0].value.indexOf('@') == -1)
+					//~ return false;
+				// Here?
+				doSubmit();
+				return false;
+			}
+			// Check bird var scrapy_do_websearch
+			// Whether or not to do a web search to begin with.
+			if (AMT__Global_Vars.scriptVars['scrapy_do_web_search'] == '1') {
+				// Get skips file
+				new AMT___requests_factory().fs__load_skips({
+					skips_key: 'austin_load_skips',
+					callback: init,
+					callback_err: function() {}
+				});
+			} else {
+				// Else straight to scrapy...
+				// scrapy_do_websearch
+				// Init
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			}
+			/**
+			 * find_url dashboard
+			 */
+			o.boldArray = o.comp.clean_string_to_array();
+			//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			//~ console.log(o);
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				search: {
+					str_add_to_searches_hidden: ' (psychiatry OR psychiatrist OR doctor OR psychologist OR md OR)', //
+					//~ use_duckduckgo_search_engine: true,
+				},
+				searches:[ // 
+					o.fname+' '+o.lname+' '+o.city,
+					o.fname+' '+o.lname+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+')',
+					o.fname+' '+o.lname+' '+o.city+' ('+o.state+' OR '+o.state.stateAbbrToFull()+') "email"', //exact
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+						//~ // Add trailing slash
+						//~ if (url[url.length-1] != '/')
+							//~ url += '/';
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (/\/dir\//.exec(obj.url)) {
+							//~ // ignore .../dir/...
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1d,
+				offsetTop: 40,
+				//~ AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: false,
+			});
+			
+			// Init
+			function init(SKIP_SITES) {
+				o.SKIP_SITES = SKIP_SITES; // Populate.
+				var ssite;
+				//~ if (o.sd_allowed_domains[0] != '') {
+					//~ ssite = 'site:'+o.sd_start_urls[0];
+				//~ } else { // Skip these!
+					//~ //ssite = '';
+					//~ new AMT___core_factory().
+						//~ iframe2parent__postMessage( //
+							//~ {
+								//~ action: 'return_and_accept'
+							//~ }
+						//~ );
+					//~ return;
+				//~ }
+				// SP search.
+				var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' +
+						encodeURIComponent(
+							'("email" OR "e-mail" OR "contact") '+o.search_str //"contact" OR 
+						) + opts,
+					callback_function: sp,
+					host: MT___host
+				});
+			}
+			// SP
+			function sp(response_obj) {
+				//o.sd_start_urls
+				//o.sd_allowed_domains
+				var rs = response_obj;
+				if (!rs.length) {
+					// No URLs
+					// R&A
+					//~ new AMT___core_factory().
+						//~ iframe2parent__postMessage( //
+							//~ {
+								//~ action: 'return_and_accept'
+							//~ }
+						//~ );
+					return;
+				}
+				// Look for Facebook pages in results.
+				// And secondly check if first result is a "non-skip" result,
+				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
+				// TODO: MAKE SURE NOT IN SKIPS!!
+				// TODO: MAKE ALLOWED_DOMAINS ONLY THOSE IN THIS LIST.
+				var num_found = 0;
+				for (var i in rs) {
+					// skips
+					var dm = rs[i][0].replace(
+						/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
+					if (!o.SKIP_SITES.hasOwnProperty( dm )) {
+						o.sd_start_urls.push(rs[i][0]);
+						num_found++;
+					}
+					if (num_found >= 2) break; // Only a few start URLs!
+					// no skips
+					//~ o.sd_start_urls.push(rs[i][0]);
+					//~ num_found++;
+					//~ if (num_found >= 2) break; // Only a few start URLs!
+				}
+				// None?
+				if (num_found == 0) {
+					//~ new AMT___core_factory().
+						//~ iframe2parent__postMessage( //
+							//~ {
+								//~ action: 'return_and_accept'
+							//~ }
+						//~ );
+					return;
+				}
+				console.log(o); // dbg
+				// Init
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			}
+			
+			/**
+			 * function scrapy
+			 * 
+			 * TODO:
+			 * 		Feature:
+			 * 			Sort results by the "relevance". In particular,
+			 * 			sort by number of matches of array [ search items ],
+			 * 			such as [ first_name, last_name, job_title, etc.].
+			 * 		Feature:
+			 *	 		Add BOLD to snippet text!!
+			 */
+			function scrapy(start_urls, allowed_domains) {
+				//
+				var s_obj =
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: AMT__Global_Vars.scriptVars['arg_max_pages_to_fetch'],// Default=40
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						'CONCURRENT_ITEMS=100', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=8', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=6', //DEFAUL = 8
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=1', //false
+						//'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=2'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				//scrapy__begin_scrape
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								// add PREVIEW all snippets
+								div: d1,
+								input_send_success: o.q[0],
+								skip_if_no_emails: true,
+								accept_if_emails: true,
+								contexts_bold_array: // array for contexts
+									[o.fname, o.lname],
+								sort_results: {
+									sarray: // sort
+										[o.fname, o.lname],
+									levensht: o.fname+''+o.lname, // A string to match levenshtein.
+								},
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) {
+									// RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									if (AMT__Global_Vars.isPreview) {
+										return false;
+									}
+									// Add to tabs queue if not in preview
+									if (AMT__Global_Vars.scriptVars['MSBell-TabsQueue'] == '1') {
+										//~ addToTabsQ();
+									}
+									//~ document.body.style.backgroundColor = 'white';
+									document.body.style.zoom = '1';
+									
+									// Let's try for some autos.
+									// o.auto_emails = []
+									/**
+									 * {
+									 *  email_contexts: Array[1]
+									 *  email_email: "info@vaultcrossfit.com"
+									 *  url: "https://www.facebook.com/VaultCrossfit/info
+									 * }
+									 */
+									if (callback_obj.matches && callback_obj.matches.length) {
+										if (o.try_autos) { // Only when autos.
+											var mt = callback_obj.matches;
+											var reg = new RegExp(
+												//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
+												'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+												__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+												'i'
+											);
+											for (var i in mt) {
+												if  (
+													mt[i].email_email &&
+													mt[i].email_email.length > 6 &&
+													mt[i].email_email.indexOf('@') != -1 &&
+													reg.exec(mt[i].email_email)
+													)
+												{
+													document.body.style.zoom = '0.4';
+													o.q[0].value = mt[i].email_email;
+													doSubmit();
+													break; // Stop here
+												}
+											}
+										}
+									} else {
+										// Auto return and accept because
+										// there are no emails found.
+										// R&A from global.js...
+										// ...Send a message to the top window and
+										// ...tell it to return and acceptfresh
+										//~ new AMT___core_factory().
+											//~ iframe2parent__postMessage( //
+												//~ {
+													//~ action: 'return_and_accept'
+												//~ }
+											//~ );
+										return false;
+									}
+									//
+									addToTabsQ();
+									return false;
+								},
+								// What to do onclick
+								// this.url
+								// this.email
+								input_onclick_callback: function() {
+									this.style.backgroundColor = 'LightGreen';
+									if  (
+										this.email.length > 6 &&
+										this.email.indexOf('@') != -1 &&
+										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
+										)
+									{
+										document.body.style.backgroundColor = 'orange';
+										o.q[0].value = this.url;//.replace(/^(https?:\/+[^\/]+)/i, '$1'); // Remove trailing
+										//~ o.q[1].value = this.email;
+										//~ doSubmit();
 									}
 								},
 							}

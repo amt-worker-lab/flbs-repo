@@ -145997,8 +145997,9 @@ qatar,80
 	// John Stockdale
 	// Find Contact Name and Website Psychiatrists
 	// or: Find Website for Psychiatrists
+	// NOTE: This works great. But let's try a scrapy version...
 	var s = '<p>Find Website&nbsp;for a given Psychiatry Practice</p>\n\n<ul>\n	<li>\n	<p>Search Google for <strong>first name, last name, city, </strong>and<strong> state</strong> to find <strong>website </strong>for listed psychiatrist. Start with "Google Search" and try other searches if needed.</p>';
-	if (ih.indexOf(s) != -1)
+	if (ih.indexOf(s) != -1 && 0==1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
