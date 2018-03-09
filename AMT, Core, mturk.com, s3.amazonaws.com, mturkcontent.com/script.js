@@ -947,7 +947,7 @@ function MT__RUN() {
 								o.q[4].value = y[1];
 							}
 							// Auto suite / floor / unit / apt.
-							var y = /[\n ](suite |ste |rm |flr |fl |apt |#|# )([^ ]{1,})/i.exec(r);
+							var y = /[\n ](suite |ste |rm |flr |fl |apt |#|# )([^ \n]{1,})/i.exec(r);
 							if (y) {
 								o.q[1].value = y[1]+y[2];
 								r = r.replace(y[0], '');
