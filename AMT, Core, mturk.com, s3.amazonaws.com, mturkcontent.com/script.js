@@ -207,6 +207,13 @@ function MT__RUN() {
 					if (options.response.status != 200) {
 						document.body.style.backgroundColor = 'blue';
 						//d1.appendChild('!200'.div());
+						if (options.response.status == 401) {
+							document.getElementsByName('Accessibility')[0].checked = true;
+							document.getElementsByName('Accessibility')[1].checked = true;
+							document.getElementsByName('Listing Status')[0].checked = true;
+							document.getElementsByName('Listing Status')[3].checked = true;
+							AMT___recordAndSubmit();
+						}
 						return false;
 					}
 					//
