@@ -964,6 +964,7 @@ function init__scrapy() {
 	// John Stockdale
 	// Find Website Psychiatrists
 	// NOTE: JUST WEBSITE
+	// Combines dashboard_find_url with scrapy-powers dashboard.
 	var s = '<p>Find Website&nbsp;for a given Psychiatry Practice</p>\n\n<ul>\n	<li>\n	<p>Search Google for <strong>first name, last name, city, </strong>and<strong> state</strong> to find <strong>website </strong>for listed psychiatrist. Start with "Google Search" and try other searches if needed.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -1362,6 +1363,8 @@ function init__scrapy() {
 													//~ action: 'return_and_accept'
 												//~ }
 											//~ );
+										// ADD TO TABS QUEUE
+										addToTabsQ();
 										return false;
 									}
 									//
