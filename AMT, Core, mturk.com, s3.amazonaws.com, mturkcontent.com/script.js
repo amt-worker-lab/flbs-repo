@@ -201760,6 +201760,13 @@ qatar,80
 			d1.style.backgroundColor='#eee';
 			d1.style.fontSize='8px';
 			
+			function trysbm() {
+				if (AMT__Global_Vars.isPreview) {
+					return;
+				}
+				// else...
+				doSubmit();
+			}
 			// XHR
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: 'https://taxdelinquent.cookcountyclerk.com/',
@@ -201788,6 +201795,13 @@ qatar,80
 						d2_err('pin number is missing from scraped document!');
 						return;
 					}
+					// no sold
+					if (rs.indexOf('No Sold or Delinquent Taxes for this PIN as of 3/8/2018') != -1) {
+						document.getElementById('Q1Url').selectedIndex = 1;
+						document.getElementById('Q1Url').value = 'No Sale/Delinquency';
+						trysbm();
+						return;
+					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					if (dom.getElementsByClassName('panel-title').length != 2 &&
 						dom.getElementsByClassName('panel-title').length != 3) {
@@ -201806,25 +201820,42 @@ qatar,80
 					// sold table
 					//////////////
 					var panel = dom.getElementsByClassName('panel-title')[1];
-					if (panel.innerText.trim() != 'Sold Taxes') {
-						d2_err('sold taxes title?');
-						return;
-					}
-					var table = panel.parentNode.parentNode.getElementsByTagName('table');
-					if (table.length != 1) {
-						d2_err('sold taxes wrong #tables');
-						return;
-					}
-					var tr = table[0].getElementsByTagName('tr');
-					for (var i=0;i<tr.length;i++) {
-						console.log(tr[i]);
-						if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
-						var tds = tr[i].getElementsByTagName('td');
-						if (!fill_in_sold(tds)) { // EXIT ON FAILURE.
-							d2_err('fill in returns false');
+					if (panel.innerText.trim() == 'Sold Taxes') {
+						//d2_err('sold taxes title?');
+						var table = panel.parentNode.parentNode.getElementsByTagName('table');
+						if (table.length != 1) {
+							d2_err('sold taxes wrong #tables');
 							return;
 						}
+						var tr = table[0].getElementsByTagName('tr');
+						for (var i=0;i<tr.length;i++) {
+							if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
+							var tds = tr[i].getElementsByTagName('td');
+							if (!fill_in_sold(tds)) { // EXIT ON FAILURE.
+								d2_err('fill in returns false1');
+								return;
+							}
+						}
+					} else if (panel.innerText.trim() == 'Delinquent Taxes') {
+						var table = panel.parentNode.parentNode.getElementsByTagName('table');
+						if (table.length != 1) {
+							d2_err('del taxes wrong #tables');
+							return;
+						}
+						var tr = table[0].getElementsByTagName('tr');
+						for (var i=0;i<tr.length;i++) {
+							console.log(tr[i]);
+							if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
+							var tds = tr[i].getElementsByTagName('td');
+							//~ console.log(tds.length); //0
+							if (!fill_in_delq(tds)) { // EXIT ON FAILURE.
+								d2_err('fill in returns false2');
+								return;
+							}
+						}
 					}
+					
+					
 					//////////////////
 					// delinq. table
 					//////////////////
@@ -201848,15 +201879,17 @@ qatar,80
 							var tds = tr[i].getElementsByTagName('td');
 							//~ console.log(tds.length); //0
 							if (!fill_in_delq(tds)) { // EXIT ON FAILURE.
-								d2_err('fill in returns false');
+								d2_err('fill in returns false2');
 								return;
 							}
 						}
 					}
+					
 					// show sbm
 					document.body.style.backgroundColor = 'lightgreen';
 					// Well, sbm then.
-					doSubmit();
+					//doSubmit();
+					trysbm();
 				}
 			});
 			function fill_in_delq(tds) {
@@ -201957,11 +201990,12 @@ qatar,80
 						}
 					}
 					// RETURN FALSE 
-					d2_err('leftovers from delq?');
+					//d2_err('leftovers from delq?');
 					// DEBUG: ENSURE THAT THIS IS CHECKED
 					//		BEFORE ALLOWING AUTO.
 					document.getElementById('MoreDelinquentTaxCheckbox').checked = true;
-					return false;
+					//return false;
+					return true; // It's good.
 				}
 				else { // This is a footer.
 					document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value = tds[2].innerText.trim().replace(/[\$,]/g,'');
