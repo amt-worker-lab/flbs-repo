@@ -201802,6 +201802,13 @@ qatar,80
 						trysbm();
 						return;
 					}
+					// invalid pin
+					if (/This is an invalid PIN for tax year \d+ or prior. Please check your property tax bill or your property deed to verify your PIN\./.exec(rs)) {
+						document.getElementById('Q1Url').selectedIndex = 2;
+						document.getElementById('Q1Url').value = 'New PIN';
+						trysbm();
+						return;
+					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					if (dom.getElementsByClassName('panel-title').length != 2 &&
 						dom.getElementsByClassName('panel-title').length != 3) {
@@ -202039,7 +202046,7 @@ qatar,80
 						
 					</td>
 				</tr>*/
-				var x = /^(\d+)( Annual Sale| Scavenger Sale| Special Assessment|)$/.exec(tds[0].innerText);
+				var x = /^(\d+)( Annual Sale| Scavenger Sale| Special Assessment| )$/.exec(tds[0].innerText);
 				if (!x) {
 					d2_err('Bad sold taxes type?' + tds[0].innerText);
 					return false;
@@ -202080,6 +202087,14 @@ qatar,80
 									if (y.value != 'Special Assessment') {
 										pause = true;
 										console.log('pause1.1c');
+									}
+									break;
+								case ' '://This is an interesting case.
+									// There is no "type", i.e. it is blank.
+									y.selectedIndex = 0;
+									if (y.value != '') {
+										pause = true;
+										console.log('pause1.1d');
 									}
 									break;
 								default:
