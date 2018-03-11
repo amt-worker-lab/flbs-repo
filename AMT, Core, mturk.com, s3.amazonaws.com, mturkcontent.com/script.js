@@ -202152,11 +202152,11 @@ qatar,80
 						}
 					}
 					// RETURN FALSE 
-					d2_err('leftovers from sold?');
+					//~ d2_err('leftovers from sold?');
 					// DEBUG: CHECK THAT THE ADD'L YEARS IS CHECKED
 					// 		CORRECTLY BEFORE ALLOWING AUTO.
 					document.getElementsByName('Sold - Additional Years')[0].checked = true;
-					return false;
+					return true;
 				}
 			}
 		}
