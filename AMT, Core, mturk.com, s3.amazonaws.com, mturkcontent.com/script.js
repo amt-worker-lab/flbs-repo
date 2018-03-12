@@ -201819,10 +201819,6 @@ qatar,80
 						d2_err('num panels length:' + dom.getElementsByClassName('panel-title').length);
 						return;
 					}
-					else if (document.body.innerHTML.match(/delinquent/gi).length != 8) {
-						//~ d2.innerText = 'num delinquent length:' + document.body.innerHTML.match(/delinquent/gi).length;
-						//~ return;
-					}
 					//~ else if (document.body.innerHTML.match(/delinquent taxes/gi).length != 8) {
 						//~ d2.innerText = 'num delinquent';
 						//~ return;
