@@ -201796,7 +201796,8 @@ qatar,80
 						return;
 					}
 					// no sold
-					if (rs.indexOf('No Sold or Delinquent Taxes for this PIN as of 3/8/2018') != -1) {
+					if (rs.indexOf('No Sold or Delinquent Taxes for this PIN as of ') != -1) {
+						// e.g. "No Sold or Delinquent Taxes for this PIN as of 3/11/2018"
 						document.getElementById('Q1Url').selectedIndex = 1;
 						document.getElementById('Q1Url').value = 'No Sale/Delinquency';
 						trysbm();
