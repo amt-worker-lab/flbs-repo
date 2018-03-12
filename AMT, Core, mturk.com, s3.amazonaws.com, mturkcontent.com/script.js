@@ -201764,6 +201764,9 @@ qatar,80
 				if (AMT__Global_Vars.isPreview) {
 					return;
 				}
+				if (/ASSIGNMENT_ID_NOT_AVAILABLE/.exec(document.location.href)) {
+					return;
+				}
 				// else...
 				doSubmit();
 			}
