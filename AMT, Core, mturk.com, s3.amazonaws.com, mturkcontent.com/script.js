@@ -202140,6 +202140,8 @@ qatar,80
 						y[1].value = tds[3].innerText.trim();
 						y[2].value = tds[4].innerText.trim();
 						if (parseInt(year) < 1996 || parseInt(year) > 2020) {
+							// DEBUG, FORM DOES NOT ALLOW 
+							// YEARS OUTSIDE OF THIS RANGE ???
 							pause = true;
 							console.log('pause1.7');
 							return false;
