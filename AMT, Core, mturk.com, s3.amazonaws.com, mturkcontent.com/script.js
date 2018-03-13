@@ -201742,7 +201742,8 @@ qatar,80
 				pin: b,
 				filename: null,
 			}
-			o.filename = new AMT___requests_factory().md5(o.pin);
+			//~ o.filename = new AMT___requests_factory().md5(o.pin);
+			o.filename = new AMT___requests_factory().md5(o.pin)+o.pin;
 			// debug
 			var d2 = ''.div({style: 'position:absolute;top:0;left:40%;height:40px;width:59%;background-color:#eee;'});
 			document.body.appendChild(d2);
@@ -201770,24 +201771,33 @@ qatar,80
 				// else...
 				doSubmit();
 			}
-			// XHR
-			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: 'https://taxdelinquent.cookcountyclerk.com/',
-				data: '__RequestVerificationToken=&Pin='+encodeURIComponent(o.pin),
-				method: 'post',
-				filename: o.filename, // unique filename
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						d2_err('status!=200 [1]');
-						return false;
-					}
-					//
-					return true;
+			//
+			//
+			var opts = {
+				server_opts: {
+					url: 'https://taxdelinquent.cookcountyclerk.com/',
+					//~ _PROXY_REDACTED__use_proxy: true,
+					//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+					headers_array: [
+						'Origin: https://taxdelinquent.cookcountyclerk.com',
+						//~ 'Accept-Encoding: gzip, deflate, br',
+						'Accept-Language: en-US,en;q=0.9',
+						'Upgrade-Insecure-Requests: 1',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+						'Content-Type: application/x-www-form-urlencoded',
+						'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+						'Cache-Control: max-age=0',
+						'Referer: https://taxdelinquent.cookcountyclerk.com/',
+						'Connection: keep-alive',
+					],
+					//~ do_not_save_to_file: true,
+					short_filename: o.filename,
+					post_object_as_str: 'Pin='+encodeURIComponent(o.pid),
+					
 				},
-				success_callback: function(options) {
+				callback_function: function(response) {
 					var rs = options.response.responseText;
-					if (options.response.status != 200) {
+					if (/^\d+$/.exec(rs) && rs != '200') {
 						d2_err('status!=200 [2]');
 						return;
 					}
@@ -201819,10 +201829,6 @@ qatar,80
 						d2_err('num panels length:' + dom.getElementsByClassName('panel-title').length);
 						return;
 					}
-					//~ else if (document.body.innerHTML.match(/delinquent taxes/gi).length != 8) {
-						//~ d2.innerText = 'num delinquent';
-						//~ return;
-					//~ }
 					//////////////
 					// sold table
 					//////////////
@@ -201862,7 +201868,6 @@ qatar,80
 						}
 					}
 					
-					
 					//////////////////
 					// delinq. table
 					//////////////////
@@ -201898,7 +201903,10 @@ qatar,80
 					//doSubmit();
 					trysbm();
 				}
-			});
+			}
+			// Init async load.
+			new AMT___requests_factory().server_load_asynchronously2(opts);
+			
 			function fill_in_delq(tds) {
 				/*<thead>
 					<tr>
@@ -202162,6 +202170,131 @@ qatar,80
 				document.getElementsByName('Sold - Additional Years')[0].checked = true;
 				return true;
 			}
+			
+			// OLD XHR
+			//~ new AMT___requests_factory().xhr_with_disk_cache({
+				//~ URL: 'https://taxdelinquent.cookcountyclerk.com/',
+				//~ data: '__RequestVerificationToken=&Pin='+encodeURIComponent(o.pin),
+				//~ method: 'post',
+				//~ filename: o.filename, // unique filename
+				//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//~ var rs = options.response.responseText;
+					//~ if (options.response.status != 200) {
+						//~ d2_err('status!=200 [1]');
+						//~ return false;
+					//~ }
+					//~ //
+					//~ return true;
+				//~ },
+				//~ success_callback: function(options) {
+					//~ var rs = options.response.responseText;
+					//~ if (options.response.status != 200) {
+						//~ d2_err('status!=200 [2]');
+						//~ return;
+					//~ }
+					//~ // set iframe
+					//~ d1.src = 'http://192.168.1.2/mturk/.cached/'+o.filename;
+					//~ // pin
+					//~ if (rs.indexOf(o.pin) == -1) {
+						//~ d2_err('pin number is missing from scraped document!');
+						//~ return;
+					//~ }
+					//~ // no sold
+					//~ if (rs.indexOf('No Sold or Delinquent Taxes for this PIN as of ') != -1) {
+						//~ // e.g. "No Sold or Delinquent Taxes for this PIN as of 3/11/2018"
+						//~ document.getElementById('Q1Url').selectedIndex = 1;
+						//~ document.getElementById('Q1Url').value = 'No Sale/Delinquency';
+						//~ trysbm();
+						//~ return;
+					//~ }
+					//~ // invalid pin
+					//~ if (/This is an invalid PIN for tax year \d+ or prior. Please check your property tax bill or your property deed to verify your PIN\./.exec(rs)) {
+						//~ document.getElementById('Q1Url').selectedIndex = 2;
+						//~ document.getElementById('Q1Url').value = 'New PIN';
+						//~ trysbm();
+						//~ return;
+					//~ }
+					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//~ if (dom.getElementsByClassName('panel-title').length != 2 &&
+						//~ dom.getElementsByClassName('panel-title').length != 3) {
+						//~ d2_err('num panels length:' + dom.getElementsByClassName('panel-title').length);
+						//~ return;
+					//~ }
+					//~ //////////////
+					//~ // sold table
+					//~ //////////////
+					//~ var panel = dom.getElementsByClassName('panel-title')[1];
+					//~ if (panel.innerText.trim() == 'Sold Taxes') {
+						//~ //d2_err('sold taxes title?');
+						//~ var table = panel.parentNode.parentNode.getElementsByTagName('table');
+						//~ if (table.length != 1) {
+							//~ d2_err('sold taxes wrong #tables');
+							//~ return;
+						//~ }
+						//~ var tr = table[0].getElementsByTagName('tr');
+						//~ for (var i=0;i<tr.length;i++) {
+							//~ if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
+							//~ var tds = tr[i].getElementsByTagName('td');
+							//~ if (!fill_in_sold(tds)) { // EXIT ON FAILURE.
+								//~ d2_err('fill in returns false1');
+								//~ return;
+							//~ }
+						//~ }
+					//~ } else if (panel.innerText.trim() == 'Delinquent Taxes') {
+						//~ var table = panel.parentNode.parentNode.getElementsByTagName('table');
+						//~ if (table.length != 1) {
+							//~ d2_err('del taxes wrong #tables');
+							//~ return;
+						//~ }
+						//~ var tr = table[0].getElementsByTagName('tr');
+						//~ for (var i=0;i<tr.length;i++) {
+							//~ console.log(tr[i]);
+							//~ if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
+							//~ var tds = tr[i].getElementsByTagName('td');
+							//~ if (!fill_in_delq(tds)) { // EXIT ON FAILURE.
+								//~ d2_err('fill in returns false2');
+								//~ return;
+							//~ }
+						//~ }
+					//~ }
+					
+					
+					//~ //////////////////
+					//~ // delinq. table
+					//~ //////////////////
+					//~ if (dom.getElementsByClassName('panel-title').length == 3) {
+						//~ var panel = dom.getElementsByClassName('panel-title')[2];
+						//~ if (panel.innerText.trim() != 'Delinquent Taxes') {
+							//~ d2_err('del taxes title?');
+							//~ return;
+						//~ }
+						//~ console.log(panel);
+						//~ var table = panel.parentNode.parentNode.getElementsByTagName('table');
+						//~ if (table.length != 1) {
+							//~ d2_err('del taxes wrong #tables');
+							//~ return;
+						//~ }
+						//~ console.log(table);
+						//~ var tr = table[0].getElementsByTagName('tr');
+						//~ for (var i=0;i<tr.length;i++) {
+							//~ console.log(tr[i]);
+							//~ if (tr[i].innerHTML.indexOf('<th>') != -1) continue; // Skip header row
+							//~ var tds = tr[i].getElementsByTagName('td');
+							//~ if (!fill_in_delq(tds)) { // EXIT ON FAILURE.
+								//~ d2_err('fill in returns false2');
+								//~ return;
+							//~ }
+						//~ }
+					//~ }
+					
+					//~ // show sbm
+					//~ document.body.style.backgroundColor = 'lightgreen';
+					//~ // Well, sbm then.
+					//~ //doSubmit();
+					//~ trysbm();
+				//~ }
+			//~ });
+			
 		}
 		new run().f();
 	}
