@@ -202050,114 +202050,115 @@ qatar,80
 				if (!x) {
 					d2_err('Bad sold taxes type?' + tds[0].innerText);
 					return false;
-				} else {
-					// Loop through all TR elements.
-					var type_sale = x[2];
-					var year = x[1];
-					var x = document.getElementsByTagName('tr'),
-						j, y,
-						pause = false,
-						occupancy = tds[2].innerText;
-					console.log(x);
-					for (j in x) {
-						if (j == 'length') break;
-						if (!x[j].innerHTML) continue;
-						if (x[j].innerHTML.indexOf('name="Sold ') != -1 && !x[j].isSelected) {
-							x[j].isSelected = true;
-							found = true;
-							// Status field
-							y = x[j].getElementsByTagName('select')[0]; // 0 TO 1
-							switch (type_sale) {
-								case ' Annual Sale':
-									y.selectedIndex = 1;
-									if (y.value != 'Annual Sale') {
-										pause = true;
-										console.log('pause1.1a');
-									}
-									break;
-								case ' Scavenger Sale':
-									y.selectedIndex = 2;
-									if (y.value != 'Scavenger Sale') {
-										pause = true;
-										console.log('pause1.1b');
-									}
-									break;
-								case ' Special Assessment':
-									y.selectedIndex = 3;
-									if (y.value != 'Special Assessment') {
-										pause = true;
-										console.log('pause1.1c');
-									}
-									break;
-								case ' '://This is an interesting case.
-									// There is no "type", i.e. it is blank.
-									y.selectedIndex = 0;
-									if (y.value != '') {
-										pause = true;
-										console.log('pause1.1d');
-									}
-									break;
-								default:
-									pause = true;
-									console.log('pause1.1');
-									break;
-							}
-							
-							y = x[j].getElementsByTagName('select')[1]; // 0 TO 1
-							if (occupancy == 'Sold') {
-								y.selectedIndex = 1;
-								if (y.value != 'Sold') {
-									pause = true;
-									console.log('pause1.2');
-								}
-							} else if (occupancy == 'Redeemed') {
-								y.selectedIndex = 2;
-								if (y.value != 'Redeemed') {
-									pause = true;
-									console.log('pause1.3');
-								}
-							} else if (occupancy == 'Vacated') {
-								y.selectedIndex = 3;
-								if (y.value != 'Vacated') {
-									pause = true;
-									console.log('pause1.4');
-								}
-							} else if (occupancy == 'Deeded') {
-								y.selectedIndex = 4;
-								if (y.value != 'Deeded') {
-									pause = true;
-									console.log('pause1.5');
-								}
-							} else {
-								pause = true;
-								console.log('pause1.6');
-							}
-							
-							y = x[j].getElementsByTagName('input');
-							y[0].value = parseInt(year);
-							y[1].value = tds[3].innerText.trim();
-							y[2].value = tds[4].innerText.trim();
-							if (parseInt(year) < 1996 || parseInt(year) > 2020) {
-								pause = true;
-								console.log('pause1.7');
-								return false;
-							}
-							
-							// STOP HERE!!
-							return true;
-							////////////
-							// No break
-							// break;
-							////////////
-						}
-					}
-					// RETURN FALSE 
-					//~ d2_err('leftovers from sold?');
-					// DEBUG: CHECK THAT THE ADD'L YEARS IS CHECKED
-					// 		CORRECTLY BEFORE ALLOWING AUTO.
-					document.getElementsByName('Sold - Additional Years')[0].checked = true;
-					return true;
 				}
+				
+				// Still here.
+				// Loop through all TR elements.
+				var type_sale = x[2];
+				var year = x[1];
+				var x = document.getElementsByTagName('tr'),
+					j, y,
+					pause = false,
+					status = tds[2].innerText;
+				console.log(x);
+				for (j in x) {
+					if (j == 'length') break;
+					if (!x[j].innerHTML) continue;
+					if (x[j].innerHTML.indexOf('name="Sold ') != -1 && !x[j].isSelected) {
+						x[j].isSelected = true;
+						found = true;
+						// Status field
+						y = x[j].getElementsByTagName('select')[0]; // 0 TO 1
+						switch (type_sale) {
+							case ' Annual Sale':
+								y.selectedIndex = 1;
+								if (y.value != 'Annual Sale') {
+									pause = true;
+									console.log('pause1.1a');
+								}
+								break;
+							case ' Scavenger Sale':
+								y.selectedIndex = 2;
+								if (y.value != 'Scavenger Sale') {
+									pause = true;
+									console.log('pause1.1b');
+								}
+								break;
+							case ' Special Assessment':
+								y.selectedIndex = 3;
+								if (y.value != 'Special Assessment') {
+									pause = true;
+									console.log('pause1.1c');
+								}
+								break;
+							case ' '://This is an interesting case.
+								// There is no "type", i.e. it is blank.
+								y.selectedIndex = 0;
+								if (y.value != '') {
+									pause = true;
+									console.log('pause1.1d');
+								}
+								break;
+							default:
+								pause = true;
+								console.log('pause1.1');
+								break;
+						}
+						
+						y = x[j].getElementsByTagName('select')[1]; // 0 TO 1
+						if (status == 'Sold') {
+							y.selectedIndex = 1;
+							if (y.value != 'Sold') {
+								pause = true;
+								console.log('pause1.2');
+							}
+						} else if (status == 'Redeemed') {
+							y.selectedIndex = 2;
+							if (y.value != 'Redeemed') {
+								pause = true;
+								console.log('pause1.3');
+							}
+						} else if (status == 'Vacated') {
+							y.selectedIndex = 3;
+							if (y.value != 'Vacated') {
+								pause = true;
+								console.log('pause1.4');
+							}
+						} else if (status == 'Deeded') {
+							y.selectedIndex = 4;
+							if (y.value != 'Deeded') {
+								pause = true;
+								console.log('pause1.5');
+							}
+						} else {
+							pause = true;
+							console.log('pause1.6');
+						}
+						
+						y = x[j].getElementsByTagName('input');
+						y[0].value = parseInt(year);
+						y[1].value = tds[3].innerText.trim();
+						y[2].value = tds[4].innerText.trim();
+						if (parseInt(year) < 1996 || parseInt(year) > 2020) {
+							pause = true;
+							console.log('pause1.7');
+							return false;
+						}
+						
+						// STOP HERE!!
+						return true;
+						////////////
+						// No break
+						// break;
+						////////////
+					}
+				}
+				// RETURN FALSE 
+				//~ d2_err('leftovers from sold?');
+				// DEBUG: CHECK THAT THE ADD'L YEARS IS CHECKED
+				// 		CORRECTLY BEFORE ALLOWING AUTO.
+				document.getElementsByName('Sold - Additional Years')[0].checked = true;
+				return true;
 			}
 		}
 		new run().f();
