@@ -201743,7 +201743,7 @@ qatar,80
 				filename: null,
 			}
 			//~ o.filename = new AMT___requests_factory().md5(o.pin);
-			o.filename = new AMT___requests_factory().md5(o.pin)+o.pin;
+			o.filename = new AMT___requests_factory().md5(o.pin)+o.pin+'-';
 			// debug
 			var d2 = ''.div({style: 'position:absolute;top:0;left:40%;height:40px;width:59%;background-color:#eee;'});
 			document.body.appendChild(d2);
@@ -201765,7 +201765,9 @@ qatar,80
 				if (AMT__Global_Vars.isPreview) {
 					return;
 				}
-				if (/ASSIGNMENT_ID_NOT_AVAILABLE/.exec(document.location.href)) {
+				if (/ASSIGNMENT_ID_NOT_AVAILABLE/.exec(document.location.href) ||
+					document.location.href.indexOf('localhost') != -1
+				) {
 					return;
 				}
 				// else...
@@ -201792,11 +201794,12 @@ qatar,80
 					],
 					//~ do_not_save_to_file: true,
 					short_filename: o.filename,
-					post_object_as_str: 'Pin='+encodeURIComponent(o.pid),
+					post_object_as_str: 'Pin='+encodeURIComponent(o.pin),
 					
 				},
 				callback_function: function(response) {
-					var rs = options.response.responseText;
+					console.log(response);
+					var rs = response.response.responseText;
 					if (/^\d+$/.exec(rs) && rs != '200') {
 						d2_err('status!=200 [2]');
 						return;
