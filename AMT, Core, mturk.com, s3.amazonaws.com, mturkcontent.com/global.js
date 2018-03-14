@@ -17592,9 +17592,9 @@ AMT___items_factory.prototype.startJobTimer = function() {
 
 
 /**
- * function create_dashboard__powers_v1__showScrapyResult_contexts
+ * create_dashboard__powers_v1__showScrapyResult_contexts
  * 
- * THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1
+ * THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1.
  * 
  * @param results_array
  * @param out_div
@@ -17609,10 +17609,7 @@ AMT___items_factory.prototype.startJobTimer = function() {
  */
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts =
-function(
-	results_array,
-	out_div,
-	seed_object)
+	function(results_array, out_div, seed_object)
 {
 	var old_divs = out_div.getElementsByTagName('div');
 	for (var i = old_divs.length - 1; i>=0; i--) {
