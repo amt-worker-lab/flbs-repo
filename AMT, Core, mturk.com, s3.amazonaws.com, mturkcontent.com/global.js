@@ -17904,16 +17904,20 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
-	el_select.onclick = function() {
+	//~ el_select.addEventListener("DOMMouseScroll", function(e) {
+			//~ console.log(e);
+		//~ }, false
+	//~ );
+	el_select.onclick = function(e) {
 		// Start by prevent default, otherwise a weird thing sometimes
 		// happens, whenever the select field is larger than the
 		// innerHeight of the window: The focus on the select field
 		// causes the window to jump down!
 		// Consider e.which: console.log(e.which)
-		//~ if (e.which && e.which == 1) {
-			//~ e.stopPropagation();
-			//~ e.preventDefault();
-		//~ }
+		// Actually, it turns out this was simply an issue
+		// with Chromium Wheel Smooth Scroller Chrome extension!
+		// FIXED.
+		//~ console.log(e);
 		if (this.value == '') return;
 		(new AMT___items_factory())
 			.create_dashboard__powers_v1__showScrapyResult_contexts(
