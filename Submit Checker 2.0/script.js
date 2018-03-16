@@ -152,7 +152,6 @@ chrome.extension.sendMessage({
 function mturk_load()
 {	
 	
-	
 	if (window.top == window.self && /^https?:\/\/(www\.|worker\.|)mturk\.com\//.exec(document.location.href)) {
 		AMT__Global_Vars.isTopWindow = true;
 
@@ -178,6 +177,7 @@ function mturk_load()
 			*/
 			)
 		{
+			console.log("trace b4 setting AMT_GLOBAL_VARS.ispreview");
 			AMT__Global_Vars.isPreview = true;
 			return;
 		}
@@ -242,7 +242,7 @@ function mturk_load()
 	}
 }
 
-var locReg = /(https?:\/\/[w]*.mturk.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
+var locReg = /(https?:\/\/worker\.mturk\.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
 if(document.location.href.match(locReg) != null) {
 	var ih;
 	if (document.readyState == "complete" || document.readyState == "interactive") {

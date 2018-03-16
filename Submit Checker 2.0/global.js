@@ -64,13 +64,17 @@ var AMT__Global_Vars =
 AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
-		var groupIdReg = /<input type="hidden" name="groupId" value="([^"]*)">/;
-		var groupId = groupIdReg.exec(ih);
+		var groupIdReg = /https?:\/\/worker\.mturk\.com\/projects\/([A-Z0-9]+)/;
+		var groupId = groupIdReg.exec(document.location.href);
+
 		if(!groupId)
 		{
 			//alert('Error initializing groupId. Try scraping it from the href? Or using the document element rather than a regex?');
 			return;
-		} else groupId = groupId[1];
+		} 
+		else {
+			groupId = groupId[1];		
+		} 
 		AMT__Global_Vars.groupId = groupId;		
 		
 		//Now that we have the groupId, listen for whether the child frame wants to learn it as well.
