@@ -19,7 +19,7 @@ function HIT(rew, reqId, reqName, jName,gId, hId, dur, worker) {
 			
 			this.time = (new Date()).getTime();
 			
-			this.accountName = document.getElementById('user_name_field').innerText; 
+			this.accountName = document.getElementsByClassName('me-bar')[0].getElementsByTagName('a')[0].innerText;
 			this.userName = AMT__Global_Vars.userName;
 			
 			//console.log('userName: ' + this.userName);
@@ -220,67 +220,38 @@ AMT__Global_Vars.initializeTabId = function() {
 		
 		rwd = detail[0].getElementsByClassName('detail-bar-label');
 		var rew;
+		var reqId;
+		var reqName;
+		var dur = document.getElementsByClassName('completion-timer')[0].innerText.match(/ of ([\d\D]+)/)[1];
 		if (rwd) {
 			for (var i=0; i<rwd.length; i++) {
 				var label = rwd[i].innerText.trim();
+				var valueItem = rwd[i].parentNode.getElementsByClassName('detail-bar-value')[0];
 				if (label == 'Reward:' ||
 					label == 'Reward' // Hm?
 					) {
 					// Copy text to menu.
-					rew = rwd[i].parentNode.getElementsByClassName('detail-bar-value')[0].innerText;
-					break;
+					rew = valueItem.innerText;
+					rew = (rew.replace(/\$/, "")) * 1; //0.03
 				}
 				else if(label == "Requester"||
 				        label == "Requester:") {
-				
-				
+					reqId = valueItem.getElementsByTagName('a')[0].href;
+					reqId = reqId.match(/requesters\/([A-Z0-9]+)/)[1];
+					reqName = valueItem.innerText.trim();
 				}
+				
 			}
 		}
 		
-		rew = (rew.replace(/\$/, "")) * 1; //0.03
-		
-		var reqId = document.getElementsByClassName('requesterId');
-		if(reqId && reqId[0] && reqId[0].value)
-		{
-			reqId = reqId.trim();
-		}
-		else
-		{
-			//Attempt a regex on it
-			reqIdReg = /name="requesterId" value="([^"]*)"/
-			if(reqId = reqIdReg.exec(document.body.innerHTML)) {
-				reqId = reqId[1];
-			}
-			else 
-			{
-				//Attempt to grab it from the 'contact' part of the page
-				reqIdReg = /requesterId=([^&]*)/
-				if(reqId = reqIdReg.exec(document.body.innerHTML)) {
-					reqId = reqId[1];
-					if(reqId == '')
-						reqId = 'Undefined Requester Id';
-				}
-				else if(false)
-				{
-					//Attempt to grab it from the link, or from the child frame's link
-				}
-				else
-				{
-					reqId = "Undefined Requester Id";
-				}
-			}	
-		}
-		
-		var reqName = document.getElementsByClassName("capsule_field_text")[0].innerHTML.trim();
-		var jName = document.getElementsByClassName("capsulelink_bold")[0].getElementsByTagName('div')[0].innerHTML.trim();
+		var jName = document.getElementsByClassName('task-project-title')[0].innerHTML.trim();
 		var gId = AMT__Global_Vars.groupId;
 		var hId = AMT__Global_Vars.hitId; 
 		
-		var dur = document.getElementsByClassName('capsule_field_text')[3].innerText.trim();		
+		
 		
 		AMT__Global_Vars.hitRecordDetails = new HIT(rew, reqId, reqName,jName, gId, hId, dur);
-		//alert('here');
+		console.log('AMT__Global_Vars.hitRecordDetails', AMT__Global_Vars.hitRecordDetails);
 		GM_xmlhttpRequest({
 		method: 'GET',
 		asynchronous: false,
