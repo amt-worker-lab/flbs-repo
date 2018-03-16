@@ -187,7 +187,7 @@ function mturk_load()
 		s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
 		t=/you were viewing could not be accepted/; // Not accepted
 		//u=/The HIT you were viewing has expired/; //XXNotal accepted
-		w=/Want to work on this HIT/; // Not accepted
+		w=/<\/span> this Requester's HIT before working on it\./; // Not accepted
 		if  (
 				s.exec(ih) || t.exec(ih) || w.exec(ih)
 			)

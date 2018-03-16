@@ -232,7 +232,7 @@ AMT__Global_Vars.initializeTabId = function() {
 					) {
 					// Copy text to menu.
 					rew = valueItem.innerText;
-					rew = (rew.replace(/\$/, "")) * 1; //0.03
+					rew = parseFloat((rew.replace(/\$/, ""))); //0.03
 				}
 				else if(label == "Requester"||
 				        label == "Requester:") {
