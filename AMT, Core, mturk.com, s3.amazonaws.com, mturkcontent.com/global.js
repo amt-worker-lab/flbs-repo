@@ -2818,7 +2818,7 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 		options: options
 	}, "*");
 	
-	parent.postMessage("test test test", "*");
+	//parent.postMessage("test test test", "*");
 	
 	//~ setInterval
 }
@@ -18723,54 +18723,51 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			//~ alert('No match');
 			return [];
 		}
-		else {
-			
-			// Not enough results.
-			// not_enough_results_str
-			// Returns []
-			if (rs.indexOf(not_enough_results_str) != -1)
-				return [];
-			
-			//Assume we have 1-10 results
+		
+		// Not enough results.
+		// not_enough_results_str
+		// Returns []
+		if (rs.indexOf(not_enough_results_str) != -1)
+			return [];
+		
+		//Assume we have 1-10 results
 
-
-			//r.lastIndex = 0;	<-- no need, not testing
+		//r.lastIndex = 0;	<-- no need, not testing
+		
+		var ol = rslts[0];
+		
+		// 1 = url
+		// 2 = body
+		var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3[^>]*><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+		var content;
+		var arr = [];
+		while(content = contentReg.exec(ol)) {
+			content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
+			content[2] = content[2].replace(/<\/b>/gi, '(``)');
+			content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
+			content[2] = content[2].replace(/<script>[^<]+<\/script>/g, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
+			content[2] = content[2].replace(/<[^>]+>/g, ' ');
+			content[2] = content[2].replace(/[<>]/g, ' ');
+			// Clean it now
+			content[2] = __js_clean_html_str(content[2]);
+			// Replace B
+			content[2] = content[2].replace(/\(``\)/g, '</b>');
+			content[2] = content[2].replace(/\(`\)/g, '<b>');
 			
-			var ol = rslts[0];
-			
-			// 1 = url
-			// 2 = body
-			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3[^>]*><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
-			var content;
-			var arr = [];
-			while(content = contentReg.exec(ol)) {				
-				content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
-				content[2] = content[2].replace(/<\/b>/gi, '(``)');
-				content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
-				content[2] = content[2].replace(/<script>[^<]+<\/script>/g, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
-				content[2] = content[2].replace(/<[^>]+>/g, ' ');
-				content[2] = content[2].replace(/[<>]/g, ' ');
-				// Clean it now
-				content[2] = __js_clean_html_str(content[2]);
-				// Replace B
-				content[2] = content[2].replace(/\(``\)/g, '</b>');
-				content[2] = content[2].replace(/\(`\)/g, '<b>');
-				
-				// URLs ?
-				if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
-					// Works?
-					// http at start, to - -
-					content[2] = content[2].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-					// www at start, to - -
-					content[2] = content[2].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-				}
-				
-				arr.push([
-					content[1], content[2]
-				]);
+			// URLs ?
+			if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+				// Works?
+				// http at start, to - -
+				content[2] = content[2].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+				// www at start, to - -
+				content[2] = content[2].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
 			}
-			return arr;
+			
+			arr.push([
+				content[1], content[2]
+			]);
 		}
+		return arr;
 	}
 	this.array_startPage_results = array_startPage_results;
 	

@@ -2480,7 +2480,7 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 		options: options
 	}, "*");
 	
-	parent.postMessage("test test test", "*");
+	//parent.postMessage("test test test", "*");
 	
 	//~ setInterval
 }
