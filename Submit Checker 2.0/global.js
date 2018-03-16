@@ -123,35 +123,16 @@ AMT__Global_Vars.initializeGroupId = function () {
 AMT__Global_Vars.initializeHitId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
-		var hitId;
-		var innerIframe = document.getElementsByTagName('iframe');
-		if(innerIframe && innerIframe[0])
-		{
-			innerIframe = innerIframe[0];
-			innerIframeSrc = innerIframe.src;
-			var hitIdReg = /hitId=([^&]+)/
-			hitId = hitIdReg.exec(innerIframeSrc);
-			if(!hitId)
-			{
-				//~ alert('Caution: Failed to get hitId from frame source. Proceeding to get hitId from topWindow instead.');
-			}
-			else
-			{
-				hitId = hitId[1];
-			}
-		}
 		
-		if(!innerIframe || !hitId)
-		{	
-			var hitIdReg = /name="hitId" value="([^"]+)">///<input type="hidden" name="groupId" value="([^"]+)">/;
-			var hitId = hitIdReg.exec(ih);
-			if(!hitId)
-			{
-				//alert('Error initializing groupId');
-				hitId = null;
-			} else
-				hitId = hitId[1];
+		var hitId;
+		var link = document.location.href;
+		var hitIdReg = /https?:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/([A-Z0-9]+)/;
+		var hitId = hitIdReg.exec(link);
+		if(!hitId)
+		{
+			//alert('Error initializing groupId');
 		}
+		hitId = hitId[1];
 		AMT__Global_Vars.hitId = hitId;
 	}
 	else
@@ -220,12 +201,13 @@ AMT__Global_Vars.initializeTabId = function() {
 	 //alert('hit');
 	//Check Assumptions
 	if(!AMT__Global_Vars.isTopWindow)
-		alert('error in initializeHitRecordDetails');
+		alert('error in initializeHitRecordDetails. Assumption failed: is top window');
 	if(AMT__Global_Vars.isPreview)
-		alert('error in initializeHitRecordDetails');	
-	if (document.body.innerHTML.indexOf('<span id="alertboxHeader">There are currently no HITs assigned to you.</span>') != -1) {
+		alert('error in initializeHitRecordDetails. Assumption failed: is preview');	
+	//This worked on the old site - may need to be implemented on the new site.
+	/*if (document.body.innerHTML.indexOf('<span id="alertboxHeader">There are currently no HITs assigned to you.</span>') != -1) {
 		return;
-	}
+	}*/
 
 	//Get COMPUTER_ID and Current User from localhost 
 	chrome.extension.sendMessage({
@@ -234,9 +216,28 @@ AMT__Global_Vars.initializeTabId = function() {
 		AMT__Global_Vars.computerId = response.computerId;
 		AMT__Global_Vars.userName = response.userName;
 		
-		console.log('trace in initializeHitRecordDetails');
+		var detail = document.getElementsByClassName('container-fluid project-detail-bar');
 		
-		var rew = document.getElementsByClassName("reward")[1].innerText.trim();
+		rwd = detail[0].getElementsByClassName('detail-bar-label');
+		var rew;
+		if (rwd) {
+			for (var i=0; i<rwd.length; i++) {
+				var label = rwd[i].innerText.trim();
+				if (label == 'Reward:' ||
+					label == 'Reward' // Hm?
+					) {
+					// Copy text to menu.
+					rew = rwd[i].parentNode.getElementsByClassName('detail-bar-value')[0].innerText;
+					break;
+				}
+				else if(label == "Requester"||
+				        label == "Requester:") {
+				
+				
+				}
+			}
+		}
+		
 		rew = (rew.replace(/\$/, "")) * 1; //0.03
 		
 		var reqId = document.getElementsByClassName('requesterId');
