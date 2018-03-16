@@ -164,10 +164,10 @@ function mturk_load()
 		 */
 		var l = document.location.href;
 		if  (
-			//OLD
-			//!/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
+			// OLD
+			// !/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
 		
-			!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks)/i.exec(l) //
+			!/^https:\/\/worker\.mturk\.com\/projects\/[^\/]+\/tasks/i.exec(l) //
 
 			//OLD
 			//TODO: Determine what page occurs when we arrive at the condition below
