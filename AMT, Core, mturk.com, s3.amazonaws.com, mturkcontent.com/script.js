@@ -58978,6 +58978,7 @@ Laurens Hammond, Chicago, Ill.**/
 	
 	/**
 	 * Facebook company search
+	 * 
 	 *  See https://developers.facebook.com/tools/accesstoken/ for 
 	 *  details on access tokens. The "user" token apparently returns
 	 *  more results sometimes? Wtf? So odd... And of course the
@@ -59011,6 +59012,581 @@ Laurens Hammond, Chicago, Ill.**/
 	 * // Facebook
 	 * // Companies
 	 */
+	// Matthew Mesher
+	// Find the Company Facebook Business Page
+	// 
+	// 
+	s = '<p>Find the Facebook page for this business (<strong>NOT</strong> personal profile page of Facebook user).</p>\n\n<ul>\n	<li>Enter whether a Company Facebook Page is found with <strong>Y</strong> or <strong>N. </strong></li>\n	<li><u>If not found, stop. Otherwise:</u>&nbsp;Enter the website address of the Facebook page.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+			//~ GM_addStyle('body {margin-top:1000px;}');
+			GM_addStyle('.container {position:absolute;top:1000px;margin-left:0px;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.exe {word-wrap:break-word;white-space:normal;}');  // NOTE WORD WRAP..............
+			GM_addStyle('#submitButton {position:absolute;top:1400px;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				comp_array: [],
+				addr: td[3].innerText.trim()+','+td[5].innerText.trim(),
+				addr_array: [],
+				state_abbr: td[7].innerText.trim(),
+				street: td[3].innerText.trim(),
+				phone: td[11].innerText.trim(),
+				//~ website: td[5].innerText.trim(),
+				site_unique_results: {},
+				unofficial_divs: [],
+				q: [
+					document.getElementById('url_found'),
+					document.getElementById('url_str')
+				],
+			}
+			//~ // Replace "The "...
+			//~ o.comp = o.comp.replace(/^The +/gi, '');
+			o.comp_array = o.comp.clean_string_to_array();
+			o.addr_array = o.addr.clean_string_to_array().concat(o.street.clean_string_to_array());
+			// Replace State abbreviation with full state name
+			// because for some reason FB gets pissed off if
+			// you send in an abbreviation. Srsly.......
+			// Use .stateAbbrToFull();
+			o.addr = o.addr.replace(/ ([A-Z]{2}), (US|CA|UK|AU|AS|[A-Z]{2})$/, function(p0, p1) {
+				o.state_abbr = p1; // Fill this...
+				return ' ' + p1.stateAbbrToFull();// + ', ';
+			});
+			
+			// AMT___addUserDecision
+			AMT___addUserDecision(
+				'JR,FB,May,2015',
+				function() {
+					return o.comp + '|' + o.addr;
+				},
+				[ 'Id(url_found)','Id(url_str)' ]
+			);
+			/* BEGIN ITEMS */
+			var w = 99.5/5;
+			var d1 = document.createElement('div');
+			d1 .setAttribute('style','position:absolute;top:160px;left:0%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:160px;left:'+w+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:160px;left:'+(w*2)+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1c);
+			//
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style','position:absolute;top:160px;left:'+(w*3)+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1d);
+			//
+			var d1e = document.createElement('div');
+			d1e.setAttribute('style','position:absolute;top:160px;left:'+(w*4)+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1e);
+			// 9% wide div for site scrape
+			var d1z = document.createElement('div');
+			d1z.setAttribute('style','position:absolute;top:20px;left:0%;width:99%;height:80px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1z);
+			//
+			var d2 = document.createElement('textarea'); // Offset these from N/A.....
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:100px;left:0;width:'+w+'%;height:60px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company_reviews(d1);
+			}
+			document.body.appendChild(d2);
+			//
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:100px;left:'+(w*1)+'%;width:'+w+'%;height:60px;');
+			d2b.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company_reviews(d1b);
+			}
+			document.body.appendChild(d2b);
+			//
+			var d2c = document.createElement('textarea');
+			d2c.setAttribute('style','position:absolute;top:100px;left:'+(w*2)+'%;width:'+w+'%;height:60px;');
+			d2c.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company_reviews(d1c);
+			}
+			document.body.appendChild(d2c);
+			//
+			var d2d = document.createElement('textarea');
+			d2d.setAttribute('style','position:absolute;top:100px;left:'+(w*3)+'%;width:'+w+'%;height:60px;');
+			d2d.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				this.value = this.value.replace(/[,\-]$/g, '').trim();
+				facebook_company_reviews(d1d);
+			}
+			document.body.appendChild(d2d);
+			//
+			var d2e = document.createElement('textarea');
+			d2e.setAttribute('style','position:absolute;top:100px;left:'+(w*4)+'%;width:'+w+'%;height:60px;');
+			d2e.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company_reviews(d1e);
+			}
+			document.body.appendChild(d2e);
+			//
+			var d3 = document.createElement('input');
+			d3.setAttribute('type','button');
+			d3.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:20px;');
+			d3.value = 'N/A';
+			d3.onclick = function() {
+				o.q[0].value = 'N';
+				//~ AMT___recordAndSubmit();
+			}
+			document.body.appendChild(d3);
+			/* END ITEMS */
+			// Default
+			o.q[0].value = 'Y';
+			//~ // 
+			//~ var second;
+			//~ var n = o.comp.split(' ');
+			//~ second = (n.length > 1) ? n.slice(0, n.length-1).join(' ').trim().replace(/[^\w\d]+$/, '') : '"'+o.comp+'"'; // Trim end of str of ",", ".", etc.
+			
+			// The first word of company.
+			// But if the first word is less than 5 characters, then
+			// first and second word. And so on until more than 5
+			// characters.
+			// For example, "The Best Drinks, Inc." becomes "The Best".
+			var t = o.comp.split(' ');
+			var t_comp = '';
+			for (var i in t) {
+				if (t_comp.replace(/ /g, '').length < 5) { // Up to five non-space characters.
+					t_comp += ' ' + t[i].trim();
+				}
+			}
+			t_comp = t_comp.trim();
+			// Comp
+			d2.value  = o.comp;
+			// Comp, Street + City
+			d2b.value = o.comp + ', ' + o.addr; 
+			// Comp, 
+			d2c.value = o.comp + ', ' + o.state_abbr;
+			// Comp[first*] + Street[first] + City[first]
+			d2d.value = o.comp + ', ' + o.phone;
+			// Comp[first*] + City[first]
+			d2e.value = o.comp + ', ' + o.addr + ',' + o.state_abbr.stateAbbrToFull();
+			// Keydown
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2c.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2d.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			ef.mouseup__delete_range({
+				element: d2b,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			ef.mouseup__delete_range({
+				element: d2c,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			ef.mouseup__delete_range({
+				element: d2d,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			ef.mouseup__delete_range({
+				element: d2e,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			// ih
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1,d1b,d1c,d1d,d1e
+				],
+				offset: 160 // offset top
+			});
+			// Init
+			//
+			facebook_company_reviews(d1);
+			facebook_company_reviews(d1b);
+			facebook_company_reviews(d1c);
+			facebook_company_reviews(d1d);
+			facebook_company_reviews(d1e);
+			//~ site_scrape(); // Site scrape
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			// Notes for doing a web search for FB pages. E.g. one panel.
+			// Returns only the URLs, no further detail?
+			// Returns a unique set of URLs in the format:
+			// 		facebook.com/..../[trim] or facebook.com/pages/..../[trim]
+			// site:facebook.com [...]
+			//
+			
+			//~ // Site scrape
+			//~ //
+			//~ function site_scrape() {
+				//~ o.website = o.website.replace(/^https?:*\/*(www\.|)/i, '').trim();
+				//~ if (o.website == '') {
+					//~ d1z.innerText = '--';
+					//~ return;
+				//~ }
+				//~ o.website = 'http://' + o.website;
+				//~ new AMT___requests_factory().xhr_with_disk_cache({
+					//~ URL: o.website,
+					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ if (options.response.status != 200) {
+							//~ return false;
+						//~ }
+						//~ return true;
+					//~ },
+					//~ success_callback: function(options) {
+						//~ var rs = options.response.responseText;
+						//~ if (options.response.status != 200) return;
+						//~ // Parse
+						//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+						//~ // Iterate
+						//~ var a = dom.getElementsByTagName('a');
+						//~ for (var i=0; i<a.length; i++) {
+							//~ if (/(fb.me|facebook.com)/i.exec(a[i].href)) {
+								//~ site_scrape_div(a[i].href);
+							//~ }
+						//~ }
+						//~ // if ""
+						//~ if (d1z.innerHTML == '') {
+							//~ d1z.innerText = '--';
+						//~ }
+					//~ }
+				//~ });
+			//~ }
+			//~ function site_scrape_div(href) {
+				//~ href = href.replace(/\?[\d\D]*/, ''); // Remove args
+				//~ href = href.replace(/^http:/i, 'https:'); // Set to https
+				//~ // Only adds if not already added. That is, unique.
+				//~ if (!o.site_unique_results[ href ]) {
+					//~ o.site_unique_results[ href ] = true;
+				//~ } else return;
+				//~ var d = document.createElement('input');
+				//~ d.type = 'button';
+				//~ d.setAttribute('style', 'cursor:pointer;');
+				//~ d.className = 'exe';
+				//~ d.link = href;
+				//~ d.link_tmp = href.replace(/\/$/, ''); // Remove trailing slash.
+				//~ d.original_bgc = '';
+				//~ d.value = href.replace(/^https?:\/\/(www\.|)facebook\.com\//i, '').replace(/\/$/, '');
+				//~ d1z.appendChild(d);
+				//~ d.onclick = function(e) {
+					//~ o.q[0].value = this.link;
+					//~ this.style.backgroundColor = 'LightGreen';
+					//~ doSubmit();
+				//~ }
+			//~ }
+			// facebook_company_reset_user_token
+			//
+			function facebook_company_reset_user_token(div) {
+				// Increment counter
+				if (!localStorage['fb_access_token__dynamic_counter']) {
+					localStorage['fb_access_token__dynamic_counter'] = 1;
+				} else {
+					localStorage['fb_access_token__dynamic_counter']++;
+				}
+				// Returns e.g.:
+				// {"access_token":"EAABkFZA143qIBALzuVw2vBbHFRo8PjZBnMAbZ
+				//  CaHRXBQNiMrqr4ZCtn48UQvtM5vpPOuBKusexxS2iZCQ28k4Jk8
+				//  eKjApL9mZAkdZBvxyGROAAh6TlZCmPMsK6ZA1nIYUxpA8FVfZBH
+				//  LZBE4TgEn9TPSBqj1RQZAUWHKNikZD",
+				// "token_type":"bearer","expires_in":5179398}
+				var u =
+					'https://graph.facebook.com/v2.6/oauth/access_token?'+
+					'client_id=110043999035042&'+
+					'client__API_KEY_REDACTED_&'+
+					'fb_exchange__API_KEY_REDACTED_+
+					'an2oGvjOG3Y6HnW0P4yh2XmhxzRjEnnZAaR6hnTnCuGSj0Gg0Tem'+
+					'8qZCw9KocbbV9HKqurFmfKeIDGwXBciqBADKLZA2nNywk3FFfgbA'+
+					'l4B4Tp1IREDVafxZCZA1XWKTd7Ei2ynunVAZDZD'+
+					'&grant_type=fb_exchange_token&suppress_http_code=1'+
+					'&__user=613706455&__a=1'+
+					'&__dyn=7xeXxmdwgrgmwCwRyax68xfLFwgoqwgEoyUnwgU6C7Qdw'+
+					'PwDyVHxe3K7E4i3K225ob8qx22S1QxG48hw'+
+					'&__req=2&__be=0&__pc=PHASED%3ADEFAULT'+
+					'&fb_dtsg=AQEEGjxRaebM%3AAQGp1gi0MqJP'+
+					'&ttstamp=26581696971106120829710198775865817111249'+
+					'10310548771137480'+
+					'&__rev=2349332'+
+					'&randomized='+Math.round(Math.random()*1000000000000000000)
+					;
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) {
+							return; // Failed.....?
+						}
+						rs = JSON.parse(rs);
+						if (!rs.access_token) {
+							return; // Failed.....?
+						}
+						localStorage['fb_access_token__dynamic'] = rs.access_token;
+						// Continue task...
+						//facebook_company_reviews(div);
+					}
+				});
+			}
+			// facebook_company_reviews
+			//
+			function facebook_company_reviews(div) {
+				var out = div;
+				var v;
+				var at;
+				out.innerHTML = '';
+				if (out == d1)
+					v = d2.value;
+				else if (out == d1b)
+					v = d2b.value;
+				else if (out == d1c)
+					v = d2c.value;
+				else if (out == d1d)
+					v = d2d.value;
+				else
+					v = d2e.value;
+				if (v.trim() == '') {
+					out.innerText = '0';
+					return;
+				}
+				// Access token.
+				// This is stored in localStorage. If it does not
+				// exist then this is probably first run. So get a
+				// new one by calling facebook_company_reset_user_token.
+				//~ if (!localStorage['fb_access_token__dynamic']) {
+					//~ facebook_company_reset_user_token(div);
+					//~ return;
+				//~ } else {
+					//~ at = localStorage['fb_access_token__dynamic'];
+				//~ }
+				var at = '114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				// URL
+				// just type=page is used here (user ignored)
+				// 114463268581528|6619aa9c8ea70e1228c17c69ab1882be:
+				//  https://graph.facebook.com/oauth/access_token?client_id=
+				//  114463268581528&client__API_KEY_REDACTED_
+				//  &grant_type=client_credentials
+				// Produces: access_token=114463268581528|naw8IaAndbfBTdu-k1I1FTX2CbA
+				var u = 
+					'https://graph.facebook.com/search'+
+					'?q='+encodeURIComponent(v)+'&type=page'+ //&type=user
+					'&fields=category,id,name,likes,talking_about_count,location,link,company_overview'+
+					'&limit=10'+
+					'&access_token='+at;
+					//~ '&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							// Try again but first reset the "user" token.
+							// See notes...
+							facebook_company_reset_user_token(div);
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						if (!r.data) {
+							out.innerHTML = '!r.data';
+							return;
+						}
+						r = r.data;
+						console.log(r);
+						// Show full search term...
+						out.appendChild((o.comp).div({style:'border-bottom:2px solid blue;'}));
+						// Loop...
+						//
+						var c = 0;
+						for (var i in r) {
+							// If event then skip.
+							if (r[i].type) {
+								if (r[i].type == 'event') continue;
+							}
+							// Remove lat / lng
+							if (r[i].location) {
+								if (r[i].location.latitude) {
+									delete r[i].location.latitude;
+								}
+								if (r[i].location.longitude) {
+									delete r[i].location.longitude;
+								}
+							}
+							// Location formatted with bold.
+							var found_state_abbr = false;
+							var temp_location = '';
+							if (r[i].location) {
+								var l = [];
+								for (var j in r[i].location) {
+									if (r[i].location[j].length > 0) {
+										l.push(r[i].location[j]);
+										// State abbreviation.
+										if (r[i].location[j] == o.state_abbr) {
+											found_state_abbr = true;
+										}
+									}
+								}
+								temp_location = MT__bold(l.join(','), o.addr_array, {color: 'blue'}).bold_string;
+							}
+							// Generic, unclaimed profiles.
+							var unofficial = false;
+							if  (
+								!r[i].link || 
+								/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
+								)
+							{
+								// Append a "blank"
+								var unofficial_div =
+									(r[i].name+'<br>L:'+r[i].likes+'<br>A:'+temp_location)
+									.div({style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true});
+								out.appendChild(
+									unofficial_div
+								);
+								unofficial = true;
+								unofficial_div.onclick = function() {
+									for (var i in o.unofficial_divs) {
+										if (o.unofficial_divs[i] && o.unofficial_divs[i].real_div) {
+											var rd = o.unofficial_divs[i].real_div;
+											rd.style.display = '';
+											o.unofficial_divs[i].style.display = 'none';
+										}
+									}
+								}
+								o.unofficial_divs.push(unofficial_div); // Push global
+							}
+							// talking_about_count
+							if (r[i].talking_about_count != null) {
+								//
+							} else
+								r[i].talking_about_count = '';
+							// likes
+							if (r[i].likes != null) {
+								//
+							} else
+								r[i].likes = '';
+							// Overview?
+							//
+							//~ r[i].company_overview = (r[i].company_overview) ? r[i].company_overview : '';
+							// Out div
+							//
+							var div = document.createElement('div');
+							div.setAttribute('style', 'width:100%;border-bottom:2px solid teal;cursor:pointer;');
+							//~ div.className	= r[i].link;
+							div.className	= 'exe';
+							div.link		= r[i].link;
+							div.link_tmp	= r[i].link.replace(/\/$/, ''); // Remove trailing slash.
+							out.appendChild(div);
+							// Tmp
+							var tmp = '';
+							tmp += MT__bold(r[i].name, o.comp_array);
+							tmp += '<br>L:<b>'+r[i].likes+'</b>';
+							tmp += '<br>T:'+r[i].talking_about_count;
+							if (r[i].company_overview)
+								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
+							// Bgc
+							if (found_state_abbr || o.state_abbr == null) {
+								tmp += '<hr>A:'+temp_location;
+								div.style.backgroundColor = ''; // Good
+								div.original_bgc = '';
+							} else {
+								div.style.backgroundColor = 'aqua';
+								div.original_bgc = 'aqua';
+							}
+							// Category
+							if (r[i].category) {
+								var x = r[i].category;
+								tmp += '<hr>C:'+x;
+							}
+							tmp += '<hr>' + r[i].link.replace(/^https:\/\/www\.facebook\.com/, '');
+							// innerHTML
+							div.innerHTML = tmp;
+							if (unofficial) {
+								div.style.display = 'none';
+								// Unofficial pages.
+								unofficial_div.real_div = div;
+							}
+							// onclick
+							div.onclick = function() {
+								this.clicked = true;
+								this.style.backgroundColor = 'LightGreen';
+								o.q[1].value = this.link;
+								if (
+										// This is only necessary to check
+										// that a FB page is in fact an
+										// official page.
+										//~ !/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
+									/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[1].value)
+									)
+									AMT___recordAndSubmit();
+							}
+							// onmouseover
+							div.onmouseover = function() {
+								var x = document.getElementsByClassName('exe');
+								for (var i in x) {
+									if (i == 'length') break;
+									if (!x[i].link || this.link_tmp.toLowerCase() != x[i].link_tmp.toLowerCase()) continue;
+									if (x[i].original_bgc == '') {
+										x[i].style.backgroundColor = 'LightGreen';
+									} else {
+										x[i].style.backgroundColor = 'purple';
+									}
+								}
+							}
+							// onmouseout
+							div.onmouseout = function() {
+								var x = document.getElementsByClassName('exe');
+								for (var i in x) {
+									if (i == 'length') break;
+									if (!x[i].link || this.link_tmp.toLowerCase() != x[i].link_tmp.toLowerCase()) continue;
+									if (!x[i].clicked)
+										x[i].style.backgroundColor = x[i].original_bgc;
+								}
+							}
+							c++;
+						}
+						// If no results
+						if (c == 0) {
+							out.appendChild('0'.div());
+							return;
+						}
+						// Else if results
+						else
+						{
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:2000px;');
+							out.appendChild(div);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// Justin Renken
 	// Find the Official Facebook Page for the Business
 	// 
