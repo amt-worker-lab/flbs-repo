@@ -59460,24 +59460,26 @@ Laurens Hammond, Chicago, Ill.**/
 								/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
 								)
 							{
+								///////////////////
 								// Append a "blank"
-								var unofficial_div =
-									(r[i].name+'<br>L:'+r[i].likes+'<br>A:'+temp_location)
-									.div({style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true});
-								out.appendChild(
-									unofficial_div
-								);
+								///////////////////
+								//~ var unofficial_div =
+									//~ (r[i].name+'<br>L:'+r[i].likes+'<br>A:'+temp_location)
+									//~ .div({style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true});
+								//~ out.appendChild(
+									//~ unofficial_div
+								//~ );
+								//~ unofficial_div.onclick = function() {
+									//~ for (var i in o.unofficial_divs) {
+										//~ if (o.unofficial_divs[i] && o.unofficial_divs[i].real_div) {
+											//~ var rd = o.unofficial_divs[i].real_div;
+											//~ rd.style.display = '';
+											//~ o.unofficial_divs[i].style.display = 'none';
+										//~ }
+									//~ }
+								//~ }
+								//~ o.unofficial_divs.push(unofficial_div); // Push global
 								unofficial = true;
-								unofficial_div.onclick = function() {
-									for (var i in o.unofficial_divs) {
-										if (o.unofficial_divs[i] && o.unofficial_divs[i].real_div) {
-											var rd = o.unofficial_divs[i].real_div;
-											rd.style.display = '';
-											o.unofficial_divs[i].style.display = 'none';
-										}
-									}
-								}
-								o.unofficial_divs.push(unofficial_div); // Push global
 							}
 							// talking_about_count
 							if (r[i].talking_about_count != null) {
@@ -59504,8 +59506,12 @@ Laurens Hammond, Chicago, Ill.**/
 							// Tmp
 							var tmp = '';
 							tmp += MT__bold(r[i].name, o.comp_array);
-							tmp += '<br>L:<b>'+r[i].likes+'</b>';
-							tmp += '<br>T:'+r[i].talking_about_count;
+							if (!unofficial) {
+								tmp += '<b><u>[ofc.]</u></b>';
+							}
+							tmp += '<br>L:'+r[i].likes+',T:'+r[i].talking_about_count;
+							if (r[i].category)
+								tmp += ',C:'+r[i].category;
 							if (r[i].company_overview)
 								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
 							// Bgc
@@ -59517,18 +59523,13 @@ Laurens Hammond, Chicago, Ill.**/
 								div.style.backgroundColor = 'aqua';
 								div.original_bgc = 'aqua';
 							}
-							// Category
-							if (r[i].category) {
-								var x = r[i].category;
-								tmp += '<hr>C:'+x;
-							}
 							tmp += '<hr>' + r[i].link.replace(/^https:\/\/www\.facebook\.com/, '');
 							// innerHTML
 							div.innerHTML = tmp;
 							if (unofficial) {
-								div.style.display = 'none';
-								// Unofficial pages.
-								unofficial_div.real_div = div;
+								//~ div.style.display = 'none';
+								//~ // Unofficial pages.
+								//~ unofficial_div.real_div = div;
 							}
 							// onclick
 							div.onclick = function() {
@@ -59553,7 +59554,7 @@ Laurens Hammond, Chicago, Ill.**/
 									if (x[i].original_bgc == '') {
 										x[i].style.backgroundColor = 'LightGreen';
 									} else {
-										x[i].style.backgroundColor = 'purple';
+										x[i].style.backgroundColor = 'pink';
 									}
 								}
 							}
