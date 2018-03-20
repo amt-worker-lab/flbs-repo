@@ -1028,10 +1028,15 @@ function MT__RUN() {
 			var a = document.getElementsByTagName('a');
 			var o = {
 				u: a[1].innerText.trim(),
+				domain: null,
 				q: [document.getElementById('web_url')]
 			}
+			// Make o.domain and o.u.
 			if (!/^http/i.exec(o.u)) {
+				o.domain = o.u;
 				o.u = 'http://' + o.u;
+			} else {
+				o.domain = o.u.replace(/^https?:\/\//gi, '');
 			}
 			// search for ...
 			var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
@@ -1039,7 +1044,7 @@ function MT__RUN() {
 				startPage: true,
 				url: 'https://startpage.com/do/metasearch.pl?query=' +
 					encodeURIComponent(
-						'site:'+o.domain + ' ("contact" OR "headquarters" OR "locations")'
+						'site:'+o.domain + ' ("about us" OR "about" OR "founder" OR "ceo" OR "president")'
 					) + opts,
 				callback_function: sp,
 				host: MT___host
@@ -1050,19 +1055,14 @@ function MT__RUN() {
 				//o.sd_allowed_domains
 				var rs = response_obj;//console.log(rs);
 				if (!rs.length) {
-					// Try checking the front page for "ceo" or "president"
-					//
-					//
-					//
-					//~ console.log('no results');
-					//~ o.to_check.push(o.url);
-					//~ check();
-					//~ open_ut();
-					//~ return;
+					// ...
 				} else {
 					// Set to first result.
-					o.url = rs[0][0];
+					o.u = rs[0][0];
 				}
+				// Start.
+				init();
+			}
 			function init() {
 				// utility window
 				var opts = {
@@ -1085,7 +1085,7 @@ function MT__RUN() {
 				}
 				AMT__setUtilityTabs(
 					[{
-						url: a[1].href,
+						url: o.u,
 						options: opts
 					}],
 					null,
