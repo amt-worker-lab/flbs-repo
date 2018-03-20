@@ -17220,6 +17220,7 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ GM_addStyle('.radio>label {font-size:2em !important;}');
 			//~ GM_addStyle('input[type="radio"] {zoom:1.4;}');
 			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var a = document.getElementsByTagName('a');
 			var o = {
 				u: a[1].href,
