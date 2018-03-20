@@ -1946,8 +1946,9 @@ function init__scrapy() {
 					if (!o.SKIP_SITES.hasOwnProperty( dm )) {
 						o.sd_start_urls.push(rs[i][0]);
 						num_found++;
+						break;
 					}
-					if (num_found >= 2) break; // Only a few start URLs!
+					//~ if (num_found >= 2) break; // Only a few start URLs!
 					// no skips
 					//~ o.sd_start_urls.push(rs[i][0]);
 					//~ num_found++;
