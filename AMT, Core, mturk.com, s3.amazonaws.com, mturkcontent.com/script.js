@@ -148267,6 +148267,7 @@ qatar,80
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
 			// Elements
 			//~ var td = document.getElementsByTagName('td');
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var h4 = document.getElementsByTagName('h4')[0];
 			var h5 = document.getElementById('location');
 			var o = {
