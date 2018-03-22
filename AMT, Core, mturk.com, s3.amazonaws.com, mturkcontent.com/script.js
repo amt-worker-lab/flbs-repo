@@ -155855,11 +155855,22 @@ qatar,80
 				comp: td[1].innerText.trim(),
 				//phone: td[1].innerText.trim(),
 				addr: td[3].innerText.trim(),
+				state: null,
 				q: [
 					document.getElementById('web_url')
 				]
 			}
 			console.log(o);
+			// Try state to full
+			var x = / ([A-Z]{2})$/.exec(o.addr);
+			if (x) {
+				o.state_abbr = x[1];
+				o.state = o.state_abbr.stateAbbrToFull();
+				o.addr = o.addr.replace(new RegExp(o.state_abbr+'$', ''), '');
+			} else {
+				o.state_abbr = '';
+				o.state = '';
+			}
 			
 			/* BEGIN ITEMS */
 			//
@@ -155893,8 +155904,8 @@ qatar,80
 					.concat(o.addr.clean_string_to_array()),
 				searches:[
 					o.comp,
-					o.comp+' '+o.addr,
-					o.comp+' '+o.addr+' company'
+					o.comp+' '+o.addr+ o.state_abbr,
+					o.comp+' '+o.addr+ o.state+' company'
 				],
 				//~ load_success_callback: function() {
 					//~ addToTabsQ(); // Add to tabs queue.
