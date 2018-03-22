@@ -42,8 +42,9 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
 			// Task specific GM
 			//...
 			
@@ -59,9 +60,20 @@ function MT__RUN() {
 			}
 			// output
 			td[0].innerText += '\n---Cleaned---\n' + o.u;
+			// ITEMS
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;\
+				left:50%;width:50%;height:400px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
 			AMT___addUserDecision(
 				'JacobBeres,2018', function() {
-					return o.search;
+					return o.u;
 				}, ['Id(companyName)']
 			)
 			MT___google_api_geocode(o.u, function(rs) {
@@ -90,7 +102,7 @@ function MT__RUN() {
 						//~ return;
 					//~ }
 				}
-			}, true, true);
+			}, true, true); // return complete, proxy, ___
 			function varian_load(u) {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
@@ -109,16 +121,62 @@ function MT__RUN() {
 							document.body.style.backgroundColor = 'blue';
 							return;
 						}
-						var r = JSON.parse(rs);
+						try {
+							var r = JSON.parse(rs);
+						} catch(e) {
+							new AMT___core_factory().
+								iframe2parent__postMessage(
+									{
+										action: 'return_and_accept_button__nextTab'
+									}
+								);
+						}
 						console.log(r);
-						o.q[0].value = r[0].field_address_value + ', ' +
-							r[0].field_city_value + ', ' +
-							r[0].field_state_value + ' ' +
-							r[0].field_zip_value;
-						if (o.q[0].value.indexOf('undefined') == -1 &&
-							o.q[0].value.indexOf('null') == -1 &&
-							o.q[0].value.length > 10) {
-							AMT___recordAndSubmit();
+						for (var i in r) {
+							// append
+							// Do not skip nulls.
+							// But instead it will not auto on null.
+							// xx skip nulls, that is, **r&a** when null
+							// xx the site simply has "null" in the address.
+							// xx or just submit it.....
+							if (r[i].field_address_value == null) {
+								r[i].field_address_value = 'null';
+							}
+							if (r[i].field_city_value == null) {
+								r[i].field_city_value = 'null';
+							}
+							if (r[i].field_state_value == null) {
+								r[i].field_state_value = 'null';
+							}
+							if (r[i].field_zip_value == null) {
+								r[i].field_zip_value = 'null';
+							}
+							var x = (r[i].node_title).div({style:'border-bottom:1px solid teal;'});
+							x.str = r[i].field_address_value.trim() + ', ' +
+									r[i].field_city_value.trim() + ', ' +
+									r[i].field_state_value.trim() + ' ' +
+									r[i].field_zip_value.trim();
+							x.innerText += '\n'+x.str;
+							x.className = 'exe';
+							x.onclick = function() {
+								o.q[0].value = this.str;
+								AMT___recordAndSubmit();
+							}
+							d1.appendChild(x);
+							// auto
+							if (r[i].node_title.trim() == o.u) {
+								o.q[0].value = r[i].field_address_value.trim() + ', ' +
+									r[i].field_city_value.trim() + ', ' +
+									r[i].field_state_value.trim() + ' ' +
+									r[i].field_zip_value.trim();
+								if (o.q[0].value.indexOf('undefined') == -1 &&
+									o.q[0].value.indexOf('null') == -1 &&
+									o.q[0].value.length > 10 &&
+									r[i].node_title.trim() == o.u) {
+									AMT___recordAndSubmit();
+								}
+								break;
+							}
 						}
 					}
 				});
