@@ -31,6 +31,66 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// Todd Schiller
+	// Find the Latitude/Longitude of Cities in Egypt
+	// 
+	// 
+	var s = '<li>Open Google Maps in a web browser (https://www.google.com/maps)</li>\n	<li>Search for the City Name (also include the word&nbsp;"Egypt" in the query, if necessary). Note that the city may not be spelled exactly the same. For example, if the city is "Hadaek El Koba", the city in Google is called Hadaiq Al Qubbah</li>\n	<li>Right click the name of the city and select&nbsp;"What\'s Here?" from the menu that appears (click any where in the city, if the name is not shown on the map).&nbsp;Enter the latitude and longitude from the information box that appears at the bottom of the map</li>';
+	var s = '<li>Search for the City Name (also include the word&nbsp;"Egypt" in the query, if necessary). Note that the city may not be spelled exactly the same. For example, if the city is "Hadaek El Koba", the city in Google is called "Hadaiq Al Qubbah". In some cases, you will not find the city, but you will find one or more businesses with the name of the city in their name indicating they are located in the city&nbsp;</li>\n	<li>Right click the name of the city and select&nbsp;"What\'s Here?" from the menu that appears (click any where in the city, if the name is not shown on the map).&nbsp;Enter the latitude and longitude from the information box that appears at the bottom of the map</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u1: td[1].innerText.trim(), // region
+				u2: td[3].innerText.trim(), // city
+				search: null,
+				//~ id: null,
+				q: [
+					document.getElementById('latitude'),
+					document.getElementById('longitude'),
+				]
+			}
+			o.search = o.u2 + ', ' + o.u1 + ', egypt';
+			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			AMT___addUserDecision(
+				'T.Schiller,2018', function() {
+					return o.search;
+				}, ['Id(latitude)', 'Id(longitude)'] 
+			)
+			MT___google_api_geocode(o.search, function(lat,lng) {
+				
+				if  (
+					!lat ||
+					!lng ||
+					!/^-?[\d\.]{4,}$/.exec(lat) ||
+					!/^-?[\d\.]{4,}$/.exec(lng)
+					)
+				{
+					//
+					document.body.style.backgroundColor = 'yellow';
+				} else {
+					o.q[0].value = lat;
+					o.q[1].value = lng;
+					//ll.lat = lat;
+					//ll.lng = lng;
+					AMT___recordAndSubmit();
+				}
+			}, false, true);
+		}
+		new run().f();
+	}
 	// Olivier Berger
 	// NOTE: kg Does not include address data. HRM.
 	// https://kgsearch.googleapis.com/v1/entities:search?query=taylor+swift&key=API_KEY&limit=1&indent=True
