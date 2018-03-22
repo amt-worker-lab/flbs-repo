@@ -31,11 +31,11 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// Jacob Beres
+	// Collect hospital physical addresses from a given website
 	// 
 	// 
-	// 
-	// 
-	var s = '<li>Search for the City Name (also include the word&nbsp;"Egypt" in the query, if necessary). Note that the city may not be spelled exactly the same. For example, if the city is "Hadaek El Koba", the city in Google is called "Hadaiq Al Qubbah". In some cases, you will not find the city, but you will find one or more businesses with the name of the city in their name indicating they are located in the city&nbsp;</li>\n	<li>Right click the name of the city and select&nbsp;"What\'s Here?" from the menu that appears (click any where in the city, if the name is not shown on the map).&nbsp;Enter the latitude and longitude from the information box that appears at the bottom of the map</li>';
+	var s = '<div class="well">https://www.varian.com/oncology/treatment-locator</div>\n</div>\n</div>\n\n<div class="row">\n<div class="col-xs-12 col-md-8 col-md-offset-2 fields" style="width: 779.98px; margin-left: 194.98px;">\n<div class="form-group fieldset" style="width: 749.98px;">\n<p><label>Hospital Name:</label></p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -48,45 +48,81 @@ function MT__RUN() {
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
-			var td = document.getElementsByTagName('td');
+			var td = document.getElementsByClassName('well');
 			var o = {
-				u1: td[1].innerText.trim(), // region
-				u2: td[3].innerText.trim(), // city
-				search: null,
+				u: td[1].innerText.trim().replace(/\([\d\.]+ m\)/, '').trim(), //
+				//~ search: null,
 				//~ id: null,
 				q: [
-					document.getElementById('latitude'),
-					document.getElementById('longitude'),
+					document.getElementById('companyName'),
 				]
 			}
-			o.search = o.u2 + ', ' + o.u1 + ', egypt';
-			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
-			// Only save one piece of information, addressLine1,
-			// because saving o.id is most important.
+			// output
+			td[0].innerText += '\n---Cleaned---\n' + o.u;
 			AMT___addUserDecision(
-				'T.Schiller,2018', function() {
+				'JacobBeres,2018', function() {
 					return o.search;
-				}, ['Id(latitude)', 'Id(longitude)'] 
+				}, ['Id(companyName)']
 			)
-			MT___google_api_geocode(o.search, function(lat,lng) {
-				
-				if  (
-					!lat ||
-					!lng ||
-					!/^-?[\d\.]{4,}$/.exec(lat) ||
-					!/^-?[\d\.]{4,}$/.exec(lng)
-					)
-				{
-					//
-					document.body.style.backgroundColor = 'yellow';
-				} else {
-					o.q[0].value = lat;
-					o.q[1].value = lng;
-					//ll.lat = lat;
-					//ll.lng = lng;
-					AMT___recordAndSubmit();
+			MT___google_api_geocode(o.u, function(rs) {
+				console.log(rs);
+				if(rs && rs.status == 'OK') {
+					rs = rs.results[0].geometry.location;
+					// Load addr
+					// https://www.varian.com/locatormap/json/47.69359230000001/-116.7929385/12/0
+					var u = 'https://www.varian.com/locatormap/json/'+
+						rs.lat+'/'+rs.lng+'/12/0';
+					varian_load(u);
+					
+					
+					
+					//~ var r = rs.results[0].address_components;
+					//~ var r = rs.results[0].formatted_address;
+					// Marker is (using their source code):
+					// i.e. view-source:https://www.varian.com/oncology/treatment-locator
+					// site.field_address_value + ', ' +
+					// site.field_city_value + ', ' +
+					// site.field_state_value + ' ' +
+					// site.field_zip_value,
+					//~ o.q[0].value = r;
+					//~ if (r.length > 10) {
+						//~ AMT___recordAndSubmit();
+						//~ return;
+					//~ }
 				}
-			}, false, true);
+			}, true, true);
+			function varian_load(u) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						var r = JSON.parse(rs);
+						console.log(r);
+						o.q[0].value = r[0].field_address_value + ', ' +
+							r[0].field_city_value + ', ' +
+							r[0].field_state_value + ' ' +
+							r[0].field_zip_value;
+						if (o.q[0].value.indexOf('undefined') == -1 &&
+							o.q[0].value.indexOf('null') == -1 &&
+							o.q[0].value.length > 10) {
+							AMT___recordAndSubmit();
+						}
+					}
+				});
+			}
 		}
 		new run().f();
 	}
