@@ -13223,6 +13223,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		// rs
 		// 0=url
 		// 1=full
+		// 2=title of result (new: March 23 2018)
 		var rs = response.rs;
 		// seed_arg
 		var out_div = response.seed;
@@ -13246,6 +13247,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			var x = rs[i][0];
 			var link = rs[i][0];
 			var full = rs[i][1];
+			var result_title = rs[i][2];
 			var div_result = {
 				p: null,
 				url: null, //TODO
@@ -13378,6 +13380,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.className = 'class_' + cls + ' result_highlight'; // Add class name here...
 			d.tmp_className = 'class_' + cls;
 			d.full_url = link;
+			d.result_title = result_title;
 			d.original_bg_color = '';
 			d.result = div_result; // Linkifier
 			out_div.appendChild(d);
@@ -18742,6 +18745,18 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		var content;
 		var arr = [];
 		while(content = contentReg.exec(ol)) {
+			// What is the website "title", or i.e. result title.
+			// Save this as rs[i][2]
+			// Where rs[i][0] = url
+			// And   rs[i][1] = body
+			// ex: <span class="result_url_heading">Got Questions - Try Alpha</span>
+			var wt = /<span class="result_url_heading">([^<]+)<\/span>/.exec(content[2]);
+			if (wt) {
+				wt = __js_clean_html_str(wt[1]);
+			} else {
+				wt = null; // Else set to null.
+			}
+			
 			content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
 			content[2] = content[2].replace(/<\/b>/gi, '(``)');
 			content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
@@ -18763,8 +18778,14 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				content[2] = content[2].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
 			}
 			
+			/////////////////////////
+			// New, March 23
+			// Add third item to return,
+			// which is the website "title",
+			// aka result title.
+			/////////////////////////
 			arr.push([
-				content[1], content[2]
+				content[1], content[2], wt
 			]);
 		}
 		return arr;
