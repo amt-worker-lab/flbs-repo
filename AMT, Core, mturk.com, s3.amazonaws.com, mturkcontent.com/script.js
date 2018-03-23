@@ -101,6 +101,13 @@ function MT__RUN() {
 						//~ AMT___recordAndSubmit();
 						//~ return;
 					//~ }
+				} else {
+					new AMT___core_factory().
+						iframe2parent__postMessage(
+							{
+								action: 'return_and_accept'
+							}
+						);
 				}
 			}, true, true); // return complete, proxy, ___
 			function varian_load(u) {
@@ -127,7 +134,7 @@ function MT__RUN() {
 							new AMT___core_factory().
 								iframe2parent__postMessage(
 									{
-										action: 'return_and_accept_button__nextTab'
+										action: 'return_and_accept'
 									}
 								);
 						}
