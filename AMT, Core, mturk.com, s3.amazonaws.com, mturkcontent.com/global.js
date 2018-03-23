@@ -13244,10 +13244,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		else if(out_div == d1c)
 			col = 2;
 		for (var i in rs) {
-			var x = rs[i][0];
+			var x    = rs[i][0];
 			var link = rs[i][0];
 			var full = rs[i][1];
 			var result_title = rs[i][2];
+			//~ console.log(rs[i]);
+			//~ console.log(result_title);
 			var div_result = {
 				p: null,
 				url: null, //TODO
@@ -13341,7 +13343,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 							(options_object.search_results.hasOwnProperty('onclick_success')) ?
 							options_object.search_results.onclick_success :
 							click_success,
-						full_url: link
+						full_url: link,
+						result_title: result_title
 					}
 				);
 			
@@ -13380,11 +13383,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.className = 'class_' + cls + ' result_highlight'; // Add class name here...
 			d.tmp_className = 'class_' + cls;
 			d.full_url = link;
-			d.result_title = result_title;
 			d.original_bg_color = '';
 			d.result = div_result; // Linkifier
 			out_div.appendChild(d);
 			div_result.p = d;
+			//~ console.log();
 			
 			// Is this a SKIP domain?
 			//
@@ -13421,6 +13424,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			txa.readOnly = true;
 			txa.value = x;
 			txa.full_url = link;
+			txa.result_title = result_title;
 			txa.parent_div	= out_div;
 			txa.parent_txa	= out_div.txa;
 			txa.parent_p	= d;
@@ -18186,7 +18190,9 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
  * 		domain: x,
  * 		load_file: 'austin_load_skips', 
  * 		var_skip_sites: SKIP_SITES, 
- * 		callback_function: false
+ * 		callback_function: false,
+ * 		full_link: string
+ *		result_title: string
  * 		
  * Returns an input element and bool()
  * 	{}.el_button // This is deprecated - do not use! 
@@ -18305,6 +18311,7 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		el_inp.value = ' + ';
 		el_inp._ignored_value = input_skips_object.domain;
 		el_inp.full_url = input_skips_object.full_url;
+		el_inp.result_title = input_skips_object.result_title; // Add this: March 23 2018
 		el_inp.onclick = input_skips_object.callback_if_ignore;
 		return el_inp;
 	}
@@ -18750,12 +18757,13 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			// Where rs[i][0] = url
 			// And   rs[i][1] = body
 			// ex: <span class="result_url_heading">Got Questions - Try Alpha</span>
-			var wt = /<span class="result_url_heading">([^<]+)<\/span>/.exec(content[2]);
+			var wt = /<span class="result_url_heading">([^<]+)<\/span>/.exec(content[0]);
 			if (wt) {
+				//console.log(wt);
 				wt = __js_clean_html_str(wt[1]);
 			} else {
 				wt = null; // Else set to null.
-			}
+			}//console.log(wt);
 			
 			content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
 			content[2] = content[2].replace(/<\/b>/gi, '(``)');

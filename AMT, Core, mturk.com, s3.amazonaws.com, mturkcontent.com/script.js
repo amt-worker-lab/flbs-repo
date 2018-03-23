@@ -146170,9 +146170,9 @@ qatar,80
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
-					o.comp,
-					o.spaced,
-					o.comp + ' (site:.gov OR site:.us OR site:.org) (city OR town OR government)'
+					o.comp+' '+o.stabb,
+					o.spaced+' '+o.stfull,
+					o.comp+' '+o.stfull + ' (site:.gov OR site:.us OR site:.org) (city OR town OR government)'
 					//~ o.comp + ' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 					//~ o.spaced+' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 				],
