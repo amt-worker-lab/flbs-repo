@@ -135962,6 +135962,7 @@ qatar,80
 	// 
 	s = '<li>Find the main phone number for the listed companies</li>\n	<li>Phone number must be a valid/active phone number for the business</li>\n	<li>Ensure the phone number is for the correct business <strong>Location as indicated by City/State/Zip</strong></li>';
 	s = '<li>Find the main phone number for the listed businesses</li>\n	<li>Enter the phone number with Area Code and NO characters other than numbers (no dashes, spaces, parenthesis etc.)</li>';
+	s = '<li>1) Enter the phone number with Area Code only (no country code) - each phone number should be 10 digits</li>\n	<li><strong>NO characters other than numbers </strong> (NO dashes, spaces, parenthesis etc.)</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {};
