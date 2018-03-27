@@ -145,7 +145,10 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
  */
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
-	//console.log(request);
+	//////////
+	// DEBUG
+	//~ console.log('@chrome.extension.onRequest.addListener (request, sender, sendResponse)', request, sender, sendResponse);
+	//////////
 	
 	// request.reloadOnNoHits
 	// Utilizes global variable savedTabUrls{}.
@@ -331,7 +334,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		});
     }
 	
-	if(request.setUtilityTabs) {
+	if (request.setUtilityTabs) {
 		console.log('sender');
 		console.log(sender.tab);
 		if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
@@ -372,10 +375,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				utilities: request.setUtilityTabs.utilities
 			}
 		);
-		
-		//~ console.log(UtilityAMTPairs);
-		//~ console.log(request.setUtilityTabs);
-		
 		for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
 			//Create a tab for each utilityTab in utilities
 			currentUtility = UtilityAMTPairs[senderId].utilities[i];
@@ -398,7 +397,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
 					//~ console.log('utTabPos:' + utTabPos);
 					UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
-					//~ console.log(UtilityAMTPairs);
 				});
 		}
 		

@@ -787,7 +787,7 @@ function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,
 		var utilityTabsAndOptions = {};
 		utilityTabsAndOptions.utilities = utilityTabs;
 		utilityTabsAndOptions.options = globalTabOptions;
-		console.log('utilityTabsAndOptions');
+		console.log('@function:AMT__setUtilityTabs - set utilityTabsAndOptions');
 		console.log(utilityTabsAndOptions);
 		for(var i = 0; i < utilityTabs.length; i++) {
 			utilityTabs[i].id = "" + i + ":" + Math.random();
@@ -799,11 +799,10 @@ function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,
 				//~ }
 			//~ }
 		}
-		
-		chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
-				function(rs){
-
-				});
+		var sr = chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
+			function(rs){}
+		);
+		console.log('@function:AMT__setUtilityTabs - sr:', sr);
 		return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions, callbackFromUtility, globalTabOptions);
 	}
 }

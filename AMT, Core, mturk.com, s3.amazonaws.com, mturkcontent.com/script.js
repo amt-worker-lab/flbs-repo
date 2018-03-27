@@ -1248,8 +1248,14 @@ function MT__RUN() {
 			var o = {
 				u: a[1].innerText.trim(),
 				domain: null,
-				q: [document.getElementById('web_url')]
+				q: [
+					document.getElementsByName('web_url')[0],
+					document.getElementsByName('web_url')[1],
+					document.getElementsByName('web_url')[2],
+					document.getElementsByName('web_url')[3],
+				]
 			}
+			console.log(o);
 			// Make o.domain and o.u.
 			if (!/^http/i.exec(o.u)) {
 				o.domain = o.u;
@@ -1298,6 +1304,7 @@ function MT__RUN() {
 							'e-commerce',
 							'ecommerce',
 							'marketing',
+							'owner',
 						]
 					},
 					highlight_range_to_parent: true
@@ -1317,30 +1324,24 @@ function MT__RUN() {
 							response.data.hasOwnProperty('text_range')
 							)
 						{
+							console.log(response.data);
 							console.log(response.data.text_range);
 							var r = response.data.text_range.trim();
-							o.q[0].value = r;
-							//~ if (o.q[0].value == '') {
-								//~ // auto-fill if there is a space.
-								//~ if (/^\w+ \w+[,\n]/.exec(r)) {
-									//~ var x = /(^\w+) (\w+)[,\n]([\d\D]+)/.exec(r);
-									//~ o.q[0].value = x[1];
-									//~ o.q[1].value = x[2];
-									//~ o.q[2].value = x[3].trim().replace(/[,\.]$/,'');
-								//~ }
-								//~ else if (r.indexOf(' ') != -1) {
-									//~ r = r.split(' ');
-									//~ o.q[0].value = r[0].replace(/,$/,'');
-									//~ o.q[1].value = r[r.length-1].replace(/,$/,'');
-								//~ } else {
-									//~ o.q[0].value = r.replace(/,$/,'');
-								//~ }
-							//~ } else if (o.q[1].value == '') {
-								//~ o.q[1].value = response.data.text_range.trim().replace(/,$/,'');
-							//~ } else { // else always overwrite
-								//~ o.q[2].value = response.data.text_range.trim().replace(/,$/,'');
-							//~ }
-							//~ o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
+							var sp = r.split(' ');
+							if (o.q[0].value == '') {
+								if (o.q[1].value == '' && sp.length > 1) {
+									o.q[0].value = sp[0].replace(/[. ,!]$/g, '');
+									o.q[1].value = sp.slice(1).join(' ').replace(/[. ,!]$/g, '');
+								} else {
+									o.q[0].value = r.replace(/[. ,!]$/g, '');
+								}
+							} else if (o.q[1].value == '') {
+								o.q[1].value = r.replace(/[. ,!]$/g, '');
+							} else { // Overwrite.
+								o.q[2].value = r.replace(/[. ,!]$/g, '');
+							}
+							o.q[3].value = response.data.url
+								.replace(/###tabId\d+###(at\d+|)/, '');
 						}
 					}
 				);
