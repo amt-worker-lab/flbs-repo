@@ -135961,6 +135961,7 @@ qatar,80
 	// 
 	// 
 	s = '<li>Find the main phone number for the listed companies</li>\n	<li>Phone number must be a valid/active phone number for the business</li>\n	<li>Ensure the phone number is for the correct business <strong>Location as indicated by City/State/Zip</strong></li>';
+	s = '<li>Find the main phone number for the listed businesses</li>\n	<li>Enter the phone number with Area Code and NO characters other than numbers (no dashes, spaces, parenthesis etc.)</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {};
@@ -135989,7 +135990,9 @@ qatar,80
 					document.getElementById('Phone'),
 				]
 			}
-			o.zip = o.zip.replace(/^(\d{5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
+			o.zip = o.zip.replace(/^(\d{4,5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
+			o.zip = (o.zip.length == 4) ? '0' + o.zip : o.zip;
+			
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
 			dx1.setAttribute('style','position:absolute;top:158px;left:0%;width:99%;height:600px;border:1px dashed blue;');
