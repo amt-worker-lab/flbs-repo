@@ -146130,23 +146130,23 @@ qatar,80
 				//~ boldArray2: [],
 				//~ boldArray3: [],
 				q: [
-					document.getElementById('web_url'),
+					document.getElementById('companyName'),
 				],
 			}
-			o.boldArray = o.comp.clean_string_to_array()
-				.concat(o.addr.clean_string_to_array())
-				.concat(o.phone.clean_string_to_array());
+			//~ o.boldArray = o.comp.clean_string_to_array()
+				//~ .concat(o.addr.clean_string_to_array())
+				//~ .concat(o.phone.clean_string_to_array());
 			//~ if (o.comp.indexOf(o.field2) == -1 && o.field2.length > 0) {
 				//~ o.spaced = o.comp + ' ' + o.field2;
 			//~ } else {
 				//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			//~ }
-			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
-			console.log(o);
+			//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			//~ console.log(o);
 			AMT___addUserDecision(
-				'Embroker,2018', function() {
-					return o.comp+o.stabb;
-				}, ['Id(web_url)']
+				'BenAnderson,2018', function() {
+					return o.u;
+				}, ['Id(companyName)']
 			)
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -146168,22 +146168,22 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
-					//~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
+					str_add_to_searches_hidden: 'site:'+o.u, //
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
-					o.comp,
-					o.comp+' '+o.addr,
-					o.comp+' '+o.phone
+					'"service"',
+					'(schedule appointment|service appointment)',
+					'"appointment"'
 					//~ o.comp + ' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 					//~ o.spaced+' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 				],
 				
 				search_results: {
-					use_domain_only: true,
-					//~ use_full_urls: true,
+					//~ use_domain_only: true,
+					use_full_urls: true,
 					bold: {
-						black: o.boldArray,
+						//~ black: o.boldArray,
 						//~ blue: o.boldArray2,
 						//~ brown: o.boldArray3,
 					},
