@@ -146119,6 +146119,7 @@ qatar,80
 			var td = document.getElementsByTagName('a');
 			var o = {
 				u: td[3].innerText.trim(),
+				domain: null,
 				//~ field2: td[3].innerText.trim().string_to_mixed_case(),
 				//~ field3: td[5].innerText.trim().string_to_mixed_case(),
 				//~ field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
@@ -146127,12 +146128,35 @@ qatar,80
 				//~ city: td[9].innerText.trim().string_to_mixed_case(),
 				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
 				boldArray: [],
-				//~ boldArray2: [],
+				auto: false,
+				autos: [
+					/schedule[-_]service(\.\w+|\/|)$/i, // E.g. .php, .html
+					/service[-_]schedule(\.\w+|\/|)$/i,
+					/ScheduleApptForm(\.\w+|\/|)$/i,
+					/ServiceApptForm(\.\w+|\/|)$/i,
+					/xtime[-_]schedule[-_]service(\.\w+|\/|)$/i,
+					/online[-_]service[-_]appmt(\.\w+|\/|)$/i,
+					/online[-_]service[-_]apptmt(\.\w+|\/|)$/i,
+					/online[-_]service[-_]appt(\.\w+|\/|)$/i,
+					/online[-_]service[-_]appointment(\.\w+|\/|)$/i,
+					/appointment[-_]form(\.\w+|\/|)$/i,
+					/service[-_]appointment(\.\w+|\/|)$/i,
+					/schedule[-_]scheduler(\.\w+|\/|)$/i,
+					/schedule[-_]appointment(\.\w+|\/|)$/i,
+					/schedule[-_]service[-_]online(\.\w+|\/|)$/i,
+					/schedule-service(\.\w+|\/|)$/i,
+					/serviceappmt(\.\w+|\/|)$/i,
+					/serviceapptmt(\.\w+|\/|)$/i,
+					/appointment(\.\w+|\/|)$/i,
+				],
 				//~ boldArray3: [],
 				q: [
 					document.getElementById('companyName'),
 				],
 			}
+			o.domain = o.u.replace(/^https?:\/\/(\w+2?\.|)/i, ''); // replace initial
+			o.domain = o.domain.replace(/\/[\d\D]*/i, '');		   // replace trailing
+			o.domain = o.domain.toLowerCase();
 			//~ o.boldArray = o.comp.clean_string_to_array()
 				//~ .concat(o.addr.clean_string_to_array())
 				//~ .concat(o.phone.clean_string_to_array());
@@ -146142,7 +146166,7 @@ qatar,80
 				//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			//~ }
 			//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
-			//~ console.log(o);
+			console.log(o);
 			AMT___addUserDecision(
 				'BenAnderson,2018', function() {
 					return o.u;
@@ -146197,14 +146221,25 @@ qatar,80
 						//~ }
 						//~ return false; // Stop default submit.
 					//~ },
-					//~ url_modifier_callback: function(url) { // Add @ symbol
-						//~ url = '@' + url;
-						//~ return url;
-						//~ // Add trailing slash
-						//~ if (url[url.length-1] != '/')
-							//~ url += '/';
-						//~ return url;
-					//~ },
+					url_modifier_callback: function(url) {
+						// Do not modify, but just use this
+						// to check if auto.
+						// Then return the URL unchanged.
+						if (o.auto) {
+							return url; // Already found. Quit.
+						}
+						for (var i in o.autos) {
+							if (o.autos[i].exec(url) &&
+								url.toLowerCase().indexOf(o.domain) != -1) {
+								o.auto = true;
+								o.q[0].value = url;
+								document.body.style.backgroundColor = 'red';
+								AMT___recordAndSubmit();
+							}
+						}
+						// Return URL unchanged.
+						return url;
+					},
 					//~ url_ignore_test: function(obj) {
 						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
 						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
