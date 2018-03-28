@@ -4177,9 +4177,10 @@ function init__scrapy() {
 				sd_start_urls: [],
 				sd_allowed_domains: [],
 				school: td[1].innerText.trim(),
-				fname: td[13].innerText.trim(),
-				lname: td[15].innerText.trim(),
-				title: td[17].innerText.trim(),
+				fname: td[5].innerText.trim(),
+				lname: td[7].innerText.trim(),
+				title: td[9].innerText.trim(),
+				state: td[3].innerText.trim(),
 				name: null,
 				//~ comp: td[1].innerText.trim(),
 				//~ name: td[3].innerText.trim(),
@@ -4209,7 +4210,7 @@ function init__scrapy() {
 			);
 			document.body.appendChild(d1b);
 			d1b.innerText = o.name + '|' + o.title + '|' +
-				td[17].innerText.trim()+' '+o.school;
+				o.state+' '+o.school;
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
 				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
@@ -4339,9 +4340,9 @@ function init__scrapy() {
 						//'SCHEDULER_ORDER=BFO',
 						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						'CONCURRENT_ITEMS=100', //DEFAUL = 100
-						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
-						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+						'CONCURRENT_ITEMS=50', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=8', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=4', //DEFAUL = 8
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=1', //false
 						//'COOKIES_ENABLED=0', //false
