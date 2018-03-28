@@ -146173,7 +146173,7 @@ qatar,80
 				},
 				searches:[ // 
 					'"service"',
-					'(schedule appointment|service appointment)',
+					'(schedule appointment OR service appointment OR service department OR ServiceApptForm OR ServiceAppt)',
 					'"appointment"'
 					//~ o.comp + ' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 					//~ o.spaced+' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
