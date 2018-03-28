@@ -146127,7 +146127,17 @@ qatar,80
 				//~ degree: td[7].innerText.trim().string_to_mixed_case(),	// industry
 				//~ city: td[9].innerText.trim().string_to_mixed_case(),
 				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
-				boldArray: [],
+				boldArray: [
+					'schedule',
+					'service',
+					'appt',
+					'appointment',
+					'xtime',
+					'form',
+					'online',
+					'scheduler',
+					'ScheduleApptForm',
+				],
 				auto: false,
 				autos: [
 					/schedule[-_]service(\.\w+|\/|)$/i, // E.g. .php, .html
@@ -146207,7 +146217,7 @@ qatar,80
 					//~ use_domain_only: true,
 					use_full_urls: true,
 					bold: {
-						//~ black: o.boldArray,
+						black: o.boldArray,
 						//~ blue: o.boldArray2,
 						//~ brown: o.boldArray3,
 					},
