@@ -3307,12 +3307,17 @@ function MT__RUN() {
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						d1.style.backgroundColor = '1px solid blue';
+						d1.style.backgroundColor = '1px solid yellow';
 						d1.appendChild('!200'.div());
 						return false;
 					}
+					if (rs.indexOf('Uncaught InstagramAPI\Exception') != -1) {
+						d1.style.backgroundColor = '1px solid yellow';
+						d1.appendChild(('Exception:\n'+rs).div());
+						return false;
+					}
 					if (rs.indexOf('Throttled by Instagram because of too many API requests') != -1) {
-						d1.style.backgroundColor = '1px solid blue';
+						d1.style.backgroundColor = '1px solid yellow';
 						d1.appendChild('throttle'.div());
 						return false;
 					}
@@ -3322,7 +3327,7 @@ function MT__RUN() {
 				success_callback: function(options) {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						d1.style.backgroundColor = '1px solid blue';
+						d1.style.backgroundColor = '1px solid yellow';
 						d1.appendChild('!200'.div());
 						return;
 					}
