@@ -12718,7 +12718,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
 	return container;
 }
 /**
- * create_dashboard_find_url
+ * AMT___items_factory.create_dashboard_find_url
  * 
  * .bold_array										Array
  * .searches										Array, Array of strings to search (3=default)
@@ -13842,7 +13842,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	}
 }
 /**
- * function create_dashboard_find_phone
+ * AMT___items_factory.create_dashboard_find_phone
  *
  * -xxxxxxxx----------------------------
  * @param options_object						object	
@@ -15136,7 +15136,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 	}
 }
 /**
- * create_dashboard_find_address
+ * AMT___items_factory.create_dashboard_find_address
  * 
  *
  * @param options_object						object	
@@ -16493,7 +16493,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								opts.o.final_location.full_address = location.join(', ');
 							}
 							// category
-							//~ console.log(i);
 							if (i.category) {
 								opts.o.final_location.category = i.category;
 								if (opts.output_elements.hasOwnProperty('category')) {
