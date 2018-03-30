@@ -135615,16 +135615,16 @@ qatar,80
 			
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
+				e.stopPropagation();
+				e.preventDefault();
 				//~ if (!/^\(\d{3}\)\d{3}-\d{4}$/.exec(o.q[1].value)) {
 					//~ return false;
 				//~ }
 				//~ if (o.q[0].value.length < 6) {
 					//~ return false;
 				//~ }
-				//~ doSubmit(); // Still here? Submit.
-				//~ return false;
+				doSubmit(); // Still here? Submit.
+				return false;
 			}
 			// try_sbm
 			function try_sbm() {

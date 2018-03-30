@@ -15176,7 +15176,15 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			fb: false,
 			hoovers: false,
 			google: false,
-			bbb: false,
+			crunchbase: false,
+			
+			/////////////////////////////////////
+			// DEPRECATED
+			
+			// March 2018
+			//~ bbb: false,
+			/////////////////////////////////////
+			
 			//~ yelp: false,
 			//~ bw: false,
 		},
@@ -15184,7 +15192,15 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			fb: {num_results: null},
 			hoovers: {num_results: null},
 			google: {num_results: null},
-			bbb: {num_results: null},
+			crunchbase: {num_results: null},
+			
+			/////////////////////////////////////
+			// DEPRECATED
+			
+			// March 2018
+			//~ bbb: {num_results: null},
+			/////////////////////////////////////
+			
 			//~ yelp: {},
 			//~ bw: false,
 		},
@@ -15299,8 +15315,14 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			// Columns are not specified, so do all.
 			FB_addr();
 			hoovers_addr();
-			bbb_addr();
+			crunchbase(); // Replacing bbb_addr
 			google_addr();
+			
+			
+			// DEPRECATED
+			
+			// March 2018
+			// bbb_addr();
 		}
 	}
 	d2.onblur = d2.init;
@@ -16206,6 +16228,131 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		if(opts.hasOwnProperty('onclick_callback')) {
 			opts.onclick_callback(opts);
 		}
+	}
+	/**
+	 * crunchbase()
+	 * Replaces bbb_addr().
+	 * 
+	 * Note:
+	 * 		Search for: only organization.companies.
+	 * 		Do not search for: people,events,principal.investors
+	 */
+	function crunchbase() {
+		d1c.innerHTML = '';
+		var url = 'https://www.crunchbase.com/v4/data/autocompletes'+
+			'?query='+encodeURIComponent(d2.value)+'&collection_ids=organization.companies';
+		//
+		var opts = {
+			url: url,
+			//~ //do_not_save_to_file: false,
+			filename: new AMT___requests_factory().md5(url), // Static file name
+			//~ no_cookies: true, // Static file name
+			//~ cookie_filename: o.cookie_filename,
+			headers_array: [
+				'cookie: D_IID=95EF9742-E08D-3547-885E-7DDEFE5F8780; D_UID=C0A56CB9-0D73-3877-BFE7-940BEDCC23FF; D_ZID=3745A9CB-FA19-3264-BB71-0B2B7E2015FA; D_ZUID=ACDEF2F7-1F4E-3958-BFF3-D32628970394; D_HID=ED47E110-534D-30C9-A88B-8408BBE4BCF6; D_SID=66.555.444.333:wlQY61BYibhH/2FgEyMQnibJdR2EOha4GqRJLmpmqUY',
+				'accept-encoding: gzip, deflate, br',
+				'accept-language: en-US,en;q=0.9',
+				'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
+				'accept: application/json, text/plain, */*',
+				'referer: https://www.crunchbase.com/organization/',
+				'authority: www.crunchbase.com',
+				'x-requested-with: XMLHttpRequest',
+				'x-distil-ajax: furyfbbzdxdf',
+			],
+			//~ post_object: {},
+			//~ post_object_as_str: '',
+			//~ //set_cookie_content: 'TS019ab495=01cf497f1e1d5d4434f08cca8579bfdd3df2bed1fd19be8a599a1391fde1d18a5f9f5f1c30efe90ff12ab154a479794cefc09d2a0f; Path=/'
+			//'TS019ab495=01cf497f1ed52599ba0c95a353c2f70fd9d31462a2d346a985139d23f89c229ff716b110db'
+			//<form method="POST" action="%2fCorpWeb%2fCorpSearch%2fCorpSearch.aspx"/>
+		}
+		opts = JSON.stringify(opts);
+		var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (/^\d{3}$/.exec(rs)) { // If status code is returned
+					// Display output
+					d1c.innerText = 'em0 ERROR='+rs;
+					o.stats.crunchbase.num_results = 0;
+					complete('crunchbase');// Mark complete
+					return;
+				}
+				try {
+					rs = JSON.parse(rs);
+					if (rs.count == 0) {
+						o.stats.crunchbase.num_results = 0;
+						return;
+					}
+				} catch(e) {
+					complete('crunchbase');// Mark complete
+					o.stats.crunchbase.num_results = 0;
+					return;
+				}
+				// rs.SearchResults
+				for (var i in rs.entities) {
+					var rslt = rs.entities[i];
+					// provides identifier.value (biz. name)
+					// provides identifier.permalink
+					// provides short_description
+					// div
+					var div = document.createElement('div');
+					div.setAttribute('style',
+						'width:98%;border-bottom:1px solid teal;cursor:pointer;'
+					);
+					// input
+					div.innerText = rslt.identifier.value + '\n' + 
+						rslt.short_description;
+					div.rslt = rslt;
+					div.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						// focus
+						if (opts.first_element)
+							opts.first_element.focus();
+						crunchbase_profile(this);
+					}
+					//~ div.appendChild(inp);
+					//~ div.appendChild(document.createElement('br'));
+					// filter by
+					if(opts.filter_for_only &&
+					   opts.filter_for_only.country &&
+					   opts.filter_for_only.country == 'USA') {
+						//~ if (rslt.Address.toLowerCase().indexOf('united states') == -1) {
+							//~ continue;
+						//~ }					
+					}
+					//~ // add location+bold
+					//~ var locSpan = document.createElement('span');
+					//~ var addr_str = rslt.Address + ',' + rslt.City + ',' +
+						//~ rslt.StateProvince;
+					//~ locSpan.innerHTML = (
+						//~ opts.bold_locn_array ?
+							//~ MT__bold(addr_str, opts.bold_locn_array) :
+							//~ addr_str
+					//~ );
+					//~ div.appendChild(locSpan);
+					//~ if (rslt.Phones && rslt.Phones.length) {
+						//~ div.appendChild(document.createElement('br'));
+						//~ div.appendChild(document.createTextNode(
+							//~ rslt.Phones.join(' | ')
+						//~ ));
+					//~ }
+					// add to d1c
+					d1c.appendChild(div);
+				}
+				// Done with items
+				if (d1c.innerHTML == '') {
+					d1c.innerHTML = '0';
+					o.stats.crunchbase.num_results = 0;
+				} else {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1c.appendChild(div);
+				}
+				complete('crunchbase');// Mark complete
+			}
+		});
 	}
 	/**
 	 * function bbb_addr
