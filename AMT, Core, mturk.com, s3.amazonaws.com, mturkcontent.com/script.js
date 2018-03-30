@@ -135543,7 +135543,7 @@ qatar,80
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
 			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 			//~ GM_addStyle('body {width:18%;margin-top:160px !important;}');
@@ -135555,7 +135555,10 @@ qatar,80
 			//~ GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			//~ GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			//~ GM_addStyle('#workContent {position:absolute;top:0;left:0;}'); // MOVE THIS DOWN
+			// TASK SPECIFIC CSS
 			GM_addStyle('select {position:absolute !important;top:0px;left:0px;width:100%;height:200px;}');
+			GM_addStyle('option {float:left;height:1.4em;font-size:1.2em;padding-left:6px;border-right:2px solid #0a0a0a;}');
+			GM_addStyle('option:hover {background-color:lightgreen;cursor:pointer;}');
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var t = document.getElementsByTagName('h4');
 			var o = {
@@ -135612,8 +135615,8 @@ qatar,80
 			
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
-				e.stopPropagation();
-				e.preventDefault();
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
 				//~ if (!/^\(\d{3}\)\d{3}-\d{4}$/.exec(o.q[1].value)) {
 					//~ return false;
 				//~ }
@@ -135621,7 +135624,7 @@ qatar,80
 					//~ return false;
 				//~ }
 				//~ doSubmit(); // Still here? Submit.
-				return false;
+				//~ return false;
 			}
 			// try_sbm
 			function try_sbm() {
