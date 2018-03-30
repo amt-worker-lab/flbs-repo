@@ -16331,7 +16331,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		var u = 
 			'https://graph.facebook.com/search'+
 			'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
-			'&fields=category,id,name,likes,talking_about_count,location,link,phone,website'+
+			'&fields=category,category_list,id,name,likes,talking_about_count,location,link,phone,website'+
 			'&limit=8'+
 			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
@@ -16523,12 +16523,19 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					div.appendChild(inp);
 					div.appendChild(document.createElement('br'));
 					div.appendChild(document.createTextNode('L:'+r[i].likes));
-					//~ div.appendChild(document.createElement('br'));
 					div.appendChild(document.createTextNode(',T:'+r[i].talking_about_count));
 					
 					if (r[i].category) {
-						//~ div.appendChild(document.createElement('br'));
-						div.appendChild(document.createTextNode('[C:'+r[i].category+']'));
+						div.appendChild(document.createTextNode(' [C:'+r[i].category+']'));
+					}
+					if (r[i].category_list && r[i].category_list.length) {
+						for (var j in r[i].category_list) {
+							var cg = r[i].category_list[j]
+							if (cg.name != r[i].category) {
+								div.appendChild(document.createElement('br'));
+								div.appendChild(document.createTextNode('  [c:'+cg.name+']'));
+							}
+						}
 					}
 					if (r[i].location) {
 						// NEW. JULY 25, 2015.
