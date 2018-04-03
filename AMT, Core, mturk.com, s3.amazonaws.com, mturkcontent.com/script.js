@@ -135556,9 +135556,10 @@ qatar,80
 			//~ GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			//~ GM_addStyle('#workContent {position:absolute;top:0;left:0;}'); // MOVE THIS DOWN
 			// TASK SPECIFIC CSS
-			GM_addStyle('select {position:absolute !important;top:0px;left:0px;width:100%;height:200px;}');
-			GM_addStyle('option {float:left;height:1.4em;font-size:1.2em;padding-left:6px;border-right:2px solid #0a0a0a;}');
-			GM_addStyle('option:hover {background-color:lightgreen;cursor:pointer;}');
+			GM_addStyle('#Phone_Number {position:absolute !important;top:0px;left:50%;}');
+			GM_addStyle('#Facebook_URL {position:absolute !important;top:34px;left:50%;}');
+			GM_addStyle('table {width:50% !important;}');
+			
 			// Task code
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var t = document.getElementsByTagName('td');
@@ -135566,7 +135567,7 @@ qatar,80
 				comp: t[1].innerText.trim(),
 				addr: t[3].innerText.trim(),
 				city: t[5].innerText.trim(),
-				state: t[7].innerText.trim(),
+				state: t[7].innerText.trim().stateAbbrToFull(),
 				country: t[9].innerText.trim(),
 				//~ zip: t[11].innerText.trim(),
 				//~ state: t[3].innerText.trim().stateAbbrToFull(),
@@ -135576,14 +135577,15 @@ qatar,80
 				]
 			}
 			//~ o.zip = o.zip.replace(/^(\d{5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
+			o.str = o.comp +', '+o.addr+', '+o.city+', '+o.state+', '+o.country;
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
-			dx1.setAttribute('style','position:absolute;top:242px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			dx1.setAttribute('style','position:absolute;top:222px;left:0%;width:99%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:200px;left:0%;width:58%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:180px;left:0%;width:100%;height:40px;font-size:1.2em !important;');
 			document.body.appendChild(dx2);
-			dx2.value = o.comp +', '+o.addr+','+o.city+','+o.state+','+o.country;
+			dx2.value = o.str;
 			//~ dx2.value = o.comp;
 			//~ var dx3 = document.createElement('input'); // info div
 			//~ dx3.value = 'N/A';
@@ -135591,6 +135593,11 @@ qatar,80
 			//~ dx3.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:150px !important;');
 			//~ document.body.appendChild(dx3);
 			/*END ITEMS*/
+			AMT___addUserDecision(
+				'BrandonWalker,2018', function() {
+					return o.str;
+				}, ['Id(Phone_Number)','Id(Facebook_URL)']
+			)
 			//~ dx3.innerText = o.zip;
 			var ef = new AMT___events_factory();
 			dx2.addEventListener('keydown', ef.keydown__blur_field, true);
@@ -135612,7 +135619,7 @@ qatar,80
 				elements: [
 					dx1
 				],
-				offset: 240 // offset top
+				offset: 220 // offset top
 			});
 			
 			// submitButton
@@ -135625,7 +135632,7 @@ qatar,80
 				//~ if (o.q[0].value.length < 6) {
 					//~ return false;
 				//~ }
-				doSubmit(); // Still here? Submit.
+				AMT___recordAndSubmit(); // Still here? Submit.
 				return false;
 			}
 			// try_sbm
@@ -135637,6 +135644,12 @@ qatar,80
 					//~ if (o.q[i].value.length < 2) return false;
 				//~ }
 				//~ doSubmit(); // Still here? Submit.
+				if (o.q[0].value.length > 6 &&
+					/^[\+\-\d \(\)]+$/.exec(o.q[0].value) && // Contains only +-\d
+					/^https?:\/\//i.exec(o.q[1].value)) {
+					document.body.style.backgroundColor = 'LightGreen';
+					AMT___recordAndSubmit();
+				}
 			}
 			
 			// Opts
@@ -135650,36 +135663,29 @@ qatar,80
 				parent_controller_el: dx2,
 				output_elements: {
 					//~ street: o.q[0],
-					//~ phone: o.q[1],
+					phone: o.q[0],
 				},
 				onclick_callback: function(opts) { // (opts)
-					//~ console.log(opts);
-					//~ document.body.style.backgroundColor = '';
-					//~ if (opts.o.final_location.state_abbr == null ) {
-						//~ document.body.style.backgroundColor = 'blue';
-						//~ return;
-					//~ }
-					//~ var sbm = true;
-					//~ o.q[0].value = opts.o.final_location.street.trim();
-					//~ if (/( ste\.* | suite )/i.exec(o.q[0].value)) {
-						//~ sbm = false;
-					//~ }
-					//~ if (o.q[0].value.length<6) {
-						//~ sbm = false;
-					//~ }
-					//~ if (o.q[0].value == 'undefined') {
-						//~ sbm = false;
-					//~ }
-					//~ // Convert phone to just numbers
-					//~ opts.o.final_location.phone = opts.o.final_location.phone.replace(/[^\d]/g, '');
-					//~ var x = /^(\d{3})(\d{3})(\d{4})$/.exec(opts.o.final_location.phone);
-					//~ if (x) {
-						//~ // turn into 000-000-0000
-						//~ o.q[1].value = '('+x[1]+')'+ x[2] +'-'+ x[3];
-						//doSubmit();
-					//~ } else {
-						//~ sbm = false;
-					//~ }
+					console.log(opts);
+					console.log(opts.profile_url);
+					// Convert phone to formatting if 10 digits.
+					// Otherwise, leave phone as is.
+					if (opts.o.final_location.phone) {
+						var y = opts.o.final_location.phone.replace(/[^\d]/g, '');
+						var x = /^(\d{3})(\d{3})(\d{4})$/.exec(y);
+						if (x) {
+							// turn into 000-000-0000
+							o.q[0].value = x[1]+'-'+x[2]+'-'+x[3];
+							//~ //doSubmit();
+						} else {
+							// Do not change it!
+						}
+					}
+					if (/facebook/i.exec(opts.profile_url)) {
+						// https://www.facebook.com/pages/Great-Lakes-Community-Center/159970488141530
+						o.q[1].value = opts.profile_url;
+					}
+					try_sbm();
 				}
 			};
 			new AMT___items_factory().create_dashboard_find_address(opts);
