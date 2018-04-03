@@ -135578,6 +135578,9 @@ qatar,80
 			}
 			//~ o.zip = o.zip.replace(/^(\d{5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
 			o.str = o.comp +', '+o.addr+', '+o.city+', '+o.state+', '+o.country;
+			if (o.city == o.state) {
+				o.str = o.comp +', '+o.addr+', '+o.city+', '+o.country;
+			}
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
 			dx1.setAttribute('style','position:absolute;top:222px;left:0%;width:99%;height:600px;border:1px dashed blue;');
