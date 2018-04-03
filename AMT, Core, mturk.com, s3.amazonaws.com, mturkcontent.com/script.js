@@ -135527,12 +135527,166 @@ qatar,80
 	 * Andrea Narvaez
 	 * Vibol Sok
 	 * Tagging Company (biz. category)
-	 * 
+	 * Brandon Walker
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
+	// Brandon Walker
+	// Uncover phone number or Facebook URL for breweries, bars, restaurants, and shops
+	// 
+	// 
+	s = '<li>Enter the listed phone number for the&nbsp;business, as found on Google or the \'About\' section of the business\' Facebook page.</li>\n	<li>Include the full phone number for the business (ex. 999-999-9999).</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
+			//~ GM_addStyle('body {width:18%;margin-top:160px !important;}');
+			//~ GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			//~ GM_addStyle('input {height:auto !important;padding:0 !important;width:100%;}');// ADD WIDTH
+			
+			//~ GM_addStyle('table {position:absolute;top:0px;left:50%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#mturk_form {margin-top:1000px !important;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#workContent {position:absolute;top:0;left:0;}'); // MOVE THIS DOWN
+			// TASK SPECIFIC CSS
+			GM_addStyle('select {position:absolute !important;top:0px;left:0px;width:100%;height:200px;}');
+			GM_addStyle('option {float:left;height:1.4em;font-size:1.2em;padding-left:6px;border-right:2px solid #0a0a0a;}');
+			GM_addStyle('option:hover {background-color:lightgreen;cursor:pointer;}');
+			// Task code
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var t = document.getElementsByTagName('td');
+			var o = {
+				comp: t[1].innerText.trim(),
+				addr: t[3].innerText.trim(),
+				city: t[5].innerText.trim(),
+				state: t[7].innerText.trim(),
+				country: t[9].innerText.trim(),
+				//~ zip: t[11].innerText.trim(),
+				//~ state: t[3].innerText.trim().stateAbbrToFull(),
+				q: [
+					document.getElementById('Phone_Number'),
+					document.getElementById('Facebook_URL'),
+				]
+			}
+			//~ o.zip = o.zip.replace(/^(\d{5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
+			/*BEGIN ITEMS*/
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:242px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('textarea');
+			dx2.setAttribute('style','position:absolute;top:200px;left:0%;width:58%;height:40px;');
+			document.body.appendChild(dx2);
+			dx2.value = o.comp +', '+o.addr+','+o.city+','+o.state+','+o.country;
+			//~ dx2.value = o.comp;
+			//~ var dx3 = document.createElement('input'); // info div
+			//~ dx3.value = 'N/A';
+			//~ dx3.type = 'button';
+			//~ dx3.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:150px !important;');
+			//~ document.body.appendChild(dx3);
+			/*END ITEMS*/
+			//~ dx3.innerText = o.zip;
+			var ef = new AMT___events_factory();
+			dx2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: dx2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			// onclick
+			//~ dx3.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+			//~ }
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					dx1
+				],
+				offset: 240 // offset top
+			});
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				//~ if (!/^\(\d{3}\)\d{3}-\d{4}$/.exec(o.q[1].value)) {
+					//~ return false;
+				//~ }
+				//~ if (o.q[0].value.length < 6) {
+					//~ return false;
+				//~ }
+				doSubmit(); // Still here? Submit.
+				return false;
+			}
+			// try_sbm
+			function try_sbm() {
+				//~ for (var i in o.q) {
+					//~ o.q[i].value = o.q[i].value.trim();
+					//~ if (/[\D]/.exec(o.q[i].value)) return false; // Contains non-digit
+					//~ if (o.q[i].value == '') return false;
+					//~ if (o.q[i].value.length < 2) return false;
+				//~ }
+				//~ doSubmit(); // Still here? Submit.
+			}
+			
+			// Opts
+			// TODO#1: RUN ONLY GOOGLE, OR SET UP FACEBOOK AND RUN ONLY GOOGLE/FB.
+			// TODO#2: Preview mode skip when COUNTRY!=USA.
+			// #3:On Google, show by line, e.g.: Street Address:698. From:
+			// adr_address: "<span class="street-address">698</span> <span class="extended-address">Azu</span>, <span class="locality">Hanno</span>, <span class="region">Saitama Prefecture</span> <span class="postal-code">357-0046</span>, <span class="country-name">Japan</span>"
+			// TODO: Add display:none if phone==null
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					//~ street: o.q[0],
+					//~ phone: o.q[1],
+				},
+				onclick_callback: function(opts) { // (opts)
+					//~ console.log(opts);
+					//~ document.body.style.backgroundColor = '';
+					//~ if (opts.o.final_location.state_abbr == null ) {
+						//~ document.body.style.backgroundColor = 'blue';
+						//~ return;
+					//~ }
+					//~ var sbm = true;
+					//~ o.q[0].value = opts.o.final_location.street.trim();
+					//~ if (/( ste\.* | suite )/i.exec(o.q[0].value)) {
+						//~ sbm = false;
+					//~ }
+					//~ if (o.q[0].value.length<6) {
+						//~ sbm = false;
+					//~ }
+					//~ if (o.q[0].value == 'undefined') {
+						//~ sbm = false;
+					//~ }
+					//~ // Convert phone to just numbers
+					//~ opts.o.final_location.phone = opts.o.final_location.phone.replace(/[^\d]/g, '');
+					//~ var x = /^(\d{3})(\d{3})(\d{4})$/.exec(opts.o.final_location.phone);
+					//~ if (x) {
+						//~ // turn into 000-000-0000
+						//~ o.q[1].value = '('+x[1]+')'+ x[2] +'-'+ x[3];
+						//doSubmit();
+					//~ } else {
+						//~ sbm = false;
+					//~ }
+				}
+			};
+			new AMT___items_factory().create_dashboard_find_address(opts);
+		}
+		new run().f();
+		return;
+	}
 	// Tagging Company
 	// Collecting data about company tagged its industry
 	// 
