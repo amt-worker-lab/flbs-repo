@@ -71981,6 +71981,14 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 				};
 				console.log(o);
+				// Sometimes addr is a lat / lng.
+				// <b>32.2879980503,-110.965091288</b>
+				var addrll = /^([\d,\-]+),([\d,\-]+)$/.exec(o.addr);
+				if (addrll) {
+					o.lat = addrll[1];
+					o.lng = addrll[2];
+				}
+				
 				//~ if(o.name.toLowerCase() == 'marshalls') {
 					//~ document.body.style.backgroundColor = 'green';
 				//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
@@ -72069,6 +72077,9 @@ Laurens Hammond, Chicago, Ill.**/
 					d4.id = 'd4';
 				}
 				
+				////////////////////
+				// showPastReturns
+				////////////////////
 				//~ showPastReturns(name + addr, function() {
 					//~ document.body.style.backgroundColor = 'aqua';
 					//~ document.getElementById('d4').innerHTML += 'Was Returned'
@@ -72282,7 +72293,9 @@ Laurens Hammond, Chicago, Ill.**/
 						'&output=embed&t=h&z=15';
 					
 					// Send street view URLs to Utility Window
-					var task = (ih.indexOf('hotels.com') != -1) ? 'AMT__traveldata_scrape_hotels_com' : 'AMT__traveldata_scrape_travelocity_com';
+					var task = (ih.indexOf('hotels.com') != -1) ?
+						'AMT__traveldata_scrape_hotels_com' :
+						'AMT__traveldata_scrape_travelocity_com';
 					
 					var hds = [0, 45, 90, 135, 180, 225, 270, 315];
 					var img_urls = [];
@@ -72314,12 +72327,6 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					], null, null, false, function(obj) {
 							console.log('got response yaya');
-							//Compute distance between two points;
-							
-							
-
-
-							
 							AMT___RunPageScript("function() {"+
 									"var currentLat = " + o.centerMapLat + ";"+
 									"var currentLng = " + o.centerMapLng + ";" + 
