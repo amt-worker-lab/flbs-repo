@@ -71671,20 +71671,18 @@ Laurens Hammond, Chicago, Ill.**/
 				
 				//Draw a marker onto the map for center of map
 				AMT___RunPageScript("function() {"+
-						
 					"}"
-					);
-				
+				);
 				//Draw a marker onto the map for lat/lng
-				AMT___RunPageScript("function() {"+
-						"var image = {"+
-							"url: 'https://google-developers.appspot.com/maps/documentation/javascript/examples/full/images/beachflag.png',"+
-							"size: new google.maps.Size(20, 32),"+
-							"origin: new google.maps.Point(0,0),"+
-							"anchor: new google.maps.Point(0, 32)"+
-						  "};"+
-					"}");
-				
+				//~ AMT___RunPageScript("function() {"+
+						//~ "var image = {"+
+							//~ "url: 'https://google-developers.appspot.com/maps/documentation/javascript/examples/full/images/beachflag.png',"+
+							//~ "size: new google.maps.Size(20, 32),"+
+							//~ "origin: new google.maps.Point(0,0),"+
+							//~ "anchor: new google.maps.Point(0, 32)"+
+						  //~ "};"+
+					//~ "}");
+				//~ return;
 				AMT___RunPageScript("function() {"+
 							"window.mouseMoveShowRect = false;" +
 							"window.demoPolyLine = new google.maps.Polyline({"+
@@ -71980,7 +71978,7 @@ Laurens Hammond, Chicago, Ill.**/
 						woutNameSearch:''
 					}
 				};
-				console.log(o);
+				console.log(o);return;
 				// Sometimes addr is a lat / lng.
 				// <b>32.2879980503,-110.965091288</b>
 				var addrll = /^([\d,\-]+),([\d,\-]+)$/.exec(o.addr);
@@ -72309,8 +72307,8 @@ Laurens Hammond, Chicago, Ill.**/
 								'&key=_GOOGLE_API_KEY_REDACTED_'
 						);
 					}
-					
 					console.log("Calling: AMT__setUtilityTabs");
+					return;
 					
 					// AMT__setUtilityTabs
 					AMT__setUtilityTabs([
