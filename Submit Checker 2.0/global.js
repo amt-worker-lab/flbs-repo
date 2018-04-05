@@ -16,6 +16,9 @@ function HIT(rew, reqId, reqName, jName,gId, hId, dur, worker) {
 			this.duration = dur;
 			this.workerName = worker;
 			
+			//~ // Modify job name to remove quotes
+			//~ // E.g. &#39; is no good.
+			//~ this.jobName = this.jobName.replace(/&#39;/g, "'");
 			
 			this.time = (new Date()).getTime();
 			
@@ -246,30 +249,31 @@ AMT__Global_Vars.initializeTabId = function() {
 		
 		var jName = document.getElementsByClassName('task-project-title')[0].innerHTML.trim();
 		var gId = AMT__Global_Vars.groupId;
-		var hId = AMT__Global_Vars.hitId; 
-		
-		
-		
+		var hId = AMT__Global_Vars.hitId;
 		AMT__Global_Vars.hitRecordDetails = new HIT(rew, reqId, reqName,jName, gId, hId, dur);
-		console.log('AMT__Global_Vars.hitRecordDetails', AMT__Global_Vars.hitRecordDetails);
+		var irurl = 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' +
+				AMT__Global_Vars.computerId + '&HIT=' +
+				encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails));
+		//console.log('AMT__Global_Vars.hitRecordDetails', AMT__Global_Vars.hitRecordDetails);
+		console.log(irurl);
 		GM_xmlhttpRequest({
-		method: 'GET',
-		asynchronous: false,
-		url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + AMT__Global_Vars.computerId + '&HIT=' + encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails)),
-		onload: function(response) {
-			//console.log('Response Recieved');
-			if(response) {
-			
-			var rs = response.responseText;
-			
-			if (response.status == 200) {
-					//console.log(rs);
-					if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
-						alert('Debug: Failed to record hit b/c it has already been recorded');
+			method: 'GET',
+			asynchronous: false,
+			url: irurl,
+			onload: function(response) {
+				//console.log('Response Recieved');
+				if(response) {
+				
+				var rs = response.responseText;
+				
+				if (response.status == 200) {
+						//console.log(rs);
+						if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
+							alert('Debug: Failed to record hit b/c it has already been recorded');
+						}
 					}
 				}
 			}
-		}
 		}); 
 		
 	});

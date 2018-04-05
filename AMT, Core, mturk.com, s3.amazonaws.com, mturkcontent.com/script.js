@@ -71691,8 +71691,35 @@ Laurens Hammond, Chicago, Ill.**/
 				script.parentNode.removeChild(script);
 			}
 			/**
+			 * mmShowInitLine
+			 * Mouse move, show initial line.
+			 * 
+			 * NOTE: To be appeneded to page.
+			 * This is for the three-point line.
+			 */
+			function mmShowInitLine() {
+				document.getElementById('map').addEventListener('mousemove',
+					function(e) {
+						if (window.mouseMoveShowInitLine) {
+							var offsetX = e.clientX - document.getElementById('map').offsetLeft;
+							var offsetY = e.clientY - document.getElementById('map').offsetTop;
+							var latLng = window.getLatLngByOffset(map,offsetX,offsetY);
+							if (!latLng) return;
+							var lat = latLng.lat();
+							var lng = latLng.lng();
+							window.demoPolyLine.setPath([
+								window.threeRectPoints[0].position,
+								{lat:lat,lng:lng}, 
+							]);
+							if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}
+						}
+					}
+				);
+			}
+			/**
 			 * coordinates_to_output
 			 * 
+			 * NOTE: To be appeneded to page.
 			 */
 			function coordinates_to_output(coors) {
 				//~ console.log(coors);
@@ -71724,6 +71751,8 @@ Laurens Hammond, Chicago, Ill.**/
 			/**
 			 * add_editable_polygon
 			 * Add a helpful editable polygon.
+			 * 
+			 * NOTE: To be appeneded to page.
 			 */
 			function add_editable_polygon(coordsArr) {
 				// Switch to hand mode........
@@ -72269,6 +72298,9 @@ Laurens Hammond, Chicago, Ill.**/
 			js_append2(add_editable_polygon);
 			// Append helper function: coordinates_to_output
 			js_append2(coordinates_to_output);
+			// Append helper function: mmShowInitLine
+			js_append(mmShowInitLine);
+			// Run chios
 			getCenterBeforeChiosRuns();
 			
 			function runAfterGettingCenter() {
