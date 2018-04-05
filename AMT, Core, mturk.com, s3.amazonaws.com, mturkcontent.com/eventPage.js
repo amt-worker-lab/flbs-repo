@@ -122,6 +122,50 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	{
 		nextTab(request,sender,sendResponse);
 	}
+	
+	/**
+	 * TASKS HERE
+	 * Specific clients go here.
+	 * 
+	 * Garret Grohman (Apr. 2018), Utilizes AMT_Global global variable.
+	 */
+	if (request.garret_grohman_brewerassoc) {
+		// Does global object exist?
+		// If no, then load from file. Then parse into an object.
+		// This only occurs every time the background page is reloaded,
+		// which happens rarely.
+		// Otherwise, caller (content script) may continue immediately.
+		if (!AMT_Global.hasOwnProperty('__garret_grohman_brewerassoc')) {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: 'http://192.168.1.2/mturk/.miscellaneous/garret_grohman_brewerassoc',
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) {
+						alert('garret_grohman_brewerassoc:Bad file.');
+						return;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var ul = dom.getElementsByClassName('vcard simple brewery-info');
+					console.log(ul.length);
+					AMT_Global.__garret_grohman_brewerassoc = {}; // Initiate to empty object.
+					for (var i=0;i<ul.length;i++) {
+						var n = ul[i].getElementsByClassName('name')[0];
+						if (n) n = n.innerText;
+						var u = ul[i].getElementsByClassName('url')[0];
+						if (u) u = u.innerText;
+						AMT_Global.__garret_grohman_brewerassoc[u] = n;
+					}
+					// Now tell content script that the object is ready.
+					sendResponse(AMT_Global.__garret_grohman_brewerassoc);
+				}
+			});
+		} else {
+			// Send back object.
+			//~ console.log('got request for (existing) AMT_Global.__garret_grohman_brewerassoc');
+			sendResponse(AMT_Global.__garret_grohman_brewerassoc);
+		}
+	}
 });
 
 
@@ -1115,6 +1159,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//~ sendResponse({}); // return blank
 		//~ }
 	//~ }
+	
+	
+	
+	
 });
 /**
  * End of onRequest
@@ -1458,6 +1506,16 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 });
 
 
+/**
+ * AMT Global
+ * This is a global variable for use in any general scripts.
+ * 
+ * This is temporary. So save anything and do no expect it to be
+ * permanent.
+ * 
+ * E.g., Garret Grohman, April 2018.
+ */
+var AMT_Global = {};
 
 /**
  * JumpToCaptcha

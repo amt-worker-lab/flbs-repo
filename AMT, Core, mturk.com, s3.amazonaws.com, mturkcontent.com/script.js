@@ -37,7 +37,7 @@ function MT__RUN() {
 	// 
 	var s = '<li>All Companies will have a name that can be found by searching the "URL to Find Name" page</li>\n	<li>Copy the text in website and search the page for a match. The company name will be in Bold lettering</li>';
 	var s2 = 'https://www.brewersassociation.org/directories/breweries/';
-	if (ih.indexOf(s) != -1 && ih.indexOf() != -1)
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
@@ -50,7 +50,7 @@ function MT__RUN() {
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
-			var td = document.getElementsByClassName('td');
+			var td = document.getElementsByTagName('td');
 			var o = {
 				u: td[1].innerText.trim(),
 				q: [
@@ -75,17 +75,33 @@ function MT__RUN() {
 				}, ['Id(web_url)']
 			)
 			// Load cached file.
-			chrome.extension.sendRequest(
+			//~ chrome.extension.sendRequest(
+			chrome.extension.sendMessage(
 				{
 					garret_grohman_brewerassoc: true
 				},
+				{}, // object: (optional) options
 				function(response)
 				{
 					//... 
+					if (!response) {
+						console.log('dne');
+						return; // failed?
+					}
+					// Object now exists.
+					var rs = response;
+					console.log(rs);
+					if (rs.hasOwnProperty( o.u )) {
+						o.q[0].value = rs[o.u].trim();
+						if (o.q[0].value.toLowerCase() != 'undefined' &&
+							o.q[0].value.toLowerCase() != 'NA' &&
+							o.q[0].value.toLowerCase() != 'N/A' &&
+							o.q[0].value.length > 4
+							)
+							AMT___recordAndSubmit();
+					}
 				}
 			);
-			
-			//~ AMT___recordAndSubmit();
 		}
 		new run().f();
 	}

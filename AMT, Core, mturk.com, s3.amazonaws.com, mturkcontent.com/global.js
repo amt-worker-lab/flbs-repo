@@ -617,29 +617,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//~ }, 5000);
 		//~ }
 	//~ }
-	
-	/**
-	 * TASKS GO HERE
-	 * 
-	 * Garret Grohman (Apr. 2018)
-	 */
-	if (request.garret_grohman_brewerassoc) {
-		// Does global object exist?
-		if (AMT__Global_Vars.tmp.__garret_grohman_brewerassoc) {
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: MT___host+'/mturk/.miscellaneous/garret_grohman_brewerassoc',
-				onload: function(response) {
-					var rs = response.responseText;
-					if (response.status != 200) {
-						document.body.style.backgroundColor = 'blue';
-						return;
-					}
-					var dom = new DOMParser().parseFromString(rs, 'text/html');
-				}
-			});
-		}
-	}
 });
 
 //
