@@ -71620,7 +71620,12 @@ Laurens Hammond, Chicago, Ill.**/
 	// New Nov21 2014, Uses Utility Window
 	/**
 	 * This is an example of using Street View images.
-	 * https://maps.googleapis.com/maps/api/streetview?size=600x600&location=1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095&heading=-80&key=_GOOGLE_API_KEY_REDACTED_
+	 * 		https://maps.googleapis.com/maps/api/streetview?size=600x600&
+	 * 		location=1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095&
+	 * 		heading=-80&key=_GOOGLE_API_KEY_REDACTED_
+	 * 
+	 * Tool for testing what the output looks like on a map:
+	 * 		https://www.darrinward.com/lat-long/?id=5ac5719fa6fb91.07068151
 	 */
 	var s = 'Draw a complete polygon around the target&nbsp;store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	var s2= 'Draw a complete polygon around all the building(s) of a&nbsp;target&nbsp;mall (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
@@ -71638,6 +71643,7 @@ Laurens Hammond, Chicago, Ill.**/
 	var s14 = "Draw a complete polygon around the target&nbsp;hotel";
 	var s15 = '<li>Draw a complete polygon around the target hotel&nbsp;and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	var s16 = 'and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
+	var s17 = '<p>If polygon includes parking lot it will be rejected - this is different than our usual tasks</p>\n\n<p>The target store to be geofenced: ';
 	
 	if  (
 		ih.indexOf(s)  != -1 ||
@@ -71655,7 +71661,8 @@ Laurens Hammond, Chicago, Ill.**/
 		ih.indexOf(s13) != -1 ||
 		ih.indexOf(s14) != -1 ||
 		ih.indexOf(s15) != -1 ||
-		ih.indexOf(s16) != -1
+		ih.indexOf(s16) != -1 ||
+		ih.indexOf(s17) != -1
 		)
 	{
 		var run = function() {};
@@ -71696,17 +71703,25 @@ Laurens Hammond, Chicago, Ill.**/
 					})
 				);
 				
+				/**
+				 * map_drawing_tools
+				 * Add some drawing tools to the page.
+				 * 
+				 * This function will be added to the scripts on the page.
+				 */
 				function map_drawing_tools(obj) {
-					//return;
 					window.mouseMoveShowRect = false; 
-					window.demoPolyLine = new google.maps.Polyline({
-										 path:[],
-										 clickable:true,
-										 strokeWeight:3,
-										 strokeColor:'#00FFFF'});
+					window.demoPolyLine = new google.maps.Polyline(
+						{
+							path:[],
+							clickable:true,
+							strokeWeight:3,
+							strokeColor:'#00FFFF'
+						}
+					);
 					google.maps.event.addListener(window.demoPolyLine, 'rightclick', function(e) {
 						console.log(e.latLng);
-						google.maps.event.trigger(map, 'rightclick', e);
+						//google.maps.event.trigger(map, 'rightclick', e);
 					});
 					window.getLatLngByOffset = function( map, offsetX, offsetY ){
 						var currentBounds = map.getBounds();
@@ -71717,7 +71732,6 @@ Laurens Hammond, Chicago, Ill.**/
 						point.y += offsetY / ( 1<<map.getZoom() );
 						return map.getProjection().fromPointToLatLng( point );
 					};
-					//return;
 					document.getElementById('map').addEventListener('mousemove', function(e) {
 						if(window.mouseMoveShowRect) { 
 							console.log('mouseMoveShowRect');
@@ -71741,19 +71755,13 @@ Laurens Hammond, Chicago, Ill.**/
 								window.demoPolyLine.setMap(map);
 							}
 					}});
-					//return;
 					window.setTimeout(function() {
-						console.log('here is de map'); 
-						console.log(map);
-						console.log(map.getCenter());
 						var lat = map.getCenter().lat(); 
 						var lng = map.getCenter().lng(); 
-						console.log(lat);
 						map.setTilt(45);
 						if(obj.sv_start_in_top_down != 0) {
 							map.setTilt(0);
 						}
-						//return;
 						var marker2 = new google.maps.Marker({
 							position: new google.maps.LatLng(lat,lng),
 							map: map,
@@ -71761,21 +71769,17 @@ Laurens Hammond, Chicago, Ill.**/
 						});
 						document.getElementById('latlng_starting_value').value = lat + ';' + lng; 
 						document.getElementById('latlng_starting_value').click();
-						//return;
 						var marker = new google.maps.Marker({
 							position: new google.maps.LatLng(lat,lng),
 							map: map,
 							title: 'testing'
 						});
-						//return;
-						
-						//BROKEN HERE
 						map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-						//~ console.log(obj)
-						//~ console.log(obj.sv_initial_zoom)
-						//~ console.log(map)
-						//~ console.log(map.setZoom)
-						//map.setZoom(obj.sv_initial_zoom * 1);
+						// This was broken before.
+						// Setting it to obj.sv_initial_zoom fixes it.
+						// Before, the script var did not exist.
+						// And this caused 100% cpu for some reason.
+						map.setZoom(obj.sv_initial_zoom * 1);
 						map.setCenter(new google.maps.LatLng(lat,lng));
 						//return;
 						google.maps.event.addListener(
@@ -71825,13 +71829,12 @@ Laurens Hammond, Chicago, Ill.**/
 							new google.maps.Size(16, 16),
 							new google.maps.Point(0, 0),
 							new google.maps.Point(8, 8));
-						//return;
-						//return;BROKEN BEFORE
 						google.maps.event.addListener(map, 'rightclick', function(e) {
 							console.log(e);
 							console.log(e.latLng);
 							map.set('disableDoubleClickZoom', true);							
 							if(!window.shiftKey) {
+								// Do Non-Shift Key
 								var m = new google.maps.Marker({
 									position: e.latLng,
 									map: map,
@@ -71922,6 +71925,7 @@ Laurens Hammond, Chicago, Ill.**/
 									window.demoPolyLine.setMap(null);
 								}
 							} else {
+								// Do Shift Key behavior.
 								var panorama = map.getStreetView();
 								panorama.setPosition(e.latLng);
 								var toggle = panorama.getVisible();
@@ -71968,7 +71972,6 @@ Laurens Hammond, Chicago, Ill.**/
 						};
 						
 						var streetViewLayer = new google.maps.StreetViewCoverageLayer();
-						//return;
 						streetViewLayer.setMap(map);
 					}, 2000);
 				}
@@ -71987,8 +71990,10 @@ Laurens Hammond, Chicago, Ill.**/
 				// h3
 				GM_addStyle('h3:hover {background-color:aqua;}');
 				GM_addStyle('h3 {width:40%;}');
-				var x = document.getElementsByTagName('h3')[0];
-				x.innerText = x.innerText.replace(/\n/g, ' ');
+				// Replace newlines to make it easier to read.
+				var x = document.getElementsByTagName('h3')[0]
+				if (x && x.innerText)
+					x.innerText = x.innerText.replace(/\n/g, ' ');
 				
 				//...
 				// This will change occasionally.
@@ -72021,7 +72026,6 @@ Laurens Hammond, Chicago, Ill.**/
 						woutNameSearch:''
 					}
 				};
-				console.log(o);return;
 				// Sometimes addr is a lat / lng.
 				// <b>32.2879980503,-110.965091288</b>
 				var addrll = /^([\d,\-]+),([\d,\-]+)$/.exec(o.addr);
@@ -72087,13 +72091,18 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 				
 				// h3[0]
+				// Highlight the main H3 to make it easier
+				// to see what is important for this task.
+				// (i.e. the store name)
 				var x = document.getElementsByTagName('h3')[0];
-				x.setAttribute('style', 'overflow:auto;');
-				x.style.border = '2px solid LightGreen';
-				x.style.cursor = 'pointer';
-				x.style.height = '28px';
-				x.style.fontSize = '24px';
-				x.innerText = name + '\n' + x.innerText;
+				if (x) {
+					x.setAttribute('style', 'overflow:auto;');
+					x.style.border = '2px solid LightGreen';
+					x.style.cursor = 'pointer';
+					x.style.height = '28px';
+					x.style.fontSize = '24px';
+					x.innerText = name + '\n' + x.innerText;
+				}
 				
 				/** TESTING // ... script
 				var d = document.createElement('script');
