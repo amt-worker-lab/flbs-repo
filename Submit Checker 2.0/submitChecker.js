@@ -100,10 +100,12 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 				//alert(userName);
 				request.resolvedHit.computerId = computerId.computerId;
 				request.resolvedHit.userName = userName.userName;
-
+				var rurl = 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords'+
+					'/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId +
+					'&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit));
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId + '&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit)),
+					url: rurl,
 					onload: function(response) {
 						console.log('Response Recieved');
 						if(response) {										

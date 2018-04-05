@@ -16,10 +16,6 @@ function HIT(rew, reqId, reqName, jName,gId, hId, dur, worker) {
 			this.duration = dur;
 			this.workerName = worker;
 			
-			//~ // Modify job name to remove quotes
-			//~ // E.g. &#39; is no good.
-			//~ this.jobName = this.jobName.replace(/&#39;/g, "'");
-			
 			this.time = (new Date()).getTime();
 			
 			this.accountName = document.getElementsByClassName('me-bar')[0].getElementsByTagName('a')[0].innerText;
@@ -264,10 +260,9 @@ AMT__Global_Vars.initializeTabId = function() {
 				//console.log('Response Recieved');
 				if(response) {
 				
-				var rs = response.responseText;
-				
-				if (response.status == 200) {
-						//console.log(rs);
+					var rs = response.responseText;
+					
+					if (response.status == 200) {
 						if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
 							alert('Debug: Failed to record hit b/c it has already been recorded');
 						}

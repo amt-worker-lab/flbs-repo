@@ -52,149 +52,154 @@ function createSubmissionDisplay(callback) {
 	//alert(COMPUTER_ID);
 	//alert(USER_NAME);
 	console.log('sending USER_NAME', USER_NAME,' COMPUTER_ID', COMPUTER_ID)
+	var rurl = 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/'+
+		'IncomeRecords.php?GetLatest=1&UserName='+USER_NAME.trim()+
+		'&ComputerId='+COMPUTER_ID;
+	console.log(rurl);
 	GM_xmlhttpRequest({
 		method: 'Get',
-		url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?GetLatest=1&UserName='+USER_NAME.trim()+'&ComputerId='+COMPUTER_ID,
+		url: rurl,
 		onload: function(response) {
-		console.log(response.responseText);
-		//alert(COMPUTER_ID);
+			console.log(response.responseText);
+			//alert(COMPUTER_ID);
 
-		try {
-		var iStats = JSON.parse(response.responseText);
-		}
-		catch(e) {
-			document.body.innerText = response.responseText;
-			callback();
-		}
-		console.log(iStats);
-		
-		//current job stats
-		var cjStats = iStats.currentJobStats;
-		
-		//combined stats
-		var cmbStats = iStats.combinedStats;
-		
-		
-		//Account stats
-		var momStats = iStats.allAccountStats['Mom'];
-		var emStats = iStats.allAccountStats['Em'];
-		var benStats = iStats.allAccountStats['Ben'];
-		var gmaStats = iStats.allAccountStats['Gma'];
-		var sauravStats = iStats.allAccountStats['Saurav'];
-		
-		//All Userstats
-		var daveUserStats = iStats.allUserStats['Dave'];
-		var momUserStats = iStats.allUserStats['Mom'];
-		var benUserStats = iStats.allUserStats['Ben'];
-		
-		var tenMinRow = document.getElementById('tenMinCJ').getElementsByTagName('td');
-		tenMinRow[1].innerText = "$" + cjStats.hourly10Min + "/hr";
-		tenMinRow[2].innerText = cjStats.num10MinSubmitted;
-		tenMinRow[3].innerText = cjStats.num10MinReturns;
-		tenMinRow[4].innerText = cjStats.percentSub10Min;
-		
-		var thirtyMinRow = document.getElementById('thirtyMinCJ').getElementsByTagName('td');
-		thirtyMinRow[1].innerText = "$" + cjStats.hourly30Min + "/hr";
-		thirtyMinRow[2].innerText = cjStats.num30MinSubmitted;
-		thirtyMinRow[3].innerText = cjStats.num30MinReturns;
-		thirtyMinRow[4].innerText = cjStats.percentSub30Min;
-		
-		var todayMinRow = document.getElementById('todayMinCJ').getElementsByTagName('td');
-		todayMinRow[1].innerText = "$" + cjStats.incomeToday;
-		todayMinRow[2].innerText = cjStats.numTodaySubmitted;
-		todayMinRow[3].innerText = cjStats.numTodayReturns;
-		todayMinRow[4].innerText = cjStats.percentSubToday;
-		
-		var todayAllCJ = document.getElementById('todayAllCJ').getElementsByTagName('td');
-		todayAllCJ[1].innerText = "$" + cjStats.allIncomeToday;
-		todayAllCJ[2].innerText = cjStats.allTodaySubmitted;
-		todayAllCJ[3].innerText = cjStats.allTodayReturns;
-		todayAllCJ[4].innerText = cjStats.percentSubAllToday;
-		
-		var todayAllCJ = document.getElementById('allTimeAllCJ').getElementsByTagName('td');
-		todayAllCJ[1].innerText = "$" + cjStats.allTotalIncome;
-		todayAllCJ[2].innerText = cjStats.allNumSubmitted;
-		todayAllCJ[3].innerText = cjStats.allNumReturns;
-		todayAllCJ[4].innerText = cjStats.allPercentSubTotal;
-		
-		//var todayAllCJ = document.getElementById('todayAllCJ').getElementsByTagName('td');
-			
-		
-		
-		cjTotals = document.getElementById('cjTotals');
-		cjTotals.innerHTML = "Current Pool: " + cjStats.pool.currentCount + " HITs, " + cjStats.pool.percentSoFarPool +"% ("+
-												cjStats.pool.ourTotalCount+"/"+cjStats.pool.allMturkDoneSoFar +") , " + cjStats.pool.leftOverPoolMoney +"$<br>" +
-						     "Total Pool: " + cjStats.pool.apexCount + " HITs, " + cjStats.pool.percentPool +"%, " + cjStats.pool.totalPoolMoney + "$<br>" +
-							 "ETA: " + cjStats.pool.activeETA + "hrs "+ cjStats.pool.dropRatePerHour + "HITs/hr<br>" +
-							 "Pass-ETA: "+cjStats.pool.passiveETA +"hrs " + cjStats.pool.passiveDropRatePerHour +"HITs/hr<br>"+ 
-							 "(last update: " + cjStats.pool.timeSinceLastUpdate + "mins ago) (goes back " + cjStats.pool.etaTimeDiffInHours+ "h" + 						   	 	cjStats.pool.etaTimeDiffInMins + "m)";
-		
-		
-		var account;
-		for(var name in iStats.allAccountStats) {
-			if(!name || name == 'length')
-					break;
-			switch(name) {
-				case 'Mom': account = momStats;
-				break;
-				case 'Em': account = emStats;
-				break;
-				case 'Ben': account = benStats;
-				break;
-				case 'Gma': account = gmaStats;
-				break;
-				case 'Saurav': account = sauravStats;
-				break;
-				default:
-					alert('undefined account');
-				break;
+			try {
+				var iStats = JSON.parse(response.responseText);
 			}
-			console.log(name);
-			var accountRow = document.getElementById(name.toLowerCase() + 'Account').getElementsByTagName('td');
-			accountRow[1].innerText = account.numTodaySubmitted;
-			accountRow[2].innerText = account.numTodayReturns;
-			accountRow[3].innerText = '$' + account.incomeToday;
-			accountRow[4].innerText = account.hitsRemaining;
-		}
-		
-		
-		var user;
-		for(var name in iStats.allUserStats) {
-			if(!name || name == 'length')
-					break;
-			switch(name) {
-				case 'Mom': user = momUserStats;
-				break;
-				case 'Ben': user = benUserStats;
-				break;
-				case 'Dave': user = daveUserStats;
-				break;
-				default:
-					alert('undefined user');
-				break;
+			catch(e) {
+				document.body.innerText = response.responseText;
+				callback();
+			}
+			console.log(iStats);
+			
+			//current job stats
+			var cjStats = iStats.currentJobStats;
+			
+			//combined stats
+			var cmbStats = iStats.combinedStats;
+			
+			
+			//Account stats
+			var momStats = iStats.allAccountStats['Mom'];
+			var emStats = iStats.allAccountStats['Em'];
+			var benStats = iStats.allAccountStats['Ben'];
+			var gmaStats = iStats.allAccountStats['Gma'];
+			var sauravStats = iStats.allAccountStats['Saurav'];
+			
+			//All Userstats
+			var daveUserStats = iStats.allUserStats['Dave'];
+			var momUserStats = iStats.allUserStats['Mom'];
+			var benUserStats = iStats.allUserStats['Ben'];
+			
+			var tenMinRow = document.getElementById('tenMinCJ').getElementsByTagName('td');
+			tenMinRow[1].innerText = "$" + cjStats.hourly10Min + "/hr";
+			tenMinRow[2].innerText = cjStats.num10MinSubmitted;
+			tenMinRow[3].innerText = cjStats.num10MinReturns;
+			tenMinRow[4].innerText = cjStats.percentSub10Min;
+			
+			var thirtyMinRow = document.getElementById('thirtyMinCJ').getElementsByTagName('td');
+			thirtyMinRow[1].innerText = "$" + cjStats.hourly30Min + "/hr";
+			thirtyMinRow[2].innerText = cjStats.num30MinSubmitted;
+			thirtyMinRow[3].innerText = cjStats.num30MinReturns;
+			thirtyMinRow[4].innerText = cjStats.percentSub30Min;
+			
+			var todayMinRow = document.getElementById('todayMinCJ').getElementsByTagName('td');
+			todayMinRow[1].innerText = "$" + cjStats.incomeToday;
+			todayMinRow[2].innerText = cjStats.numTodaySubmitted;
+			todayMinRow[3].innerText = cjStats.numTodayReturns;
+			todayMinRow[4].innerText = cjStats.percentSubToday;
+			
+			var todayAllCJ = document.getElementById('todayAllCJ').getElementsByTagName('td');
+			todayAllCJ[1].innerText = "$" + cjStats.allIncomeToday;
+			todayAllCJ[2].innerText = cjStats.allTodaySubmitted;
+			todayAllCJ[3].innerText = cjStats.allTodayReturns;
+			todayAllCJ[4].innerText = cjStats.percentSubAllToday;
+			
+			var todayAllCJ = document.getElementById('allTimeAllCJ').getElementsByTagName('td');
+			todayAllCJ[1].innerText = "$" + cjStats.allTotalIncome;
+			todayAllCJ[2].innerText = cjStats.allNumSubmitted;
+			todayAllCJ[3].innerText = cjStats.allNumReturns;
+			todayAllCJ[4].innerText = cjStats.allPercentSubTotal;
+			
+			//var todayAllCJ = document.getElementById('todayAllCJ').getElementsByTagName('td');
 				
+			
+			
+			cjTotals = document.getElementById('cjTotals');
+			cjTotals.innerHTML = "Current Pool: " + cjStats.pool.currentCount + " HITs, " + cjStats.pool.percentSoFarPool +"% ("+
+													cjStats.pool.ourTotalCount+"/"+cjStats.pool.allMturkDoneSoFar +") , " + cjStats.pool.leftOverPoolMoney +"$<br>" +
+								 "Total Pool: " + cjStats.pool.apexCount + " HITs, " + cjStats.pool.percentPool +"%, " + cjStats.pool.totalPoolMoney + "$<br>" +
+								 "ETA: " + cjStats.pool.activeETA + "hrs "+ cjStats.pool.dropRatePerHour + "HITs/hr<br>" +
+								 "Pass-ETA: "+cjStats.pool.passiveETA +"hrs " + cjStats.pool.passiveDropRatePerHour +"HITs/hr<br>"+ 
+								 "(last update: " + cjStats.pool.timeSinceLastUpdate + "mins ago) (goes back " + cjStats.pool.etaTimeDiffInHours+ "h" + 						   	 	cjStats.pool.etaTimeDiffInMins + "m)";
+			
+			
+			var account;
+			for(var name in iStats.allAccountStats) {
+				if(!name || name == 'length')
+						break;
+				switch(name) {
+					case 'Mom': account = momStats;
+					break;
+					case 'Em': account = emStats;
+					break;
+					case 'Ben': account = benStats;
+					break;
+					case 'Gma': account = gmaStats;
+					break;
+					case 'Saurav': account = sauravStats;
+					break;
+					default:
+						alert('undefined account');
+					break;
+				}
+				console.log(name);
+				var accountRow = document.getElementById(name.toLowerCase() + 'Account').getElementsByTagName('td');
+				accountRow[1].innerText = account.numTodaySubmitted;
+				accountRow[2].innerText = account.numTodayReturns;
+				accountRow[3].innerText = '$' + account.incomeToday;
+				accountRow[4].innerText = account.hitsRemaining;
 			}
 			
-			var userRow = document.getElementById(name.toLowerCase() + 'User').getElementsByTagName('td');
-			userRow[1].innerText = '$' + user.incomeToday;
-			userRow[2].innerText = '$' + user.incomeThisWeek;
-			userRow[3].innerText = '$' + user.incomeThisMonth;
-			userRow[4].innerText = '$' + user.incomeThisYear;
-		}
+			
+			var user;
+			for(var name in iStats.allUserStats) {
+				if(!name || name == 'length')
+						break;
+				switch(name) {
+					case 'Mom': user = momUserStats;
+					break;
+					case 'Ben': user = benUserStats;
+					break;
+					case 'Dave': user = daveUserStats;
+					break;
+					default:
+						alert('undefined user');
+					break;
+					
+				}
+				
+				var userRow = document.getElementById(name.toLowerCase() + 'User').getElementsByTagName('td');
+				userRow[1].innerText = '$' + user.incomeToday;
+				userRow[2].innerText = '$' + user.incomeThisWeek;
+				userRow[3].innerText = '$' + user.incomeThisMonth;
+				userRow[4].innerText = '$' + user.incomeThisYear;
+			}
 
-		var cmbRow = document.getElementById('cmbUser').getElementsByTagName('td');
-		cmbRow[1].innerText = '$' +cmbStats.allIncomeToday;
-		cmbRow[2].innerText = '$' +cmbStats.allIncomeThisWeek;
-		cmbRow[3].innerText = '$' +cmbStats.allIncomeThisMonth;
-		cmbRow[4].innerText = '$' + cmbStats.allIncomeThisYear;
-		
-		console.log('debug: ' + cjStats.pool.ourTotalCount);
-		
-		
-		if(callback)
-			callback();
-		
-	}});
+			var cmbRow = document.getElementById('cmbUser').getElementsByTagName('td');
+			cmbRow[1].innerText = '$' +cmbStats.allIncomeToday;
+			cmbRow[2].innerText = '$' +cmbStats.allIncomeThisWeek;
+			cmbRow[3].innerText = '$' +cmbStats.allIncomeThisMonth;
+			cmbRow[4].innerText = '$' + cmbStats.allIncomeThisYear;
+			
+			console.log('debug: ' + cjStats.pool.ourTotalCount);
+			
+			
+			if(callback)
+				callback();
+			
+		}
+	});
 }
 
 function signIn(id) {
