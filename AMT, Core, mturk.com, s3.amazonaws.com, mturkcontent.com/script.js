@@ -78,7 +78,8 @@ function MT__RUN() {
 			//~ chrome.extension.sendRequest(
 			chrome.extension.sendMessage(
 				{
-					garret_grohman_brewerassoc: true
+					garret_grohman_brewerassoc: true,
+					garret_grohman_brewerassoc_key: o.u
 				},
 				{}, // object: (optional) options
 				function(response)
@@ -89,17 +90,16 @@ function MT__RUN() {
 						return; // failed?
 					}
 					// Object now exists.
-					var rs = response;
+					var rs = response.trim();
 					console.log(rs);
-					if (rs.hasOwnProperty( o.u )) {
-						o.q[0].value = rs[o.u].trim();
-						if (o.q[0].value.toLowerCase() != 'undefined' &&
-							o.q[0].value.toLowerCase() != 'NA' &&
-							o.q[0].value.toLowerCase() != 'N/A' &&
-							o.q[0].value.length > 4
-							)
-							AMT___recordAndSubmit();
-					}
+					o.q[0].value = rs;
+					if (o.q[0].value.toLowerCase() != 'undefined' &&
+						o.q[0].value.toLowerCase() != 'NA' &&
+						o.q[0].value.toLowerCase() != 'N/A' &&
+						o.q[0].value.toLowerCase() != 'false' &&
+						o.q[0].value.length > 4
+						)
+						AMT___recordAndSubmit();
 				}
 			);
 		}

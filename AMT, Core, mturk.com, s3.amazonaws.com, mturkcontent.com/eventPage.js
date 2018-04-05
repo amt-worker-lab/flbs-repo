@@ -157,13 +157,37 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 						AMT_Global.__garret_grohman_brewerassoc[u] = n;
 					}
 					// Now tell content script that the object is ready.
-					sendResponse(AMT_Global.__garret_grohman_brewerassoc);
+					//~ sendResponse(AMT_Global.__garret_grohman_brewerassoc);
+					var keyexists = AMT_Global.__garret_grohman_brewerassoc.hasOwnProperty(
+						request.garret_grohman_brewerassoc_key
+					);
+					console.log('keyexists1:'+keyexists);
+					if (keyexists) {
+						var val = AMT_Global.__garret_grohman_brewerassoc[
+							request.garret_grohman_brewerassoc_key
+						];
+						sendResponse(val);
+					} else {
+						sendResponse(false);
+					}
 				}
 			});
 		} else {
 			// Send back object.
 			//~ console.log('got request for (existing) AMT_Global.__garret_grohman_brewerassoc');
-			sendResponse(AMT_Global.__garret_grohman_brewerassoc);
+			//~ sendResponse(AMT_Global.__garret_grohman_brewerassoc);
+			var keyexists = AMT_Global.__garret_grohman_brewerassoc.hasOwnProperty(
+				request.garret_grohman_brewerassoc_key
+			);
+			console.log('keyexists2:'+keyexists);
+			if (keyexists) {
+				var val = AMT_Global.__garret_grohman_brewerassoc[
+					request.garret_grohman_brewerassoc_key
+				];
+				sendResponse(val);
+			} else {
+				sendResponse(false);
+			}
 		}
 	}
 });
