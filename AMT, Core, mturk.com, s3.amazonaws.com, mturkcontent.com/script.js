@@ -72016,8 +72016,9 @@ Laurens Hammond, Chicago, Ill.**/
 						});
 						window.threeRectPoints = [];
 						window.fourLines = [];
-						window.markerImage = new google.maps.MarkerImage(obj.sv_host+'/media/images/Yellow_dot.svg',
-							new google.maps.Size(16, 16),
+						window.markerImage = new google.maps.MarkerImage(
+							obj.sv_host+'/media/images/Yellow_dot.svg',
+							new google.maps.Size(1, 1),
 							new google.maps.Point(0, 0),
 							new google.maps.Point(8, 8));
 						google.maps.event.addListener(map, 'rightclick', function(e) {
@@ -72602,10 +72603,16 @@ Laurens Hammond, Chicago, Ill.**/
 							for (var i in rs.results) {
 								var n = rs.results[i];
 								// js_append (add marker)
+								// Marker blocks editable polygon corners.
+								// So, change marker to 1px by 1px,
+								// down from 16px by 16px.
+								// Another solution is to find out how to
+								// place the yellow box underneath
+								// so it does not block.
 								js_append(function (object) {
 									var mi = new google.maps.MarkerImage(
 										object.__host__+"/media/images/Yellow_dot.svg",
-										new google.maps.Size(16, 16),
+										new google.maps.Size(1, 1),
 										new google.maps.Point(0, 0),
 										new google.maps.Point(8, 8)
 									);
