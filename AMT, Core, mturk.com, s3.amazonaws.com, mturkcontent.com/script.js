@@ -31,6 +31,64 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// Garret Grohman
+	//
+	// Utilizes mturk/.miscellaneous/garret_grohman_brewerassoc
+	// 
+	var s = '<li>All Companies will have a name that can be found by searching the "URL to Find Name" page</li>\n	<li>Copy the text in website and search the page for a match. The company name will be in Bold lettering</li>';
+	var s2 = 'https://www.brewersassociation.org/directories/breweries/';
+	if (ih.indexOf(s) != -1 && ih.indexOf() != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByClassName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			// output
+			//~ td[0].innerText += '\n---Cleaned---\n' + o.u;
+			// ITEMS
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;\
+				left:50%;width:50%;height:400px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			AMT___addUserDecision(
+				'GarretGroh-BA,2018', function() {
+					return o.u;
+				}, ['Id(web_url)']
+			)
+			// Load cached file.
+			chrome.extension.sendRequest(
+				{
+					garret_grohman_brewerassoc: true
+				},
+				function(response)
+				{
+					//... 
+				}
+			);
+			
+			//~ AMT___recordAndSubmit();
+		}
+		new run().f();
+	}
 	// Jacob Beres
 	// Collect hospital physical addresses from a given website
 	// 
@@ -71897,29 +71955,6 @@ Laurens Hammond, Chicago, Ill.**/
 						return map.getProjection().fromPointToLatLng( point );
 					};
 					document.getElementById('map').addEventListener('mousemove', function(e) {
-						//~ if(window.mouseMoveShowRect) { 
-							//~ console.log('mouseMoveShowRect');
-							//~ var offsetX = e.clientX - document.getElementById('map').offsetLeft;
-							//~ var offsetY = e.clientY - document.getElementById('map').offsetTop;
-							//~ var latLng = window.getLatLngByOffset(map,offsetX,offsetY);
-							//~ var lat = latLng.lat();
-							//~ var lng = latLng.lng();
-							//~ var diffLat = lat - window.threeRectPoints[1].position.lat();
-							//~ var diffLng = lng - window.threeRectPoints[1].position.lng();
-							//~ var newLatLng = {
-								//~ lat: diffLat + window.threeRectPoints[0].position.lat(),
-								//~ lng: diffLng + window.threeRectPoints[0].position.lng()
-							//~ };
-							//~ window.demoPolyLine.setPath([
-								//~ window.threeRectPoints[0].position,
-								//~ newLatLng,
-								//~ {lat:lat,lng:lng},
-								//~ window.threeRectPoints[1].position
-							//~ ]);
-							//~ if(window.demoPolyLine.getMap() == null) {
-								//~ window.demoPolyLine.setMap(map);
-							//~ }
-						//~ }
 						if(window.mouseMoveShowRect) {
 							var offsetX = e.clientX - document.getElementById('map').offsetLeft;
 							var offsetY = e.clientY - document.getElementById('map').offsetTop;
@@ -72141,98 +72176,6 @@ Laurens Hammond, Chicago, Ill.**/
 									window.mouseMoveShowRect = false;
 									window.demoPolyLine.setMap(null);
 								}
-							}
-							if(!window.shiftKey) {
-								//~ // Do Non-Shift Key
-								//~ var m = new google.maps.Marker({
-									//~ position: e.latLng,
-									//~ map: map,
-									//~ icon: window.markerImage
-								//~ });
-								//~ if(window.threeRectPoints.length < 3) {
-									//~ window.threeRectPoints.push(m);
-									//~ if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {
-										//~ var polyline = new google.maps.Polyline({
-											//~ path:[
-											//~ m.position,
-											//~ window.threeRectPoints[window.threeRectPoints.length-2].position],
-											//~ strokeWeight:3,
-											//~ strokeColor:'#00FF00'});
-										//~ polyline.setMap(map);
-										//~ window.fourLines.push(polyline);
-									//~ }
-
-									//~ if(window.threeRectPoints.length == 3) {
-										//~ var diffLat = window.threeRectPoints[2].position.lat() - window.threeRectPoints[1].position.lat();
-										//~ var diffLng = window.threeRectPoints[2].position.lng() - window.threeRectPoints[1].position.lng();
-										//~ var newLatLng = {
-											//~ lat: diffLat + window.threeRectPoints[0].position.lat(),
-											//~ lng: diffLng + window.threeRectPoints[0].position.lng()
-										//~ };
-
-
-										//~ var randOff = 0.00000898472*1; //1 meter is 1/111,300
-										//~ var w = randOff * Math.sqrt(Math.random());
-										//~ var t = 2 * Math.PI * Math.random();
-										//~ var x = newLatLng.lat*1 + w*Math.cos(t);
-										//~ var y = newLatLng.lng*1 + w*Math.sin(t);
-										//~ newLatLng = {lat:x,lng:y};
-
-										//~ var lastPoint = new google.maps.Marker({
-											//~ position: newLatLng,
-											//~ map: map,
-											//~ icon: window.markerImage
-										//~ });
-										//~ window.threeRectPoints.push(lastPoint);
-
-										//~ var polyline = new google.maps.Polyline({
-											//~ path:[
-												//~ window.threeRectPoints[2].position,
-												//~ window.threeRectPoints[3].position
-											//~ ],
-											//~ strokeWeight:3,
-											//~ strokeColor:'#00FF00'
-										//~ });
-										//~ polyline.setMap(map);
-										//~ window.fourLines.push(polyline);
-										//~ var polyline = new google.maps.Polyline({
-											//~ path:[
-												//~ window.threeRectPoints[3].position,
-												//~ window.threeRectPoints[0].position
-											//~ ],
-											//~ strokeWeight:3,
-											//~ strokeColor:'#00FF00'
-										//~ });
-										//~ polyline.setMap(map);
-										//~ window.fourLines.push(polyline);
-										//~ // reset value to blank
-										//~ // and then fill in with points.
-										//~ document.getElementById('polygon').value = '';
-										//~ for(var i = 0; i < window.threeRectPoints.length; i++) {
-											//~ document.getElementById('polygon').value +=
-												//~ window.threeRectPoints[i].position.lat() + ',' +
-												//~ window.threeRectPoints[i].position.lng() +';';
-										//~ }
-										//~ document.getElementById('polygon').value +=
-											//~ window.threeRectPoints[0].position.lat() + ',' +
-											//~ window.threeRectPoints[0].position.lng()+';';
-									//~ }
-								//~ }
-								//~ else {
-									//~ for(var i = 0; i < window.threeRectPoints.length; i++) {
-										//~ window.threeRectPoints[i].setMap(null);
-										//~ window.fourLines[i].setMap(null);
-									//~ }
-									//~ window.threeRectPoints = [];
-									//~ window.fourLines = [];
-									//~ window.threeRectPoints.push(m);
-								//~ }
-								//~ if(window.threeRectPoints.length == 2) {
-									//~ window.mouseMoveShowRect = true; 
-								//~ } else {
-									//~ window.mouseMoveShowRect = false;
-									//~ window.demoPolyLine.setMap(null);
-								//~ }
 							}
 							// Do shift key behavior.
 							if (window.shiftKey) {

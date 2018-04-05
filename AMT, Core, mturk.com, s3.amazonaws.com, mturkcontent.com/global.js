@@ -89,6 +89,9 @@ var AMT__Global_Vars = //function()
 		is_running_on_local_dev: false, // This is boolean for e.g. http://localhost/mturk/.dev/HITs/CHIOS%20TESTING.html
 		//~ tabURL: null, // To be loaded in mturk_load(). Useful for e.g. ReloadOnNoHits.
 	},
+	tmp: { // Temporary keys may be set here.
+		
+	},
 	
 	num_amt_tabs: null,
 	
@@ -615,7 +618,28 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//~ }
 	//~ }
 	
-	
+	/**
+	 * TASKS GO HERE
+	 * 
+	 * Garret Grohman (Apr. 2018)
+	 */
+	if (request.garret_grohman_brewerassoc) {
+		// Does global object exist?
+		if (AMT__Global_Vars.tmp.__garret_grohman_brewerassoc) {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/.miscellaneous/garret_grohman_brewerassoc',
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+				}
+			});
+		}
+	}
 });
 
 //
