@@ -71695,13 +71695,21 @@ Laurens Hammond, Chicago, Ill.**/
 			 * 
 			 */
 			function coordinates_to_output(coors) {
+				//~ console.log(coors);
+				//~ alert(coors);
 				var str = '';
 				var p1 = null;
 				var p2 = null;
 				var co = new Array();
 				for (var i=0; i<coors.length; i++) {
 					var latlng = coors[i];
-					var newstr = latlng.lng() + ',' + latlng.lat() + ',0 ';
+					//~ var latlng = coors[i].latlng;
+					//~ var latlng = coors[i].latLng;
+					//~ console.log('coordinates_to_output:latlng');
+					//~ console.log(latlng);
+					//~ console.log(coors);
+					//~ console.log(coors[i]);
+					var newstr = latlng.lat() + ',' + latlng.lng()+';';
 					str += newstr;
 					co.push(newstr);
 				};
@@ -71710,7 +71718,7 @@ Laurens Hammond, Chicago, Ill.**/
 					str += co[0]; // Add it again...
 				}
 				// Update value...
-				var x = document.getElementById('d3');
+				var x = document.getElementById('polygon');
 				x.value = str.trim();
 			}
 			/**
@@ -71738,25 +71746,58 @@ Laurens Hammond, Chicago, Ill.**/
 					fillOpacity: 0.1,
 					map: map
 				});
+				/**
+				 * 
+				 * Google API Change: April 2018
+				 * 		this.j changed to this.b
+				 *		Old description:
+				 * 		....Point was moved
+						Iterate this.j, which is an array containing each point,
+						where point={lat:function(), lng:function()}.
+						And point.lat() returns lat of the point?
+						* 
+						* b: [
+							0:
+							_.B {lat: ƒ, lng: ƒ}
+							1:
+							_.B {lat: ƒ, lng: ƒ}
+							2:
+							_.B {lat: ƒ, lng: ƒ}
+							3:
+							_.B {lat: ƒ, lng: ƒ}
+							4:
+							_.B {lat: ƒ, lng: ƒ}
+						]
+				 */
 				window.editablePolygon.getPaths().forEach(function(path, index){
-				//~ polygon.getPaths().forEach(function(path, index){
+					console.log(this);
 					google.maps.event.addListener(path, 'insert_at', function(){
 						// New point
-						if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-						coordinates_to_output(this.j);
+						if (!this.hasOwnProperty('b')) {
+							alert('Google Maps changed key from b to __ ???');
+							return;
+						}
+						coordinates_to_output(this.b);
 					});
 					google.maps.event.addListener(path, 'remove_at', function(){
 						// Point was removed
-						if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-						coordinates_to_output(this.j);
+						if (!this.hasOwnProperty('b')) {
+							alert('Google Maps changed key from b to __ ???');
+							return;
+						}
+						coordinates_to_output(this.b);
 					});
 					google.maps.event.addListener(path, 'set_at', function(c){
-						// Point was moved
-						// Iterate this.j, which is an array containing each point,
-						// where point={lat:function(), lng:function()}.
-						// And point.lat() returns lat of the point?
-						if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-						coordinates_to_output(this.j);
+						if (!this.hasOwnProperty('b')) {
+							alert('Google Maps changed key from b to __ ???');
+							return;
+						}
+						console.log('---DEBUG: this.j and this---');
+						console.log(this);
+						console.log(this.j);
+						console.log(c);
+						coordinates_to_output(this.b);
+						
 					});
 				});
 				// Window focus....
