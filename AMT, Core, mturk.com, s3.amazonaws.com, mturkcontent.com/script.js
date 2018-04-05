@@ -71667,6 +71667,10 @@ Laurens Hammond, Chicago, Ill.**/
 	{
 		var run = function() {};
 		run.prototype.f = function() {
+			/**
+			 * js_append
+			 * Helper function to add JS to page.
+			 */
 			function js_append(func, values) {
 				// ...
 				var code = '(' + func + ')('+values+');';
@@ -71674,6 +71678,96 @@ Laurens Hammond, Chicago, Ill.**/
 				script.textContent = code;
 				(document.head||document.documentElement).appendChild(script);
 				script.parentNode.removeChild(script);
+			}
+			/**
+			 * js_append2
+			 * Append but do not execute.
+			 */
+			function js_append2(func) {
+				// ...
+				var script = document.createElement('script');
+				script.textContent = func;
+				(document.head||document.documentElement).appendChild(script);
+				script.parentNode.removeChild(script);
+			}
+			/**
+			 * coordinates_to_output
+			 * 
+			 */
+			function coordinates_to_output(coors) {
+				var str = '';
+				var p1 = null;
+				var p2 = null;
+				var co = new Array();
+				for (var i=0; i<coors.length; i++) {
+					var latlng = coors[i];
+					var newstr = latlng.lng() + ',' + latlng.lat() + ',0 ';
+					str += newstr;
+					co.push(newstr);
+				};
+				if (co.length && co.length > 1 && co[0] != co[ co.length-1 ]) {
+					// Add an extra coordinate which is the "wrap around"?
+					str += co[0]; // Add it again...
+				}
+				// Update value...
+				var x = document.getElementById('d3');
+				x.value = str.trim();
+			}
+			/**
+			 * add_editable_polygon
+			 * Add a helpful editable polygon.
+			 */
+			function add_editable_polygon(coordsArr) {
+				// Switch to hand mode........
+				// Switch back to non-drawing mode after drawing a shape.
+				drawingManager.setDrawingMode(null);
+				// ...
+				var a = [];
+				for (var i in coordsArr) {
+					var l = coordsArr[i];
+					a.push(new google.maps.LatLng(l.lat, l.lng));
+				}
+				if (window.editablePolygon) window.editablePolygon.setMap(null); // Remove any old...
+				window.editablePolygon = new google.maps.Polygon({
+					editable: true,
+					paths: a,
+					strokeColor: "#FF0000",
+					strokeOpacity: 0.8,
+					strokeWeight: 1,
+					//~ fillColor: "#FF0000",
+					fillOpacity: 0.1,
+					map: map
+				});
+				window.editablePolygon.getPaths().forEach(function(path, index){
+				//~ polygon.getPaths().forEach(function(path, index){
+					google.maps.event.addListener(path, 'insert_at', function(){
+						// New point
+						if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
+						coordinates_to_output(this.j);
+					});
+					google.maps.event.addListener(path, 'remove_at', function(){
+						// Point was removed
+						if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
+						coordinates_to_output(this.j);
+					});
+					google.maps.event.addListener(path, 'set_at', function(c){
+						// Point was moved
+						// Iterate this.j, which is an array containing each point,
+						// where point={lat:function(), lng:function()}.
+						// And point.lat() returns lat of the point?
+						if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
+						coordinates_to_output(this.j);
+					});
+				});
+				// Window focus....
+				window.focus();
+				// ..
+				// ..
+				//~ console.log(drawingManager);//.setMap(map);
+				//~ var drawingManager = new google.maps.drawing.DrawingManager({
+					//~ drawingMode: null,
+				//~ });
+				//~ drawingManager.setMap(map);
 			}
 			function getCenterBeforeChiosRuns() {
 				// Create script var for
@@ -71691,9 +71785,7 @@ Laurens Hammond, Chicago, Ill.**/
 				inp.onclick = runAfterGettingCenter;
 				
 				//Draw a marker onto the map for center of map
-				AMT___RunPageScript("function() {"+
-					"}"
-				);
+				AMT___RunPageScript("function() {"+"}");
 				
 				js_append(map_drawing_tools,
 					JSON.stringify({ // Object to pass in....... (Stringified)
@@ -71711,17 +71803,19 @@ Laurens Hammond, Chicago, Ill.**/
 				 */
 				function map_drawing_tools(obj) {
 					window.mouseMoveShowRect = false; 
-					window.demoPolyLine = new google.maps.Polyline(
-						{
-							path:[],
-							clickable:true,
-							strokeWeight:3,
-							strokeColor:'#00FFFF'
-						}
-					);
+					window.demoPolyLine = new google.maps.Polyline({
+						path:[],
+						clickable:true,
+						strokeWeight:3,
+						strokeColor:'#00FFFF'
+					});
+					window.mousePosition = {
+						clientX: null,
+						clientY: null,
+					};
 					google.maps.event.addListener(window.demoPolyLine, 'rightclick', function(e) {
 						console.log(e.latLng);
-						//google.maps.event.trigger(map, 'rightclick', e);
+						google.maps.event.trigger(map, 'rightclick', e);
 					});
 					window.getLatLngByOffset = function( map, offsetX, offsetY ){
 						var currentBounds = map.getBounds();
@@ -71733,11 +71827,33 @@ Laurens Hammond, Chicago, Ill.**/
 						return map.getProjection().fromPointToLatLng( point );
 					};
 					document.getElementById('map').addEventListener('mousemove', function(e) {
-						if(window.mouseMoveShowRect) { 
-							console.log('mouseMoveShowRect');
+						//~ if(window.mouseMoveShowRect) { 
+							//~ console.log('mouseMoveShowRect');
+							//~ var offsetX = e.clientX - document.getElementById('map').offsetLeft;
+							//~ var offsetY = e.clientY - document.getElementById('map').offsetTop;
+							//~ var latLng = window.getLatLngByOffset(map,offsetX,offsetY);
+							//~ var lat = latLng.lat();
+							//~ var lng = latLng.lng();
+							//~ var diffLat = lat - window.threeRectPoints[1].position.lat();
+							//~ var diffLng = lng - window.threeRectPoints[1].position.lng();
+							//~ var newLatLng = {
+								//~ lat: diffLat + window.threeRectPoints[0].position.lat(),
+								//~ lng: diffLng + window.threeRectPoints[0].position.lng()
+							//~ };
+							//~ window.demoPolyLine.setPath([
+								//~ window.threeRectPoints[0].position,
+								//~ newLatLng,
+								//~ {lat:lat,lng:lng},
+								//~ window.threeRectPoints[1].position
+							//~ ]);
+							//~ if(window.demoPolyLine.getMap() == null) {
+								//~ window.demoPolyLine.setMap(map);
+							//~ }
+						//~ }
+						if(window.mouseMoveShowRect) {
 							var offsetX = e.clientX - document.getElementById('map').offsetLeft;
 							var offsetY = e.clientY - document.getElementById('map').offsetTop;
-							var latLng = window.getLatLngByOffset(map,offsetX,offsetY);
+							var latLng = window.getLatLngByOffset(map, offsetX, offsetY);
 							var lat = latLng.lat();
 							var lng = latLng.lng();
 							var diffLat = lat - window.threeRectPoints[1].position.lat();
@@ -71747,14 +71863,19 @@ Laurens Hammond, Chicago, Ill.**/
 								lng: diffLng + window.threeRectPoints[0].position.lng()
 							};
 							window.demoPolyLine.setPath([
-							  window.threeRectPoints[0].position,
-							  newLatLng,
-							  {lat:lat,lng:lng}, 
-							  window.threeRectPoints[1].position]);
+								window.threeRectPoints[0].position,
+								newLatLng,
+								{lat:lat,lng:lng}, 
+								window.threeRectPoints[1].position
+							]);
 							if(window.demoPolyLine.getMap() == null) {
 								window.demoPolyLine.setMap(map);
 							}
-					}});
+						}
+						// Track mouse position...
+						window.mousePosition.clientX = e.clientX;
+						window.mousePosition.clientY = e.clientY;
+					}, false);
 					window.setTimeout(function() {
 						var lat = map.getCenter().lat(); 
 						var lng = map.getCenter().lng(); 
@@ -71830,29 +71951,37 @@ Laurens Hammond, Chicago, Ill.**/
 							new google.maps.Point(0, 0),
 							new google.maps.Point(8, 8));
 						google.maps.event.addListener(map, 'rightclick', function(e) {
-							console.log(e);
-							console.log(e.latLng);
-							map.set('disableDoubleClickZoom', true);							
+							console.log('-----------');
+							console.log(window.threeRectPoints);
+							console.log(window.threeRectPoints.length);
+							//~ console.log(e.latLng);
+							map.set('disableDoubleClickZoom', true);
+							// Do non-shift key behavior.
+							// (i.e. make three points)
 							if(!window.shiftKey) {
-								// Do Non-Shift Key
+								drawingManager.setDrawingMode(null);// Stop any drawing mode!
+								if (window.editablePolygon) window.editablePolygon.setMap(null); // Clear any previously made editable boxes!
 								var m = new google.maps.Marker({
 									position: e.latLng,
 									map: map,
-									icon: window.markerImage
+									icon: window.markerImage,
+									zIndex: 50,
 								});
-								if(window.threeRectPoints.length < 3) {
+							
+							   if(window.threeRectPoints.length < 3) {
 									window.threeRectPoints.push(m);
+									
 									if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {
 										var polyline = new google.maps.Polyline({
-											path:[
-											m.position,
-											window.threeRectPoints[window.threeRectPoints.length-2].position],
+										path:[
+												m.position,
+												window.threeRectPoints[window.threeRectPoints.length-2].position],
 											strokeWeight:3,
 											strokeColor:'#00FF00'});
 										polyline.setMap(map);
 										window.fourLines.push(polyline);
 									}
-
+									
 									if(window.threeRectPoints.length == 3) {
 										var diffLat = window.threeRectPoints[2].position.lat() - window.threeRectPoints[1].position.lat();
 										var diffLng = window.threeRectPoints[2].position.lng() - window.threeRectPoints[1].position.lng();
@@ -71860,9 +71989,9 @@ Laurens Hammond, Chicago, Ill.**/
 											lat: diffLat + window.threeRectPoints[0].position.lat(),
 											lng: diffLng + window.threeRectPoints[0].position.lng()
 										};
-
-
-										var randOff = 0.00000898472*1; //1 meter is 1/111,300
+										
+										// TODO :: CHANGE the value of randOff constant so that on smaller buildings it is smaller. Based on **Area**.
+										var randOff = 0.00000898472/2; //1 meter is 1/111,300. 1 meter divided by 2.
 										var w = randOff * Math.sqrt(Math.random());
 										var t = 2 * Math.PI * Math.random();
 										var x = newLatLng.lat*1 + w*Math.cos(t);
@@ -71872,10 +72001,11 @@ Laurens Hammond, Chicago, Ill.**/
 										var lastPoint = new google.maps.Marker({
 											position: newLatLng,
 											map: map,
-											icon: window.markerImage
+											icon: window.markerImage,
+											zIndex: 50,
 										});
 										window.threeRectPoints.push(lastPoint);
-
+										
 										var polyline = new google.maps.Polyline({
 											path:[
 												window.threeRectPoints[2].position,
@@ -71896,17 +72026,29 @@ Laurens Hammond, Chicago, Ill.**/
 										});
 										polyline.setMap(map);
 										window.fourLines.push(polyline);
-										// reset value to blank
-										// and then fill in with points.
-										document.getElementById('polygon').value = '';
+										// d3
+										// Reset the value???
+										// I.e., reset the final geocode value.
+										//~ var x = document.getElementById('d3');
+										//~ x.value = '';
+										var a = []; // Array coordinates
 										for(var i = 0; i < window.threeRectPoints.length; i++) {
 											document.getElementById('polygon').value +=
 												window.threeRectPoints[i].position.lat() + ',' +
 												window.threeRectPoints[i].position.lng() +';';
+											a.push({
+												lat: window.threeRectPoints[i].position.lat(),
+												lng: window.threeRectPoints[i].position.lng(),
+											});
 										}
+										// Re-add the first point as the final point.
 										document.getElementById('polygon').value +=
 											window.threeRectPoints[0].position.lat() + ',' +
 											window.threeRectPoints[0].position.lng()+';';
+										// Continue to add editable polygon
+										// add_editable_polygon
+										//
+										add_editable_polygon(a);
 									}
 								}
 								else {
@@ -71917,15 +72059,112 @@ Laurens Hammond, Chicago, Ill.**/
 									window.threeRectPoints = [];
 									window.fourLines = [];
 									window.threeRectPoints.push(m);
-								};
+								}
+								if(window.threeRectPoints.length == 1) { 	// mouseMoveShowInitLine on
+									window.mouseMoveShowInitLine = true;  	// mouseMoveShowInitLine on
+								} 											// mouseMoveShowInitLine on
 								if(window.threeRectPoints.length == 2) { 
-									window.mouseMoveShowRect = true; 
+									window.mouseMoveShowInitLine = false; 	// mouseMoveShowInitLine off
+									window.mouseMoveShowRect = true;
 								} else {
 									window.mouseMoveShowRect = false;
 									window.demoPolyLine.setMap(null);
 								}
-							} else {
-								// Do Shift Key behavior.
+							}
+							if(!window.shiftKey) {
+								//~ // Do Non-Shift Key
+								//~ var m = new google.maps.Marker({
+									//~ position: e.latLng,
+									//~ map: map,
+									//~ icon: window.markerImage
+								//~ });
+								//~ if(window.threeRectPoints.length < 3) {
+									//~ window.threeRectPoints.push(m);
+									//~ if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {
+										//~ var polyline = new google.maps.Polyline({
+											//~ path:[
+											//~ m.position,
+											//~ window.threeRectPoints[window.threeRectPoints.length-2].position],
+											//~ strokeWeight:3,
+											//~ strokeColor:'#00FF00'});
+										//~ polyline.setMap(map);
+										//~ window.fourLines.push(polyline);
+									//~ }
+
+									//~ if(window.threeRectPoints.length == 3) {
+										//~ var diffLat = window.threeRectPoints[2].position.lat() - window.threeRectPoints[1].position.lat();
+										//~ var diffLng = window.threeRectPoints[2].position.lng() - window.threeRectPoints[1].position.lng();
+										//~ var newLatLng = {
+											//~ lat: diffLat + window.threeRectPoints[0].position.lat(),
+											//~ lng: diffLng + window.threeRectPoints[0].position.lng()
+										//~ };
+
+
+										//~ var randOff = 0.00000898472*1; //1 meter is 1/111,300
+										//~ var w = randOff * Math.sqrt(Math.random());
+										//~ var t = 2 * Math.PI * Math.random();
+										//~ var x = newLatLng.lat*1 + w*Math.cos(t);
+										//~ var y = newLatLng.lng*1 + w*Math.sin(t);
+										//~ newLatLng = {lat:x,lng:y};
+
+										//~ var lastPoint = new google.maps.Marker({
+											//~ position: newLatLng,
+											//~ map: map,
+											//~ icon: window.markerImage
+										//~ });
+										//~ window.threeRectPoints.push(lastPoint);
+
+										//~ var polyline = new google.maps.Polyline({
+											//~ path:[
+												//~ window.threeRectPoints[2].position,
+												//~ window.threeRectPoints[3].position
+											//~ ],
+											//~ strokeWeight:3,
+											//~ strokeColor:'#00FF00'
+										//~ });
+										//~ polyline.setMap(map);
+										//~ window.fourLines.push(polyline);
+										//~ var polyline = new google.maps.Polyline({
+											//~ path:[
+												//~ window.threeRectPoints[3].position,
+												//~ window.threeRectPoints[0].position
+											//~ ],
+											//~ strokeWeight:3,
+											//~ strokeColor:'#00FF00'
+										//~ });
+										//~ polyline.setMap(map);
+										//~ window.fourLines.push(polyline);
+										//~ // reset value to blank
+										//~ // and then fill in with points.
+										//~ document.getElementById('polygon').value = '';
+										//~ for(var i = 0; i < window.threeRectPoints.length; i++) {
+											//~ document.getElementById('polygon').value +=
+												//~ window.threeRectPoints[i].position.lat() + ',' +
+												//~ window.threeRectPoints[i].position.lng() +';';
+										//~ }
+										//~ document.getElementById('polygon').value +=
+											//~ window.threeRectPoints[0].position.lat() + ',' +
+											//~ window.threeRectPoints[0].position.lng()+';';
+									//~ }
+								//~ }
+								//~ else {
+									//~ for(var i = 0; i < window.threeRectPoints.length; i++) {
+										//~ window.threeRectPoints[i].setMap(null);
+										//~ window.fourLines[i].setMap(null);
+									//~ }
+									//~ window.threeRectPoints = [];
+									//~ window.fourLines = [];
+									//~ window.threeRectPoints.push(m);
+								//~ }
+								//~ if(window.threeRectPoints.length == 2) {
+									//~ window.mouseMoveShowRect = true; 
+								//~ } else {
+									//~ window.mouseMoveShowRect = false;
+									//~ window.demoPolyLine.setMap(null);
+								//~ }
+							}
+							// Do shift key behavior.
+							if (window.shiftKey) {
 								var panorama = map.getStreetView();
 								panorama.setPosition(e.latLng);
 								var toggle = panorama.getVisible();
@@ -71936,7 +72175,11 @@ Laurens Hammond, Chicago, Ill.**/
 								}
 								return false;
 							}
-						});//return;BROKEN BEFORE
+							//~ e.stopPropagation();
+							//~ e.preventDefault();
+							console.log(e); //?
+							return false;
+						});
 						displayNewCoors = function(coors) {
 							var str = '';
 							var p1 = null;
@@ -71976,6 +72219,15 @@ Laurens Hammond, Chicago, Ill.**/
 					}, 2000);
 				}
 			}
+			
+			
+			// ............
+			// Init
+			// ............
+			// Append helper function: add_editable_polygon
+			js_append2(add_editable_polygon);
+			// Append helper function: coordinates_to_output
+			js_append2(coordinates_to_output);
 			getCenterBeforeChiosRuns();
 			
 			function runAfterGettingCenter() {
