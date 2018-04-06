@@ -71718,6 +71718,7 @@ Laurens Hammond, Chicago, Ill.**/
 	var s15 = '<li>Draw a complete polygon around the target hotel&nbsp;and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	var s16 = 'and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	var s17 = '<p>If polygon includes parking lot it will be rejected - this is different than our usual tasks</p>\n\n<p>The target store to be geofenced: ';
+	var s18 = '<p>If polygon does not include&nbsp;parking lot it will be rejected</p>\n\n<p>The target store to be geofenced: <b></b></p>\n\n<p>Address: <b>';
 	
 	if  (
 		ih.indexOf(s)  != -1 ||
@@ -71736,7 +71737,8 @@ Laurens Hammond, Chicago, Ill.**/
 		ih.indexOf(s14) != -1 ||
 		ih.indexOf(s15) != -1 ||
 		ih.indexOf(s16) != -1 ||
-		ih.indexOf(s17) != -1
+		ih.indexOf(s17) != -1 ||
+		ih.indexOf(s18) != -1
 		)
 	{
 		var run = function() {};
