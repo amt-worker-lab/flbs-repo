@@ -18208,38 +18208,33 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 			//~ }
 		//~ }
 	}
-	for (var i in object_response.urls.complete_high_to_low) {
-		var rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
-		// add option
-		el_option = document.createElement('option');
-		el_option.value = rslt.url;
-		el_option.innerText = rslt.url;
-		// color
-		var bg;
-		switch(rslt.priority) {
-			case 'high':
-				bg = 'LightGreen';
-				break;
-			case 'low':
-				bg = 'Orange';
-				break;
-			case 'none':
-				bg = '#fff';
-				break;
-			case 'outside':
-				bg = 'pink';
-				break;
+	if (object_response && object_response.urls && object_response.urls.complete_high_to_low) {
+		for (var i in object_response.urls.complete_high_to_low) {
+			var rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
+			// add option
+			el_option = document.createElement('option');
+			el_option.value = rslt.url;
+			el_option.innerText = rslt.url;
+			// color
+			var bg;
+			switch(rslt.priority) {
+				case 'high':
+					bg = 'LightGreen';
+					break;
+				case 'low':
+					bg = 'Orange';
+					break;
+				case 'none':
+					bg = '#fff';
+					break;
+				case 'outside':
+					bg = 'pink';
+					break;
+			}
+			el_option.setAttribute('style', 'background-color:'+bg+';');
+			el_select2.appendChild(el_option);
 		}
-		el_option.setAttribute('style', 'background-color:'+bg+';');
-		el_select2.appendChild(el_option);
 	}
-	//~ for (var i = 0; i<20; i++) {// append blank lines!
-		//~ // add option
-		//~ el_option = document.createElement('option');
-		//~ el_option.value = '';
-		//~ el_option.innerText = '';
-		//~ el_select2.appendChild(el_option);
-	//~ }
 	
 	// auto-click first email
 	if (object_response.matches.length > 0) {
