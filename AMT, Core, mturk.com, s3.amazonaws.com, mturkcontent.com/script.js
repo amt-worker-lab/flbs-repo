@@ -146764,7 +146764,8 @@ qatar,80
 	 * Amos Weiskopf (netflix, ddf)
 	 * Mturk Leadfeeder
 	 * Mturk Leadfeeder #2
-	 * College Factual
+	 * College Factual (government websites)
+	 * College Factual #2 (media outlets)
 	 * Embroker
 	 * Ben Anderson
 	 * Karen Rubin
@@ -147330,6 +147331,143 @@ qatar,80
 	}
 	// College Factual
 	// Collect URLs for the City Governments in the United States
+	// + title #2
+	var s = '<h3><span style="font-family:arial,helvetica,sans-serif;">The task is to collect information (specifically the URL of the website) of the various <strong>media outlets (Newspapers, TV channels, radio stations, magazines etc.)</strong> located in the cities of the United States of America.</span></h3>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			// Elements
+			//~ var table = document.getElementsByTagName('table')[1];
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[9].innerText.trim(),
+				city: td[11].innerText.trim().replace(/-/g, ' ').string_to_mixed_case(),
+				//~ stabb: td[3].innerText.trim().replace(/-/g, ' ').string_to_mixed_case(),
+				stfull: td[13].innerText.trim().replace(/-/g, ' ').string_to_mixed_case(),
+				//field2: td[3].innerText.trim().string_to_mixed_case(),
+				//~ field2: td[3].innerText.trim().string_to_mixed_case(),
+				//~ field3: td[5].innerText.trim().string_to_mixed_case(),
+				//~ field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				//~ lname: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				//~ degree: td[7].innerText.trim().string_to_mixed_case(),	// industry
+				//~ city: td[9].innerText.trim().string_to_mixed_case(),
+				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
+				boldArray: [],
+				//~ boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('weburl'),
+					document.getElementById('webtitle'),
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array()
+				.concat(o.city.clean_string_to_array())
+				.concat(o.stfull.clean_string_to_array());
+			//~ if (o.comp.indexOf(o.field2) == -1 && o.field2.length > 0) {
+				//~ o.spaced = o.comp + ' ' + o.field2;
+			//~ } else {
+				//~ o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			//~ }
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			console.log(o);
+			AMT___addUserDecision(
+				'CollegeFactual#2,2018', function() {
+					return o.comp+o.city+o.stfull;
+				}, ['Id(weburl)','Id(webtitle)']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				search: {
+					//~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
+					//~ use_duckduckgo_search_engine: true,
+				},
+				searches:[ // 
+					o.comp+' '+o.stfull,
+					o.spaced+' '+o.city,
+					o.comp+' '+o.city + ' (site:.gov OR site:.us OR site:.org OR site:.edu)'
+					//~ o.comp + ' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
+					//~ o.spaced+' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
+				],
+				
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					onclick_success: function(e) {
+						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						// url
+						// Do not take anything following the final
+						// slash.
+						// Also, do not include https.
+						// So, it is like a domain only.
+						// Except: Includes www. !!!
+						o.q[0].value = this.full_url.replace(/^https?:\/\//i, '').replace(/\/[\d\D]+/, '');
+						o.q[1].value = this.result_title;
+						if (this.result_title != null) {
+							AMT___recordAndSubmit();
+						}
+						return false; // Stop default submit.
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+						//~ // Add trailing slash
+						//~ if (url[url.length-1] != '/')
+							//~ url += '/';
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (/\/dir\//.exec(obj.url)) {
+							//~ // ignore .../dir/...
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
+	// College Factual
+	// Collect URLs for the City Governments in the United States
+	// + title
 	var s = '<p><span style="font-family:lucida sans unicode,lucida grande,sans-serif;">Clicking on the link provided for each City below will launch a new browser window that will automatically do a pre-defined Google search for that city\'s local government. Your job is to then use your judgment to select the best (as in the official and most relevant) URL of the city. And then provide the URL and some basic information on the website.</span></p>';
 	if (ih.indexOf(s) != -1)
 	{
