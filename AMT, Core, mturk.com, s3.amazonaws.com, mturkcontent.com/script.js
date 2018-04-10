@@ -147408,7 +147408,7 @@ qatar,80
 				searches:[ // 
 					o.comp+' '+o.stfull,
 					o.spaced+' '+o.city,
-					o.comp+' '+o.city + ' (site:.gov OR site:.us OR site:.org OR site:.edu)'
+					o.comp+' '+o.city + ' ' + o.stfull
 					//~ o.comp + ' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 					//~ o.spaced+' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 				],
@@ -147429,7 +147429,7 @@ qatar,80
 						// Also, do not include https.
 						// So, it is like a domain only.
 						// Except: Includes www. !!!
-						o.q[0].value = this.full_url.replace(/^https?:\/\//i, '').replace(/\/[\d\D]+/, '');
+						o.q[0].value = this.full_url.replace(/^https?:\/\//i, '').replace(/\/[\d\D]*/, '');
 						o.q[1].value = this.result_title;
 						if (this.result_title != null) {
 							AMT___recordAndSubmit();
