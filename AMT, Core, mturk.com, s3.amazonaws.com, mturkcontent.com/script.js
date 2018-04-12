@@ -2827,6 +2827,11 @@ function MT__RUN() {
 	// Ray Tsai
 	// Parts Availability and Pricing
 	// orderkeystone.com
+	// Note: Ensure that the data sent for individual requests
+	// 		is accuracte. That is, it is currently the following:
+	//		{"part":"<part #>","custNbr":"378686",
+	//			"defaultShipVia":"01","industryType":"B2BE",
+	//			"language":"en-US","companyNum":"001","environment":"PROD"}
 	s = '<p>You will need to go to this website: https://orderkeystone.com<br>\nUse the Username: abohl and Password: keystone093</p>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -2841,6 +2846,8 @@ function MT__RUN() {
 				//~ q: [
 					//~ document.getElementsByName('web_url')[0]
 				//~ ]
+				num_part_to_search: null, // To be filled...
+				num_searches_complete: 0, // To be added onto later...
 			}
 			//~ AMT___addUserDecision(
 				//~ 'RayTsai,Apr2018',
@@ -2930,18 +2937,92 @@ function MT__RUN() {
 							return;
 						}
 						
+						// Otherwise, ensure that the page contains
+						// at least the part number.
+						if (rs.indexOf(o.num) == -1) {
+							d1.innerText = 'no part # ???';
+							return;
+						}
+						
 						// Exists.
 						q_exists.value = 'Y';
 						
 						// Now load each part.
-						load_part();
+						// <a href="#" onclick="ShowPartInfo('CH1225251C');return false;">
+						// "ShowPartInfo"
+								//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var all_parts = [];
+						var all_parts_dct = {};
+						var rgx = /<a href="#" onclick="ShowPartInfo\('([\w\d]+)'\);return false;">/gi;
+						while (var x = rgx.exec(rs)) {
+							// If part # ends with "R" then skip,
+							// per client.
+							if (x[x.length - 1] == 'R') {
+								d1.innerText += '(skipping '+x[1]+')';
+								continue;
+							}
+							if (all_parts_dct.hasOwnProperty(x[1])) {
+								// Duplicate parts?
+								d1.innerText = 'duplicate parts???';
+								return;
+							}
+							// If bad part (check web safety)
+							if (x[1].length > 10 || /[^\dA-Z]/.exec(x[1]) {
+								d1.innerText = 'web-safe bad part?? '+x[1];
+								return;
+							}
+							// add to dict
+							all_parts_dct[x[1]] = true;
+							// add to arr
+							all_parts.push(x[1]);
+						}
+						o.num_part_to_search = all_parts.length;
+						
+						for (var i in all_parts)
+							load_part(all_parts[i]);
 					}
 				};
 				// Init async load.
 				new AMT___requests_factory().server_load_asynchronously2(opts);
 				
-				function load_part() {
+				function load_part(part) {
 					//curl 'https://orderkeystone.com/B2BAjaxCalls.asmx/GetPartToolTipInfo' -H 'Content-Type: application/json; charset=UTF-8' -H 'Accept: */*' -H 'Referer: https://orderkeystone.com/ViewCrashCatalog.aspx' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' --data '{"part":"CH1225251V","custNbr":"378686","defaultShipVia":"01","industryType":"B2BE","language":"en-US","companyNum":"001","environment":"PROD"}'
+					var opts = {
+						server_opts: {
+							url: 'https://orderkeystone.com/ViewCrashCatalog.aspx',
+							//~ _PROXY_REDACTED__use_proxy: true,
+							cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+							headers_array: [
+								'Cookie: ASP.NET_SessionId=aaaryhlzkfrbtbnkr1srslxl; BIGipServerProdEcomB2XDMZF1_orderkeystone.com_poolhttp=1125427392.20480.0000',
+								'Origin: https://orderkeystone.com',
+								'Accept-Encoding: gzip, deflate, br',
+								'Accept-Language: en-US,en;q=0.9',
+								'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
+								'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+								'Accept: */*',
+								'Cache-Control: no-cache',
+								'X-Requested-With: XMLHttpRequest',
+								'Connection: keep-alive',
+								'X-MicrosoftAjax: Delta=true',
+								'Referer: https://orderkeystone.com/ViewCrashCatalog.aspx'
+							],
+							//~ do_not_save_to_file: true,
+							short_filename:
+								part.replace(/[^\dA-Z]/g, '')+'-rtsai-detail',
+							post_object_as_str: '{"part":"'+part+'","custNbr":"378686","defaultShipVia":"01","industryType":"B2BE","language":"en-US","companyNum":"001","environment":"PROD"}'
+						},
+						callback_function: function(response) {
+							var rs = response.response.responseText;
+							
+							// If all loaded.......
+							o.num_searches_complete++;
+							
+							//{"d":"SUCCESS|Available: |Yes|Delivery Date:|4/13/2018|List Price: |151.00|Your Price: |69.97"}
+							rs = JSON.parse(rs);
+							
+						}
+					};
+					new AMT___requests_factory().server_load_asynchronously2(opts);
 				}
 			}
 		}
