@@ -2859,40 +2859,26 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:0px;left:0%;width:100%;\
+				'position:fixed;top:0px;left:50%;width:49%;\
 				height:200px;background-color:#eee;\
 				border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
+			d1.innerText = o.num;
 			/*END ITEMS*/
-			// Warn if necessary.
-			//~ if (AMT__Global_Vars.scriptVars['MattEmmert-Cookie'] == '') {
-				//~ d1.innerText = o.instructions;
-				
-				//~ return;
-			//~ }
-			// Replace
-			//~ o.session_formdata = o.session_formdata
-				//~ .replace(/searchticket=\d+/,			'searchticket='+encodeURIComponent(o.num))
-				//~ .replace(/PVO_VIOLATION_NUMBER=\d+/,	'PVO_VIOLATION_NUMBER='+encodeURIComponent(o.num))
-				//~ .replace(/searchticket%3D\d+/,			'searchticket%3D'+encodeURIComponent(o.num))
-				//~ .replace(/PVO_VIOLATION_NUMBER%3D\d+/,	'PVO_VIOLATION_NUMBER%3D'+encodeURIComponent(o.num));
 			console.log(o);
-			//~ // Dbl
-			//~ document.body.addEventListener('dblclick', function() {
-				//~ document.location.reload();
-			//~ }, false);
-			// Turn off form submit.
-			//~ document.getElementById('mturk_form').onsubmit = function(e) {
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ AMT___recordAndSubmit(); // Do it here.
-				//~ return false;
-			//~ }
+			
+			// check sbm
+			function check_sbm() {
+				if (o.num_part_to_search == o.num_searches_complete) {
+					d1.style.backgroundColor = 'lightgreen';
+					//~ doSubmit();
+					document.getElementById('submitButton').scrollIntoView();
+				}
+			}
 			
 			// Init.
 			load();
-			
 			function load() {
 				var opts = {
 					server_opts: {
@@ -2930,12 +2916,12 @@ function MT__RUN() {
 						
 						// RESPONSE: No Parts Found
 						// e.g. part # 20954794
-						var npf_str = '<img id="Image2" src="SiteImages/NoPartsFound.gif" alt="No Parts Found" style="border-width:0px;" />';
-						if (rs.indexOf(npf_str) != -1) {
-							d1.innerText = 'npf';
-							q_exists.value = 'N';
-							return;
-						}
+						//~ var npf_str = '<img id="Image2" src="SiteImages/NoPartsFound.gif" alt="No Parts Found" style="border-width:0px;" />';
+						//~ if (rs.indexOf(npf_str) != -1) {
+							//~ d1.innerText = 'npf';
+							//~ q_exists.value = 'N';
+							//~ return;
+						//~ }
 						
 						// Otherwise, ensure that the page contains
 						// at least the part number.
@@ -2954,7 +2940,8 @@ function MT__RUN() {
 						var all_parts = [];
 						var all_parts_dct = {};
 						var rgx = /<a href="#" onclick="ShowPartInfo\('([\w\d]+)'\);return false;">/gi;
-						while (var x = rgx.exec(rs)) {
+						var x;
+						while (x = rgx.exec(rs)) {
 							// If part # ends with "R" then skip,
 							// per client.
 							if (x[x.length - 1] == 'R') {
@@ -2967,7 +2954,7 @@ function MT__RUN() {
 								return;
 							}
 							// If bad part (check web safety)
-							if (x[1].length > 10 || /[^\dA-Z]/.exec(x[1]) {
+							if (x[1].length > 14 || /[^\dA-Z]/.exec(x[1])) {
 								d1.innerText = 'web-safe bad part?? '+x[1];
 								return;
 							}
@@ -2989,37 +2976,124 @@ function MT__RUN() {
 					//curl 'https://orderkeystone.com/B2BAjaxCalls.asmx/GetPartToolTipInfo' -H 'Content-Type: application/json; charset=UTF-8' -H 'Accept: */*' -H 'Referer: https://orderkeystone.com/ViewCrashCatalog.aspx' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' --data '{"part":"CH1225251V","custNbr":"378686","defaultShipVia":"01","industryType":"B2BE","language":"en-US","companyNum":"001","environment":"PROD"}'
 					var opts = {
 						server_opts: {
-							url: 'https://orderkeystone.com/ViewCrashCatalog.aspx',
+							url: 'https://orderkeystone.com/B2BAjaxCalls.asmx/GetPartToolTipInfo',
 							//~ _PROXY_REDACTED__use_proxy: true,
-							cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+							//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
 							headers_array: [
-								'Cookie: ASP.NET_SessionId=aaaryhlzkfrbtbnkr1srslxl; BIGipServerProdEcomB2XDMZF1_orderkeystone.com_poolhttp=1125427392.20480.0000',
-								'Origin: https://orderkeystone.com',
-								'Accept-Encoding: gzip, deflate, br',
-								'Accept-Language: en-US,en;q=0.9',
-								'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-								'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+								'Content-Type: application/json; charset=UTF-8',
 								'Accept: */*',
-								'Cache-Control: no-cache',
+								'Referer: https://orderkeystone.com/ViewCrashCatalog.aspx',
 								'X-Requested-With: XMLHttpRequest',
-								'Connection: keep-alive',
-								'X-MicrosoftAjax: Delta=true',
-								'Referer: https://orderkeystone.com/ViewCrashCatalog.aspx'
+								'Connection: keep-alive'
 							],
 							//~ do_not_save_to_file: true,
 							short_filename:
-								part.replace(/[^\dA-Z]/g, '')+'-rtsai-detail',
-							post_object_as_str: '{"part":"'+part+'","custNbr":"378686","defaultShipVia":"01","industryType":"B2BE","language":"en-US","companyNum":"001","environment":"PROD"}'
+								part.replace(/[^\dA-Z]/g, '')+'-rtsai-detail1',
+							post_object_as_str:
+								'{"part":"'+part+'","custNbr":"378686","defaultShipVia":"01","industryType":"B2BE","language":"en-US","companyNum":"001","environment":"PROD"}'
 						},
 						callback_function: function(response) {
 							var rs = response.response.responseText;
 							
+							//{"d":"SUCCESS|Available: |Yes|Delivery Date:|4/13/2018|List Price: |151.00|Your Price: |69.97"}
+							rs = JSON.parse(rs);
+							rs = rs.d;
+							if (rs.indexOf('SUCCESS') == -1) {
+								d1.innerText += ' no success?? '+part;
+								return;
+							}
+							
+							// Part type
+							/**
+							 *  C = CAPA
+								PP = Platinum Plus
+								N = NSF
+								<> = Regular
+								V = Value
+								OE = OEM
+								R = Remanufactured (Ignore! Do not use!)
+							 */
+							var type = /(\d|C|PP|N|V|OE|R)$/.exec(part);
+							if (!type || !type[1]) {
+								d1.innerText += ' bad part type ?? '+part;
+								return;
+							}
+							type = type[1];
+							if (type == 'R') {
+								d1.innerText += ' bad part: these are supposed to be filtered out before this point in the code ?? '+part;
+								return;
+							}
+							if (/^\d$/.exec(type)) {
+								type = 'r'; // In this case, "r" stands for "regular", not "remanufactured".
+							}
+							type = type.toLowerCase();
+							switch(type) { // Check the box.
+								case 'c':
+									document.getElementById('c').click();
+									document.getElementById('c').checked = true;
+									break;
+								case 'pp':
+									document.getElementById('pp').click();
+									document.getElementById('pp').checked = true;
+									break;
+								case 'n':
+									document.getElementById('nsf').click();
+									document.getElementById('nsf').checked = true;
+									break;
+								case 'r':
+									document.getElementById('regular').click();
+									document.getElementById('regular').checked = true;
+									break;
+								case 'v':
+									document.getElementById('v').click();
+									document.getElementById('v').checked = true;
+									break;
+								case 'oe':
+									document.getElementById('oem').click();
+									document.getElementById('oem').checked = true;
+									break;
+							}
+							
+							// Avail.
+							if (rs.indexOf('Available: |Yes') != -1) {
+								document.getElementById(type+'_in_stock').value = 'yes';
+							} else if (rs.indexOf('Available: |No') != -1) {
+								document.getElementById(type+'_in_stock').value = 'no';
+							} else if (rs.indexOf('Available: |Out of stock') != -1) {
+								document.getElementById(type+'_in_stock').value = 'no';
+							} else {
+								d1.innerText += ' bad avail.?? '+part;
+								return;
+							}
+							
+							// List
+							// List Price: |151.00|Your Price: |69.97
+							var lp = /List Price: \|(\d+\.\d+)/.exec(rs);
+							if (!lp) {
+								d1.innerText += ' bad lp.?? '+part;
+								return;
+							} else {
+								document.getElementById(type+'_list_price').value = lp[1];
+							}
+							
+							// "Sales"
+							// List Price: |151.00|Your Price: |69.97
+							var yp = /Your Price: \|(\d+\.\d+)/.exec(rs);
+							if (!yp) {
+								d1.innerText += ' bad lp.?? '+part;
+								return;
+							} else {
+								if (type != 'v')
+									document.getElementById(type+'_sales_price').value = yp[1];
+								else // Typo in HTML.
+									document.getElementById(type+'_ales_price').value = yp[1];
+							}
+							
 							// If all loaded.......
 							o.num_searches_complete++;
 							
-							//{"d":"SUCCESS|Available: |Yes|Delivery Date:|4/13/2018|List Price: |151.00|Your Price: |69.97"}
-							rs = JSON.parse(rs);
-							
+							// Check submit.
+							check_sbm();
 						}
 					};
 					new AMT___requests_factory().server_load_asynchronously2(opts);
