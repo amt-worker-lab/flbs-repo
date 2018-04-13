@@ -2869,8 +2869,8 @@ function MT__RUN() {
 			function check_sbm() {
 				if (o.num_part_to_search == o.num_searches_complete) {
 					d1.style.backgroundColor = 'lightgreen';
-					//~ doSubmit();
-					document.getElementById('submitButton').scrollIntoView(false);
+					doSubmit();
+					//~ document.getElementById('submitButton').scrollIntoView(false);
 				}
 			}
 			
@@ -2908,7 +2908,7 @@ function MT__RUN() {
 						var rs = response.response.responseText;
 						console.log(rs);
 						console.log(rs.indexOf(o.num));
-						var sbm = true;
+						o.sbm = true;
 						var q_exists = document.getElementById('VARIABLE_NAME');
 						
 						// RESPONSE: No Parts Found
@@ -2940,6 +2940,17 @@ function MT__RUN() {
 						var x;
 						while (x = rgx.exec(rs)) {
 							var p = x[1];
+							var type = /(\d|C|PP|N|V|OE|R|CORE|U|DS)$/.exec(p);
+							if (!type || !type[1]) {
+								d1.innerText += ' bad part type ?? '+p;
+								o.sbm = false;
+								continue;
+							}
+							type = type[1];
+							if (type == 'CORE' || type == 'U' || type == 'DS') {
+								d1.innerText += '(skipping '+p+')';
+								continue; // skip these
+							}
 							// If part # ends with "R" then skip,
 							// per client.
 							if (p[p.length - 1] == 'R') {
@@ -2963,6 +2974,20 @@ function MT__RUN() {
 						}
 						o.num_part_to_search = all_parts.length;
 						
+						// Maybe there are no parts?
+						// Then err. Or return.
+						// r&a
+						if (all_parts.length == 0) {
+							new AMT___core_factory().
+								iframe2parent__postMessage(
+									{
+										action: 'return_and_accept'
+									}
+								);
+							return;
+						}
+						
+						// Load parts
 						for (var i in all_parts)
 							load_part(all_parts[i]);
 					}
@@ -3011,12 +3036,16 @@ function MT__RUN() {
 								OE = OEM
 								R = Remanufactured (Ignore! Do not use!)
 							 */
-							var type = /(\d|C|PP|N|V|OE|R)$/.exec(part);
+							var type = /(\d|C|PP|N|V|OE|R|CORE|U|DS)$/.exec(part);
 							if (!type || !type[1]) {
 								d1.innerText += ' bad part type ?? '+part;
 								return;
 							}
 							type = type[1];
+							if (type == 'CORE' || type == 'U' || type == 'DS') {
+								d1.innerText += ' bad part: these are supposed to be filtered out before this point in the code ?? '+part;
+								return;
+							}
 							if (type == 'R') {
 								d1.innerText += ' bad part: these are supposed to be filtered out before this point in the code ?? '+part;
 								return;
