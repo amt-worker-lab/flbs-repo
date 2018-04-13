@@ -2870,7 +2870,7 @@ function MT__RUN() {
 				if (o.num_part_to_search == o.num_searches_complete) {
 					d1.style.backgroundColor = 'lightgreen';
 					//~ doSubmit();
-					document.getElementById('submitButton').scrollIntoView();
+					document.getElementById('submitButton').scrollIntoView(false);
 				}
 			}
 			
@@ -2939,26 +2939,27 @@ function MT__RUN() {
 						var rgx = /<a href="#" onclick="ShowPartInfo\('([\w\d]+)'\);return false;">/gi;
 						var x;
 						while (x = rgx.exec(rs)) {
+							var p = x[1];
 							// If part # ends with "R" then skip,
 							// per client.
-							if (x[x.length - 1] == 'R') {
-								d1.innerText += '(skipping '+x[1]+')';
+							if (p[p.length - 1] == 'R') {
+								d1.innerText += '(skipping '+p+')';
 								continue;
 							}
-							if (all_parts_dct.hasOwnProperty(x[1])) {
+							if (all_parts_dct.hasOwnProperty(p)) {
 								// Duplicate parts?
-								d1.innerText = 'duplicate parts???';
+								d1.innerText += 'duplicate parts???';
 								return;
 							}
 							// If bad part (check web safety)
-							if (x[1].length > 14 || /[^\dA-Z]/.exec(x[1])) {
-								d1.innerText = 'web-safe bad part?? '+x[1];
+							if (p.length > 14 || /[^\dA-Z]/.exec(p)) {
+								d1.innerText += 'web-safe bad part?? '+p;
 								return;
 							}
 							// add to dict
-							all_parts_dct[x[1]] = true;
+							all_parts_dct[p] = true;
 							// add to arr
-							all_parts.push(x[1]);
+							all_parts.push(p);
 						}
 						o.num_part_to_search = all_parts.length;
 						
