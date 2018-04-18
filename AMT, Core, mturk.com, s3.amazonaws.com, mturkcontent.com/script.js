@@ -2605,13 +2605,7 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}	
-	
-	
-	
-	
-	
-	
-// Preferred Networks, Inc (IIP)
+	// Preferred Networks, Inc (IIP)
 	// Write an instruction to move an object
 	// 
 	s = '	<li>move the brownish plushie next to the coke to the box on the right.</li>';
