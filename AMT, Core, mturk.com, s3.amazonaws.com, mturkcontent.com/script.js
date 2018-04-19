@@ -324,6 +324,128 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	// Matthew Joseph
+	// Collect contact information from a Website
+	// Simple xhr
+	// 
+	var s = '<p>Click the link below to review the Website. Collect the following information if it\'s available:</p>\n\n<ul>\n	<li>NPI Number</li>\n	<li>Healthcare Provider Name</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('a');
+			var o = {
+				u: td[1].innerText.trim(),
+				//~ id: null,
+				q: [
+					//~ document.getElementById('galleryname'),
+					//~ document.getElementById('galleryaddress'),
+				]
+			}
+			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			//~ AMT___addUserDecision(
+				//~ 'OlivierBerger,2018', function() {
+					//~ return o.comp;
+				//~ }, ['Id(galleryname)', 'Id(galleryaddress)'] 
+			//~ )
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						//d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					//~ var r = JSON.parse(rs);
+					//~ AMT___recordAndSubmit();
+					//~ console.log(r);
+					// dom
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var sbm = true;
+					
+					// npi #
+					var x = /<dt class="col-sm-6">NPI Number<\/dt>[\r\n\t\s]+<dd class="col-sm-6">[\r\n\t\s]+<div class="col-xs-7 hs-no-padding">[\r\n\t\s]+(\d+)[\r\n\t\s]*<\/div>/.exec(rs);
+					if (x) {
+						document.getElementById('NPI').value = x[1];
+					} else {
+						sbm = false;
+					}
+					// Provider / Name
+					var x = /Healthcare Provider&#47;Organization Name<\/dt>[\r\n\t\s]+<dd class="col-sm-6">([^<]{4,})<\/dd>/.exec(rs);
+					if (x) {
+						x[1] = __js_clean_html_str(x[1]).trim();
+						document.getElementById('ProviderName').value = x[1];
+					} else {
+						sbm = false;
+					}
+					// Auth. off.
+					var x = /Authorized Official<\/dt>[\r\n\t\s]+<dt class="clearfix"><\/dt>[\r\n\t\s]+<dt class="col-sm-6 hs-dd-pad-60">Title or Position<\/dt>[\r\n\t\s]+<dd class="col-sm-6">([^<]{2,})<\/dd>[\r\n\t\s]+<dt class="col-sm-6 hs-dd-pad-60">Name<\/dt>[\r\n\t\s]+<dd class="col-sm-6">([^<]{2,})<\/dd>[\r\n\t\s]+<dt class="col-sm-6 hs-dd-pad-60">Credential<\/dt>[\r\n\t\s]+<dd class="col-sm-6">([^<]{2,})<\/dd>[\r\n\t\s]+<dt class="col-sm-6 hs-dd-pad-60">Telephone Number<\/dt>[\r\n\t\s]+<dd class="col-sm-6">([^<]{2,})<\/dd>/.exec(rs);
+					if (x) {
+						x[1] = __js_clean_html_str(x[1]).trim();
+						x[2] = __js_clean_html_str(x[2]).trim();
+						x[3] = __js_clean_html_str(x[3]).trim();
+						x[4] = __js_clean_html_str(x[4]).trim();
+						x[2] = x[2].replace(/\s+/, ' '); // Multi-spaces
+						if (x[1].length < 2) {
+							sbm = false;
+						}
+						if (x[2].length < 2) {
+							sbm = false;
+						}
+						if (x[3].length < 2) {
+							//sbm = false;
+						}
+						if (x[4].length < 4) {
+							sbm = false;
+						}
+						document.getElementById('Title').value = x[1];
+						document.getElementById('AdminName').value = x[2];
+						document.getElementById('Credential').value = x[3];
+						document.getElementById('Phone').value = x[4];
+					} else {
+						sbm = false;
+					}
+					// 
+					var x = /Last Updated<\/dt>[\r\n\t\s]+<dd class="col-sm-6">(\d+\/\d+\/\d+)<\/dd>/.exec(rs);
+					if (x) {
+						x[1] = __js_clean_html_str(x[1]).trim();
+						document.getElementById('DateUpdated').value = x[1];
+					} else {
+						sbm = false;
+					}
+					
+					if (sbm) {
+						document.body.style.backgroundColor = 'LightGreen';
+						doSubmit();
+					}
+					
+					
+				}
+			});
+		}
+		new run().f();
+	}
 	// Olivier Berger
 	// NOTE: kg Does not include address data. HRM.
 	// https://kgsearch.googleapis.com/v1/entities:search?query=taylor+swift&key=API_KEY&limit=1&indent=True
