@@ -324,6 +324,84 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	/**
+	 * Simple xhr
+	 * 
+	 * @clients
+	 * Matthew Joseph
+	 * Saransh Chauhan
+	 * 
+	 * 
+	 */
+	// Saransh Chauhan
+	// Verify whether a web-link is working
+	// @tags: Simple xhr
+	// 
+	var s = '<p>Click the link below to review the Website. Collect the following information if it\'s available. Type NA if the link is broken.<\/p>\n\n<ul>\n	<li>City<\/li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('a');
+			var o = {
+				u: td[1].innerText.trim(),
+				//~ id: null,
+				q: [
+					document.getElementById('companyName'),
+					//~ document.getElementById('galleryaddress'),
+				]
+			}
+			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			AMT___addUserDecision(
+				'SaranshChauhan,2018', function() {
+					return o.u;
+				}, ['Id(companyName)']
+			)
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						//d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					
+					// Scrape city.
+					// <title>Walgreens Pharmacy - 3005 E RIGGS RD,  Chandler, AZ 85249 | Walgreens</title>
+					var x = /<title>Walgreens Pharmacy - [^,]+,\s+([^,]+), [A-Z]{2} \d{5} \| Walgreens<\/title>/.exec(rs);
+					if (x) {
+						o.q[0].value = __js_clean_html_str(x[1]).trim();
+						if (o.q[0].value.length > 3 && o.q[0].value != 'null'
+							&& o.q[0].value != 'undefined') {
+							AMT___recordAndSubmit();
+						}
+					}
+				}
+			});
+		}
+		new run().f();
+	}
 	// Matthew Joseph
 	// Collect contact information from a Website
 	// Simple xhr
