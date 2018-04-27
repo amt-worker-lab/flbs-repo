@@ -18237,7 +18237,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	}
 	
 	// auto-click first email
-	if (object_response.matches.length > 0) {
+	if (object_response.matches && object_response.matches.length > 0) {
 		(new AMT___items_factory())
 			.create_dashboard__powers_v1__showScrapyResult_contexts(
 				el_select.options[0].results_array,
