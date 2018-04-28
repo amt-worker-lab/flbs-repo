@@ -3405,10 +3405,10 @@ function init__scrapy() {
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=1', //false
 						//'COOKIES_ENABLED=0', //false
-						//'RETRY_ENABLED=0', //false
+						'RETRY_ENABLED=0', //false
 						//'DI=0', //false
-						'REDIRECT_MAX_TIMES=2'//,
-						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						'REDIRECT_MAX_TIMES=2',
+						'DOWNLOAD_TIMEOUT=12' //ERR !? :"14 is not greater than or equal to 0 seconds"
 						//'AJAXCRAWL_ENABLED=1', //true
 					]
 				}
