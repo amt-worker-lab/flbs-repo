@@ -4401,7 +4401,7 @@ function init__scrapy() {
 									 *  url: "https://www.facebook.com/VaultCrossfit/info
 									 * }
 									 */
-									if (callback_obj.matches && callback_obj.matches.length) {
+									if (callback_obj.matches && callback_obj.matches.length > 0) {
 										if (o.try_autos) { // Only when autos.
 											var mt = callback_obj.matches;
 											var reg = new RegExp(

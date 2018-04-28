@@ -18187,26 +18187,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 					x[i].style.backgroundColor = 'LightGreen';
 			}
 		}
-		//~ // add option sel2
-		//~ el_option = document.createElement('option');
-		//~ el_option.value = '';
-		//~ el_option.innerText = '';
-		//~ el_select.appendChild(el_option);
-		//~ el_option.el_select2 = el_select2;
-		//~ el_option.onmouseover = function(e) { // Reset all bg color
-			//~ var x = this.parentNode.getElementsByTagName('option');
-			//~ for (var i=0; i<x.length; i++) {
-				//~ x[i].style.backgroundColor = '';
-				//~ if (x[i].is_facebook)
-					//~ x[i].style.backgroundColor = 'LightGreen';
-			//~ }
-			//~ var x = this.el_select2.getElementsByTagName('option');
-			//~ for (var i=0; i<x.length; i++) {
-				//~ x[i].style.backgroundColor = '';
-				//~ if (x[i].is_facebook)
-					//~ x[i].style.backgroundColor = 'LightGreen';
-			//~ }
-		//~ }
 	}
 	if (object_response && object_response.urls && object_response.urls.complete_high_to_low) {
 		for (var i in object_response.urls.complete_high_to_low) {
