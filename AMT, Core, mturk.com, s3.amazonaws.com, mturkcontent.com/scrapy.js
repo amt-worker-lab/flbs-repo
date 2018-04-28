@@ -3397,11 +3397,12 @@ function init__scrapy() {
 					settings: [
 						//'DEPTH_LIMIT=4',
 						//'SCHEDULER_ORDER=BFO',
-						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						//'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						'CONCURRENT_ITEMS=20', //DEFAUL = 100
-						'CONCURRENT_REQUESTS=6', //DEFAUL = 16
-						'CONCURRENT_REQUESTS_PER_DOMAIN=4', //DEFAUL = 8
+						'CONCURRENT_ITEMS=400', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=1', //false
 						//'COOKIES_ENABLED=0', //false
@@ -3715,18 +3716,19 @@ function init__scrapy() {
 					settings: [
 						//'DEPTH_LIMIT=4',
 						//'SCHEDULER_ORDER=BFO',
-						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						//'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						'CONCURRENT_ITEMS=40', //DEFAUL = 100
-						'CONCURRENT_REQUESTS=8', //DEFAUL = 16
-						'CONCURRENT_REQUESTS_PER_DOMAIN=4', //DEFAUL = 8
+						'CONCURRENT_ITEMS=400', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=1', //false
 						//'COOKIES_ENABLED=0', //false
-						//'RETRY_ENABLED=0', //false
+						'RETRY_ENABLED=0', //false
 						//'DI=0', //false
-						'REDIRECT_MAX_TIMES=2'//,
-						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						'REDIRECT_MAX_TIMES=2',
+						'DOWNLOAD_TIMEOUT=12' //ERR !? :"14 is not greater than or equal to 0 seconds"
 						//'AJAXCRAWL_ENABLED=1', //true
 					]
 				}
