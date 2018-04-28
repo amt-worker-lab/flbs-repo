@@ -3397,8 +3397,8 @@ function init__scrapy() {
 					settings: [
 						//'DEPTH_LIMIT=4',
 						//'SCHEDULER_ORDER=BFO',
-						'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						//'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
 						'CONCURRENT_ITEMS=400', //DEFAUL = 100
 						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
@@ -3716,8 +3716,8 @@ function init__scrapy() {
 					settings: [
 						//'DEPTH_LIMIT=4',
 						//'SCHEDULER_ORDER=BFO',
-						'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						//'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 						//~ 'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
 						'CONCURRENT_ITEMS=400', //DEFAUL = 100
 						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
