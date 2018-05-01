@@ -415,7 +415,7 @@ function MT__RUN() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');
 			// Task specific GM
 			GM_addStyle('.exe:hover {cursor:pointer;}');
 			
@@ -460,7 +460,7 @@ function MT__RUN() {
 			var d2c = document.createElement('input'); //city
 			d1a.appendChild(d2c);
 			var d2d = document.createElement('input'); //state
-			d2d.setAttribute('style','width:20px;');
+			d2d.setAttribute('style','width:28px;');
 			d1a.appendChild(d2d);
 			var d2e = document.createElement('input'); //specialty
 			d1a.appendChild(d2e);
@@ -560,11 +560,13 @@ function MT__RUN() {
 			d3e.onblur = function(e) {
 				init(this);
 			}
-			// Start script by blurring a text field on either side.
-			d2a.focus();
-			d2a.blur();
-			d3a.focus();
-			d3a.blur();
+			// Start script.
+			init(d2a);
+			init(d3a);
+			//~ d2a.focus();
+			//~ d2a.blur();
+			//~ d3a.focus();
+			//~ d3a.blur();
 			// Init function
 			// taxonomy is e.g. "Anesthesiology"
 			function init(input) {
@@ -622,7 +624,8 @@ function MT__RUN() {
 						style:'width:100%;\
 							border-bottom:1px solid teal;\
 							border-top:1px solid teal;\
-							margin-bottom:-1px;',
+							margin-bottom:-1px;\
+							word-wrap:break-word;',
 						a: parentContainer.output
 					});
 					d.npi = rslt.number;
@@ -684,12 +687,15 @@ function MT__RUN() {
 						///////////////////////////
 						// debug
 						///////////////////////////
-						console.log(o.fn.toUpperCase(), rslt.basic.first_name, o.fn.toUpperCase() == rslt.basic.first_name)
-						console.log(o.ln.toUpperCase() == rslt.basic.last_name)
-						console.log(locations_dict.hasOwnProperty(o.cy+'|'+o.st))
-						console.log(o.sp == '')
-						console.log(taxonomies_dict.hasOwnProperty(o.sp))
+						//~ console.log(o.fn.toUpperCase(), rslt.basic.first_name, o.fn.toUpperCase() == rslt.basic.first_name)
+						//~ console.log(o.ln.toUpperCase() == rslt.basic.last_name)
+						//~ console.log(locations_dict.hasOwnProperty(o.cy+'|'+o.st))
+						//~ console.log(o.sp == '')
+						//~ console.log(taxonomies_dict.hasOwnProperty(o.sp))
 					}
+				}
+				if (rs.result_count > 0) {
+					''.div({style:'height:2000px;', a: parentContainer.output});
 				}
 			}
 			function mouseover_(e) {
