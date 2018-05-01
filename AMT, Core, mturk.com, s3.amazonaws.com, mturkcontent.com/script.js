@@ -407,7 +407,7 @@ function MT__RUN() {
 	// Use a provided website to look up an ID number
 	// @tags: Simple-xhr
 	// e.g. https://npiregistry.cms.hhs.gov/api/?first_name=mike&last_name=yarb*
-	var s = '<p>Click the link below to review the Website. Collect the following information if it\'s available. Type NA if the link is broken.<\/p>\n\n<ul>\n	<li>City<\/li>';
+	var s = '<p>Go to this website: &nbsp;&nbsp;https://npiregistry.cms.hhs.gov/</p>\n\n<p>Look up the physician below by using their name, city, and state. &nbsp;Verify that you have the right person by looking at their specialty</p>\n\n<p>Enter their NPI # into this form.</p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -439,46 +439,170 @@ function MT__RUN() {
 					return o.u;
 				}, ['Id(companyName)']
 			)
-			// Two columns.
 			/*BEGIN ITEMS*/
-			var d1 = ''.div({
+			// Two columns.
+			var d1a = ''.div({
 				style:
-				'position:absolute;top:0px;left:0%;width:100%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
-				append: true
+				'position:absolute;top:0px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d1b = ''.div({
+				style:
+				'position:absolute;top:0px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			// Add inputs to left
+			var d2a = document.createElement('input'); //fn
+			d1a.appendChild(d2a);
+			var d2b = document.createElement('input'); //ln
+			d1a.appendChild(d2b);
+			var d2c = document.createElement('input'); //city
+			d1a.appendChild(d2c);
+			var d2d = document.createElement('input'); //state
+			d2d.setAttribute('style','width:20px;');
+			d1a.appendChild(d2d);
+			var d2e = document.createElement('input'); //specialty
+			d1a.appendChild(d2e);
+			// Add inputs to right
+			var d3a = document.createElement('input'); //fn
+			d1b.appendChild(d3a);
+			var d3b = document.createElement('input'); //ln
+			d1b.appendChild(d3b);
+			var d3c = document.createElement('input'); //city
+			d1b.appendChild(d3c);
+			var d3d = document.createElement('input'); //state
+			d3d.setAttribute('style','width:20px;');
+			d1b.appendChild(d3d);
+			var d3e = document.createElement('input'); //specialty
+			d1b.appendChild(d3e);
+			// Add output box to each div
+			var d4a = ''.div({
+				style:
+				'width:100%;height:94%;background-color:#eee;border-top:1px solid blue;overflow:auto;',
+				a: d1a
+			});
+			var d4b = ''.div({
+				style:
+				'width:100%;height:94%;background-color:#eee;border-top:1px solid blue;overflow:auto;',
+				a: d1b
 			});
 			/*END ITEMS*/
-			// xhr
-			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: o.u,
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						document.body.style.backgroundColor = 'blue';
-						//d1.appendChild('!200'.div());
-						return false;
-					}
-					//
-					return true;
-				},
-				success_callback: function(options) {
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						document.body.style.backgroundColor = 'blue';
-						return;
-					}
-					
-					// Scrape city.
-					// <title>Walgreens Pharmacy - 3005 E RIGGS RD,  Chandler, AZ 85249 | Walgreens</title>
-					var x = /<title>Walgreens Pharmacy - [^,]+,\s+([^,]+), [A-Z]{2} \d{5} \| Walgreens<\/title>/.exec(rs);
-					if (x) {
-						o.q[0].value = __js_clean_html_str(x[1]).trim();
-						if (o.q[0].value.length > 3 && o.q[0].value != 'null'
-							&& o.q[0].value != 'undefined') {
-							AMT___recordAndSubmit();
-						}
+			// Set inputs and outputs for divs
+			d1a.inputs = [d2a,d2b,d2c,d2d,d2e];
+			d1b.inputs = [d3a,d3b,d3c,d3d,d3e];
+			d1a.output = d4a;
+			d1b.output = d4b;
+			// left values
+			d2a.value = o.fn;
+			d2b.value = o.ln;
+			d2c.value = o.cy;
+			d2d.value = o.st;
+			d2e.value = o.sp;
+			// right values (no specialty, no city)
+			d3a.value = o.fn;
+			d3b.value = o.ln;
+			d3c.value = '';
+			d3d.value = o.st;
+			d3e.value = '';
+			// Set a "reset value" for each input, such that, on
+			// ctrl+click it will reset to the original value.
+			for (var i in d1a.inputs) {
+				var input1 = d1a.inputs[i];
+				var input2 = d1b.inputs[i];
+				// set originalValue (both input1.value)
+				input1.originalValue = input1.value;
+				input2.originalValue = input1.value;
+				// onclick
+				input1.onclick = 
+				input2.onclick = function(e) {
+					if (e.ctrlKey) {
+						this.value = this.originalValue;
+						this.blur();
 					}
 				}
+			}
+			// height
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					//~ d4a,d4b
+					d1a,d1b
+				],
+				offset: 0 // offset top
 			});
+			// keyboard
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [ d2a,d2b,d2c,d2d,d2e,
+							d3a,d3b,d3c,d3d,d3e ],
+				blur_element: true,
+				remove_whitespace: true,
+			});
+			// Set onblur event
+			d2a.onblur = 
+			d2b.onblur = 
+			d2c.onblur = 
+			d2d.onblur = 
+			d2e.onblur = 
+			d3a.onblur = 
+			d3b.onblur = 
+			d3c.onblur = 
+			d3d.onblur = 
+			d3e.onblur = function(e) {
+				init(this);
+			}
+			// Start script by blurring a text field on either side.
+			d2a.blur();
+			d3a.blur();
+			// Init function
+			// taxonomy is e.g. "Anesthesiology"
+			function init(input) {
+				// Inputs and form url.
+				// Note that whitespace is cleaned b/c of 
+				// mouseup__delete_range.
+				var inputs = input.parentNode.inputs;
+				var u = 'https://npiregistry.cms.hhs.gov/api/'+
+					'?first_name='+	encodeURIComponent(inputs[0].value)+
+					'&last_name=' +	encodeURIComponent(inputs[1].value)+
+					'&city=' +		encodeURIComponent(inputs[2].value)+
+					'&state=' +		encodeURIComponent(inputs[3].value)+
+					'&taxonomy_description=' +
+									encodeURIComponent(inputs[4].value)
+					;
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						rs = JSON.parse(rs);
+						//~ console.log();
+						add_results(rs, input.parentNode);
+					}
+				});
+			}
+			function add_results(rs, div) {
+				for (var i in rs) {
+					var d = ''.div(
+						a: div.output
+					);
+				}
+			}
 		}
 		new run().f();
 	}
