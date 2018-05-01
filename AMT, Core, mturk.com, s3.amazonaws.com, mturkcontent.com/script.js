@@ -428,6 +428,7 @@ function MT__RUN() {
 				st: td[7].innerText.trim(),
 				sp: td[9].innerText.trim(),
 				hash: null,
+				sbm: false, // Attr. to track if autoed
 				q: [
 					document.getElementById('NPI'),
 				]
@@ -436,8 +437,8 @@ function MT__RUN() {
 			o.hash = new AMT___requests_factory().md5(JSON.stringify(o));
 			AMT___addUserDecision(
 				'ScottCThompson,2018', function() {
-					return o.u;
-				}, ['Id(companyName)']
+					return o.hash;
+				}, ['Id(NPI)']
 			)
 			/*BEGIN ITEMS*/
 			// Two columns.
@@ -540,6 +541,12 @@ function MT__RUN() {
 				blur_element: true,
 				remove_whitespace: true,
 			});
+			for (var i in d1a.inputs) {
+				var input1 = d1a.inputs[i];
+				var input2 = d1b.inputs[i];
+				input1.addEventListener('keydown', ef.keydown__blur_field, true);
+				input2.addEventListener('keydown', ef.keydown__blur_field, true);
+			}
 			// Set onblur event
 			d2a.onblur = 
 			d2b.onblur = 
@@ -604,8 +611,9 @@ function MT__RUN() {
 					parentContainer.output.innerText = '0 results!';
 					return;
 				} else {
+					var nrs = (rs.result_count == 1) ? 'result' : 'results';
 					parentContainer.output.innerHTML =
-						'<b>'+(rs.result_count+'').replace(/[^\d]/g, '')+'</b> result.<br>';
+						'<b>'+(rs.result_count+'').replace(/[^\d]/g, '')+'</b> '+nrs+'.<br>';
 				}
 				for (var i in rs.results) {
 					var rslt = rs.results[i];
@@ -613,7 +621,8 @@ function MT__RUN() {
 					var d = ''.div({
 						style:'width:100%;\
 							border-bottom:1px solid teal;\
-							border-top:1px solid teal;',
+							border-top:1px solid teal;\
+							margin-bottom:-1px;',
 						a: parentContainer.output
 					});
 					d.npi = rslt.number;
@@ -634,39 +643,66 @@ function MT__RUN() {
 					var x =
 						'FN:'+MT__bold(rslt.basic.first_name, o.fn.clean_string_to_array()) + '<br>' +
 						'LN:'+MT__bold(rslt.basic.last_name,  o.ln.clean_string_to_array()) + '<br>';
+					var locations_dict = {};
 					for (var i in rslt.addresses) {
 						var a = rslt.addresses[i];
+						var lkey = a.city + '|' + a.state; // Key for locations dict.
+						if (locations_dict.hasOwnProperty(lkey))
+							continue; // Skip!
 						x +=
-							'CY:'+MT__bold(a.city,  o.cy.clean_string_to_array()) + '<br>' +
-							'ST:'+MT__bold(a.state, o.st.clean_string_to_array()) + '<br>';
+							'L CY:'+MT__bold(a.city,  o.cy.clean_string_to_array()) + '<br>' +
+							'L ST:'+MT__bold(a.state, o.st.clean_string_to_array()) + '<br>';
+						locations_dict[lkey] = true;
 					}
+					var taxonomies_dict = {};
 					if (rslt.taxonomies.length) {
 						for (var i in rslt.taxonomies) {
 							var a = rslt.taxonomies[i];
-							x += 'SP:'+MT__bold(a.desc, o.sp.clean_string_to_array()) + '<br>';
+							if (taxonomies_dict.hasOwnProperty(a.desc))
+								continue; // Skip!
+							x += 'S SP:'+MT__bold(a.desc, o.sp.clean_string_to_array()) + '<br>';
+							taxonomies_dict[a.desc] = true;
 						}
 					}
 					if (rslt.other_names.length) {
 						x += '{ON: '+JSON.stringify(rslt.other_names)+'}';
 					}
 					d.innerHTML = x;
-					//~ // Append to output div.
-					//~ output.appendChild(d);
+					// Check auto.
+					if (!o.sbm) {
+						if (o.fn.toUpperCase() == rslt.basic.first_name &&
+							o.ln.toUpperCase() == rslt.basic.last_name &&
+							locations_dict.hasOwnProperty(o.cy+'|'+o.st) &&
+							(o.sp == '' ||
+							taxonomies_dict.hasOwnProperty(o.sp)
+							)
+							// TODO, specialties.....
+							) {
+							o.sbm = true;
+							d.click();
+						}
+						///////////////////////////
+						// debug
+						///////////////////////////
+						console.log(o.fn.toUpperCase(), rslt.basic.first_name, o.fn.toUpperCase() == rslt.basic.first_name)
+						console.log(o.ln.toUpperCase() == rslt.basic.last_name)
+						console.log(locations_dict.hasOwnProperty(o.cy+'|'+o.st))
+						console.log(o.sp == '')
+						console.log(taxonomies_dict.hasOwnProperty(o.sp))
+					}
 				}
 			}
 			function mouseover_(e) {
-				console.log(this);
-				console.log(this.npi);
 				// Highlight all divs with corresponding npi #.
 				var x = document.getElementsByClassName('exe');
 				for (var i=0;i<x.length;i++) {
 					if (x[i].clicked) // avoid changing clicked items
 						continue;
-					console.log(x[i].npi);
 					if (x[i].npi == this.npi) {
-						this.style.backgroundColor = 'LightGreen';
+						x[i].style.backgroundColor = 'LightGreen';
+						//~ x[i].style.setProperty('background-color', 'LightGreen', 'important');
 					} else {
-						this.style.backgroundColor = '';
+						x[i].style.backgroundColor = '';
 					}
 				}
 			}
@@ -676,7 +712,7 @@ function MT__RUN() {
 				for (var i=0;i<x.length;i++) {
 					if (x[i].clicked) // avoid changing clicked items
 						continue;
-					this.style.backgroundColor = '';
+					x[i].style.backgroundColor = '';
 				}
 			}
 		}
