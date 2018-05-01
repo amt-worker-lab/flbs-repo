@@ -417,7 +417,7 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
 			// Task specific GM
-			//...
+			GM_addStyle('.exe:hover {cursor:pointer;}');
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var td = document.getElementsByTagName('td');
@@ -554,7 +554,9 @@ function MT__RUN() {
 				init(this);
 			}
 			// Start script by blurring a text field on either side.
+			d2a.focus();
 			d2a.blur();
+			d3a.focus();
 			d3a.blur();
 			// Init function
 			// taxonomy is e.g. "Anesthesiology"
@@ -591,16 +593,90 @@ function MT__RUN() {
 							return;
 						}
 						rs = JSON.parse(rs);
-						//~ console.log();
+						console.log(rs);
 						add_results(rs, input.parentNode);
 					}
 				});
 			}
-			function add_results(rs, div) {
-				for (var i in rs) {
-					var d = ''.div(
-						a: div.output
-					);
+			function add_results(rs, parentContainer) {
+				console.log(rs.result_count);
+				if (rs.result_count == 0) {
+					parentContainer.output.innerText = '0 results!';
+					return;
+				} else {
+					parentContainer.output.innerHTML =
+						'<b>'+(rs.result_count+'').replace(/[^\d]/g, '')+'</b> result.<br>';
+				}
+				for (var i in rs.results) {
+					var rslt = rs.results[i];
+							//~ console.log(rslt);
+					var d = ''.div({
+						style:'width:100%;\
+							border-bottom:1px solid teal;\
+							border-top:1px solid teal;',
+						a: parentContainer.output
+					});
+					d.npi = rslt.number;
+					d.className = 'exe';
+					d.clicked = false; // attribute to watch clicked status
+					d.onclick = function() {
+						// Onlick submit the form, given the NPI is valid.
+						o.q[0].value = this.npi;
+						this.clicked = true;
+						this.style.backgroundColor = 'aqua';
+						if (/^\d{4,40}$/.exec(o.q[0].value)) {
+							AMT___recordAndSubmit();
+						}
+					}
+					d.addEventListener('mouseover', mouseover_, false);
+					d.addEventListener('mouseout', mouseout_, false);
+					// Set the IH of div.
+					var x =
+						'FN:'+MT__bold(rslt.basic.first_name, o.fn.clean_string_to_array()) + '<br>' +
+						'LN:'+MT__bold(rslt.basic.last_name,  o.ln.clean_string_to_array()) + '<br>';
+					for (var i in rslt.addresses) {
+						var a = rslt.addresses[i];
+						x +=
+							'CY:'+MT__bold(a.city,  o.cy.clean_string_to_array()) + '<br>' +
+							'ST:'+MT__bold(a.state, o.st.clean_string_to_array()) + '<br>';
+					}
+					if (rslt.taxonomies.length) {
+						for (var i in rslt.taxonomies) {
+							var a = rslt.taxonomies[i];
+							x += 'SP:'+MT__bold(a.desc, o.sp.clean_string_to_array()) + '<br>';
+						}
+					}
+					if (rslt.other_names.length) {
+						x += '{ON: '+JSON.stringify(rslt.other_names)+'}';
+					}
+					d.innerHTML = x;
+					//~ // Append to output div.
+					//~ output.appendChild(d);
+				}
+			}
+			function mouseover_(e) {
+				console.log(this);
+				console.log(this.npi);
+				// Highlight all divs with corresponding npi #.
+				var x = document.getElementsByClassName('exe');
+				for (var i=0;i<x.length;i++) {
+					if (x[i].clicked) // avoid changing clicked items
+						continue;
+					console.log(x[i].npi);
+					if (x[i].npi == this.npi) {
+						this.style.backgroundColor = 'LightGreen';
+					} else {
+						this.style.backgroundColor = '';
+					}
+				}
+			}
+			function mouseout_(e) {
+				// Reset all bg colors (except where clicked)
+				var x = document.getElementsByClassName('exe');
+				for (var i=0;i<x.length;i++) {
+					if (x[i].clicked) // avoid changing clicked items
+						continue;
+					this.style.backgroundColor = '';
 				}
 			}
 		}
