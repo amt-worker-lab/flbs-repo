@@ -410,7 +410,7 @@ function MT__RUN() {
 	// TODO: Way to switch fn/ln (swap)
 	// TODO: If fn/ln/state is 0, then populate third column (no state), else do not!
 	// TODO: If "," in specialty, then replace with * and chop string - to have better chance
-	// 
+	// TODO: New Hamp. to NH
 	var s = '<p>Go to this website: &nbsp;&nbsp;https://npiregistry.cms.hhs.gov/</p>\n\n<p>Look up the physician below by using their name, city, and state. &nbsp;Verify that you have the right person by looking at their specialty</p>\n\n<p>Enter their NPI # into this form.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -429,7 +429,7 @@ function MT__RUN() {
 				fn: td[1].innerText.trim(),
 				ln: td[3].innerText.trim(),
 				cy: td[5].innerText.trim(),
-				st: td[7].innerText.trim(),
+				st: td[7].innerText.trim().state_full_to_abbr(),
 				sp: td[9].innerText.trim(),
 				hash: null,
 				sbm: false, // Attr. to track if autoed
