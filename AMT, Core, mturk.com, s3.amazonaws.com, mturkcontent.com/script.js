@@ -409,6 +409,8 @@ function MT__RUN() {
 	// e.g. https://npiregistry.cms.hhs.gov/api/?first_name=mike&last_name=yarb*
 	// TODO: Way to switch fn/ln (swap)
 	// TODO: If fn/ln/state is 0, then populate third column (no state), else do not!
+	// TODO: If "," in specialty, then replace with * and chop string - to have better chance
+	// 
 	var s = '<p>Go to this website: &nbsp;&nbsp;https://npiregistry.cms.hhs.gov/</p>\n\n<p>Look up the physician below by using their name, city, and state. &nbsp;Verify that you have the right person by looking at their specialty</p>\n\n<p>Enter their NPI # into this form.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -562,6 +564,9 @@ function MT__RUN() {
 			d3e.onblur = function(e) {
 				init(this);
 			}
+			// Set attribute for triedFirst: On first, if no match, try __x__.
+			d1a.triedFirst = false;
+			d1b.triedFirst = false;
 			// Start script.
 			init(d2a);
 			init(d3a);
@@ -611,8 +616,46 @@ function MT__RUN() {
 			}
 			function add_results(rs, parentContainer) {
 				console.log(rs.result_count);
+				// Error: special char or wrong # of chars
+				var errMsg = 'Error 05 - Field contains special character(s) or wrong number of characters';
+				if (rs.Errors && JSON.stringify(rs.Errors).indexOf(errMsg) != -1) {
+					parentContainer.output.innerText = 'ERR: '+JSON.stringify(rs);
+					return;
+				}
+				
+				// Try second on left side.
+				// If Error
+				if (parentContainer == d1a &&
+					!d1a.triedFirst &&
+					rs.Errors &&
+					rs.Errors.taxonomy_description &&
+					rs.Errors.taxonomy_description == 'Error 14 - No taxonomy codes found with entered description'
+					) {
+					d1a.triedFirst = true;
+					d1a.inputs[4].value = ''; // Clear tx input field.
+					d1a.inputs[4].style.border = '2px solid orange';
+					init(d1a.inputs[0]);
+					return;
+				}
+				
+				// Zero results
 				if (rs.result_count == 0) {
-					parentContainer.output.innerText = '0 results!';
+					parentContainer.output.innerText = '0 results!\n';
+					var tmpf = [];
+					for (var i in parentContainer.inputs) {
+						var inp = parentContainer.inputs[i];
+						tmpf.push(inp.value);
+					}
+					parentContainer.output.innerText += tmpf.join(',');
+					// Try second on right side.
+					if (parentContainer == d1b &&
+						!d1b.triedFirst
+						) {
+						d1b.triedFirst = true;
+						d1b.inputs[3].value = ''; // Clear state input field.
+						d1b.inputs[3].style.border = '2px solid orange';
+						init(d1b.inputs[0]);
+					}
 					return;
 				} else {
 					var nrs = (rs.result_count == 1) ? 'result' : 'results';
