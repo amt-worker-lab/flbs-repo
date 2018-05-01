@@ -407,6 +407,8 @@ function MT__RUN() {
 	// Use a provided website to look up an ID number
 	// @tags: Simple-xhr
 	// e.g. https://npiregistry.cms.hhs.gov/api/?first_name=mike&last_name=yarb*
+	// TODO: Way to switch fn/ln (swap)
+	// TODO: If fn/ln/state is 0, then populate third column (no state), else do not!
 	var s = '<p>Go to this website: &nbsp;&nbsp;https://npiregistry.cms.hhs.gov/</p>\n\n<p>Look up the physician below by using their name, city, and state. &nbsp;Verify that you have the right person by looking at their specialty</p>\n\n<p>Enter their NPI # into this form.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -619,6 +621,17 @@ function MT__RUN() {
 				}
 				for (var i in rs.results) {
 					var rslt = rs.results[i];
+					// case where person is "authorized_official" (no first/last name)
+					if (!rslt.basic.hasOwnProperty('first_name') &&
+						rslt.basic.hasOwnProperty('authorized_official_first_name')
+						) {
+						rslt.basic.first_name = rslt.basic.authorized_official_first_name;
+					}
+					if (!rslt.basic.hasOwnProperty('last_name') &&
+						rslt.basic.hasOwnProperty('authorized_official_last_name')
+						) {
+						rslt.basic.last_name = rslt.basic.authorized_official_last_name;
+					}
 							//~ console.log(rslt);
 					var d = ''.div({
 						style:'width:100%;\
@@ -675,11 +688,11 @@ function MT__RUN() {
 					if (!o.sbm) {
 						if (o.fn.toUpperCase() == rslt.basic.first_name &&
 							o.ln.toUpperCase() == rslt.basic.last_name &&
-							locations_dict.hasOwnProperty(o.cy+'|'+o.st) &&
+							locations_dict.hasOwnProperty(o.cy.toUpperCase()+'|'+o.st) &&
 							(o.sp == '' ||
 							taxonomies_dict.hasOwnProperty(o.sp)
 							)
-							// TODO, specialties.....
+							// TODO, specialties.....??
 							) {
 							o.sbm = true;
 							d.click();
@@ -687,11 +700,16 @@ function MT__RUN() {
 						///////////////////////////
 						// debug
 						///////////////////////////
-						//~ console.log(o.fn.toUpperCase(), rslt.basic.first_name, o.fn.toUpperCase() == rslt.basic.first_name)
-						//~ console.log(o.ln.toUpperCase() == rslt.basic.last_name)
-						//~ console.log(locations_dict.hasOwnProperty(o.cy+'|'+o.st))
-						//~ console.log(o.sp == '')
-						//~ console.log(taxonomies_dict.hasOwnProperty(o.sp))
+						console.log('-----DEBUG AUTO-----');
+						console.log(o.fn.toUpperCase(), rslt.basic.first_name,
+							o.fn.toUpperCase() == rslt.basic.first_name);
+						console.log(o.ln.toUpperCase(), rslt.basic.last_name,
+							o.ln.toUpperCase() == rslt.basic.last_name);
+						console.log(JSON.stringify(locations_dict),
+							locations_dict.hasOwnProperty(o.cy.toUpperCase()+'|'+o.st))
+						console.log("o.sp == ''", o.sp == '');
+						console.log('taxonomies_dict.hasOwnProperty(o.sp)',
+							taxonomies_dict.hasOwnProperty(o.sp))
 					}
 				}
 				if (rs.result_count > 0) {
