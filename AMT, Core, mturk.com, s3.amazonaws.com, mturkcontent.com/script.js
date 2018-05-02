@@ -2549,15 +2549,32 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				u: td[1].innerText.trim(),
+				u: td[1].innerHTML.trim(),
 				q: [
-					document.getElementsByName('name1')[0],
-					document.getElementsByName('name2')[0],
 					document.getElementsByName('address1')[0],
 					document.getElementsByName('unit1')[0],
 					document.getElementsByName('other1')[0],
+					document.getElementsByName('name1')[0], // Put name fields at "last"
+					document.getElementsByName('name2')[0],
 				],
 			}
+			console.log(o);
+			// Try auto
+			var x = o.u.split('\n');
+			if (x.length == 1) {
+				// Assume address.
+				// Take innerText.
+				o.q[0].value = td[1].innerText.trim();
+				// Try split
+				addr_split(td[1].innerText.trim());
+			} else if (x.length == 2) {
+				o.q[0].value = __js_clean_html_str(x[0]); // Assume address.
+				o.q[1].value = __js_clean_html_str(x[1]); // Assume suite.
+				clean_unit();
+				// create a send this field to other field button.
+			}
+			// Go back to innerText (not innerHTML).
+			o.u = td[1].innerText.trim()
 			
 			console.log(o);
 			AMT___addUserDecision(
@@ -2601,11 +2618,15 @@ function MT__RUN() {
 					//~ if (addField == o.q[2]) {
 						//~ addField.value = addField.value.state_full_to_abbr();
 					//~ }
+					// If field is "Unit", then modify (per instructions).
+					if (addField == o.q[1]) {
+						clean_unit();
+					}
 				},
 				//~ appendToField: true,
 				//~ appendToField_glue: ', ',
 				//~ delimeter: '',
-				focusToField: false,
+				//~ focusToField: false,
 				style: 'border-radius:2px;border:1;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:2;', //background-color:#feccef;
 			});
 			d1.appendChild(buttons);
@@ -2619,12 +2640,38 @@ function MT__RUN() {
 			});
 			//sbm
 			document.getElementById('submitButton').onclick = function(e) {
-				o.q[0].value = o.q[0].value.trim().replace(/\s+/, ' ');
-				o.q[1].value = o.q[1].value.trim().replace(/\s+/, ' ');
 				e.stopPropagation();
 				e.preventDefault();
-				doSubmit();
+				// Check at least one non-blank
+				var foundBlank = false;
+				for (var i in o.q) {
+					if (o.q[i].value.trim() != '') {
+						foundBlank = true;
+						break;
+					}
+				}
+				if (!foundBlank) {
+					return false;
+				}
+				AMT___recordAndSubmit();
 				return;
+			}
+			// Clean unit
+			function clean_unit() {
+				o.q[1].value = o.q[1].value
+					.replace(/(suite|ste|unit|#)/i, 'Unit')
+					.trim();
+				// replace "#777" with "777"
+			}
+			//
+			function addr_split(str) {
+				var x = /,* *(suite|ste|unit|#) *([\w\d]+)/i.exec(str);
+				if (x) {
+					o.q[1].value = 'Unit '+x[2];
+					// Remove original and put in addr field.
+					o.q[0].value = str.replace(x[0], '').trim();
+					
+				}
 			}
 		}
 		new run().f();
