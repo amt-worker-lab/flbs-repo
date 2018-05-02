@@ -2665,7 +2665,7 @@ function MT__RUN() {
 			}
 			//
 			function addr_split(str) {
-				var x = /,* *(suite|ste|unit|#) *([\w\d]+)/i.exec(str);
+				var x = /,* *(suite|ste|unit|#) *([^ $]+)/i.exec(str);
 				if (x) {
 					o.q[1].value = 'Unit '+x[2];
 					// Remove original and put in addr field.
@@ -2673,6 +2673,7 @@ function MT__RUN() {
 					
 				}
 			}
+			// ondblclick, set this field to be the next field for annotate output.
 		}
 		new run().f();
 	};
