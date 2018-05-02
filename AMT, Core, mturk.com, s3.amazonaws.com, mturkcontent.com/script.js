@@ -2511,6 +2511,124 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	/**
+	 * @script: create_annotation_to_output_fields()
+	 * 
+	 * @clients:
+	 * Marketing Research
+	 * Ryan Doherty
+	 * 
+	 * 
+	 */
+	// Ryan Doherty
+	// Split up this list of addresses into parts
+	// Utilize (??)
+	// 		A function which attempts to split a string into its address parts.
+	// 
+	var s = '<p>Split up the address into multiple parts: "Name of organization (ie. clinic/hospital name)", "Main Address (ie. 123 Main Street)", "Unit # (ie. Unit 1)", and "Other"&nbsp;</p>\n\n<ul>\n	<li>Copy/paste to ensure there are no spelling mistakes.</li>';
+	if (ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			//////////
+			// Styles
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			// Instructions
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}');
+			// Content
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;width: 50%;}');
+			//~ GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');
+			// Other
+			//~ GM_addStyle('.exe:hover {background-color:orange;}');
+			//~ GM_addStyle('#submitButton {width:100%;height:200px;margin-top:-160px;}');
+			// End styles
+			/////////////
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('name1')[0],
+					document.getElementsByName('name2')[0],
+					document.getElementsByName('address1')[0],
+					document.getElementsByName('unit1')[0],
+					document.getElementsByName('other1')[0],
+				],
+			}
+			
+			console.log(o);
+			AMT___addUserDecision(
+				'RyanDoherty,2018', function() {
+					return o.u;
+				},
+				['Name(name1)[0]','Name(name2)[0]','Name(address1)[0]',
+				 'Name(unit1)[0]','Name(other1)[0]']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:5%;width:90%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			
+			// annotate
+			// Feature to add:
+			//		Need: "in house", not "in the house",
+			//			but there are two fields. So appendToField
+			//			does not work!
+			// Feature to add:
+			//		Add: Mouseover color
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: o.u,
+				output_fields: o.q,
+				callback_mouseup: function(addField) {
+					//~ // Remove any non-digit, non-word!
+					//~ addField.value = addField.value.replace(/ *[^\d\w]* *$/, '');
+					//~ // Remove "the"/"a" from 2nd field.
+					//~ if (addField == o.q[1]) {
+						//~ addField.value = addField.value.replace(/ (a|the|an) /gi, ' ');
+						//~ // clean whitespace
+						//~ addField.value = addField.value.replace(/\s+/, ' ');
+					//~ }
+					// Remove trailing commas
+					addField.value = addField.value.replace(/ *[,]*$/, '');
+					// Remove starting commas
+					addField.value = addField.value.replace(/^ *[,]* */g, '');
+					//~ // State. Try going full to abbreviation.
+					//~ if (addField == o.q[2]) {
+						//~ addField.value = addField.value.state_full_to_abbr();
+					//~ }
+				},
+				//~ appendToField: true,
+				//~ appendToField_glue: ', ',
+				//~ delimeter: '',
+				focusToField: false,
+				style: 'border-radius:2px;border:1;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:2;', //background-color:#feccef;
+			});
+			d1.appendChild(buttons);
+			
+			// ondblclick, remove word from input
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [o.q[0],o.q[1]],
+				blur_element: false,
+				remove_whitespace: true,
+			});
+			//sbm
+			document.getElementById('submitButton').onclick = function(e) {
+				o.q[0].value = o.q[0].value.trim().replace(/\s+/, ' ');
+				o.q[1].value = o.q[1].value.trim().replace(/\s+/, ' ');
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return;
+			}
+		}
+		new run().f();
+	};
 	// Marketing Research ""
 	// Categorize Products And Key Phrases
 	//
@@ -2557,36 +2675,6 @@ function MT__RUN() {
 				'position:absolute;top:0px;left:5%;width:90%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
-			//~ var d1b = document.createElement('div');
-			//~ d1b.setAttribute('style',
-				//~ 'position:absolute;top:0px;left:75%;width:24%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
-			//~ );
-			//~ document.body.appendChild(d1b);
-			//~ var d2 = document.createElement('input');
-			//~ d2.setAttribute('style',
-				//~ 'position:absolute;top:0px;left:0%;width:10%;height:600px;overflow:auto;'
-			//~ );
-			//~ d2.value = 'correct';
-			//~ d2.type = 'button';
-			//~ document.body.appendChild(d2);
-			//~ var d2b = document.createElement('input'); // case btn
-			//~ d2b.setAttribute('style',
-				//~ 'position:absolute;top:0px;left:10%;width:10%;height:600px;overflow:auto;'
-			//~ );
-			//~ d2b.value = 'case';
-			//~ d2b.type = 'button';
-			//~ document.body.appendChild(d2b);
-			/* END ITEMS */
-			// innerHeight
-			//~ new AMT___core_factory().el_innerHeight({
-				//~ // This set the elements d1,d1b, and d1c
-				//~ // to fill up the whole window, minus their
-				//~ // distance from page top (top:XX pixels;).
-				//~ elements: [
-					//~ d1
-				//~ ],
-				//~ offset: 0 // offset top
-			//~ });
 			
 			// annotate
 			// Feature to add:
@@ -2630,17 +2718,6 @@ function MT__RUN() {
 				blur_element: false,
 				remove_whitespace: true,
 			});
-			
-			//d2
-			//~ d2.onclick = function() {
-				//~ document.getElementById('alternative').value = 'correct';
-				//~ doSubmit();
-			//~ }
-			//~ //d2b
-			//~ d2b.onclick = function() {
-				//~ document.getElementById('alternative').value = o.u.string_to_mixed_case();
-				//~ doSubmit();
-			//~ }
 			//sbm
 			document.getElementById('submitButton').onclick = function(e) {
 				o.q[0].value = o.q[0].value.trim().replace(/\s+/, ' ');
