@@ -331,7 +331,7 @@ function MT__RUN() {
 	 * Matthew Joseph
 	 * Scott C Thompson
 	 * Saransh Chauhan
-	 * 
+	 * Chandler Nunez
 	 * 
 	 */
 	// Saransh Chauhan
@@ -400,6 +400,169 @@ function MT__RUN() {
 					}
 				}
 			});
+		}
+		new run().f();
+	}
+	// Chandler Nunez
+	// Collect Market Cap and Revenue for Companies
+	// @tags: Simple xhr, Item search / R&D, Company search
+	// Uses Yahoo finance
+	var s = '<li>Look up the company in one of the following sites to get information:&nbsp;<a href="http://nasdaq.com">nasdaq.com</a>,&nbsp;<a href="http://finance.yahoo.com">finance.yahoo.com</a></li>\n	<li>If the currency is <strong>NOT</strong> in USD, please fill out what currency it is in.</li>\n	<li>If no information is found, write in "no info".</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
+			// Task specific GM
+			//...
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('a');
+			var o = {
+				u: td[1].innerText.trim(),
+				//~ id: null,
+				q: [
+					document.getElementsByName('market_cap')[0],
+					document.getElementsByName('revenue')[0],
+					document.getElementsByName('currency')[0],
+					//~ document.getElementById('galleryaddress'),
+				]
+			}
+			/*BEGIN ITEMS*/
+			// Two columns.
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:28px;left:0%;width:50%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:26px;');
+			document.body.appendChild(d2);
+			var d1b = ''.div({
+				style:
+				'position:absolute;top:28px;left:50%;width:49%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:26px;');
+			document.body.appendChild(d2b);
+			/*END ITEMS*/
+			AMT___addUserDecision(
+				'ChandlerNunez,2018', function() {
+					return o.u;
+				}, ['Name(market_cap)[0]','Name(revenue)[0]','Name(currency)[0]']
+			)
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [ d2,d2b ],
+				blur_element: true,
+				remove_whitespace: true,
+			});
+			d2 .addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.onblur = d2b.onblur = init;
+			d2.value = o.u;
+			d2b.value = o.u.replace(/ [^ ]+$/, ''); // Remove one word
+			d2.output = d1;
+			d2b.output = d1b;
+			// Init func.
+			function init(e) {
+				// this - refers to input element.
+				var elem = this;
+				var output = this.output;
+				var elem_value = this.value;
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://s.yimg.com/xb/v7/finance/autocomplete'+
+						'?appid=finance.yahoo.com&nresults=10&output=yjsonp'+
+						'&region=US&lang=en-US&corsDomain=https%3A%2F%2Ffinance.yahoo.com'+
+						'&query='+encodeURIComponent(this.value),
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						rs = JSON.parse(rs);
+						if (!rs || !rs.ResultSet || !rs.ResultSet.Result ||
+							!rs.ResultSet.Result.length) {
+							this.output.innerText = '0 results - '+elem_value;
+							return;
+						}
+						for (var i in rs.ResultSet.Result) {
+							var r = rs.ResultSet.Result[i];
+							var d = (r.name+'\n'+r.symbol).div({
+								style: 'width:100%;border-bottom:1px solid teal;',
+								innerText: true
+							});
+							d.symbol = r.symbol;
+							output.appendChild(d);
+							d.onclick = function() {
+								this.style.backgroundColor = 'aqua';
+								profile(this);
+							}
+						}
+						//~ // Scrape city.
+						//~ // <title>Walgreens Pharmacy - 3005 E RIGGS RD,  Chandler, AZ 85249 | Walgreens</title>
+						//~ var x = /<title>Walgreens Pharmacy - [^,]+,\s+([^,]+), [A-Z]{2} \d{5} \| Walgreens<\/title>/.exec(rs);
+						//~ if (x) {
+							//~ o.q[0].value = __js_clean_html_str(x[1]).trim();
+							//~ if (o.q[0].value.length > 3 && o.q[0].value != 'null'
+								//~ && o.q[0].value != 'undefined') {
+								//~ AMT___recordAndSubmit();
+							//~ }
+						//~ }
+					}
+				});
+			}
+			function profile(div) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://finance.yahoo.com/quote/DKS/financials'+
+						'?p='+encodeURIComponent(div.symbol),
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						//
+						if (rs.indexOf('All numbers in thousands') == -1) {
+							div.innerText += '\nErr:All numbers in thousands';
+							return;
+						}
+						// regex revenue
+						var rx = /<span data-reactid="\d+">Total Revenue<\/span><\/td><td[^>]+><span data-reactid="\d+">([\d,]+)<\/span><\/td>/.exec(rs);
+						if (rx) {
+							o.q[1].value = rx[1];
+						} else {
+							div.innerText += '\nErr:Bad tot. rev. regex ??';
+							return;
+						}
+					}
+				});
+			}
 		}
 		new run().f();
 	}
