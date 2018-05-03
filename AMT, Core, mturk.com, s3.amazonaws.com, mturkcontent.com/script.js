@@ -570,9 +570,11 @@ function MT__RUN() {
 				}
 			}
 			function profile(div) {
+				var u = 'https://finance.yahoo.com/quote/'+
+					encodeURIComponent(div.symbol)+'/financials'+
+					'?p='+encodeURIComponent(div.symbol);
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'https://finance.yahoo.com/quote/'+encodeURIComponent(div.symbol)+'/financials'+
-						'?p='+encodeURIComponent(div.symbol),
+					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
@@ -599,7 +601,7 @@ function MT__RUN() {
 						var rx = /<span data-reactid="\d+">Total Revenue<\/span><\/td><td[^>]+>(<span data-reactid="\d+">([\d,\.]+)<\/span>|-)<\/td>/.exec(rs);
 						if (rx) {
 							if (rx[1] == '-') {
-								o.q[1].value = 'no info';
+								o.q[1].value = 'no info'; // MEH.
 							} else {
 								if (rx[2].indexOf('.') != -1) {
 									// remove periods
@@ -612,6 +614,10 @@ function MT__RUN() {
 						} else {
 							div.innerText += '\nErr:Bad tot. rev. regex ??';
 							sbm = false;
+							window.open(u); 
+							// In case of blank, could do "no info".
+							// MEH
+							
 						}
 						// regex market cap
 						// "marketCap":{"raw":3292744960,"fmt":"3.29B","longFmt":"3,292,744,960.00"},
