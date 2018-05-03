@@ -417,9 +417,10 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');
 			// Task specific GM
+			GM_addStyle('.exe:hover {cursor:pointer;}');
 			//...
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
-			var td = document.getElementsByTagName('a');
+			var td = document.getElementsByTagName('td');
 			var o = {
 				u: td[1].innerText.trim(),
 				//~ id: null,
@@ -430,6 +431,7 @@ function MT__RUN() {
 					//~ document.getElementById('galleryaddress'),
 				]
 			}
+			o.q[2].value = 'USD';
 			/*BEGIN ITEMS*/
 			// Two columns.
 			var d1 = ''.div({
@@ -462,23 +464,30 @@ function MT__RUN() {
 			});
 			d2 .addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-			d2.onblur = d2b.onblur = init;
-			d2.value = o.u;
-			d2b.value = o.u.replace(/ [^ ]+$/, ''); // Remove one word
+			d2.onblur = d2b.onblur = function(e) {
+				init(this);
+			}
+			var x = o.u.replace(/'s/gi, '').replace(/,/g, '');
+			d2.value = x;
+			d2b.value = x.replace(/ [^ ]+$/, ''); // Remove one word
 			d2.output = d1;
 			d2b.output = d1b;
+			// init
+			init(d2);
+			if (d2b.value != d2.value)
+				init(d2b);
 			// Init func.
-			function init(e) {
+			function init(input) {
 				// this - refers to input element.
-				var elem = this;
-				var output = this.output;
-				var elem_value = this.value;
+				var elem = input;
+				var output = input.output;
+				var elem_value = input.value;
 				// xhr
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: 'https://s.yimg.com/xb/v7/finance/autocomplete'+
 						'?appid=finance.yahoo.com&nresults=10&output=yjsonp'+
 						'&region=US&lang=en-US&corsDomain=https%3A%2F%2Ffinance.yahoo.com'+
-						'&query='+encodeURIComponent(this.value),
+						'&query='+encodeURIComponent(input.value),
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
@@ -495,24 +504,34 @@ function MT__RUN() {
 							document.body.style.backgroundColor = 'blue';
 							return;
 						}
+						// clear output
+						output.innerText = '';
 						rs = JSON.parse(rs);
 						if (!rs || !rs.ResultSet || !rs.ResultSet.Result ||
 							!rs.ResultSet.Result.length) {
-							this.output.innerText = '0 results - '+elem_value;
+							output.innerText = '0 results - '+elem_value;
 							return;
 						}
 						for (var i in rs.ResultSet.Result) {
+							// todo: notify if symbol contains "." or is > 6 chars.
 							var r = rs.ResultSet.Result[i];
 							var d = (r.name+'\n'+r.symbol).div({
 								style: 'width:100%;border-bottom:1px solid teal;',
 								innerText: true
 							});
+							d.className = 'exe';
 							d.symbol = r.symbol;
 							output.appendChild(d);
 							d.onclick = function() {
 								this.style.backgroundColor = 'aqua';
+								this.clicked = true;
+								// nextab
+								new AMT___core_factory().nextTab();
 								profile(this);
 							}
+							d.addEventListener('mouseover',mouseover_,false);
+							d.addEventListener('mouseout',mouseout_,false);
+							d.clicked = false;
 						}
 						//~ // Scrape city.
 						//~ // <title>Walgreens Pharmacy - 3005 E RIGGS RD,  Chandler, AZ 85249 | Walgreens</title>
@@ -527,9 +546,32 @@ function MT__RUN() {
 					}
 				});
 			}
+			function mouseover_(e) {
+				// Highlight all divs with corresponding npi #.
+				var x = document.getElementsByClassName('exe');
+				for (var i=0;i<x.length;i++) {
+					if (x[i].clicked) // avoid changing clicked items
+						continue;
+					if (x[i].symbol == this.symbol) {
+						x[i].style.backgroundColor = 'LightGreen';
+						//~ x[i].style.setProperty('background-color', 'LightGreen', 'important');
+					} else {
+						x[i].style.backgroundColor = '';
+					}
+				}
+			}
+			function mouseout_(e) {
+				// Reset all bg colors (except where clicked)
+				var x = document.getElementsByClassName('exe');
+				for (var i=0;i<x.length;i++) {
+					if (x[i].clicked) // avoid changing clicked items
+						continue;
+					x[i].style.backgroundColor = '';
+				}
+			}
 			function profile(div) {
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'https://finance.yahoo.com/quote/DKS/financials'+
+					URL: 'https://finance.yahoo.com/quote/'+encodeURIComponent(div.symbol)+'/financials'+
 						'?p='+encodeURIComponent(div.symbol),
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
@@ -547,18 +589,42 @@ function MT__RUN() {
 							document.body.style.backgroundColor = 'blue';
 							return;
 						}
+						var sbm = true;
 						//
 						if (rs.indexOf('All numbers in thousands') == -1) {
 							div.innerText += '\nErr:All numbers in thousands';
 							return;
 						}
 						// regex revenue
-						var rx = /<span data-reactid="\d+">Total Revenue<\/span><\/td><td[^>]+><span data-reactid="\d+">([\d,]+)<\/span><\/td>/.exec(rs);
+						var rx = /<span data-reactid="\d+">Total Revenue<\/span><\/td><td[^>]+>(<span data-reactid="\d+">([\d,\.]+)<\/span>|-)<\/td>/.exec(rs);
 						if (rx) {
-							o.q[1].value = rx[1];
+							if (rx[1] == '-') {
+								o.q[1].value = 'no info';
+							} else {
+								if (rx[2].indexOf('.') != -1) {
+									// remove periods
+									rx[2] = rx[2].replace(/\.[\d\D]+$/, '');
+								}
+								o.q[1].value = rx[2] + ',000'; // "in thousands" !!
+								//~ sbm = false;
+								//~ div.innerText += '\nErr:check periods';
+							}
 						} else {
 							div.innerText += '\nErr:Bad tot. rev. regex ??';
-							return;
+							sbm = false;
+						}
+						// regex market cap
+						// "marketCap":{"raw":3292744960,"fmt":"3.29B","longFmt":"3,292,744,960.00"},
+						var rx = /"marketCap":\{"raw":\d+,"fmt":"[^"]+","longFmt":"([\d\.,]+)"\}/.exec(rs);
+						if (rx) {
+							o.q[0].value = rx[1]; // "in thousands" !!
+						} else {
+							div.innerText += '\nErr:Bad tot. rev. regex ??';
+							sbm = false;
+						}
+						// sbm
+						if (sbm) {
+							AMT___recordAndSubmit();
 						}
 					}
 				});
