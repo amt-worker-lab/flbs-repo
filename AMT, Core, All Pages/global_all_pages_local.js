@@ -108,8 +108,12 @@ function AMT__all_pages_util(r) {
 		MT___all_pages_extend();
 	
 	// add js to page
-	if ( r.add_js_to_page )
+	if ( r.add_JsString_to_page )
 		new AMT___global_factory().add_JsString_to_page(r.add_JsString_to_page);
+	
+	// add_cssStr_to_page
+	if ( r.add_cssStr_to_page )
+		new AMT___global_factory().add_cssStr_to_page(r.add_cssStr_to_page);
 		
 	// zoom
 	if ( r.MT___all_pages_zoom )
@@ -702,6 +706,17 @@ AMT___global_factory.prototype.add_JsString_to_page = function(str) {
 		script.parentNode.removeChild(script);
 	}
 	js_append2(str);
+}
+/**
+ * add_cssStr_to_page:
+ * Adds CSS code to a utility window HTML page.
+ * 
+ * Example code run:
+ * new AMT___global_factory().add_cssStr_to_page(r.add_cssStr_to_page);
+ */
+AMT___global_factory.prototype.add_cssStr_to_page = function(str) {
+	// (forked via chios)
+	GM_addStyle(str);
 }
 /**
  * .up_button_to_all_links

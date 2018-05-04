@@ -2261,10 +2261,10 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			var td = document.getElementsByTagName('td');
 			var o = {
-				u: td[2].innerText.trim(),
+				u: td[3].innerText.trim(),
 				q: [
-					document.getElementById('VZSignal'),
 					document.getElementById('ATTSignal'),
+					document.getElementById('VZSignal'),
 					document.getElementsByName('AddressNotFound')[0],
 				]
 			}
@@ -2285,16 +2285,19 @@ function MT__RUN() {
 					add_JsString_to_page:
 					   'var lat = '+lat+';\
 						var lng = '+lng+';\
-						var marker2 = new google.maps.Marker({\
-							position: new google.maps.LatLng(lat,lng),\
-							map: map,\
-							title: \'testing\',\
-						});\
-						map.maxZoom = 20;\
-						map.setZoom(16);',
+						setTimeout(function() { \
+							var marker2 = new google.maps.Marker({\
+								position: new google.maps.LatLng('+lat+','+lng+'),\
+								map: map,\
+								title: \'testing\',\
+							});\
+							map.maxZoom = 20;\
+							map.setZoom(16);\
+							map.setCenter({lat:'+lat+',lng:'+lng+'})\
+						}, 4000)',
 					add_cssStr_to_page:
 						'.modal-container, .popup_container, .legend \
-							{user-select: !important; }'
+							{user-select: unset !important; }'
 				}
 				AMT__setUtilityTabs(
 					[{

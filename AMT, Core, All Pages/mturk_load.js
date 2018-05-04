@@ -109,7 +109,11 @@ function initializeIh() {
 		return func.apply(this._value, arguments);
 	  };
 	});
-
+	
+	// Not sure why document.body.innerHTML is failing.
+	if (!document || !document.body || !document.body.innerHTML)
+		return '';
+		
 	var tmpIh = document.body.innerHTML;
 	tmpIh = new MyString(tmpIh);
 	tmpIh.oldIndexOf = tmpIh.indexOf;
