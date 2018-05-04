@@ -2287,6 +2287,9 @@ function MT__RUN() {
 					task: 'AMT__all_pages_util',
 					highlight_range_to_parent: true,
 					add_JsString_to_page:
+						'var j = document.createElement("textarea");\
+						j.id = "_util_pass_data";\
+						document.body.appendChild(j);'
 					   'var lat = '+lat+';\
 						var lng = '+lng+';\
 						setTimeout(function() { \
@@ -2298,7 +2301,13 @@ function MT__RUN() {
 							map.maxZoom = 20;\
 							map.setZoom(16);\
 							map.setCenter({lat:'+lat+',lng:'+lng+'})\
-						}, 4000)',
+						}, 4000);\
+						/*processHexStatsJSON controls clicked hex.*/\
+						function processHexStatsJSON(\
+							data, cr, ptLatLng, leftClick, leftOffset, topClick, topOffset, map_width, map_height, arrowClass\
+						) {\
+							document.getElementById("_util_pass_data").value = JSON.stringify(data);\
+						}',
 					add_cssStrings_to_page:
 						['.modal-container, .popup_container, .legend \
 							{user-select: unset !important;};',
