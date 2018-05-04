@@ -112,8 +112,8 @@ function AMT__all_pages_util(r) {
 		new AMT___global_factory().add_JsString_to_page(r.add_JsString_to_page);
 	
 	// add_cssStr_to_page
-	if ( r.add_cssStr_to_page )
-		new AMT___global_factory().add_cssStr_to_page(r.add_cssStr_to_page);
+	if ( r.add_cssStrings_to_page )
+		new AMT___global_factory().add_cssStrings_to_page(r.add_cssStrings_to_page);
 		
 	// zoom
 	if ( r.MT___all_pages_zoom )
@@ -708,15 +708,16 @@ AMT___global_factory.prototype.add_JsString_to_page = function(str) {
 	js_append2(str);
 }
 /**
- * add_cssStr_to_page:
+ * add_cssStrings_to_page:
  * Adds CSS code to a utility window HTML page.
  * 
  * Example code run:
- * new AMT___global_factory().add_cssStr_to_page(r.add_cssStr_to_page);
+ * new AMT___global_factory().add_cssStrings_to_page(r.add_cssStrings_to_page);
  */
-AMT___global_factory.prototype.add_cssStr_to_page = function(str) {
-	// (forked via chios)
-	GM_addStyle(str);
+AMT___global_factory.prototype.add_cssStrings_to_page = function(arr_css) {
+	for (var i in arr_css) {
+		GM_addStyle(arr_css[i]);
+	}
 }
 /**
  * .up_button_to_all_links
@@ -1533,8 +1534,10 @@ AMT___global_factory.prototype.highlight_range_to_parent = function(options_obje
 				control_key_is_active: e.ctrlKey,	// Is control key down?
 				url: window.location.href
 			};
-			if (typeof options_object.highlight_range_to_parent == 'object') { // Is object or boolean
-				return_object.key = options_object.highlight_range_to_parent.completion_key; // e.g. Dan_Shaffer_site_eval
+			if (typeof options_object.highlight_range_to_parent == 'object') {
+				// Is object or boolean
+				// e.g. Dan_Shaffer_site_eval
+				return_object.key = options_object.highlight_range_to_parent.completion_key;
 			}
 			
 			if (!options_object.hasOwnProperty('isUtilityTab')) {

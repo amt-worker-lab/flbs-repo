@@ -2268,6 +2268,10 @@ function MT__RUN() {
 					document.getElementsByName('AddressNotFound')[0],
 				]
 			}
+			// onclick
+			o.q[0].onclick = o.q[1].onclick = function() {
+				this.value = 0;
+			}
 			// Geocode
 			// (location, callback, return_complete_response, proxy)
 			MT___google_api_geocode(o.u, ll, false, true);
@@ -2295,9 +2299,11 @@ function MT__RUN() {
 							map.setZoom(16);\
 							map.setCenter({lat:'+lat+',lng:'+lng+'})\
 						}, 4000)',
-					add_cssStr_to_page:
-						'.modal-container, .popup_container, .legend \
-							{user-select: unset !important; }'
+					add_cssStrings_to_page:
+						['.modal-container, .popup_container, .legend \
+							{user-select: unset !important;};',
+						'.max-download-speed-value { zoom:2; }'
+						]
 				}
 				AMT__setUtilityTabs(
 					[{
@@ -2316,10 +2322,13 @@ function MT__RUN() {
 						{
 							console.log(response.data.text_range);
 							var r = response.data.text_range.trim();
+							// Remove hyphen "-" and then add one back.
+							// Because then user does not have to click
+							// on hyphen on page. (It's faster.)
 							if (o.q[0].value == '') {
-								o.q[0].value = r.replace(/[^\d\-]/g, '');
+								o.q[0].value = '-'+r.replace(/[^\d]/g, '');
 							} else {
-								o.q[1].value = r.replace(/[^\d\-]/g, '');
+								o.q[1].value = '-'+r.replace(/[^\d]/g, '');
 							}
 						}
 					}
