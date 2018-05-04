@@ -2286,11 +2286,14 @@ function MT__RUN() {
 				var opts = {
 					task: 'AMT__all_pages_util',
 					highlight_range_to_parent: true,
-					add_JsString_to_page:
+					__client: { // custom code to run for client
+						client: 'jb'
+					},
+					add_JsString_to_page: // ( Also adds in rest_of_func! )
 						'var j = document.createElement("textarea");\
 						j.id = "_util_pass_data";\
-						document.body.appendChild(j);'
-					   'var lat = '+lat+';\
+						document.body.appendChild(j);\
+					    var lat = '+lat+';\
 						var lng = '+lng+';\
 						setTimeout(function() { \
 							var marker2 = new google.maps.Marker({\
@@ -2307,6 +2310,7 @@ function MT__RUN() {
 							data, cr, ptLatLng, leftClick, leftOffset, topClick, topOffset, map_width, map_height, arrowClass\
 						) {\
 							document.getElementById("_util_pass_data").value = JSON.stringify(data);\
+							'+rest_of_func+'\
 						}',
 					add_cssStrings_to_page:
 						['.modal-container, .popup_container, .legend \
@@ -2324,6 +2328,7 @@ function MT__RUN() {
 					true,
 					function(response) {
 						console.log(response);
+						// Highlighted text
 						if  (
 							response.hasOwnProperty('data') &&
 							response.data.hasOwnProperty('text_range')
@@ -2340,6 +2345,34 @@ function MT__RUN() {
 								o.q[1].value = '-'+r.replace(/[^\d]/g, '');
 							}
 						}
+						// data.json, Auto for this client.
+						else if (response.hasOwnProperty('data') &&
+							response.data.hasOwnProperty('json')) {
+							// parse
+							var j = JSON.parse(response.data.json);
+							console.log(j);
+							// Some error checking.
+							if (!j.carriers) {
+								return;
+							}
+							else if (j.endpoint != 'hex_stats') {
+								return;
+							}
+							// Auto-fill
+							for (var i=1;i<=20;i++) {
+								if (j.carriers[i] == undefined)
+									continue;
+								var n = j.carriers[i];
+								if (n.name == 'AT&T') {
+									o.q[0].value = n.sig.sig.avg;
+								}
+								else if (n.name == 'Verizon') {
+									o.q[1].value = n.sig.sig.avg;
+								}
+								if (j == 20)
+									alert('wow, made it to 20!!!??')
+							}
+						}
 					}
 				)
 			}
@@ -2351,6 +2384,70 @@ function MT__RUN() {
 				doSubmit();
 				return false;
 			}
+			
+			// REST OF OVERRIDDEN FUNCTION (For debug output)
+			var rest_of_func = 'var hexDataHolder = null;\
+			$.each(data.carriers, function(carrier_id, carrier_hex_data) {\
+				if (!carrier_hex_data) {\
+					return;\
+				}\
+				if (parseCarrierIdNameValue(carrier, \'getId\') == carrier_id) {\
+					var hexData = null;\
+					switch (mode) {\
+						case "sig":\
+							if (\'sig\' in carrier_hex_data) {\
+								hexData = carrier_hex_data;\
+							}\
+							break;\
+						case "data":\
+							if (\'data\' in carrier_hex_data) {\
+								hexData = carrier_hex_data;\
+							}\
+							break;\
+						case "tech":\
+							if (\'sig\' in carrier_hex_data) {\
+								if (\'best_tech\' in carrier_hex_data[\'sig\']) {\
+									hexData = carrier_hex_data;\
+								}\
+							}\
+							break;\
+					}\
+					hexDataHolder = hexData;\
+				}\
+			});\
+			$("#loading_popup").hide();\
+			$("#untested_popup").hide();\
+			$("#signal_popup").hide();\
+			$("#data_popup").hide();\
+			$("#tech_popup").hide();\
+			if (hexDataHolder == null) {\
+				$("#untested_popup").show();\
+				positionPopupAndDisplay(leftClick, leftOffset, topClick, topOffset, map_width, map_height, arrowClass, "untested");\
+			}\
+			else {\
+				var popupType = "";\
+				switch (mode) {\
+					case "sig" :\
+						_gaq.push([\'_trackEvent\', \'Hexagon\', \'Click\', \'Call Performance Hexagon\']);\
+						updateSignalPopup(hexDataHolder);\
+						$("#signal_popup").show();\
+						popupType = "signal";\
+						break;\
+					case "data" :\
+						_gaq.push([\'_trackEvent\', \'Hexagon\', \'Click\', \'Speed Test Hexagon\']);\
+						updateDataPopup(hexDataHolder);\
+						$("#data_popup").show();\
+						popupType = "data";\
+						break;\
+					case "tech" :\
+						_gaq.push([\'_trackEvent\', \'Hexagon\', \'Click\', \'Data Availability Hexagon\']);\
+						updateTechPopup(hexDataHolder);\
+						$("#tech_popup").show();\
+						popupType = "tech";\
+						break;\
+				}\
+				positionPopupAndDisplay(leftClick, leftOffset, topClick, topOffset, map_width, map_height, arrowClass, popupType);}\
+			';
 		}
 		new run().f();
 	}

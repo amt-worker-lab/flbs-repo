@@ -253,6 +253,14 @@ function AMT__all_pages_util(r) {
 		d.innerText = r.debug_display;
 		document.body.appendChild(d);
 	}
+	
+	// Clients
+	// @clients: jb
+	if (r.__client) {
+		// @client jb (utilizing http://webcoveragemap.rootmetrics.com)
+		if (r.__client.client = 'jb')
+			new AMT___global_factory().clients__jb(r.__client);
+	}
 }
 
 // THESE ARE SOME GENERAL FUNCTIONS...
@@ -690,6 +698,41 @@ var AMT__rq = function() {
 function AMT___global_factory() {
 	
 }
+/*Clients*/
+//new AMT___global_factory().clients__jb(r.__client);
+AMT___global_factory.prototype.clients__jb = function(obj) {
+	// Watch page for finished!
+	var xint = setInterval(func, 100);
+	var done = false;
+	function func() {
+		var x = document.getElementById("_util_pass_data");
+		if (x && x.value != '') {
+			clearInterval(xint);
+			if (done) {
+				// Quit here if multiple intervals have made it past
+				// this point. This is a race condition check.
+				return;
+			}
+			done = true;
+			// Pass message from utility tab.
+			chrome.runtime.sendMessage(
+				'gcfnekbbpmbgadddbojhlojhddnkcpje',
+				{
+					util_window_message_passing: true,
+					data: {
+						json: x.value
+					},
+					//~ init_object: options,
+					focus: true
+				},
+				function(response) {
+					// response=object
+				}
+			);
+		}
+	}
+}
+
 /**
  * add_JsString_to_page:
  * Adds JS code to a utility window HTML page.
