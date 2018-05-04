@@ -783,7 +783,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 //			{
 //				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
 //			}
-function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,runInPreviewMode, callbackFromUtility) {
+function AMT__setUtilityTabs(
+		utilityTabs,
+		globalTabOptions,
+		utilityPanelOptions,
+		runInPreviewMode,
+		callbackFromUtility)
+{
 	if(!AMT__Global_Vars.isPreview || (!runInPreviewMode && AMT__Global_Vars.isPreview)) {
 		var utilityTabsAndOptions = {};
 		utilityTabsAndOptions.utilities = utilityTabs;
@@ -792,13 +798,6 @@ function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,
 		console.log(utilityTabsAndOptions);
 		for(var i = 0; i < utilityTabs.length; i++) {
 			utilityTabs[i].id = "" + i + ":" + Math.random();
-			//~ if(globalTabOptions && globalTabOptions.options) {
-				//~ for(var j in globalTabOptions.options) {
-					//~ if(!utilityTabs[i][j]) {
-						//~ utilityTabs[i][j] = globalTabOptions.options[j];
-					//~ }
-				//~ }
-			//~ }
 		}
 		var sr = chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
 			function(rs){}
