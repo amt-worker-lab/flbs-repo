@@ -1939,10 +1939,11 @@ function MT__RUN() {
 	/**
 	 * simple utility window task
 	 * 
+	 * @clients
 	 * Jorge Mejia
 	 * Steve Johnston
 	 * Zijing Li
-	 * 
+	 * JB
 	 * 
 	 */
 	// Steve Johnston
@@ -2238,6 +2239,90 @@ function MT__RUN() {
 					}
 				);
 			}
+			// sbm form
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();
+	}
+	// JB
+	// Look up cellular signal strength for a US address
+	// 
+	var s = '<p>Find the signal strength for Verizon and ATT for a US&nbsp;address</p>\n\n<ul>\n	<li>Download CoverageMap on your iOS or Android device\n	<ul>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[2].innerText.trim(),
+				q: [
+					document.getElementById('VZSignal'),
+					document.getElementById('ATTSignal'),
+					document.getElementsByName('AddressNotFound')[0],
+				]
+			}
+			// Geocode
+			// (location, callback, return_complete_response, proxy)
+			MT___google_api_geocode(o.u, ll, false, true);
+			
+			// ll
+			function ll(lat, lng) {
+				if (!lat || !lng) {
+					document.body.style.backgroundColor = 'aqua';
+					return;
+				}
+				// utility window
+				var opts = {
+					task: 'AMT__all_pages_util',
+					highlight_range_to_parent: true,
+					add_JsString_to_page:
+					   'var lat = '+lat+';\
+						var lng = '+lng+';\
+						var marker2 = new google.maps.Marker({\
+							position: new google.maps.LatLng(lat,lng),\
+							map: map,\
+							title: \'testing\',\
+						});\
+						map.maxZoom = 20;\
+						map.setZoom(16);',
+					add_cssStr_to_page:
+						'.modal-container, .popup_container, .legend \
+							{user-select: !important; }'
+				}
+				AMT__setUtilityTabs(
+					[{
+						url: 'http://webcoveragemap.rootmetrics.com/en-US',
+						options: opts
+					}],
+					null,
+					{backgroundColor:'pink'},
+					true,
+					function(response) {
+						console.log(response);
+						if  (
+							response.hasOwnProperty('data') &&
+							response.data.hasOwnProperty('text_range')
+							)
+						{
+							console.log(response.data.text_range);
+							var r = response.data.text_range.trim();
+							if (o.q[0].value == '') {
+								o.q[0].value = r.replace(/[^\d\-]/g, '');
+							} else {
+								o.q[1].value = r.replace(/[^\d\-]/g, '');
+							}
+						}
+					}
+				)
+			}
+			
 			// sbm form
 			document.getElementById('mturk_form').onsubmit = function(e) {
 				e.stopPropagation();

@@ -107,6 +107,10 @@ function AMT__all_pages_util(r) {
 	if ( r.MT___all_pages_extend )
 		MT___all_pages_extend();
 	
+	// add js to page
+	if ( r.add_js_to_page )
+		new AMT___global_factory().add_JsString_to_page(r.add_JsString_to_page);
+		
 	// zoom
 	if ( r.MT___all_pages_zoom )
 		MT___all_pages_zoom( r.MT___all_pages_zoom );
@@ -139,9 +143,8 @@ function AMT__all_pages_util(r) {
 	if ( r.highlight_range_to_parent ) {
 		//~ console.log('highlight range is on');
 		//~ r.highlight_range_to_parent.messagePassingOptions = r;
-		new AMT___global_factory().highlight_range_to_parent(
-				r
-		);
+		new AMT___global_factory()
+			.highlight_range_to_parent(	r );
 	}
 	
 	// Zoom a name
@@ -682,6 +685,23 @@ var AMT__rq = function() {
  */
 function AMT___global_factory() {
 	
+}
+/**
+ * add_JsString_to_page:
+ * Adds JS code to a utility window HTML page.
+ * 
+ * Example code run:
+ * new AMT___global_factory().add_JsString_to_page(r.add_js_to_page);
+ */
+AMT___global_factory.prototype.add_JsString_to_page = function(str) {
+	// (forked via chios)
+	function js_append2(func) {
+		var script = document.createElement('script');
+		script.textContent = func;
+		(document.head||document.documentElement).appendChild(script);
+		script.parentNode.removeChild(script);
+	}
+	js_append2(str);
 }
 /**
  * .up_button_to_all_links
