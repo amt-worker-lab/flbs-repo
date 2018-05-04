@@ -2353,24 +2353,47 @@ function MT__RUN() {
 							console.log(j);
 							// Some error checking.
 							if (!j.carriers) {
+								alert('no json.carriers');
 								return;
 							}
 							else if (j.endpoint != 'hex_stats') {
-								return;
+								// apparently not necessary.
+								//~ alert('no json.hex_stats');
+								//~ return;
 							}
 							// Auto-fill
+							var found_att = false;
+							var found_ver = false;
 							for (var i=1;i<=20;i++) {
 								if (j.carriers[i] == undefined)
 									continue;
 								var n = j.carriers[i];
 								if (n.name == 'AT&T') {
-									o.q[0].value = n.sig.sig.avg;
+									found_att = true;
+									if (n.sig && n.sig.sig && n.sig.sig.avg)
+										o.q[0].value = n.sig.sig.avg;
+									else
+										o.q[0].value = '0';
 								}
 								else if (n.name == 'Verizon') {
-									o.q[1].value = n.sig.sig.avg;
+									found_ver = true;
+									if (n.sig && n.sig.sig && n.sig.sig.avg)
+										o.q[1].value = n.sig.sig.avg;
+									else
+										o.q[1].value = '0';
 								}
 								if (j == 20)
 									alert('wow, made it to 20!!!??')
+							}
+							if (!found_att) {
+								o.q[0].value = '0';
+							}
+							if (!found_ver) {
+								o.q[1].value = '0';
+							}
+							// Auto-submit
+							if (o.q[0].value != '' && o.q[1].value != '') {
+								doSubmit();
 							}
 						}
 					}
