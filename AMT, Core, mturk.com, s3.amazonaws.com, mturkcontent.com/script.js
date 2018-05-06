@@ -2311,7 +2311,8 @@ function MT__RUN() {
 						) {\
 							document.getElementById("_util_pass_data").value = JSON.stringify(data);\
 							'+rest_of_func+'\
-						}',
+						}\
+						' + override_styleSwapper,
 					add_cssStrings_to_page:
 						['.modal-container, .popup_container, .legend \
 							{user-select: unset !important;};',
@@ -2471,6 +2472,30 @@ function MT__RUN() {
 				}\
 				positionPopupAndDisplay(leftClick, leftOffset, topClick, topOffset, map_width, map_height, arrowClass, popupType);}\
 			';
+			// Override the styleSwapper function on the page.
+			// This is in order to make map style remain the same at
+			// higher zoom levels.
+			var override_styleSwapper = 'function styleSwapper() {\
+				var zoom = map.getZoom();\
+				var mapStyle;\
+				if (zoom === 4) {\
+					mapStyle = mapStyleBase;\
+				} else if (zoom === 5) {\
+					mapStyle = mapStyleZoom5;\
+				} else if (zoom === 6) {\
+					mapStyle = mapStyleZoom6;\
+				} else if ((zoom >= 7) && (zoom <= 11)) {\
+					mapStyle = mapStyleZoom7;\
+				} else if (zoom === 12) {\
+					mapStyle = mapStyleZoom12;\
+				} else if (zoom >= 13) {\
+					mapStyle = mapStyleZoom13;\
+				} else if (zoom === 16) {\
+					/*mapStyle = mapStyleZoom16;*/\
+				}\
+				map.setOptions({\
+					styles: mapStyle\
+				});}'
 		}
 		new run().f();
 	}
