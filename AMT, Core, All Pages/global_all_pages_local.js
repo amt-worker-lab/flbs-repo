@@ -722,8 +722,21 @@ AMT___global_factory.prototype.clients__jb = function(obj) {
 					data: {
 						json: x.value
 					},
-					//~ init_object: options,
-					focus: true
+					focus: false
+				},
+				function(response) {
+					// response=object
+				}
+			);
+			// Also pass message to the Work Localhost Chrome extension.
+			chrome.runtime.sendMessage(
+				'mabgkkenedddfkfmpocdekdjckalpddc',
+				{
+					util_window_message_passing: true,
+					data: {
+						json: x.value
+					},
+					focus: false
 				},
 				function(response) {
 					// response=object
