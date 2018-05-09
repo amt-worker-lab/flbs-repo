@@ -150969,16 +150969,13 @@ qatar,80
 			// Elements
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim().string_to_mixed_case(),	// comp
-				field2: td[3].innerText.trim().string_to_mixed_case(),	// comp
-				field3: td[5].innerText.trim().string_to_mixed_case(),	// comp
-				field4: td[7].innerText.trim().string_to_mixed_case(),	// comp
-				field5: td[9].innerText.trim().string_to_mixed_case(),	// comp
-				field6: td[11].innerText.trim().string_to_mixed_case(),	// comp
-				//~ lname: td[5].innerText.trim().string_to_mixed_case(),	// comp
-				//~ degree: td[7].innerText.trim().string_to_mixed_case(),	// industry
-				//~ city: td[9].innerText.trim().string_to_mixed_case(),
-				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
+				comp: td[1].innerText.trim().string_to_mixed_case(),	// 
+				field2: td[3].innerText.trim().string_to_mixed_case(),	// 
+				field3: td[5].innerText.trim().string_to_mixed_case(),	// 
+				field4: td[7].innerText.trim().string_to_mixed_case(),	// 
+				field5: td[9].innerText.trim().string_to_mixed_case(),	// 
+				field6: td[11].innerText.trim().string_to_mixed_case(),	// 
+				field7: td[13].innerText.trim().string_to_mixed_case(),	// 
 				boldArray: [],
 				//~ boldArray2: [],
 				//~ boldArray3: [],
@@ -150987,7 +150984,13 @@ qatar,80
 					document.getElementById('url_found'),
 				],
 			}
-			o.boldArray = o.comp.clean_string_to_array();
+			o.boldArray = o.comp.clean_string_to_array().concat(
+				o.field2.clean_string_to_array()).concat(
+				o.field3.clean_string_to_array()).concat(
+				o.field4.clean_string_to_array()).concat(
+				o.field5.clean_string_to_array()).concat(
+				o.field6.clean_string_to_array()).concat(
+				o.field7.clean_string_to_array());
 			if (o.comp.indexOf(o.field2) == -1 && o.field2.length > 0) {
 				o.spaced = o.comp + ' ' + o.field2 + ' (' + o.field4 + ' OR '+o.field4.stateAbbrToFull()+')'
 			} else {
@@ -151025,9 +151028,9 @@ qatar,80
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // comp, comp+location, comp+industry
-					o.comp + ' (' + o.field4 + ' OR '+o.field4.stateAbbrToFull()+')',
-					o.spaced,
-					o.comp + ' ' + o.field3 + ' (' + o.field4 + ' OR '+o.field4.stateAbbrToFull()+') ' + o.field5+' ('+o.field6.replace(/-/g, ' ')+' OR )'
+					o.comp+' ("'+o.field4+'" OR "'+o.field4.stateAbbrToFull()+'")',
+					o.comp+' "'+o.field3+'" ("'+o.field4+'" OR "'+o.field4.stateAbbrToFull()+'")',
+					'"'+o.field7+'"'
 				],
 				search_results: {
 					//~ use_domain_only: true,
