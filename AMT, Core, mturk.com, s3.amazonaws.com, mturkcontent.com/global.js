@@ -3767,7 +3767,10 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 	function read_from_disk() {
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: options.host + '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+			url: options.host +
+				'/mturk/util.php?xhr_with_disk_cache__read_from_disk='+
+				encodeURIComponent(JSON.stringify(options))+
+				'&random='+Math.random(),
 			onload: function (response) {
 				var rs = response.responseText;
 				
