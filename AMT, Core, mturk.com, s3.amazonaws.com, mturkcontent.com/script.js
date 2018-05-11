@@ -34,6 +34,8 @@ function MT__RUN() {
 	// Melissa Kendall
 	// Easy! Find the Pet Policy for a Vacation Rental on Airbnb.com.
 	// 
+	// Example with "You must acknowledge" portion:
+	//		https://www.airbnb.com/rooms/586955
 	var s = '<p><strong>Please follow the&nbsp;steps below to find the&nbsp;"Pet Rules" for a vacation rental&nbsp;on Airbnb.&nbsp;</strong></p>\n\n<p><strong>Step 1: Click on URL Provided</strong></p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -43,63 +45,104 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:2000px;}');
 			// Task specific GM
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
-			var td = document.getElementsByTagName('td');
+			var a = document.getElementsByTagName('a');
+			var id = /rooms\/(\d+)/.exec(a[1].innerText)[1];
 			var o = {
-				u: td[1].innerText.trim(),
+				u: a[1].innerText.trim(),
+				id: id,
+				ignored_rules: {
+					'No smoking':true,
+					'No parties or events':true,
+					'Not safe or suitable for children (2-12 years)':true,
+					'Not safe or suitable for children (2-12 years)'+
+						'- The decks are not safe for small children':true,
+					'Check-in time is flexible':true,
+					'Check out by 11AM':true,
+					'Self check-in with keypad':true,
+				},
 				q: [
-					document.getElementById('web_url'),
-				]
+					document.getElementById('petFee'),
+				],
 			}
-			// output
-			//~ td[0].innerText += '\n---Cleaned---\n' + o.u;
-			// ITEMS
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
 				'position:absolute;top:0px;\
-				left:50%;width:50%;height:400px;overflow:auto;\
+				left:0%;width:0%;height:400px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/*END ITEMS*/
 			AMT___addUserDecision(
-				'GarretGroh-BA,2018', function() {
+				'MelissaKendall-airbnb,2018', function() {
 					return o.u;
-				}, ['Id(web_url)']
+				}, ['Id(petFee)']
 			)
-			// Load cached file.
-			//~ chrome.extension.sendRequest(
-			chrome.extension.sendMessage(
-				{
-					garret_grohman_brewerassoc: true,
-					garret_grohman_brewerassoc_key: o.u
-				},
-				{}, // object: (optional) options
-				function(response)
-				{
-					//... 
-					if (!response) {
-						console.log('dne');
-						return; // failed?
+			// xhr
+			// e.g. https://www.airbnb.com/api/v2/pdp_listing_details/586955?_API_KEY_REDACTED_&currency=USD&locale=en&_format=for_rooms_show&request_url=https%3A%2F%2Fwww.airbnb.com%2Frooms%2F586955
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://www.airbnb.com/api/v2/pdp_listing_details/'+
+					o.id+ // Note: o.id is a #
+					'?_API_KEY_REDACTED_&currency=USD'+
+					'&locale=en&_format=for_rooms_show'+
+					'&request_url='+encodeURIComponent(o.u),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = 'blue';
+						return false;
 					}
-					// Object now exists.
-					var rs = response.trim();
-					console.log(rs);
-					o.q[0].value = rs;
-					if (o.q[0].value.toLowerCase() != 'undefined' &&
-						o.q[0].value.toLowerCase() != 'NA' &&
-						o.q[0].value.toLowerCase() != 'N/A' &&
-						o.q[0].value.toLowerCase() != 'false' &&
-						o.q[0].value.length > 4
-						)
-						AMT___recordAndSubmit();
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						d1.style.backgroundColor = 'blue';
+						return;
+					}
+					rs = JSON.parse(rs);
+					rs = rs.pdp_listing_detail;
+					// If no add'l rules
+					if (!rs.hasOwnProperty('additional_house_rules') ||
+						rs.additional_house_rules.trim() == '') {
+						d1.appendChild(
+							'No Additional Rules'
+								.div({style:'border-bottom:1px solid teal;'})
+						);
+					}
+					else {
+						// Split add'l rules by paragraph
+						var x = rs.additional_house_rules
+							.trim()
+							.replace(/ *\n{2,} */g, '\n\n')
+							.trim()
+							.split('\n\n');
+						for (var i in x) {
+							var d = ''.div({style:'border-bottom:1px solid teal;'})
+							d1.appendChild(d);
+							var dx = document.createElement('input');
+							dx.type = 'button';
+							dx.value = ' full ';
+							dx.paragraph = x[i].trim();
+							dx.clicked = false;
+							d1.appendChild(dx);
+							dx.onclick = function(e) {
+								if (this.clicked) return;
+								this.style.backgroundColor = 'LightGreen';
+								this.clicked = true;
+								o.q[0].value += ' ' + this.paragraph;
+								o.q[0].value = o.q[0].value.trim();
+							}
+						}
+					}
 				}
-			);
+			});
 		}
 		new run().f();
 	}
