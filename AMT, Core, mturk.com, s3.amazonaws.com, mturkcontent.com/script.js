@@ -31,6 +31,78 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// Melissa Kendall
+	// Easy! Find the Pet Policy for a Vacation Rental on Airbnb.com.
+	// 
+	var s = '<p><strong>Please follow the&nbsp;steps below to find the&nbsp;"Pet Rules" for a vacation rental&nbsp;on Airbnb.&nbsp;</strong></p>\n\n<p><strong>Step 1: Click on URL Provided</strong></p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			// output
+			//~ td[0].innerText += '\n---Cleaned---\n' + o.u;
+			// ITEMS
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;\
+				left:50%;width:50%;height:400px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			AMT___addUserDecision(
+				'GarretGroh-BA,2018', function() {
+					return o.u;
+				}, ['Id(web_url)']
+			)
+			// Load cached file.
+			//~ chrome.extension.sendRequest(
+			chrome.extension.sendMessage(
+				{
+					garret_grohman_brewerassoc: true,
+					garret_grohman_brewerassoc_key: o.u
+				},
+				{}, // object: (optional) options
+				function(response)
+				{
+					//... 
+					if (!response) {
+						console.log('dne');
+						return; // failed?
+					}
+					// Object now exists.
+					var rs = response.trim();
+					console.log(rs);
+					o.q[0].value = rs;
+					if (o.q[0].value.toLowerCase() != 'undefined' &&
+						o.q[0].value.toLowerCase() != 'NA' &&
+						o.q[0].value.toLowerCase() != 'N/A' &&
+						o.q[0].value.toLowerCase() != 'false' &&
+						o.q[0].value.length > 4
+						)
+						AMT___recordAndSubmit();
+				}
+			);
+		}
+		new run().f();
+	}
 	// Garret Grohman
 	//
 	// Utilizes mturk/.miscellaneous/garret_grohman_brewerassoc
@@ -98670,10 +98742,12 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					}
 					fmt_cat = fmt_cat.join(','); // Or blank
+					// clean url
+					b[i].url = b[i].url.replace(/\?[\d\D]*/, '');
 					// Div
 					var d = document.createElement('div');
 					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
-					d.className = 'exe '+b[i].url.replace(/\?[\d\D]*/, '');
+					d.className = 'exe '+b[i].url;
 					d.ypurl = b[i].url;
 					d.api_response = b[i];
 					div.appendChild(d);
@@ -98685,11 +98759,25 @@ Laurens Hammond, Chicago, Ill.**/
 					d.onclick = function() {
 						this.style.backgroundColor = 'teal';
 						document.body.style.backgroundColor = 'LightGreen';
-						//~ console.log(this.api_response);
-						//~ o.q[0].value = this.api_response.rating;
-						//~ try_sbm();
-						//~ // NextTab
-						//~ new AMT___core_factory().nextTab();
+						// NextTab
+						new AMT___core_factory().nextTab();
+						var a = this.api_response;
+						o.q[0].value = (a.is_closed) ? 'N' : 'Y';
+						o.q[1].value = a.url;
+						o.q[2].value = a.name;
+						o.q[3].value = a.rating;
+						o.q[4].value = a.address;
+						if (a.phone.length == 10 && /^\d+$/.exec(a.phone)) {
+							var x = /(\d{3})(\d{3})(\d{4})/.exec(a.phone);
+							o.q[5].value = '('+x[1]+') '+x[2]+'-'+x[3];
+						} else if (a.display_phone) {
+							o.q[5].value = a.display_phone;
+						} else if (a.phone) {
+							o.q[5].value = a.phone;
+						}
+						// Get profile in order to check "website" field.
+						// As well as add full address.
+						yp_profile(this);
 					}
 					d.onmouseover = d.onmousemove = function() {
 						var x = document.getElementsByClassName(this.className);
