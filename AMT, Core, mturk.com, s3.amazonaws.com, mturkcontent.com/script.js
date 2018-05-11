@@ -65,7 +65,15 @@ function MT__RUN() {
 					'Check-in time is flexible':true,
 					'Check out by 11AM':true,
 					'Self check-in with keypad':true,
+					'Self check-in with building staff':true,
+					'Must climb stairs':true,
 				},
+				rule_regexes: [
+					/Check-in time [\d\D]{0,40}/,
+					/Check-in is [\d\D]{0,40}/,
+					/Check-out is [\d\D]{0,40}/,
+					/Check out by [\d\D]{0,40}/
+				],
 				bold: [
 					'pets',
 					'pet',
@@ -86,25 +94,75 @@ function MT__RUN() {
 					'feeding',
 					'leash',
 					'veterinary',
+					'animals',
+					'animal',
+					'furry',
+					'furries',
+					'neutered',
+					'neuter',
+					'spayed',
+					'spay',
 				],
 				q: [
 					document.getElementById('petFee'),
+					document.getElementById('notesField'),
 				],
 			}
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:38px;\
-				left:0%;width:100%;height:400px;overflow:auto;\
+				'position:absolute;top:200px;\
+				left:10%;width:90%;height:400px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style',
+				'position:absolute;top:38px;\
+				left:0%;width:100%;height:160px;overflow:auto;\
+				background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d2);
+			var d3 = document.createElement('input');
+			d3.type = 'button';
+			d3.value = 'N/A';
+			d3.setAttribute('style',
+				'position:absolute;top:200px;\
+				left:0%;width:10%;height:200px;');
+			document.body.appendChild(d3);
+			var d4 = document.createElement('input');
+			d4.type = 'button';
+			d4.value = 'bad pg.';
+			d4.setAttribute('style',
+				'position:absolute;top:400px;\
+				left:0%;width:10%;height:200px;');
+			document.body.appendChild(d4);
 			/*END ITEMS*/
 			AMT___addUserDecision(
 				'MelissaKendall-airbnb,2018', function() {
 					return o.u;
-				}, ['Id(petFee)']
+				}, ['Id(petFee)','Id(notesField)']
 			)
+			d3.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = 'N/A';
+				o.q[1].value = '';
+				AMT___recordAndSubmit();
+			}
+			d4.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = '';
+				o.q[1].value = 'Bad page.';
+				AMT___recordAndSubmit();
+			}
+			//sbm
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				AMT___recordAndSubmit();
+				return false;
+			}
+			
 			// xhr
 			// e.g. https://www.airbnb.com/api/v2/pdp_listing_details/586955?_API_KEY_REDACTED_&currency=USD&locale=en&_format=for_rooms_show&request_url=https%3A%2F%2Fwww.airbnb.com%2Frooms%2F586955
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -113,10 +171,16 @@ function MT__RUN() {
 					'?_API_KEY_REDACTED_&currency=USD'+
 					'&locale=en&_format=for_rooms_show'+
 					'&request_url='+encodeURIComponent(o.u),
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+				check_pre_write_to_disk: function(options) {
+					// Return TRUE to write to disk.
+					// Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						d1.style.backgroundColor = 'blue';
+						d1.style.backgroundColor = 'aqua';
+						d1.innerText = rs;
+						d1.onclick = function() {
+							window.open(o.u);
+						}
 						return false;
 					}
 					//
@@ -125,7 +189,7 @@ function MT__RUN() {
 				success_callback: function(options) {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						d1.style.backgroundColor = 'blue';
+						d1.style.backgroundColor = 'aqua';
 						return;
 					}
 					rs = JSON.parse(rs);
@@ -140,11 +204,16 @@ function MT__RUN() {
 					}
 					else {
 						// Split add'l rules by paragraph
+						//~ var para = rs.additional_house_rules
+							//~ .trim()
+							//~ .replace(/ *\n{2,} */g, '\n\n')
+							//~ .trim()
+							//~ .split('\n\n');
 						var para = rs.additional_house_rules
 							.trim()
-							.replace(/ *\n{2,} */g, '\n\n')
+							.replace(/ *\n+ */g, '\n')
 							.trim()
-							.split('\n\n');
+							.split('\n');
 						console.log('Here is the paragraphs array:',para);
 						for (var i in para) {
 							var d = ''.div({style:'border-bottom:1px solid teal;'})
@@ -165,18 +234,19 @@ function MT__RUN() {
 								this.clicked = true;
 								o.q[0].value += ' ' + this.paragraph;
 								o.q[0].value = o.q[0].value.trim();
+								d2.innerText = o.q[0].value;
 							}
 							// Add sentences.
 							var n = para[i].split('.');
 							for (var j in n) {
 								if (n[j].trim() == '') continue;
 								var sentence = (n[j]+'.')
-									.replace(/\s+/g, ' ');
+									.replace(/\s+/g, ' ').trim();
 								var dx = (MT__bold(sentence, o.bold))
 									.div({style:'display:inline;cursor:pointer;', innerHTML:true});
 								dx.clicked = false;
 								dx.className = 'exe';
-								dx.sentence = n[j];
+								dx.sentence = sentence;
 								d.appendChild(dx);
 								// Add a space.
 								d.appendChild(document.createTextNode(' '));
@@ -187,6 +257,7 @@ function MT__RUN() {
 									this.clicked = true;
 									o.q[0].value += ' ' + this.sentence;
 									o.q[0].value = o.q[0].value.trim();
+									d2.innerText = o.q[0].value;
 								}
 							}
 						}
@@ -197,7 +268,9 @@ function MT__RUN() {
 						for (var i in rs.listing_expectations) {
 							var le = rs.listing_expectations[i];
 							// Add paragraph.
-							var fullText = (le.title+' - '+le.added_details)
+							var fullText = le.title;
+							fullText += (le.added_details) ? ' - '+le.added_details : '';
+							var fullText = fullText
 								.replace(/ *\n+ */g, ' ')
 								.replace(/\s+/g, ' ')
 								.trim();
@@ -217,6 +290,7 @@ function MT__RUN() {
 								this.clicked = true;
 								o.q[0].value += ' ' + this.paragraph;
 								o.q[0].value = o.q[0].value.trim();
+								d2.innerText = o.q[0].value;
 							}
 						}
 					}
@@ -228,6 +302,14 @@ function MT__RUN() {
 							var rule = r[i];
 							if (o.ignored_rules.hasOwnProperty(rule)) {
 								continue;
+							} else {
+								var found = true;
+								for (var i in o.rule_regexes) {
+									if (o.rule_regexes[i].exec(rule)) {
+										found = true;
+									}
+								}
+								if (found) continue;
 							}
 							// Show any important rules.
 							// Add paragraph.
@@ -250,6 +332,8 @@ function MT__RUN() {
 							}
 						}
 					}
+					// Add spacer
+					d1.appendChild(''.div({style:'height:4000px;'}))
 				}
 			});
 		}
