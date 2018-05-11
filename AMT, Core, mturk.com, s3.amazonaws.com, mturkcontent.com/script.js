@@ -98278,7 +98278,7 @@ Laurens Hammond, Chicago, Ill.**/
 		var run = function() {}
 		run.prototype.f = function() {
 			console.log('');
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
 			GM_addStyle('#submitButton {width:10%;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('em {font-weight:bold;zoom:2;}');
@@ -98286,7 +98286,7 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:1000px !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			// gm specific
-			GM_addStyle('form {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:1000px !important;}');
+			GM_addStyle('form {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:2000px !important;}');
 			//
 			var a = document.getElementsByTagName('a');
 			//~ var x = a[0].href.replace(/https:\/\/www\.google\.com\/search\?q=/, '');
@@ -98330,6 +98330,16 @@ Laurens Hammond, Chicago, Ill.**/
 			//
 			o.bold_addr = o.locn.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
+			// add apostrophes
+			// Note that yelp has LAAAMMMEE apostrophes: "’", not "'"
+			for (var i in o.bold_comp) {
+				var finalTwo = o.bold_comp[i].slice(-2).toLowerCase();
+				var finalOne = o.bold_comp[i].slice(-1).toLowerCase();
+				if (finalTwo.indexOf("’s") == -1 && 
+					finalOne == 's') {
+					o.bold_comp.push(o.bold_comp[i].replace(/s$/, "’s"));
+				}
+			}
 			//
 			//~ o.addr_cln = o.addr.toLowerCase().replace(/[, ]*(usa|us)$/, '').replace(/[^a-z0-9]/gi, '').replace(/\d{5}$/, ''); // Remove zip
 			//~ o.comp_cln = o.comp.toLowerCase().replace(/[^a-z0-9]/gi, '');
@@ -98424,9 +98434,6 @@ Laurens Hammond, Chicago, Ill.**/
 			 * try_sbm
 			 */
 			function try_sbm() {
-				//~ if (!/^\d\.\d$/.exec(o.q[0].value) && o.q[0].value != 'N/A') {
-					//~ return;
-				//~ }
 				for (var i in o.q) {
 					if (o.q[i].value.indexOf('null') != -1 ||
 						o.q[i].value.indexOf('undefined') != -1) {
@@ -98434,10 +98441,15 @@ Laurens Hammond, Chicago, Ill.**/
 						return false;
 					}
 					if (i == 6) break; // Website may be blank.
+					if (i == 5) break; // Phone may be blank.
 					if (o.q[i].value == '') {
 						o.q[i].focus();
 						return false;
 					}
+				}
+				if (o.q[2].value.indexOf('CLOSED') != -1) {
+					o.q[2].focus();
+					return false;
 				}
 				// Still here?
 				//~ AMT___recordAndSubmit();
@@ -98869,7 +98881,7 @@ Laurens Hammond, Chicago, Ill.**/
 								.replace(/\?[\d\D]*/, '');
 							d.api_response = {
 								name: u.innerText.trim()
-									.replace(/CLOSED/, '')
+									.replace(/ - CLOSED/, '')
 									.replace(/\s+/, ' '),
 								url: 'https://www.yelp.com'+
 									u.getAttribute('href')
@@ -98884,18 +98896,18 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							out.appendChild(d);
 							d.innerHTML =
-								MT__bold(u.innerText.trim(), o.bold_comp) + '<br>' +
+								MT__bold(u.innerText.trim(), o.bold_comp) + '<br>&nbsp;' +
 								MT__bold(
 									ad + ', ' + locn,
 									o.bold_addr, {style: 'color:blue;'}
 								).bold_string+'<br>'+
-								'R:'+rvct;
+								'&nbsp;R:'+rvct;
 							d.onclick = function() {
 								this.style.backgroundColor = 'teal';
 								document.body.style.backgroundColor = 'LightGreen';
 								console.log(this.api_response);
 								// NextTab
-								//~ new AMT___core_factory().nextTab();
+								new AMT___core_factory().nextTab();
 								// Fill in details
 								var a = this.api_response;
 								o.q[0].value = (a.is_closed) ? 'N' : 'Y';
@@ -98936,7 +98948,7 @@ Laurens Hammond, Chicago, Ill.**/
 			// yp_profile
 			// http://www.yelp.com/biz/longhorn-steakhouse-enfield/review_feed/?start=0&sort_by=date_desc
 			function yp_profile(div) {
-				console.log(div);
+				console.log(div);https://www.yelp.com/biz/dimples-deli-brentwood
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: div.api_response.url,
 					check_pre_write_to_disk: function(options) {
@@ -98959,11 +98971,20 @@ Laurens Hammond, Chicago, Ill.**/
 						var a = dom.getElementsByClassName('biz-website');
 						var sbm = true;
 						if (a && a.length == 1 && a[0].innerText) {
-							o.q[6].value = a[0].innerText
-								.replace('Business website', '')
-								.trim();
-							//~ 
-							o.q[6].focus();
+							a = a[0].getElementsByTagName('a');
+							if (a && a.length > 0) {
+								// One link.
+								a = /\?url=([^&]+)/.exec(a[0].href);
+								if (a) {
+									a = decodeURIComponent(a[1]);
+									o.q[6].value = a.trim();
+								}
+							}
+							//~ o.q[6].value = a[0].innerText
+								//~ .replace('Business website', '')
+								//~ .trim();
+							
+							//~ o.q[6].focus();
 							// Ensure no other junk in website field.
 							if (o.q[6].value.indexOf(' ') != -1) {
 								sbm = false;
@@ -98982,20 +99003,16 @@ Laurens Hammond, Chicago, Ill.**/
 								.replace(/\s+/g, ' ').trim();
 						}
 						if (rs.indexOf('Yelpers report this location has closed') != -1) {
-							//~ o.q[0].value = 'N/A';
-							//~ o.q[1].value = 'N/A';
-							//~ AMT___recordAndSubmit();
-							sbm = false;
-							o.q[0].focus();
-							o.q[0].style.backgroundColor = 'orange';
+							// TESTED
+							//~ sbm = false;
+							//~ o.q[0].focus();
+							//~ o.q[0].style.backgroundColor = 'orange';
 						}
 						if (div.api_response.is_closed) {
-							//~ o.q[0].value = 'N/A';
-							//~ o.q[1].value = 'N/A';
-							//~ AMT___recordAndSubmit();
-							sbm = false;
-							o.q[0].focus();
-							o.q[0].style.backgroundColor = 'pink';
+							// TESTED
+							//~ sbm = false;
+							//~ o.q[0].focus();
+							//~ o.q[0].style.backgroundColor = 'pink';
 						}
 						if (sbm) {
 							try_sbm();
