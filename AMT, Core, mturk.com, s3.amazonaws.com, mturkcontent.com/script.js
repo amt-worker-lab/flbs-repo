@@ -216,32 +216,38 @@ function MT__RUN() {
 							.split('\n');
 						console.log('Here is the paragraphs array:',para);
 						for (var i in para) {
+							if (para[i].trim() == '') continue;
+							var fullText = para[i].trim();
+							if (fullText[fullText.length-1] != '.' &&
+								fullText[fullText.length-1] != '!'
+								) {
+								fullText = fullText+'.';
+							}
+							fullText = fullText.replace(/[\s\n]+/g, ' ')
+								.trim();
 							var d = ''.div({style:'border-bottom:1px solid teal;'})
 							d1.appendChild(d);
 							var dx = document.createElement('input');
 							dx.style.cursor = 'pointer';
 							dx.type = 'button';
 							dx.value = ' - - full - - ';
-							dx.paragraph = para[i]
-								.replace(/ *\n+ */g, ' ')
-								.replace(/\s+/g, ' ')
-								.trim();
+							dx.is_full = true;
+							dx.sentence = fullText;
 							dx.clicked = false;
 							d.appendChild(dx);
-							dx.onclick = function(e) {
-								if (this.clicked) return;
-								this.style.backgroundColor = 'LightGreen';
-								this.clicked = true;
-								o.q[0].value += ' ' + this.paragraph;
-								o.q[0].value = o.q[0].value.trim();
-								d2.innerText = o.q[0].value;
-							}
+							dx.onclick = click_sentence;
 							// Add sentences.
 							var n = para[i].split('.');
 							for (var j in n) {
 								if (n[j].trim() == '') continue;
-								var sentence = (n[j]+'.')
-									.replace(/\s+/g, ' ').trim();
+								var sentence = n[j].trim();
+								if (sentence[sentence.length-1] != '.' &&
+									sentence[sentence.length-1] != '!'
+									) {
+									sentence = sentence+'.';
+								}
+								setence = sentence.replace(/[\s\n]+/g, ' ')
+									.trim();
 								var dx = (MT__bold(sentence, o.bold))
 									.div({style:'display:inline;cursor:pointer;', innerHTML:true});
 								dx.clicked = false;
@@ -251,14 +257,7 @@ function MT__RUN() {
 								// Add a space.
 								d.appendChild(document.createTextNode(' '));
 								// onclick
-								dx.onclick = function(e) {
-									if (this.clicked) return;
-									this.style.backgroundColor = 'LightGreen';
-									this.clicked = true;
-									o.q[0].value += ' ' + this.sentence;
-									o.q[0].value = o.q[0].value.trim();
-									d2.innerText = o.q[0].value;
-								}
+								dx.onclick = click_sentence;
 							}
 						}
 					}
@@ -275,23 +274,26 @@ function MT__RUN() {
 								.replace(/\s+/g, ' ')
 								.trim();
 							// Ensure ends with a period.
-							if (fullText[fullText.length-1] != '.') {
+							if (fullText[fullText.length-1] != '.' &&
+								fullText[fullText.length-1] != '!'
+								) {
 								fullText = fullText+'.';
 							}
-							var d = (fullText)
-								.div({style:'border-bottom:1px solid teal;'})
+							var d = (MT__bold(fullText, o.bold))
+								.div({style:'border-bottom:1px solid teal;', innerHTML: true})
 							d.className = 'exe';
-							d.paragraph = fullText;
+							d.sentence = fullText;
 							d.clicked = false;
 							d1.appendChild(d);
-							d.onclick = function(e) {
-								if (this.clicked) return;
-								this.style.backgroundColor = 'LightGreen';
-								this.clicked = true;
-								o.q[0].value += ' ' + this.paragraph;
-								o.q[0].value = o.q[0].value.trim();
-								d2.innerText = o.q[0].value;
-							}
+							d.onclick = click_sentence;
+							//~ d.onclick = function(e) {
+								//~ if (this.clicked) return;
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ this.clicked = true;
+								//~ o.q[0].value += ' ' + this.paragraph;
+								//~ o.q[0].value = o.q[0].value.trim();
+								//~ d2.innerText = o.q[0].value;
+							//~ }
 						}
 					}
 					// Section: guest_controls.p3_structured_house_rules
@@ -320,22 +322,36 @@ function MT__RUN() {
 							var d = (fullText)
 								.div({style:'border-bottom:1px solid teal;'})
 							d.className = 'exe';
-							d.paragraph = fullText;
+							d.sentence = fullText;
 							d.clicked = false;
 							d1.appendChild(d);
-							d.onclick = function(e) {
-								if (this.clicked) return;
-								this.style.backgroundColor = 'LightGreen';
-								this.clicked = true;
-								o.q[0].value += ' ' + this.paragraph;
-								o.q[0].value = o.q[0].value.trim();
-							}
+							d.onclick = click_sentence;
+							//~ d.onclick = function(e) {
+								//~ if (this.clicked) return;
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ this.clicked = true;
+								//~ o.q[0].value += ' ' + this.paragraph;
+								//~ o.q[0].value = o.q[0].value.trim();
+							//~ }
 						}
 					}
 					// Add spacer
 					d1.appendChild(''.div({style:'height:4000px;'}))
 				}
 			});
+			function click_sentence(e) {
+				if (this.clicked) return;
+				this.style.backgroundColor = 'LightGreen';
+				this.clicked = true;
+				o.q[0].value += ' ' + this.sentence;
+				o.q[0].value = o.q[0].value.trim();
+				o.q[0].focus();
+				d2.innerText = o.q[0].value;
+				// On full, highlight parentNode.
+				if (this.is_full) {
+					this.parentNode.style.backgroundColor = 'aqua';
+				}
+			}
 		}
 		new run().f();
 	}
