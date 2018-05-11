@@ -98291,7 +98291,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var a = document.getElementsByTagName('a');
 			//~ var x = a[0].href.replace(/https:\/\/www\.google\.com\/search\?q=/, '');
 			var x = a[0].href.replace('https://www.google.com/search?q=','');
-			x = decodeURIComponent(x);
+			x = decodeURIComponent(x).replace(/\s+/, ' ').trim();
 			x = x.split('+');
 			var o = { // 
 				comp: x[0],
@@ -98424,8 +98424,20 @@ Laurens Hammond, Chicago, Ill.**/
 			 * try_sbm
 			 */
 			function try_sbm() {
-				if (!/^\d\.\d$/.exec(o.q[0].value) && o.q[0].value != 'N/A') {
-					return;
+				//~ if (!/^\d\.\d$/.exec(o.q[0].value) && o.q[0].value != 'N/A') {
+					//~ return;
+				//~ }
+				for (var i in o.q) {
+					if (o.q[i].value.indexOf('null') != -1 ||
+						o.q[i].value.indexOf('undefined') != -1) {
+						o.q[i].focus();
+						return false;
+					}
+					if (i == 6) break; // Website may be blank.
+					if (o.q[i].value == '') {
+						o.q[i].focus();
+						return false;
+					}
 				}
 				// Still here?
 				//~ AMT___recordAndSubmit();
@@ -98766,8 +98778,8 @@ Laurens Hammond, Chicago, Ill.**/
 			 */
 			function yelp_search_snippet() {
 				var out = d1b;
-				// Reset bgcolor
-				d1b.style.backgroundColor = '';
+				//~ // Reset bgcolor
+				//~ d1b.style.backgroundColor = '';
 				u = 'http://www.yelp.com/search/snippet'+
 						'?find_desc='+encodeURIComponent(d2.value) +
 						'&find_loc='+ encodeURIComponent(d2b.value)+
@@ -98817,7 +98829,9 @@ Laurens Hammond, Chicago, Ill.**/
 							var rvct = rg[i].getElementsByClassName('review-count');
 							var rtg  = /(\d\.\d) stars? rating/.exec(rg[i].innerHTML);
 							var ad = rg[i].getElementsByTagName('address');
-							var ph = rg[i].getElementsByTagName('biz-phone');
+							var ph = rg[i].getElementsByClassName('biz-phone');
+							var locn = rg[i].getElementsByClassName('neighborhood-str-list');
+							var city = rg[i].getElementsByClassName('biz-city');
 							if (!rvct || rvct.length == 0) {
 								console.log(rg[i].innerHTML);
 								rvct = 'N/A';
@@ -98838,6 +98852,16 @@ Laurens Hammond, Chicago, Ill.**/
 								ph = '';
 							} else 
 								ph = ph[0].innerText.replace(/\s+/g, ' ').trim();
+							if (!locn || locn.length == 0 || !locn[0].innerText) {
+								locn = '';
+							} else 
+								locn = locn[0].innerText.replace(/\s+/g, ' ').trim();
+							if (!city || city.length == 0 || !city[0].innerText) {
+								// nothing
+							} else {
+								city = city[0].innerText.replace(/\s+/g, ' ').trim();
+								locn += (locn == '') ? city : ', '+city;
+							}
 							// Div
 							var d = document.createElement('div');
 							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
@@ -98847,11 +98871,14 @@ Laurens Hammond, Chicago, Ill.**/
 								name: u.innerText.trim()
 									.replace(/CLOSED/, '')
 									.replace(/\s+/, ' '),
-								url: u.getAttribute('href'),
+								url: 'https://www.yelp.com'+
+									u.getAttribute('href')
+									.replace(/\?[\d\D]*/, ''),
 								review_count: rvct,
 								rating: rtg,
 								is_closed: (u.innerText.indexOf('CLOSED') != -1) ? true : false,
 								address: ad,
+								locn: locn,
 								phone: ph,
 								// If name contains CLOSED then is_closed=true, else is_closed=false.
 							}
@@ -98859,7 +98886,7 @@ Laurens Hammond, Chicago, Ill.**/
 							d.innerHTML =
 								MT__bold(u.innerText.trim(), o.bold_comp) + '<br>' +
 								MT__bold(
-									ad,
+									ad + ', ' + locn,
 									o.bold_addr, {style: 'color:blue;'}
 								).bold_string+'<br>'+
 								'R:'+rvct;
@@ -98868,17 +98895,18 @@ Laurens Hammond, Chicago, Ill.**/
 								document.body.style.backgroundColor = 'LightGreen';
 								console.log(this.api_response);
 								// NextTab
-								new AMT___core_factory().nextTab();
+								//~ new AMT___core_factory().nextTab();
 								// Fill in details
 								var a = this.api_response;
-								o.q[0].value = (a.is_closed) ? 'Y' ; 'N';
+								o.q[0].value = (a.is_closed) ? 'N' : 'Y';
 								o.q[1].value = a.url;
 								o.q[2].value = a.name;
 								o.q[3].value = a.rating;
-								o.q[4].value = a.phone;
+								o.q[4].value = a.address;
+								o.q[5].value = a.phone;
 								// Get profile in order to check "website" field.
+								// As well as add full address.
 								yp_profile(this);
-								//~ try_sbm();
 							}
 							d.onmouseover = d.onmousemove = function() {
 								var x = document.getElementsByClassName(this.className);
@@ -98908,8 +98936,9 @@ Laurens Hammond, Chicago, Ill.**/
 			// yp_profile
 			// http://www.yelp.com/biz/longhorn-steakhouse-enfield/review_feed/?start=0&sort_by=date_desc
 			function yp_profile(div) {
+				console.log(div);
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: div.api_reponse.url,
+					URL: div.api_response.url,
 					check_pre_write_to_disk: function(options) {
 						// Return TRUE to write to disk.
 						// Return FALSE to not write to disk.
@@ -98927,6 +98956,50 @@ Laurens Hammond, Chicago, Ill.**/
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						var dom = new DOMParser().parseFromString(rs,'text/html');
+						var a = dom.getElementsByClassName('biz-website');
+						var sbm = true;
+						if (a && a.length == 1 && a[0].innerText) {
+							o.q[6].value = a[0].innerText
+								.replace('Business website', '')
+								.trim();
+							//~ 
+							o.q[6].focus();
+							// Ensure no other junk in website field.
+							if (o.q[6].value.indexOf(' ') != -1) {
+								sbm = false;
+							}
+						} else {
+							console.log("dom.getElementsByClassName('biz-website')",a);
+							console.log("rs.indexOf('biz-website')",rs.indexOf('biz-website'));
+							console.log("rs.indexOf('website')",rs.indexOf('website'));
+						}
+						// Add full address
+						var a = dom.getElementsByTagName('address');
+						if (a && a.length && a[0].innerText) {
+							//~ try_sbm();
+							o.q[4].value = a[0].innerText.trim()
+								.replace(/\n+/g, ', ') // Add a comma to separate Street from City.
+								.replace(/\s+/g, ' ').trim();
+						}
+						if (rs.indexOf('Yelpers report this location has closed') != -1) {
+							//~ o.q[0].value = 'N/A';
+							//~ o.q[1].value = 'N/A';
+							//~ AMT___recordAndSubmit();
+							sbm = false;
+							o.q[0].focus();
+							o.q[0].style.backgroundColor = 'orange';
+						}
+						if (div.api_response.is_closed) {
+							//~ o.q[0].value = 'N/A';
+							//~ o.q[1].value = 'N/A';
+							//~ AMT___recordAndSubmit();
+							sbm = false;
+							o.q[0].focus();
+							o.q[0].style.backgroundColor = 'pink';
+						}
+						if (sbm) {
+							try_sbm();
+						}
 						// get catg?
 						//~ if (getCategories) {
 							//~ var x = dom.getElementsByClassName('category-str-list');
