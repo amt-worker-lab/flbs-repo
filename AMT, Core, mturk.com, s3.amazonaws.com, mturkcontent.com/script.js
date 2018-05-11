@@ -109,6 +109,14 @@ function MT__RUN() {
 					'rabbits',
 					'rabbit',
 				],
+				//TODO: BREAK ON ! AND ?
+				no_manual_check: [ // Do not stop to check these!
+					'vacate',
+					'vacation',
+					'location',
+					'locate',
+					'',
+				],
 				checkManual: false,
 				q: [
 					document.getElementById('petFee'),
