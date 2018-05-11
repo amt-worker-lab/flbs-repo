@@ -69,6 +69,7 @@ function MT__RUN() {
 					'Must climb stairs':true,
 					'Potential for noise':true,
 					'Self check-in with lockbox':true,
+					'Self check-in with smart lock':true,
 				},
 				rule_regexes: [
 					/Check-in time [\d\D]{0,40}/,
@@ -83,6 +84,7 @@ function MT__RUN() {
 					'dog',
 					'cats',
 					'cat',
+					'birds',
 					'horses',
 					'horse',
 					'puppy',
@@ -217,10 +219,11 @@ function MT__RUN() {
 					// If no add'l rules
 					if (!rs.hasOwnProperty('additional_house_rules') ||
 						rs.additional_house_rules.trim() == '') {
-						d1.appendChild(
-							'No Additional Rules'
-								.div({style:'border-bottom:1px solid teal;'})
-						);
+						//~ d1.appendChild(
+							//~ 'No Additional Rules'
+								//~ .div({style:'border-bottom:1px solid teal;'})
+						//~ );
+						// Nothing...
 					}
 					else {
 						checkManual(rs.additional_house_rules);
@@ -231,8 +234,16 @@ function MT__RUN() {
 							.trim()
 							.split('\n');
 						console.log('Here is the paragraphs array:',para);
+						var found_first_check = false;
 						for (var i in para) {
+							// Hide paragraphs before mention of a pet appears.
+							if (!found_first_check && !contains(para[i]))
+								continue;
+							found_first_check = true; // Now set to true.
+							
+							// If blank, ignore.
 							if (para[i].trim() == '') continue;
+							
 							var fullText = para[i].trim();
 							if (fullText[fullText.length-1] != '.' &&
 								fullText[fullText.length-1] != '!'
@@ -364,24 +375,34 @@ function MT__RUN() {
 					d1.appendChild(''.div({style:'height:4000px;'}))
 					// Found one.
 					if (!o.checkManual) {
+						// Assume that there is no pet policy.
+						// There was not a single instance of
+						// any of the match words inside the text.
+						// Therefore, auto-submit at N/A.
 						d2.style.backgroundColor = 'orange';
+						o.q[0].value = 'N/A';
+						AMT___recordAndSubmit();
+					} else {
+						//
 					}
 				}
 			});
 			function checkManual(str) {
 				// Always return true if already true.
 				if (o.checkManual) return;
+				o.checkManual = contains(str);
+			}
+			function contains(str) {
 				// Check if any instances of pet, to help
 				// speed up manual checking.
 				var x = str.toLowerCase();
 				for (var i in o.bold) {
 					var w = o.bold[i];
 					if (x.indexOf(w) != -1) {
-						o.checkManual = true;
-						return;
+						return true;
 					}
 				}
-				o.checkManual = false;
+				return false;
 			}
 			function click_sentence(e) {
 				if (this.clicked) return;
