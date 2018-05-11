@@ -67,6 +67,8 @@ function MT__RUN() {
 					'Self check-in with keypad':true,
 					'Self check-in with building staff':true,
 					'Must climb stairs':true,
+					'Potential for noise':true,
+					'Self check-in with lockbox':true,
 				},
 				rule_regexes: [
 					/Check-in time [\d\D]{0,40}/,
@@ -102,7 +104,10 @@ function MT__RUN() {
 					'neuter',
 					'spayed',
 					'spay',
+					'rabbits',
+					'rabbit',
 				],
+				checkManual: false,
 				q: [
 					document.getElementById('petFee'),
 					document.getElementById('notesField'),
@@ -176,7 +181,7 @@ function MT__RUN() {
 					return false;
 				}
 			});
-				
+			
 			// xhr
 			// e.g. https://www.airbnb.com/api/v2/pdp_listing_details/586955?_API_KEY_REDACTED_&currency=USD&locale=en&_format=for_rooms_show&request_url=https%3A%2F%2Fwww.airbnb.com%2Frooms%2F586955
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -218,6 +223,7 @@ function MT__RUN() {
 						);
 					}
 					else {
+						checkManual(rs.additional_house_rules);
 						// Split add'l rules by paragraph
 						var para = rs.additional_house_rules
 							.trim()
@@ -227,8 +233,6 @@ function MT__RUN() {
 						console.log('Here is the paragraphs array:',para);
 						for (var i in para) {
 							if (para[i].trim() == '') continue;
-							// Found one.
-							found_one_to_check = true;
 							var fullText = para[i].trim();
 							if (fullText[fullText.length-1] != '.' &&
 								fullText[fullText.length-1] != '!'
@@ -293,8 +297,6 @@ function MT__RUN() {
 									continue;
 								}
 							}
-							// Found one.
-							found_one_to_check = true;
 							// Add paragraph.
 							var fullText = le.title;
 							fullText += (le.added_details) ? ' - '+le.added_details : '';
@@ -302,6 +304,8 @@ function MT__RUN() {
 								.replace(/ *\n+ */g, ' ')
 								.replace(/\s+/g, ' ')
 								.trim();
+							// Found one.
+							checkManual(fullText);
 							// Ensure ends with a period.
 							if (fullText[fullText.length-1] != '.' &&
 								fullText[fullText.length-1] != '!'
@@ -339,16 +343,16 @@ function MT__RUN() {
 									continue;
 								}
 							}
-							// Found one.
-							found_one_to_check = true;
 							// Show any important rules.
 							// Add paragraph.
 							var fullText = (rule)
 								.replace(/ *\n+ */g, ' ')
 								.replace(/\s+/g, ' ')
 								.trim()+'.';
-							var d = (fullText)
-								.div({style:'border-bottom:1px solid teal;'})
+							// Found one.
+							checkManual(fullText);
+							var d = (MT__bold(fullText, o.bold))
+								.div({style:'border-bottom:1px solid teal;', innerHTML:true})
 							d.className = 'exe';
 							d.sentence = fullText;
 							d.clicked = false;
@@ -359,11 +363,26 @@ function MT__RUN() {
 					// Add spacer
 					d1.appendChild(''.div({style:'height:4000px;'}))
 					// Found one.
-					if (!found_one_to_check) {
+					if (!o.checkManual) {
 						d2.style.backgroundColor = 'orange';
 					}
 				}
 			});
+			function checkManual(str) {
+				// Always return true if already true.
+				if (o.checkManual) return;
+				// Check if any instances of pet, to help
+				// speed up manual checking.
+				var x = str.toLowerCase();
+				for (var i in o.bold) {
+					var w = o.bold[i];
+					if (x.indexOf(w) != -1) {
+						o.checkManual = true;
+						return;
+					}
+				}
+				o.checkManual = false;
+			}
 			function click_sentence(e) {
 				if (this.clicked) return;
 				this.style.backgroundColor = 'LightGreen';
