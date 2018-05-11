@@ -72,7 +72,7 @@ function MT__RUN() {
 					/Check-in time [\d\D]{0,40}/,
 					/Check-in is [\d\D]{0,40}/,
 					/Check-out is [\d\D]{0,40}/,
-					/Check out by [\d\D]{0,40}/
+					/Check out by [\d\D]{0,40}/,
 				],
 				bold: [
 					'pets',
@@ -159,10 +159,24 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				AMT___recordAndSubmit();
+				//~ AMT___recordAndSubmit();
 				return false;
 			}
-			
+			// Watch for keypresses.
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				// Enter key
+				if (c == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+					if (o.q[0].value == '' && o.q[1].value != 'Bad page.') {
+						o.q[0].value = 'N/A';
+					}
+					AMT___recordAndSubmit();
+					return false;
+				}
+			});
+				
 			// xhr
 			// e.g. https://www.airbnb.com/api/v2/pdp_listing_details/586955?_API_KEY_REDACTED_&currency=USD&locale=en&_format=for_rooms_show&request_url=https%3A%2F%2Fwww.airbnb.com%2Frooms%2F586955
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -194,6 +208,7 @@ function MT__RUN() {
 					}
 					rs = JSON.parse(rs);
 					rs = rs.pdp_listing_detail;
+					var found_one_to_check = false; // If check is needed.
 					// If no add'l rules
 					if (!rs.hasOwnProperty('additional_house_rules') ||
 						rs.additional_house_rules.trim() == '') {
@@ -204,11 +219,6 @@ function MT__RUN() {
 					}
 					else {
 						// Split add'l rules by paragraph
-						//~ var para = rs.additional_house_rules
-							//~ .trim()
-							//~ .replace(/ *\n{2,} */g, '\n\n')
-							//~ .trim()
-							//~ .split('\n\n');
 						var para = rs.additional_house_rules
 							.trim()
 							.replace(/ *\n+ */g, '\n')
@@ -217,6 +227,8 @@ function MT__RUN() {
 						console.log('Here is the paragraphs array:',para);
 						for (var i in para) {
 							if (para[i].trim() == '') continue;
+							// Found one.
+							found_one_to_check = true;
 							var fullText = para[i].trim();
 							if (fullText[fullText.length-1] != '.' &&
 								fullText[fullText.length-1] != '!'
@@ -266,6 +278,23 @@ function MT__RUN() {
 						rs.listing_expectations.length) {
 						for (var i in rs.listing_expectations) {
 							var le = rs.listing_expectations[i];
+							if (o.ignored_rules.hasOwnProperty(le.title)) {
+								console.log(' (ack is ignored - str match)');
+								continue;
+							} else {
+								var found = false;
+								for (var i in o.rule_regexes) {
+									if (o.rule_regexes[i].exec(le.title)) {
+										found = true;
+									}
+								}
+								if (found) {
+									console.log(' (ack is ignored - regex)');
+									continue;
+								}
+							}
+							// Found one.
+							found_one_to_check = true;
 							// Add paragraph.
 							var fullText = le.title;
 							fullText += (le.added_details) ? ' - '+le.added_details : '';
@@ -286,14 +315,6 @@ function MT__RUN() {
 							d.clicked = false;
 							d1.appendChild(d);
 							d.onclick = click_sentence;
-							//~ d.onclick = function(e) {
-								//~ if (this.clicked) return;
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ this.clicked = true;
-								//~ o.q[0].value += ' ' + this.paragraph;
-								//~ o.q[0].value = o.q[0].value.trim();
-								//~ d2.innerText = o.q[0].value;
-							//~ }
 						}
 					}
 					// Section: guest_controls.p3_structured_house_rules
@@ -302,17 +323,24 @@ function MT__RUN() {
 						var r = rs.guest_controls.p3_structured_house_rules;
 						for (var i in r) {
 							var rule = r[i];
+							console.log('checking rule:',rule);
 							if (o.ignored_rules.hasOwnProperty(rule)) {
+								console.log(' (rule is ignored - str match)');
 								continue;
 							} else {
-								var found = true;
+								var found = false;
 								for (var i in o.rule_regexes) {
 									if (o.rule_regexes[i].exec(rule)) {
 										found = true;
 									}
 								}
-								if (found) continue;
+								if (found) {
+									console.log(' (rule is ignored - regex)');
+									continue;
+								}
 							}
+							// Found one.
+							found_one_to_check = true;
 							// Show any important rules.
 							// Add paragraph.
 							var fullText = (rule)
@@ -326,17 +354,14 @@ function MT__RUN() {
 							d.clicked = false;
 							d1.appendChild(d);
 							d.onclick = click_sentence;
-							//~ d.onclick = function(e) {
-								//~ if (this.clicked) return;
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ this.clicked = true;
-								//~ o.q[0].value += ' ' + this.paragraph;
-								//~ o.q[0].value = o.q[0].value.trim();
-							//~ }
 						}
 					}
 					// Add spacer
 					d1.appendChild(''.div({style:'height:4000px;'}))
+					// Found one.
+					if (!found_one_to_check) {
+						d2.style.backgroundColor = 'orange';
+					}
 				}
 			});
 			function click_sentence(e) {
