@@ -45,8 +45,10 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:2000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:2000px !important;}');
 			// Task specific GM
+			GM_addStyle('.exe:hover {cursor:pointer;background-color:lightgreen;}');
+			GM_addStyle('#petFee {position:absolute;top:0;}');
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
@@ -59,12 +61,32 @@ function MT__RUN() {
 					'No smoking':true,
 					'No parties or events':true,
 					'Not safe or suitable for children (2-12 years)':true,
-					'Not safe or suitable for children (2-12 years)'+
-						'- The decks are not safe for small children':true,
+					'Not safe or suitable for children (2-12 years) - The decks are not safe for small children':true,
 					'Check-in time is flexible':true,
 					'Check out by 11AM':true,
 					'Self check-in with keypad':true,
 				},
+				bold: [
+					'pets',
+					'pet',
+					'dogs',
+					'dog',
+					'cats',
+					'cat',
+					'horses',
+					'horse',
+					'puppy',
+					'puppies',
+					'pups',
+					'vaccine',
+					'vaccinated',
+					'vaccinate',
+					'vaccination',
+					'grooming',
+					'feeding',
+					'leash',
+					'veterinary',
+				],
 				q: [
 					document.getElementById('petFee'),
 				],
@@ -72,8 +94,8 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;\
-				left:0%;width:0%;height:400px;overflow:auto;\
+				'position:absolute;top:38px;\
+				left:0%;width:100%;height:400px;overflow:auto;\
 				background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
@@ -118,21 +140,108 @@ function MT__RUN() {
 					}
 					else {
 						// Split add'l rules by paragraph
-						var x = rs.additional_house_rules
+						var para = rs.additional_house_rules
 							.trim()
 							.replace(/ *\n{2,} */g, '\n\n')
 							.trim()
 							.split('\n\n');
-						for (var i in x) {
+						console.log('Here is the paragraphs array:',para);
+						for (var i in para) {
 							var d = ''.div({style:'border-bottom:1px solid teal;'})
 							d1.appendChild(d);
 							var dx = document.createElement('input');
+							dx.style.cursor = 'pointer';
 							dx.type = 'button';
-							dx.value = ' full ';
-							dx.paragraph = x[i].trim();
+							dx.value = ' - - full - - ';
+							dx.paragraph = para[i]
+								.replace(/ *\n+ */g, ' ')
+								.replace(/\s+/g, ' ')
+								.trim();
 							dx.clicked = false;
-							d1.appendChild(dx);
+							d.appendChild(dx);
 							dx.onclick = function(e) {
+								if (this.clicked) return;
+								this.style.backgroundColor = 'LightGreen';
+								this.clicked = true;
+								o.q[0].value += ' ' + this.paragraph;
+								o.q[0].value = o.q[0].value.trim();
+							}
+							// Add sentences.
+							var n = para[i].split('.');
+							for (var j in n) {
+								if (n[j].trim() == '') continue;
+								var sentence = (n[j]+'.')
+									.replace(/\s+/g, ' ');
+								var dx = (MT__bold(sentence, o.bold))
+									.div({style:'display:inline;cursor:pointer;', innerHTML:true});
+								dx.clicked = false;
+								dx.className = 'exe';
+								dx.sentence = n[j];
+								d.appendChild(dx);
+								// Add a space.
+								d.appendChild(document.createTextNode(' '));
+								// onclick
+								dx.onclick = function(e) {
+									if (this.clicked) return;
+									this.style.backgroundColor = 'LightGreen';
+									this.clicked = true;
+									o.q[0].value += ' ' + this.sentence;
+									o.q[0].value = o.q[0].value.trim();
+								}
+							}
+						}
+					}
+					// Section: "You must also acknowledge"
+					if (rs.listing_expectations &&
+						rs.listing_expectations.length) {
+						for (var i in rs.listing_expectations) {
+							var le = rs.listing_expectations[i];
+							// Add paragraph.
+							var fullText = (le.title+' - '+le.added_details)
+								.replace(/ *\n+ */g, ' ')
+								.replace(/\s+/g, ' ')
+								.trim();
+							// Ensure ends with a period.
+							if (fullText[fullText.length-1] != '.') {
+								fullText = fullText+'.';
+							}
+							var d = (fullText)
+								.div({style:'border-bottom:1px solid teal;'})
+							d.className = 'exe';
+							d.paragraph = fullText;
+							d.clicked = false;
+							d1.appendChild(d);
+							d.onclick = function(e) {
+								if (this.clicked) return;
+								this.style.backgroundColor = 'LightGreen';
+								this.clicked = true;
+								o.q[0].value += ' ' + this.paragraph;
+								o.q[0].value = o.q[0].value.trim();
+							}
+						}
+					}
+					// Section: guest_controls.p3_structured_house_rules
+					if (rs.guest_controls &&
+						rs.guest_controls.p3_structured_house_rules) {
+						var r = rs.guest_controls.p3_structured_house_rules;
+						for (var i in r) {
+							var rule = r[i];
+							if (o.ignored_rules.hasOwnProperty(rule)) {
+								continue;
+							}
+							// Show any important rules.
+							// Add paragraph.
+							var fullText = (rule)
+								.replace(/ *\n+ */g, ' ')
+								.replace(/\s+/g, ' ')
+								.trim()+'.';
+							var d = (fullText)
+								.div({style:'border-bottom:1px solid teal;'})
+							d.className = 'exe';
+							d.paragraph = fullText;
+							d.clicked = false;
+							d1.appendChild(d);
+							d.onclick = function(e) {
 								if (this.clicked) return;
 								this.style.backgroundColor = 'LightGreen';
 								this.clicked = true;
