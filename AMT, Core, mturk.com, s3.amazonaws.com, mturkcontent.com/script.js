@@ -98468,8 +98468,8 @@ Laurens Hammond, Chicago, Ill.**/
 			function yelp() {
 				//
 				// Skip left side! May 2018.
-				yelp_search_snippet();
-				return;
+				//~ yelp_search_snippet();
+				//~ return;
 				//
 				var auth = {
 					// new
@@ -98590,7 +98590,7 @@ Laurens Hammond, Chicago, Ill.**/
 								rs.indexOf('"text": "Signature was invalid"') != -1
 								)
 							{
-								d1c.style.backgroundColor = 'yellow';
+								d1.style.backgroundColor = 'yellow';
 								return false;
 							}
 							else
@@ -98598,7 +98598,7 @@ Laurens Hammond, Chicago, Ill.**/
 						},
 						success_callback: function(options) {
 							var rs = options.response.responseText;
-							yelp_success(options.response, d1c);
+							yelp_success(options.response, d1);
 						}
 					});
 				}
@@ -98607,11 +98607,13 @@ Laurens Hammond, Chicago, Ill.**/
 				var rs = response.responseText;
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
 				console.log(rs);
+				console.log(rs.businesses);
 				div.innerText = '';
 				// Reset bgcolor of right side.
 				//~ d1b.style.backgroundColor = '';
 				//~ d1b.innerHTML = '';
 				if (!rs.businesses || rs.businesses.length == 0) {
+					console.log('0 left results');
 					div.innerText += '0 results\n';
 					// DO RIGHT
 					yelp_search_snippet();
@@ -98629,8 +98631,10 @@ Laurens Hammond, Chicago, Ill.**/
 					var fmt_address_match = '';
 					if (b[i].location && b[i].location.display_address && b[i].location.display_address.length) {
 						var l = b[i].location.display_address; // []
-						if (l.length == 3) { // REMOVE "NEIGHBORHOOD" as this is typically just the city repeated, or is at best unnecessary info.
-							l.splice(1, 1); // REMOVES array item #2 ([1,2,3])
+						if (l.length == 3) {
+							// REMOVE "NEIGHBORHOOD" as this is typically just the city repeated, or is at best unnecessary info.
+							// REMOVES array item #2 ([1,2,3])
+							l.splice(1, 1);
 						}
 						var lfmt = [];
 						for (var j in l) {
@@ -98638,16 +98642,14 @@ Laurens Hammond, Chicago, Ill.**/
 								MT__bold(l[j], o.bold_addr, {style: 'color:blue;text-decoration:none;'}).bold_string
 							);
 							fmt_address_match += l[j];
-							// Old
-							//~ lfmt.push( MT__bold(l[j], o.bold_addr) );
 						}
 						if (lfmt.length)
 							fmt_address = lfmt.join(',');
 					}
 					//
-					if (b[i].location.display_address.toString().indexOf(', '+o.state_abbr) == -1) {
-						continue; // Skip this......
-					}
+					//~ if (b[i].location.display_address.toString().indexOf(', '+o.state_abbr) == -1) {
+						//~ continue; // Skip this......
+					//~ }
 					//~ // Number of bolds in address?
 					//~ // Versus number of words
 					//~ var nb_numwords = fmt_address.split(' ').length;
@@ -98683,27 +98685,11 @@ Laurens Hammond, Chicago, Ill.**/
 					d.onclick = function() {
 						this.style.backgroundColor = 'teal';
 						document.body.style.backgroundColor = 'LightGreen';
-						console.log(this.api_response);
-						o.q[0].value = this.api_response.rating;
-						try_sbm();
-						// NextTab
-						//~ new AMT___core_factory().nextTab();
-						// Fill in details
-						//~ var a = this.api_response;
-						//~ if (a.is_closed === true) { // If is_closed !== false then is_closed == true
-							//~ o.q[1].value = 'N/A';
-							//~ o.q[0].value = 'N/A';
-							//~ try_sbm();
-							//~ return;
-						//~ }
-						// Still here.
-						//~ o.q[0].value = a.rating;
-						//~ o.q[1].value = a.review_count;
+						//~ console.log(this.api_response);
+						//~ o.q[0].value = this.api_response.rating;
 						//~ try_sbm();
-						
-						
-						//~ this.chk_url = a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
-						//~ yp_profile(this, true);
+						//~ // NextTab
+						//~ new AMT___core_factory().nextTab();
 					}
 					d.onmouseover = d.onmousemove = function() {
 						var x = document.getElementsByClassName(this.className);
@@ -98720,39 +98706,39 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					}
 					//
-					var ypnm_cln = b[i].name.clean_str_to_auto();
-					var ypad_cln = fmt_address_match.clean_str_to_auto().replace(/\d+$/, '');
-						console.log(o.comp_cln);
-						console.log(ypnm_cln);
-						console.log(o.addr_cln);
-						console.log(ypad_cln);
-					// Auto found?
-					if  (
-						!auto_found &&
-						o.comp_cln == ypnm_cln &&
-						o.addr_cln == ypad_cln &&
-						o.comp_cln.length > 4 &&
-						o.addr_cln.length > 4
-						)
-					{
-						d.click();
-						auto_found = true;
-					}
+					//~ var ypnm_cln = b[i].name.clean_str_to_auto();
+					//~ var ypad_cln = fmt_address_match.clean_str_to_auto().replace(/\d+$/, '');
+						//~ console.log(o.comp_cln);
+						//~ console.log(ypnm_cln);
+						//~ console.log(o.addr_cln);
+						//~ console.log(ypad_cln);
+					//~ // Auto found?
+					//~ if  (
+						//~ !auto_found &&
+						//~ o.comp_cln == ypnm_cln &&
+						//~ o.addr_cln == ypad_cln &&
+						//~ o.comp_cln.length > 4 &&
+						//~ o.addr_cln.length > 4
+						//~ )
+					//~ {
+						//~ d.click();
+						//~ auto_found = true;
+					//~ }
 					// Right column (decide whether or not to "screen scrape")
 					//~ if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
 						//~ found_close_enough_street = true;
 						//~ console.log('close enough');
 					//~ }
-					// ToCheck
-					var toCheck = o.comp_cln + o.addr_cln;
-					var diff = toCheck.str_diff(ypnm_cln + ypad_cln);
-					console.log(diff);
-					if (1-(diff.pctDiff/100) > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
-						// diff.pctDiff is 0-100. So e.g. 1-(20/100)= 0.8
-						// For example, abcdef versus abcde is 1/11 different, or about 9.1%.
-						// Hmm. This is not working very well... Let's turn off for now.
-						//~ found_close_enough = true;
-					}
+					//~ // ToCheck
+					//~ var toCheck = o.comp_cln + o.addr_cln;
+					//~ var diff = toCheck.str_diff(ypnm_cln + ypad_cln);
+					//~ console.log(diff);
+					//~ if (1-(diff.pctDiff/100) > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
+						//~ // diff.pctDiff is 0-100. So e.g. 1-(20/100)= 0.8
+						//~ // For example, abcdef versus abcde is 1/11 different, or about 9.1%.
+						//~ // Hmm. This is not working very well... Let's turn off for now.
+						//found_close_enough = true;
+					//~ }
 				}
 				if (div.innerHTML != '') {
 					var d = document.createElement('div');
