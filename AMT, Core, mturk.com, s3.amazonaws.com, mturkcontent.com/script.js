@@ -60,6 +60,8 @@ function MT__RUN() {
 				ignored_rules: {
 					'No smoking':true,
 					'No parties or events':true,
+					'Not safe or suitable for infants (Under 2 years).':true,
+					'Not safe or suitable for children (0-12 years)':true,
 					'Not safe or suitable for children (2-12 years)':true,
 					'Not safe or suitable for children (2-12 years) - The decks are not safe for small children':true,
 					'Check-in time is flexible':true,
@@ -68,7 +70,7 @@ function MT__RUN() {
 					'Self check-in with building staff':true,
 					'Must climb stairs':true,
 					'Potential for noise':true,
-					'Self check-in with lockbox':true,
+					'Self check-in with lockbox':true,	
 					'Self check-in with smart lock':true,
 				},
 				rule_regexes: [
@@ -110,12 +112,17 @@ function MT__RUN() {
 					'rabbit',
 				],
 				//TODO: BREAK ON ! AND ?
+				// MAY RE-ADD IF NOT ( INDEX OF)
+				// When all that remains is: Pet(s) live on property.
+				//		Then auto.
 				no_manual_check: [ // Do not stop to check these!
 					'vacate',
 					'vacation',
 					'location',
 					'locate',
-					'',
+					'located',
+					'verification',
+					'relocation',
 				],
 				checkManual: false,
 				q: [
