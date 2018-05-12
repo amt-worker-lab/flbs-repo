@@ -36,7 +36,7 @@ function MT__RUN() {
 	// 
 	// Example with "You must acknowledge" portion:
 	//		https://www.airbnb.com/rooms/586955
-	var s = '<p><strong>Please follow the&nbsp;steps below to find the&nbsp;"Pet Rules" for a vacation rental&nbsp;on Airbnb.&nbsp;</strong></p>\n\n<p><strong>Step 1: Click on URL Provided</strong></p>';
+	var s = '<p><strong>Step 1: Click on URL Provided</strong></p>\n\n<p>Please click on the&nbsp;URL provided below to view a vacation rental\'s&nbsp;property listing on Airbnb.com.</p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -78,6 +78,7 @@ function MT__RUN() {
 					/Check-in is [\d\D]{0,40}/,
 					/Check-out is [\d\D]{0,40}/,
 					/Check out by [\d\D]{0,40}/,
+					/Security Deposit - [\d\D]{0,40}/,
 				],
 				bold: [
 					'pets',
@@ -118,11 +119,17 @@ function MT__RUN() {
 				no_manual_check: [ // Do not stop to check these!
 					'vacate',
 					'vacation',
+					'vacating',
 					'location',
 					'locate',
 					'located',
 					'verification',
 					'relocation',
+					'carpet',
+					'communication',
+					'identification',
+					'cation',
+					
 				],
 				checkManual: false,
 				q: [
@@ -410,7 +417,13 @@ function MT__RUN() {
 			function contains(str) {
 				// Check if any instances of pet, to help
 				// speed up manual checking.
+				// Start by first removing any instances of 
+				// ignorable words, such as "vacate".
 				var x = str.toLowerCase();
+				for (var i in o.no_manual_check) {
+					var w = o.no_manual_check[i];
+					x = x.replace(new RegExp(w, 'gi'), '');
+				}
 				for (var i in o.bold) {
 					var w = o.bold[i];
 					if (x.indexOf(w) != -1) {
