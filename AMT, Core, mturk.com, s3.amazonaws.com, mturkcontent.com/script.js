@@ -72,6 +72,8 @@ function MT__RUN() {
 					'Potential for noise':true,
 					'Self check-in with lockbox':true,	
 					'Self check-in with smart lock':true,
+					'Some spaces are shared':true,
+					'Amenity limitations':true,
 				},
 				rule_regexes: [
 					/Check-in time [\d\D]{0,40}/,
@@ -79,6 +81,7 @@ function MT__RUN() {
 					/Check-out is [\d\D]{0,40}/,
 					/Check out by [\d\D]{0,40}/,
 					/Security Deposit - [\d\D]{0,40}/,
+					/Not safe or suitable for infants[\d\D]{0,40}/,
 				],
 				bold: [
 					'pets',
@@ -114,7 +117,7 @@ function MT__RUN() {
 				],
 				//TODO: BREAK ON ! AND ?
 				// MAY RE-ADD IF NOT ( INDEX OF)
-				// When all that remains is: Pet(s) live on property.
+				// When all that remains is: Pet(s) live on property. OR Not suitable for pets.
 				//		Then auto.
 				no_manual_check: [ // Do not stop to check these!
 					'vacate',
@@ -237,7 +240,7 @@ function MT__RUN() {
 					}
 					rs = JSON.parse(rs);
 					rs = rs.pdp_listing_detail;
-					var found_one_to_check = false; // If check is needed.
+					var found_one_custom_to_check = false; // If custom check is needed.
 					// If no add'l rules
 					if (!rs.hasOwnProperty('additional_house_rules') ||
 						rs.additional_house_rules.trim() == '') {
@@ -261,10 +264,13 @@ function MT__RUN() {
 							// Hide paragraphs before mention of a pet appears.
 							if (!found_first_check && !contains(para[i]))
 								continue;
-							found_first_check = true; // Now set to true.
-							
 							// If blank, ignore.
 							if (para[i].trim() == '') continue;
+							
+							// Now set to true the manual checking.
+							// Enforce manual checking starting now.
+							found_first_check = true; 
+							found_one_custom_to_check = true;
 							
 							var fullText = para[i].trim();
 							if (fullText[fullText.length-1] != '.' &&
@@ -310,6 +316,8 @@ function MT__RUN() {
 							}
 						}
 					}
+					// Auto-rules array
+					var auto_rules = [];
 					// Section: "You must also acknowledge"
 					if (rs.listing_expectations &&
 						rs.listing_expectations.length) {
@@ -352,9 +360,15 @@ function MT__RUN() {
 							d.clicked = false;
 							d1.appendChild(d);
 							d.onclick = click_sentence;
+							// Add to auto
+							auto_rules.push({
+								div: d,
+								text: fullText,
+							});
 						}
 					}
 					// Section: guest_controls.p3_structured_house_rules
+					// These are the main house rules.
 					if (rs.guest_controls &&
 						rs.guest_controls.p3_structured_house_rules) {
 						var r = rs.guest_controls.p3_structured_house_rules;
@@ -391,6 +405,11 @@ function MT__RUN() {
 							d.clicked = false;
 							d1.appendChild(d);
 							d.onclick = click_sentence;
+							// Add to auto
+							auto_rules.push({
+								div: d,
+								text: fullText,
+							});
 						}
 					}
 					// Add spacer
@@ -404,8 +423,32 @@ function MT__RUN() {
 						d2.style.backgroundColor = 'orange';
 						o.q[0].value = 'N/A';
 						AMT___recordAndSubmit();
-					} else {
-						//
+					}
+					
+					// Consider auto when no custom rules exist.
+					// If there are no "additional house rules", i.e. custom rules, then consider auto.
+					if (!found_one_custom_to_check) {
+						if (auto_rules.length == 1) {
+							//
+							var a = auto_rules[0];
+							if (a.text == 'Pet(s) live on property.') {
+								a.div.click();
+								AMT___recordAndSubmit();
+							} else if (a.text == 'Not suitable for pets.') {
+								a.div.click();
+								AMT___recordAndSubmit();
+							}
+						} else if (auto_rules.length == 2) {
+							if (auto_rules[0].text == 'Pet(s) live on property.' &&
+								auto_rules[1].text == 'Not suitable for pets.') {
+								auto_rules[0].div.click();
+								auto_rules[1].div.click();
+								if (o.q[0].value == 'Pet(s) live on property. Not suitable for pets.'
+									) {
+									AMT___recordAndSubmit();
+								}
+							}
+						}
 					}
 				}
 			});
