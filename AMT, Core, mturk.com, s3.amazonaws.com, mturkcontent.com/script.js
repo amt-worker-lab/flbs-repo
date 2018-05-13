@@ -84,6 +84,7 @@ function MT__RUN() {
 					/Not safe or suitable for infants[\d\D]{0,40}/,
 				],
 				bold: [
+					'chien',
 					'pets',
 					'pet',
 					'dogs',
