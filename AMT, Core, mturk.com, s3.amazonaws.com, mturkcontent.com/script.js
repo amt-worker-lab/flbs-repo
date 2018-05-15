@@ -112515,10 +112515,11 @@ qatar,80
 	//
 	// David Camacho
 	// Get results for visa lottery participants.
-	//
+	// http://www.dvlottery.state.gov/ESC/
 	//~ s='<p><font size="2">1. </font><font size="2">Go to&nbsp;</font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
 	//~ s='<p><span style="font-family:verdana,geneva,sans-serif;"><font size="2">1. Go to URL </font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
-	s='1. Go to URL </font><a href="http://www.dvlottery.state.gov/ESC/" style="text-align: center; line-height: normal; font-family: Arial, Helvetica, sans-serif; font-size: small;" target="_blank">http://www.dvlottery.state.gov/ESC/';
+	//~ s='1. Go to URL </font><a href="http://www.dvlottery.state.gov/ESC/" style="text-align: center; line-height: normal; font-family: Arial, Helvetica, sans-serif; font-size: small;" target="_blank">http://www.dvlottery.state.gov/ESC/';
+	s='<p><span style="font-family: verdana,geneva,sans-serif;"><font size="2">1. Go to URL <a href="http://www.dvlottery.state.gov/ESC/" style="text-align: center; line-height: normal; font-family: Arial, Helvetica, sans-serif; font-size: small;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
 	if (ih.indexOf(s) != -1 && 1 == 1) {
 		var run = function() {};
 		run.prototype.f = function() {
@@ -112600,7 +112601,7 @@ qatar,80
 					console.log('conf');
 					exit();
 				}
-				if (o.name.length < 3) {
+				if (o.name.length < 2) {
 					console.log('name');
 					exit();
 				}
@@ -112675,12 +112676,6 @@ qatar,80
 							opts = JSON.stringify(opts);
 							var u = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
 							o.im.src = u;
-							
-							//~ AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=' + src;
-							//~ o.im.src = src;
-							
-							//~ o.im.src = url.replace(/\/[^\/]+$/, '/')+reg;
-							//~ o.im.src = 'https://www.dvlottery.state.gov/ESC/Secure/'+reg;
 						}
 						// Go to Step 2
 						//~ dvlottery_2(rs);
@@ -112721,25 +112716,6 @@ qatar,80
 					err();
 				}
 				v.ev = __js_clean_html_str(reg[1]);
-				// __EVENTTARGET & __EVENTARGUMENT always empty.
-				//~ // __EVENTTARGET
-				//~ var reg = /id="__EVENTTARGET" value="([^"]*)"/.exec(rs);
-				//~ if (!reg) {
-					//~ err();
-				//~ }
-				//~ v.et = __js_clean_html_str(reg[1]);
-				//~ // __EVENTARGUMENT
-				//~ var reg = /id="__EVENTARGUMENT" value="([^"]*)"/.exec(rs);
-				//~ if (!reg) {
-					//~ err();
-				//~ }
-				//~ v.ea = __js_clean_html_str(reg[1]);
-				//~ // VIEWSTATEGENERATOR, e.g. "63A28BC0"
-				//~ var reg = /id="__VIEWSTATEGENERATOR" value="([^"]+)"/.exec(rs);
-				//~ if (!reg) {
-					//~ err();
-				//~ }
-				//~ v.vsg = __js_clean_html_str(reg[1]);
 				// 
 				var reg = /id="LBD_VCID_c_checkstatus_uccaptcha30" value="([^"]+)"/.exec(rs);
 				if (!reg) {
@@ -112752,14 +112728,6 @@ qatar,80
 					err();
 				}
 				v.lbd_bw = __js_clean_html_str(reg[1]);
-				// old ............
-				//~ // LBD_VCID_c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30, e.g. "c8719fa771454dfeb229fa9e52038082"
-				//~ var reg = /id="LBD_VCID_c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30" value="([^"]+)"/.exec(rs);
-				//~ if (!reg) {
-					//~ err();
-				//~ }
-				//~ v.lbd = __js_clean_html_str(reg[1]);
-				
 				return v;
 			}
 			/**
@@ -112791,22 +112759,12 @@ qatar,80
 					"__EVENTVALIDATION":		encodeURIComponent(v.ev),// [GET THIS]
 					"__EVENTVALIDATION":		encodeURIComponent(v.ev)  // [GET THIS]
 					
-					//~ "__LASTFOCUS":				'',
-					//~ "__EVENTTARGET":			'',
-					//~ "__EVENTARGUMENT":			'',
-					//~ "__VIEWSTATE":				encodeURIComponent(v.vs), // [GET THIS]
-					//~ "__VIEWSTATEGENERATOR":		encodeURIComponent(v.vsg),// [GET THIS]
-					//~ "__EVENTVALIDATION":		encodeURIComponent(v.ev)  // [GET THIS]
 				};
 				var others = [
 					[
 					encodeURIComponent("ctl00$mainCPH$ucEntrantInfo$txtCN"),
 					encodeURIComponent(o.conf)
 					],
-					//~ [
-					//~ encodeURIComponent("ctl00$mainCPH$ucEntrantInfo$cbNoLastName"),
-					//~ //////'rbLastName'
-					//~ ],
 					[
 					encodeURIComponent("ctl00$mainCPH$ucEntrantInfo$txtLastName"),
 					encodeURIComponent(o.name)
@@ -112900,8 +112858,10 @@ qatar,80
 							o.q[3].value = dom.getElementById('lblLRN1').value;
 							// Check more than one match of "lblLRN1" on page?
 							o.q[1].checked = true;
+							document.body.style.backgroundColor = 'white';
 							// Stop here for now... 
 							// Todo: Test that this works...
+							// Later add sbm!
 							return;
 						}
 						
@@ -112911,6 +112871,7 @@ qatar,80
 							d2.innerText = 'Based on the information provided, the Entry <b>HAS NOT BEEN SELECTED</b>.....';
 							o.q[0].checked = true;
 							o.q[1].checked = false;
+							document.body.style.backgroundColor = 'white';
 							if (o.q[2].value != '') doSubmit();
 							return;
 						}
@@ -112922,13 +112883,13 @@ qatar,80
 							d2.innerText = 'The information entered is not valid.';
 							o.q[0].checked = true;
 							o.q[1].checked = false;
+							document.body.style.backgroundColor = 'white';
 							if (o.q[2].value != '') doSubmit();
 							return;
 						}
 						
 						// If still here then there is an issue.
 						// Try reloading the frame and re-type captcha.
-						//~ document.location.reload();
 						if (num_tries < 2) {
 							num_tries += 1;
 							d2.innerText = 'tries:'+num_tries;
@@ -112936,11 +112897,8 @@ qatar,80
 						} else {
 							dvlottery_1();
 							document.body.style.backgroundColor = 'pink';
-							//~ d1.innerText = 'tries:'+num_tries;
 							d1.value = '';
 						}
-						
-						//~ console.log(rs);
 						
 						// If still here then selected?
 						// Need to test this ~~
