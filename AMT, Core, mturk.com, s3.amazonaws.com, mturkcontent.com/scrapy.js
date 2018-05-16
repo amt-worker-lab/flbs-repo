@@ -97,11 +97,13 @@ function init__scrapy() {
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '1'); //meh
 			//
 			var a = document.getElementsByTagName('a');
+			var x = /<p>Here's the name of the restaurant:<br>[\r\n\t\s]+([^<]+)<\/p>/
+				.exec(ih)[1];
 			var o = {
 				sd_start_urls: [a[0].href.trim()],
 				sd_allowed_domains: null,
+				comp: __js_clean_html_str(x),
 				//~ name: a[2].innerText.trim(),
-				//~ comp: td[1].innerText.trim(),
 				//~ name: td[3].innerText.trim(),
 				q: [
 					document.getElementsByName('email1')[0],
@@ -134,6 +136,7 @@ function init__scrapy() {
 				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1c);
+			d1c.innerText = o.comp;
 			//~ d1c.innerText = o.name;
 			/* END ITEMS */
 			
