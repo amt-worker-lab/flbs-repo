@@ -3567,11 +3567,27 @@ function init__scrapy() {
 			d1b.innerText = o.name + ' | ' + o.school + ' | ' + o.dept;
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
-				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.2em !important;'
+				'position:absolute;top:0px;left:50%;width:40%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1c);
 			d1c.innerText = o.name;
+			//~ d1c.innerText = o.name;
+			// Input for BAD@DATA.COM
+			// That is, N/A.
+			var d1d = document.createElement('input');
+			d1d.type = 'button';
+			d1d.value = 'BAD@DATA.COM';
+			d1d.setAttribute('style',
+				'position:absolute;top:0px;left:90%;width:9%;height:40px;'
+			);
+			document.body.appendChild(d1c);
 			/* END ITEMS */
+			// onclick
+			d1d.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = 'BAD@DATA.COM';
+				doSubmit();
+			}
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -3817,7 +3833,7 @@ function init__scrapy() {
 		new run().f();
 		return false;
 	}
-	// Corey
+	// Corey #1
 	// Find the Contact Information for the College Instructors
 	// Feeling lucky
 	var s = '<li>Go to the school website.</li>\n	<li>Find the faculty directory. &nbsp;Locate the instructor&nbsp;listed below.&nbsp;</li>\n	<li>If there are multiple instructors&nbsp;by that name, use the department to help identify correct person</li>';
@@ -3886,11 +3902,27 @@ function init__scrapy() {
 			d1b.innerText = o.name + ' | ' + o.school + ' | ' + o.dept;
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style',
-				'position:absolute;top:0px;left:50%;width:50%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.2em !important;'
+				'position:absolute;top:0px;left:50%;width:40%;height:40px;overflow:hidden;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1c);
 			d1c.innerText = o.name;
+			//~ d1c.innerText = o.name;
+			// Input for BAD@DATA.COM
+			// That is, N/A.
+			var d1d = document.createElement('input');
+			d1d.type = 'button';
+			d1d.value = 'BAD@DATA.COM';
+			d1d.setAttribute('style',
+				'position:absolute;top:0px;left:90%;width:9%;height:40px;'
+			);
+			document.body.appendChild(d1d);
 			/* END ITEMS */
+			// onclick
+			d1d.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = 'BAD@DATA.COM';
+				doSubmit();
+			}
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
