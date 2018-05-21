@@ -3037,6 +3037,21 @@ function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
+ * php_run_task()
+ * Run some ambigous php code via util.php, specifying details via options.
+ * 
+ * Has a response_complete function to alert JS code that server-side
+ * is complete? This could be, e.g., callback(object). Where the provided
+ * callback object is JSON.parse(<response from util.php>). That is,
+ * when util.php completes, it may finish by passing data from its
+ * operations back to the waiting JS code. As always, important to keep in
+ * mind is to operate async, checking in on the util.php progress
+ * via a status- / complete-file?
+ */
+AMT___requests_factory.prototype.php_run_task = function(options) {
+	
+}
+/**
  * fix_rejected_tasks
  * On {event}, sends corrected values to DB and gets next REJECTED task "HIT_ID".
  * 
@@ -4223,8 +4238,7 @@ AMT___requests_factory.prototype.general_functions__color__hexToRGB = function(h
 }
 //
 AMT___requests_factory.prototype.general_functions__md5 = 
-AMT___requests_factory.prototype.md5 =
-function(str)
+AMT___requests_factory.prototype.md5 = function(str)
 {
 	return any_md5(str, '0123456789ABCDEF');
   //........	
