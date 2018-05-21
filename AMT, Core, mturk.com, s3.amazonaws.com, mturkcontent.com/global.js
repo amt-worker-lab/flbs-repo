@@ -3047,9 +3047,36 @@ function AMT___requests_factory(obj_vars) {
  * operations back to the waiting JS code. As always, important to keep in
  * mind is to operate async, checking in on the util.php progress
  * via a status- / complete-file?
+ * 
+ * @param options
+ * @param options._client
+ * @param options.opts
+ * @param options.opts.{any params to pass to php}
+ * @param options.callback
+ * 
  */
 AMT___requests_factory.prototype.php_run_task = function(options) {
-	
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: MT___host + '/mturk/util.php?php_run_task='+
+			encodeURIComponent(JSON.stringify(options)),
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				// TODO: @param options.onerror
+				alert('@1.AMT___requests_factory.prototype.php_run_task');
+				return
+			}
+			//~ new AMT___requests_factory().io__command_line_request({
+				//~ filename: f+'.pdf',
+				//~ command: 'pdftotext',
+				//~ callback: options.callback
+			//~ });
+		}
+	});
+	// Check on whether the task has completed.
+	// This will appear in a status complete file.
+	// Location: mturk/.cached/[...]
 }
 /**
  * fix_rejected_tasks
