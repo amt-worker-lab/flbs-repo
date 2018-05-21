@@ -3054,8 +3054,18 @@ function AMT___requests_factory(obj_vars) {
  * @param options.opts.{any params to pass to php}
  * @param options.callback
  * 
+ * @param options._status_filename (private) 
+ * @param options._check_complete (private) 
  */
 AMT___requests_factory.prototype.php_run_task = function(options) {
+	// Add a filename for the status file.
+	// The status file may contain a response for the JS to parse.
+	// (Private)
+	options._status_filename = 'prt-status-'+
+		new AMT___requests_factory().md5(
+			JSON.stringify(options)
+		);
+	// Initiate request.
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: MT___host + '/mturk/util.php?php_run_task='+
@@ -3076,7 +3086,36 @@ AMT___requests_factory.prototype.php_run_task = function(options) {
 	});
 	// Check on whether the task has completed.
 	// This will appear in a status complete file.
-	// Location: mturk/.cached/[...]
+	// Location: ./mturk/.cached/[...]
+	var xint = setInterval(check, 600);
+	var done_callback = false;
+	//~ options._check_complete = true; // Private variable letting the script know to check done.
+	function check() {
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: MT___host + '/mturk/.cached/'+options._status_filename,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) {
+					//~ // TODO: @param options.onerror
+					//~ alert('@1.AMT___requests_factory.prototype.php_run_task');
+					return;
+				}
+				// Success.
+				clearInterval(xint);
+				// Only callback once!
+				if (!done_callback) {
+					done_callback = true;
+					options.callback(JSON.parse(rs));
+				}
+				//~ new AMT___requests_factory().io__command_line_request({
+					//~ filename: f+'.pdf',
+					//~ command: 'pdftotext',
+					//~ callback: options.callback
+				//~ });
+			}
+		});
+	}
 }
 /**
  * fix_rejected_tasks
