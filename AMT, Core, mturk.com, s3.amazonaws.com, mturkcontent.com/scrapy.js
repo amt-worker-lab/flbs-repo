@@ -188,6 +188,13 @@ function init__scrapy() {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
 							document.body.style.backgroundColor = 'blue';
+							// r&a
+							new AMT___core_factory().
+								iframe2parent__postMessage(
+									{
+										action: 'return_and_accept'
+									}
+								);
 							return false;
 						}
 						//
@@ -200,43 +207,45 @@ function init__scrapy() {
 							return;
 						}
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						var d = dom.getElementsByClassName('org-header-meta has-blog has-email');
+						var d = dom.getElementsByClassName('has-email');
 						console.log(d);
 						if (d && d[0]) {
 							var a = d[0].getElementsByTagName('a');
 							var found = false;
-							for (var i=0; i<a.length; a++) {
+							for (var i=0; i<a.length; i++) {
+								console.log(a[i].innerText);
 								if (/^[^@]{1,}@[^@]{3,}$/.exec(a[i].innerText)) {
+									
 									o.q[0].value = a[i].innerText.trim();
 									doSubmit();
-									found = true;
 									return; // quit.
-								} else if (/^http/i.exec(a[i].innerText)) {
-									var x = a[i].innerText.trim();
-									o.sd_allowed_domains = [
-										x.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")
-									];
-									o.sd_start_urls[0] =
-										(!/^https?:\/\//i.exec(o.sd_start_urls[0]))
-										? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
 								}
+								//~ else if (/^http/i.exec(a[i].innerText)) {
+									//~ var x = a[i].innerText.trim();
+									//~ o.sd_allowed_domains = [
+										//~ x.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")
+									//~ ];
+									//~ o.sd_start_urls[0] =
+										//~ (!/^https?:\/\//i.exec(o.sd_start_urls[0]))
+										//~ ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
+								//~ }
 							}
-							// Still here
-							if (!found) {
-								// DO REGULAR SCRAPY
-								new AMT___requests_factory().fs__load_skips({
-									skips_key: 'austin_load_skips',
-									callback: init,
-									callback_err: function() {}
-								});
-							}
+							//~ // Still here
+							//~ if (!found) {
+								//~ // DO REGULAR SCRAPY
+								//~ new AMT___requests_factory().fs__load_skips({
+									//~ skips_key: 'austin_load_skips',
+									//~ callback: init,
+									//~ callback_err: function() {}
+								//~ });
+							//~ }
 						} else {
 							// org-header-meta has-blog
-							var d = dom.getElementsByClassName('org-header-meta has-blog');
+							var d = dom.getElementsByClassName('has-blog');
 							if (d && d[0]) {
 								var a = d[0].getElementsByTagName('a');
 								var found = false;
-								for (var i=0; i<a.length; a++) {
+								for (var i=0; i<a.length; i++) {
 									if (/^[^@]{1,}@[^@]{3,}$/.exec(a[i].innerText)) {
 										o.q[0].value = a[i].innerText.trim();
 										doSubmit();
@@ -260,6 +269,56 @@ function init__scrapy() {
 										callback: init,
 										callback_err: function() {}
 									});
+								}
+							} else { // developer's page.
+								//~ if (//rs.indexOf('email') != -1 ||
+									//~ dom.body.innerText.indexOf('@') != -1) {
+									//~ document.body.style.backgroundColor = 'green';
+									//~ return;
+								//~ }
+								
+								var a = dom.getElementsByClassName('u-email');
+								if (a && a[0]) {
+									if (/@/i.exec(a[0].innerText)) {
+										var x = a[0].innerText.trim();
+										if (x.length > 4 && x.indexOf('@') != -1) {
+											o.q[0].value = x;
+											doSubmit();
+										}
+										return;
+									}
+								}
+								
+								// blog
+								var a = dom.getElementsByClassName('u-url');
+								var found = false;
+								if (a && a[0]) {
+									if (/^http/i.exec(a[0].innerText)) {
+										var x = a[0].innerText.trim();
+										o.sd_allowed_domains = [
+											x.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")
+										];
+										o.sd_start_urls[0] =
+											(!/^https?:\/\//i.exec(o.sd_start_urls[0]))
+											? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
+										// DO REGULAR SCRAPY
+										new AMT___requests_factory().fs__load_skips({
+											skips_key: 'austin_load_skips',
+											callback: init,
+											callback_err: function() {}
+										});
+										found = true;
+									}
+								}
+								if (!found) {
+									// return
+									// r&a
+									new AMT___core_factory().
+										iframe2parent__postMessage(
+											{
+												action: 'return_and_accept'
+											}
+										);
 								}
 							}
 						}
