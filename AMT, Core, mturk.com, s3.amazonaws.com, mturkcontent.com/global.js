@@ -3067,9 +3067,13 @@ AMT___requests_factory.prototype.php_run_task = function(options) {
 		);
 	// Initiate request.
 	GM_xmlhttpRequest({
-		method: "GET",
-		url: MT___host + '/mturk/util.php?php_run_task='+
+		method: "POST",
+		url: MT___host + '/mturk/util.php',
+		data: 'php_run_task='+
 			encodeURIComponent(JSON.stringify(options)),
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
 		onload: function(response) {
 			var rs = response.responseText;
 			if (response.status != 200) {
