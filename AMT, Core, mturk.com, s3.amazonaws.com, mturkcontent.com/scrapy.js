@@ -107,7 +107,7 @@ function init__scrapy() {
 				],
 				SKIP_SITES: {},
 				util_url: null,
-				try_autos: true, // Turn on and off as necessary. Default=false (off)
+				try_autos: false, // NO AUTOS // Turn on and off as necessary. Default=false (off)
 				try_autos_str: '^(info|contact|about)@'
 				//~ try_autos_str: '^(finaid|financialaid|fin_aid|financial_aid|fin\.aid|financial\.aid)@'
 				//~ auto_emails: ['info','contact','contactus','mail'],
