@@ -3845,8 +3845,12 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 	}
 	/**
 	 * function read_from_disk
+	 * 
+	 * 
 	 * @desc This will return "___FILE_DOES_NOT_EXIST___" if file does not exist. Then read_from_xhr() will be called.
 	 * If file does exist then the file will be returned here and success_callback() will be called.
+	 * 
+	 * Note: Adds from_disk attribute to response object.
 	 * 
 	 */	
 	function read_from_disk() {
@@ -3864,6 +3868,7 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 					read_from_xhr();
 				} else {
 					console.log('-----\nRESPONSE CACHED!\n-----');
+					response.from_disk = true;
 					success(response);
 				}
 			}
