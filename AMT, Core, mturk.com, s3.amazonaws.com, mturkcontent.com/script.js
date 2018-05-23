@@ -5338,6 +5338,11 @@ function MT__RUN() {
 						d1.appendChild('throttle'.div());
 						return false;
 					}
+					if (rs.indexOf('Fatal error') != -1) {
+						d1.style.backgroundColor = '1px solid yellow';
+						d1.appendChild(('Exception:\n'+rs).div());
+						return false;
+					}
 					//
 					return true;
 				},
