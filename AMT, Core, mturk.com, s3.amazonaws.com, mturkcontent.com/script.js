@@ -727,6 +727,84 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	/**
+	 * Simple geocode
+	 * 
+	 * @clients
+	 * Todd Schiller
+	 * Jake Irwin
+	 * 
+	 * 
+	 * 
+	 */
+	// Jake Irwin
+	// 
+	// 
+	// 
+	var s = '<p>-Copy the City, State county in column one</p>\n\n<p>-Paste the City, State county into the google search bar</p>\n\n<p>-Press Enter</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u1: td[1].innerText.trim().replace(/ county$/i, ''),
+				q: [
+					document.getElementById('Field1'),
+				]
+			}
+			//~ o.search = o.u2 + ', ' + o.u1 + ', egypt';
+			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			AMT___addUserDecision(
+				'JakeIrwin,2018', function() {
+					return o.u1;
+				}, ['Id(Field1)'] 
+			)
+			MT___google_api_geocode(o.u1, function(full) {
+				console.log(full);
+				var r = full.results[0];
+				if (r.address_components) {
+					for (var i in r.address_components) {
+						var ac = r.address_components[i];
+						if (ac.long_name.indexOf('County') != -1) {
+							o.q[0].value = ac.long_name;
+							if (ac.long_name.length > 3)
+								AMT___recordAndSubmit();
+							break;
+						}
+					}
+				}
+				
+				//~ if  (
+					//~ !lat ||
+					//~ !lng ||
+					//~ !/^-?[\d\.]{4,}$/.exec(lat) ||
+					//~ !/^-?[\d\.]{4,}$/.exec(lng)
+					//~ )
+				//~ {
+					//~ //
+					//~ document.body.style.backgroundColor = 'yellow';
+				//~ } else {
+					//~ o.q[0].value = lat;
+					//~ o.q[1].value = lng;
+					//~ //ll.lat = lat;
+					//~ //ll.lng = lng;
+					//~ AMT___recordAndSubmit();
+				//~ }
+			}, true, true);
+		}
+		new run().f();
+	}
 	// Todd Schiller
 	// Find the Latitude/Longitude of Cities in Egypt
 	// 
