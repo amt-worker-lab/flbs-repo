@@ -2485,7 +2485,218 @@ function MT__RUN() {
 	 * Zijing Li
 	 * JB
 	 * 
+	 * 
+	 * 
 	 */
+	// Seth Gottlieb
+	// Correct Company Website URL
+	var s = 'We are correcting website information in our database of companies. Automated tests have flagged this URL for manual testing. In this HIT, you will check the website listed to see if it loads, and if so, determine whether it looks like it belongs to the listed company. If not, we ask that you search Google to find the company\'s official corporate website.';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;width: 50%;}');
+			GM_addStyle('.col-xs-16 .col-md-16 .image {margin:0;padding:0;position:absolute;top:0;left:0;}');
+			GM_addStyle('#submitButton {position:absolute;top:100px;left:50%;height:98px;width:49%;}');
+			//~ GM_addStyle('.col-md-4 {margin:0;padding:0;position:absolute;top:0;left:50%;}');
+			
+			var a = document.getElementsByTagName('a');
+			var li = document.getElementsByTagName('li');
+			var o = {
+				//~ domain: td[3].innerText.trim(),
+				url: a[1].innerText.trim(),
+				comp: li[0].innerText.replace(/Name:/, '').trim(),
+				country: li[2].innerText.replace(/Country:/, '').trim(),
+				q: [
+					document.getElementById('pageloads-1'),
+					document.getElementById('pageloads-2'),
+					document.getElementById('rightCompany-1'),
+					document.getElementById('rightCompany-2'),
+					document.getElementById('correctedurl'),
+				]
+			}
+			//~ if (!/^http/i.exec(o.domain)) {
+				//~ o.url = 'http://'+o.domain;
+			//~ } else {
+				//~ o.url = o.domain;
+			//~ }
+			//~ o.domain = o.domain.replace(/^www\./i, '');
+			//~ // clean
+			//~ for (var i in o.q) {
+				//~ o.q[i].onblur = function() {
+					//~ this.value = this.value.replace(/[,\r\n\t\s]+$/g, '');
+				//~ }
+			//~ }
+			var x = document.getElementById('pageloads-1').parentNode.parentNode.parentNode.parentNode;
+			x.setAttribute('style','position:absolute;top:0;left:50%;width:25%;');
+			var x = document.getElementById('rightCompany-1').parentNode.parentNode.parentNode.parentNode;
+			x.setAttribute('style','position:absolute;top:0;left:75%;width:24%;');
+			o.q[1].checked = true;
+			o.q[3].checked = true;
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:200px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 200 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				search: {
+					//~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
+					//~ use_duckduckgo_search_engine: true,
+				},
+				searches:[ // 
+					o.comp,
+					o.comp + ' ' + o.country,
+					o.comp+' company ' + o.country,
+				],
+				
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						//~ black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ onclick_success: function(e) {
+						//~ //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						//~ // url
+						//~ o.q[0].value = this.full_url.replace(/^https?:\/\//i, '');
+						//~ o.q[1].value = this.result_title;
+						//~ if (this.result_title != null) {
+							//~ AMT___recordAndSubmit();
+						//~ }
+						//~ return false; // Stop default submit.
+					//~ },
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+						//~ // Add trailing slash
+						//~ if (url[url.length-1] != '/')
+							//~ url += '/';
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (/\/dir\//.exec(obj.url)) {
+							//~ // ignore .../dir/...
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[4],
+				parent: d1,
+				offsetTop: 0,
+				//~ AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: false,
+			});
+			
+			// Init ut
+			open_ut();
+			function open_ut() {
+				// utility window
+				var opts = {
+					task: 'AMT__all_pages_util',
+					highlight_strings_in_page: {
+						// array, remove single items, e.g. "&"
+						strings: o.comp.replace(/ [\d\D] /gi, ' ').split(' '),
+					},
+					//~ highlight_range_to_parent: true
+				}
+				//~ AMT__setUtilityTabs([{
+					//~ url: o.url,
+					//~ options: opts
+				//~ }]);
+				AMT__setUtilityTabs(
+					[{
+						url: o.url,
+						options: opts
+					}],
+					null,
+					{backgroundColor:'pink'},
+					true,
+					function(response) {
+						console.log(response);
+						if  (
+							response.hasOwnProperty('data') &&
+							response.data.hasOwnProperty('text_range')
+							)
+						{
+							//~ console.log(response.data.text_range);
+							//~ console.log(response.data.text_range.split("\n"));
+							//~ var r = response.data.text_range.trim();
+							//~ // Auto state+zip
+							//~ var y = /[\n ,]*([A-Z]{2})[, \n]+([\d\-]+)$/.exec(r);
+							//~ if (y) {
+								//~ r = r.replace(y[0], '').trim();
+								//~ o.q[3].value = y[1];
+								//~ o.q[4].value = y[2];
+							//~ }
+							//~ // Auto zip
+							//~ var y = /([\d\-]+)$/.exec(r);
+							//~ if (y) {
+								//~ r = r.replace(y[0], '').trim();
+								//~ o.q[4].value = y[1];
+							//~ }
+							//~ // Auto suite / floor / unit / apt.
+							//~ var y = /[\n ](suite |ste\.? |rm\.? |flr\.? |fl\.? |apt\.? |#|# )([^ \n]{1,})/i.exec(r);
+							//~ if (y) {
+								//~ o.q[1].value = y[1]+y[2];
+								//~ r = r.replace(y[0], '');
+							//~ }
+							//~ // Try \n
+							//~ var x = r.split('\n');
+							//~ if (x.length > 1) {
+								//~ var count = 0
+								//~ for (var i in x) {
+									//~ if (x[i].trim() == '') continue; // Skip any blanks.
+									//~ o.q[count].value = x[i].trim();
+									//~ count++;
+									//~ if (count == 1) { // Skip #1 field (address2)
+										//~ count = 2;
+									//~ }
+								//~ }
+							//~ } else {
+								//~ for (var i in o.q) {
+									//~ if (o.q[i].value == '') {
+										//~ o.q[i].value = r;
+										//~ break;
+									//~ }
+								//~ }
+							//~ }
+						}
+					}
+				);
+			}
+			// sbm form
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();
+	}
 	// Steve Johnston
 	// Find USA Headquarters of International Company
 	// 
