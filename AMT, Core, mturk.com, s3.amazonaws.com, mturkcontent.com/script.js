@@ -295,7 +295,9 @@ function MT__RUN() {
 							dx.onclick = click_sentence;
 							// Add sentences.
 							// replace .00 with ==__==00
+							// 		   ... with ==__==--
 							para[i] = para[i].replace(/\.00/g, '==__==');
+							para[i] = para[i].replace(/\.\.\./g, '--__--');
 							// Anything not . ? ! leading upt to
 							// zero or one . ? !
 							var rg = /([^\.\?!]+[\.\?!]?)/g;
@@ -311,6 +313,8 @@ function MT__RUN() {
 								sentence = sentence.replace(/[\s\n]+/g, ' ')
 									.trim();
 								sentence = sentence.replace(/==__==/g, '.00')
+									.trim();
+								sentence = sentence.replace(/--__--/g, '...')
 									.trim();
 								// SPLIT BY EXCLAMATION and ?.
 								
