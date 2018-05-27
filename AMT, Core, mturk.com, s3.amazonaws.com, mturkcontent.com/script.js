@@ -294,19 +294,30 @@ function MT__RUN() {
 							d.appendChild(dx);
 							dx.onclick = click_sentence;
 							// Add sentences.
-							var n = para[i].split('.');
-							for (var j in n) {
-								if (n[j].trim() == '') continue;
-								var sentence = n[j].trim();
-								if (sentence[sentence.length-1] != '.' &&
-									sentence[sentence.length-1] != '!'
-									) {
-									sentence = sentence+'.';
-								}
-								setence = sentence.replace(/[\s\n]+/g, ' ')
+							// replace .00 with ==__==00
+							para[i] = para[i].replace(/\.00/g, '==__==');
+							// Anything not . ? ! leading upt to
+							// zero or one . ? !
+							var rg = /([^\.\?!]+[\.\?!]?)/g;
+							var rslt;
+							while ((result = rg.exec(para[i])) !== null) {
+								if (result[0].trim() == '') continue;
+								var sentence = result[0].trim();
+								//~ if (sentence[sentence.length-1] != '.' &&
+									//~ sentence[sentence.length-1] != '!'
+									//~ ) {
+									//~ sentence = sentence+'.';
+								//~ }
+								sentence = sentence.replace(/[\s\n]+/g, ' ')
 									.trim();
-								var dx = (MT__bold(sentence, o.bold))
-									.div({style:'display:inline;cursor:pointer;', innerHTML:true});
+								sentence = sentence.replace(/==__==/g, '.00')
+									.trim();
+								// SPLIT BY EXCLAMATION and ?.
+								
+								var dx = (MT__bold(sentence, o.bold)).div({
+									style:'display:inline;cursor:pointer;',
+									innerHTML:true
+								});
 								dx.clicked = false;
 								dx.className = 'exe';
 								dx.sentence = sentence;
@@ -316,6 +327,33 @@ function MT__RUN() {
 								// onclick
 								dx.onclick = click_sentence;
 							}
+							
+							//~ var n = para[i].split('.');
+							//~ for (var j in n) {
+								//~ if (n[j].trim() == '') continue;
+								//~ var sentence = n[j].trim();
+								//~ if (sentence[sentence.length-1] != '.' &&
+									//~ sentence[sentence.length-1] != '!'
+									//~ ) {
+									//~ sentence = sentence+'.';
+								//~ }
+								//~ sentence = sentence.replace(/[\s\n]+/g, ' ')
+									//~ .trim();
+								//~ sentence = sentence.replace(/==__==/g, '.00')
+									//~ .trim();
+								//~ // SPLIT BY EXCLAMATION and ?.
+								
+								//~ var dx = (MT__bold(sentence, o.bold))
+									//~ .div({style:'display:inline;cursor:pointer;', innerHTML:true});
+								//~ dx.clicked = false;
+								//~ dx.className = 'exe';
+								//~ dx.sentence = sentence;
+								//~ d.appendChild(dx);
+								//~ // Add a space.
+								//~ d.appendChild(document.createTextNode(' '));
+								//~ // onclick
+								//~ dx.onclick = click_sentence;
+							//~ }
 						}
 					}
 					// Auto-rules array
