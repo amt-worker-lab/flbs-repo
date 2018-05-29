@@ -2543,6 +2543,7 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;width: 50%;}');
 			GM_addStyle('.col-xs-16 .col-md-16 .image {margin:0;padding:0;position:absolute;top:0;left:0;}');
 			GM_addStyle('#submitButton {position:absolute;top:100px;left:50%;height:98px;width:49%;}');
+			GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
 			//~ GM_addStyle('.col-md-4 {margin:0;padding:0;position:absolute;top:0;left:50%;}');
 			
 			var a = document.getElementsByTagName('a');
@@ -2616,16 +2617,15 @@ function MT__RUN() {
 						//~ blue: o.boldArray2,
 						//~ brown: o.boldArray3,
 					},
-					//~ onclick_success: function(e) {
-						//~ //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
-						//~ // url
-						//~ o.q[0].value = this.full_url.replace(/^https?:\/\//i, '');
-						//~ o.q[1].value = this.result_title;
-						//~ if (this.result_title != null) {
-							//~ AMT___recordAndSubmit();
-						//~ }
-						//~ return false; // Stop default submit.
-					//~ },
+					onclick_success: function(e) {
+						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						// url
+						o.q[4].value = this.value;
+						o.q[2].checked = true;
+						this.style.backgroundColor = 'LightGreen';
+						doSubmit();
+						return false; // Stop default submit.
+					},
 					//~ url_modifier_callback: function(url) { // Add @ symbol
 						//~ url = '@' + url;
 						//~ return url;
