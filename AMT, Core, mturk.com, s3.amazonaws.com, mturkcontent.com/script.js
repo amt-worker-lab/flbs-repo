@@ -16771,12 +16771,6 @@ Laurens Hammond, Chicago, Ill.**/
 					var rs = options.response.responseText;
 					if (options.response.status != 200) return;
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					//~ if (dom.getElementById('profile_header_heading')) { // Person's name... To verify correctness, anything will do here...
-						//~ o.q[0].value = rs.trim();
-						//~ if (o.q[0].value.length > 1000) {
-							//~ doSubmit();
-						//~ }
-					//~ }
 					var sbm = true;
 					
 					// country
@@ -16807,7 +16801,6 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 						}
 					}
-					//console.log(dom.body.innerText);
 					
 					//Funding Status ↵Early Stage Venture↵Last Funding Type ↵Series B↵Also Known As ↵
 					var x = /Funding Status[\r\n\t\s]+(Early Stage Venture|[^\n]+)[\r\n\t\s]+Last Funding Type[\r\n\t\s]+(Series B|[^\n]+)/
@@ -16815,6 +16808,10 @@ Laurens Hammond, Chicago, Ill.**/
 					if (x) {
 						o.q[5].value = x[1];
 						o.q[6].value = x[2];
+					} else {
+						sbm = false; // TEST
+						o.q[5].value = 'NA';
+						o.q[6].value = 'NA';
 					}
 					
 					//Number of Employees ↵()
@@ -16822,13 +16819,14 @@ Laurens Hammond, Chicago, Ill.**/
 						.exec(dom.body.innerText);
 					if (x) {
 						o.q[7].value = x[1];
-					} else if (dom.body.innerText.indexOf('Number of Employees') != -1) {
-						console.log(dom.body.innerText.indexOf('Number of Employees'));
-						sbm = false;
+					//~ } else if (dom.body.innerText.indexOf('Number of Employees') != -1) {
+						//console.log(dom.body.innerText.indexOf('Number of Employees'));
+						//sbm = false;
 					} else {
 						o.q[7].value = 'NA';
 					}
 					
+					console.log('sbm:', sbm);
 				}
 			});
 		}
