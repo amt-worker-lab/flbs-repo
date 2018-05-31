@@ -16726,6 +16726,114 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();return;
 	}
+	// 
+	// crunchbase.com HTML scrape
+	// 
+	// 
+	s = '<p>Click the link below to review the Website. Collect the following information if it\'s available. If the information is not available, please type "NA"</p>\n\n<ul>\n	<li>Country of Origin</li>\n	<li>Categories</li>\n	<li>Funding Status</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Country of Origin')[0],
+					document.getElementsByName('Category 1')[0],
+					document.getElementsByName('Category 2')[0],
+					document.getElementsByName('Category 3')[0],
+					document.getElementsByName('Category 4')[0],
+					document.getElementsByName('phoneNumber')[0], // fnd status
+					document.getElementsByName('Last Funding Type')[0],
+					document.getElementsByName('Number of Employees')[0],
+				]
+			}
+			for (var i in o.q) {
+				o.q[i].value = '';
+			}
+			// xhr_with_disk_cache
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return false;
+					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//~ if (dom.getElementById('flex flex-grow cb-margin-small-horizontal cb-font-weight-bold cb-font-size-medium layout-row layout-align-start-center')) {
+						//~ // Person's name... To verify correctness, anything will do here...
+						//~ return true;
+					//~ }
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return;
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//~ if (dom.getElementById('profile_header_heading')) { // Person's name... To verify correctness, anything will do here...
+						//~ o.q[0].value = rs.trim();
+						//~ if (o.q[0].value.length > 1000) {
+							//~ doSubmit();
+						//~ }
+					//~ }
+					var sbm = true;
+					
+					// country
+					var x = /<a class="cb-link ng-star-inserted" hoverpreview="" role="link" aria-title="[^"]+" title="[^"]+" href="\/search\/organizations\/field\/organizations\/location_identifiers\/[^"]+">[\r\n\t\s]+([^<]+)<\/a>[^,]/.exec(rs);
+					if (x) {
+						o.q[0].value = __js_clean_html_str(x[1]);
+					} else {
+						sbm = false;
+					}
+					
+					// catg
+					var groups = dom.getElementsByClassName('component--fields-card');
+					if (groups) {
+						var a = groups[0].getElementsByTagName('a');
+						var counter = 1;
+						var theStr = '/search/organizations/field/organizations/categories/';
+						for (var i=0; i<a.length; i++) {
+							if (a[i].href.indexOf(theStr) != -1) {
+								o.q[counter].value = a[i].innerText.trim();
+								counter++;
+								if (counter > 4) break;
+							}
+						}
+						if (counter <= 4) {
+							while (counter <= 4) {
+								o.q[counter].value = 'NA';
+								counter++;
+							}
+						}
+					}
+					//console.log(dom.body.innerText);
+					
+					//Funding Status ↵Early Stage Venture↵Last Funding Type ↵Series B↵Also Known As ↵
+					var x = /Funding Status[\r\n\t\s]+(Early Stage Venture|[^\n]+)[\r\n\t\s]+Last Funding Type[\r\n\t\s]+(Series B|[^\n]+)/
+						.exec(dom.body.innerText);
+					if (x) {
+						o.q[5].value = x[1];
+						o.q[6].value = x[2];
+					}
+					
+					//Number of Employees ↵()
+					var x = /Number of Employees[\r\n\t\s]+([^\n]+)/
+						.exec(dom.body.innerText);
+					if (x) {
+						o.q[7].value = x[1];
+					} else if (dom.body.innerText.indexOf('Number of Employees') != -1) {
+						console.log(dom.body.innerText.indexOf('Number of Employees'));
+						sbm = false;
+					} else {
+						o.q[7].value = 'NA';
+					}
+					
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// "Jay"
 	// crunchbase.com HTML scrape
 	// 
