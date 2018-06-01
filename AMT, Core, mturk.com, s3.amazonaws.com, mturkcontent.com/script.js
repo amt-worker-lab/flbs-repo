@@ -3915,9 +3915,109 @@ function MT__RUN() {
 	 * @clients:
 	 * Marketing Research
 	 * Ryan Doherty
-	 * 
+	 * Ben
 	 * 
 	 */
+	// Ben
+	// Summarize short answers
+	var s1 = 'Read the short answer and then write back to the author of the paragraph by';
+	var s2 = 'You mentioned that you want to _________________.';
+	if (ih.indexOf(s1) != -1 && ih.indexOf(s2) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			//////////
+			// Styles
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			// Instructions
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}');
+			// Content
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;width: 50%;}');
+			//~ GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');
+			// Other
+			GM_addStyle('input[type="text"]{margin:0 !important;padding:0 !important;position:absolute;top:0px;left:30px;width:100%;height:48px;zoom:1.6;}');
+			//~ GM_addStyle('.exe:hover {background-color:orange;}');
+			//~ GM_addStyle('#submitButton {width:100%;height:200px;margin-top:-160px;}');
+			// End styles
+			/////////////
+			
+			var b = document.getElementsByTagName('b');
+			var o = {
+				u: b[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Q5FreeTextInput')[0],
+				],
+			}
+			
+			console.log(o);
+			AMT___addUserDecision(
+				'BenText,2018', function() {
+					return o.u;
+				},
+				['Name(Q5FreeTextInput)[0]']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:100px;left:0%;width:90%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			
+			// annotate
+			// Feature to add:
+			//		Need: "in house", not "in the house",
+			//			but there are two fields. So appendToField
+			//			does not work!
+			// Feature to add:
+			//		Add: Mouseover color
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: o.u,
+				output_fields: o.q,
+				callback_mouseup: function(addField) {
+					console.log(addField)
+					//~ // Remove any non-digit, non-word!
+					//~ addField.value = addField.value.replace(/ *[^\d\w]* *$/, '');
+					//~ // Remove "the"/"a" from 2nd field.
+					//~ if (addField == o.q[1]) {
+						//~ addField.value = addField.value.replace(/ (a|the|an) /gi, ' ');
+						//~ // clean whitespace
+						//~ addField.value = addField.value.replace(/\s+/, ' ');
+					//~ }
+					// Remove trailing commas
+					addField.value = addField.value.replace(/ *[\.,\!\?]* *$/, '');
+					// Remove starting commas
+					addField.value = addField.value.replace(/^ *[,]* */g, '');
+					//~ console.log('addField.value:',addField.value);
+				},
+				appendToField: true,
+				appendToField_glue: ' ',
+				//~ delimeter: '',
+				focusToField: true,
+				style: 'border-radius:2px;border:1;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:1.2;',
+			});
+			d1.appendChild(buttons);
+			
+			// ondblclick, remove word from input
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [o.q[0]],
+				blur_element: false,
+				remove_whitespace: true,
+			});
+			//sbm
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value == '') return false;
+				AMT___recordAndSubmit();
+				return;
+			}
+		}
+		new run().f();
+	};
 	// Ryan Doherty
 	// Split up this list of addresses into parts
 	// Utilize (??)

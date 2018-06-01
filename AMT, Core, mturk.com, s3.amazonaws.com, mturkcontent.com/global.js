@@ -17222,7 +17222,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			
 			// CALLBACK
 			if (options_object.callback_mouseup) {
-				options_object.callback_mouseup(s);						// THIS SENDS BACK THE STRING ADDED
+				//~ options_object.callback_mouseup(s);						// THIS SENDS BACK THE STRING ADDED
+				options_object.callback_mouseup(output_fields[i]);	// THIS SENDS THE FIELD BACK (change to this instead of string, Jun 2018)
 			}
 			return;
 		}
