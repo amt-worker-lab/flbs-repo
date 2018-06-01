@@ -914,8 +914,127 @@ function MT__RUN() {
 	 * Scott C Thompson
 	 * Saransh Chauhan
 	 * Chandler Nunez
+	 * Frank Fatato
+	 * 
 	 * 
 	 */
+	// Frank Fatato
+	// Collect Part Data
+	// @tags: Simple xhr
+	// 
+	var s = '<li><span style="font-family: tahoma,geneva,sans-serif;">Go to <a href="http://www.daycoproducts.com/online-catalog/">http://www.daycoproducts.com/online-catalog/</a></span></li>\n	<li><span style="font-family: tahoma,geneva,sans-serif;"><span new="" style="line-height: 115%;" times=""><font color="#000000">Click on the “&gt; COMPETITOR/OE#” tab within the “FIND MY PART” section on the left hand corner';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			GM_addStyle('img {zoom:0.1;}');
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				//~ id: null,
+				q: [
+					document.getElementById('web_url'),
+					//~ document.getElementById('galleryaddress'),
+				]
+			}
+			//~ o.id = /^https:\/\/www\.crexi\.com\/properties\/([\d]+)\//.exec(o.url)[1];
+			// Only save one piece of information, addressLine1,
+			// because saving o.id is most important.
+			AMT___addUserDecision(
+				'FrankFatato,2018', function() {
+					return o.u;
+				}, ['Id(web_url)']
+			)
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'http://www.daycoproducts.com/parts?oe_number='+
+					encodeURIComponent(o.u),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						//d1.appendChild('!200'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					
+					if (rs.indexOf('<div class="no-results">No results</div>') != -1) {
+						o.q[0].value = 0;
+						AMT___recordAndSubmit();
+						return;
+					}
+					
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var d = dom.getElementById('results');
+					if (d) {
+						var tr = d.getElementsByTagName('tr');
+						if (tr.length != 2) { // more than 1
+							var out = [];
+							for (var i=1; i<tr.length; i++) {
+								var td = tr[i].getElementsByTagName('td');
+								if (td.length != 4) {
+									// bad num?
+									o.q[0].value = '?';
+									return;
+								}
+								var x = td[0].innerText.trim();
+								//o.q[0].value = x;
+								if (/^[a-z0-9]+$/i.exec(x)) {
+									//AMT___recordAndSubmit();
+									out.push(x);
+								} else {
+									o.q[0].value = '??';
+									return;
+								}
+							}
+							o.q[0].value = out.join(',');
+							return;
+						}
+						// Only 1
+						tr = tr[1];
+						var td = tr.getElementsByTagName('td');
+						if (td.length != 4) {
+							// bad num?
+							return;
+						}
+						var x = td[0].innerText.trim();
+						o.q[0].value = x;
+						if (/^[a-z0-9]+$/i.exec(x)) {
+							AMT___recordAndSubmit();
+						}
+					}
+					
+					//~ // Scrape city.
+					//~ // <title>Walgreens Pharmacy - 3005 E RIGGS RD,  Chandler, AZ 85249 | Walgreens</title>
+					//~ var x = /<title>Walgreens Pharmacy - [^,]+,\s+([^,]+), [A-Z]{2} \d{5} \| Walgreens<\/title>/.exec(rs);
+					//~ if (x) {
+						//~ o.q[0].value = __js_clean_html_str(x[1]).trim();
+						//~ if (o.q[0].value.length > 3 && o.q[0].value != 'null'
+							//~ && o.q[0].value != 'undefined') {
+							//~ AMT___recordAndSubmit();
+						//~ }
+					//~ }
+				}
+			});
+		}
+		new run().f();
+	}
 	// Saransh Chauhan
 	// Verify whether a web-link is working
 	// @tags: Simple xhr
