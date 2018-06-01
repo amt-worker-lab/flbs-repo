@@ -2,55 +2,44 @@
  * 
  * 
  * 
- * 
- * 
- * 
- * 
  * TODO:
  * 	Home page graph memory, tallied up almost 10gib after ~1-2 days
  * 
  **/
-// KH
-var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
 /**
  * OTHER GLOBAL VARIABLES
  * 
  */
-// Changed to https, Jan2018.
+// Changed back to http from https, Spring 2018.
 var MT___host = 'http://192.168.1.2';
-//				'https://192.168.1.2';
+
 /**
+ * AMT__GLOBAL_VARS
  * 
  * 
- * 													AMT__GLOBAL_VARS
- * 
- * 
- * */
-//		AMT__Global_Vars.isTopWindow
-//		AMT__Global_Vars.isPreview
-//		AMT__Global_Vars.groupId
-var AMT__Global_Vars = //function()
+ **/
+var AMT__Global_Vars =
 {
 	defaultPersistantScriptVars : [
 		//{name: 'RecordAllHits',			value: 1, isPersistant:true},
-		{name: 'DS ShiftFarLeft',			value: '1', isPersistant:true},
-		{name: 'DS ShowNextTab',			value: '1', isPersistant:true},
+		{name: 'DS ShiftFarLeft',			value: '0', isPersistant:true},
+		{name: 'DS ShowNextTab',			value: '0', isPersistant:true},
 		{name: 'DS NextTab',				value: '1', isPersistant:true},
 		{name: 'DS Offset Time (s)',		value: '0', isPersistant:true},
-		{name: 'R&A ShiftFarLeft',			value: '1', isPersistant:true},
+		{name: 'R&A ShiftFarLeft',			value: '0', isPersistant:true},
 		{name: 'JohnRobertsCheckHistory',	value: '0', isPersistant:true},
-		{name: 'R&A ShowNextTab',			value: '1', isPersistant:true},
+		{name: 'R&A ShowNextTab',			value: '0', isPersistant:true},
 		{name: 'NextTab Iframe Focus',		value: '1', isPersistant:true},
 		{name: 'RJTStyleTop',				value: '1000', isPersistant:true},
 		{name: 'Record Job Timings',		value: '0', isPersistant:true},
 		{name: 'Return Button Hotkey',		value: '`', isPersistant:true},
-		{name: 'Return Button ShowNextTab',	value: '1', isPersistant:true},
+		{name: 'Return Button ShowNextTab',	value: '0', isPersistant:true},
 		{name: 'Right-Click-R&A',			value: '0', isPersistant:true},
 		{name: 'NumPassby',					value: '3', isPersistant:true},
 		{name: 'PassbyDelay',				value: '100', isPersistant:true},
-		{name: 'TabsQ JumpToFirst',			value: '1', isPersistant:true},
-		{name: 'addToTabsQ:ShiftRight',		value: '1', isPersistant:true},
-		{name: 'EnableTabsQ',				value: '1', isPersistant:true},
+		{name: 'TabsQ JumpToFirst',			value: '0', isPersistant:true},
+		{name: 'addToTabsQ:ShiftRight',		value: '0', isPersistant:true},
+		{name: 'EnableTabsQ',				value: '0', isPersistant:true},
 		{name: 'Return NextTab',			value: '0', isPersistant:true},
 		{name: 'Server Location',			value: 'http://192.168.1.2', isPersistant:true},
 		{name: 'JumpToCaptchas',			value: '1', isPersistant:true},
