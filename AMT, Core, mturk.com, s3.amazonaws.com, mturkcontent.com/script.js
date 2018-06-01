@@ -3938,6 +3938,7 @@ function MT__RUN() {
 			//~ GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');
 			// Other
 			GM_addStyle('input[type="text"]{margin:0 !important;padding:0 !important;position:absolute;top:0px;left:30px;width:100%;height:48px;zoom:1.6;}');
+			GM_addStyle('body {background-color: #efe;}');
 			//~ GM_addStyle('.exe:hover {background-color:orange;}');
 			//~ GM_addStyle('#submitButton {width:100%;height:200px;margin-top:-160px;}');
 			// End styles
@@ -3945,7 +3946,7 @@ function MT__RUN() {
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
-				u: b[1].innerText.trim(),
+				u: b[1].innerText.trim().replace(/äó»/gi, '\''),
 				q: [
 					document.getElementsByName('Q5FreeTextInput')[0],
 				],
@@ -3999,7 +4000,7 @@ function MT__RUN() {
 				appendToField_glue: ' ',
 				//~ delimeter: '',
 				focusToField: true,
-				style: 'border-radius:2px;border:1;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:1.2;',
+				style: 'border-radius:2px;border:0;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:1.2;',
 			});
 			d1.appendChild(buttons);
 			
