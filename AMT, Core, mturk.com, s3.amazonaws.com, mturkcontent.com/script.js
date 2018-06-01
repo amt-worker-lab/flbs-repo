@@ -3920,6 +3920,8 @@ function MT__RUN() {
 	 */
 	// Ben
 	// Summarize short answers
+	// TODO: Highlight words most commonly entered, such as Be, Become, Own,
+	//		Etc., etc.
 	var s1 = 'Read the short answer and then write back to the author of the paragraph by';
 	var s2 = 'You mentioned that you want to _________________.';
 	if (ih.indexOf(s1) != -1 && ih.indexOf(s2) != -1)
@@ -3962,7 +3964,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:100px;left:0%;width:60%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:100px;left:0%;width:60%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			
@@ -3995,6 +3997,13 @@ function MT__RUN() {
 					addField.value = addField.value.replace(/[, ^]I[, $]/gi, ' you ').trim();
 					// Replace my with your
 					addField.value = addField.value.replace(/[, ^]my[, $]/gi, ' your ').trim();
+					// Replace 
+					addField.value = addField.value.replace(/^becoming/gi, 'become').trim();
+					addField.value = addField.value.replace(/^pursuing/gi, 'pursue').trim();
+					// Replace ING with ""
+					addField.value = addField.value.replace(/^([^ ]+)/gi, function(p1) {
+						return p1.replace(/ing$/, '');
+					}).trim();
 				},
 				appendToField: true,
 				appendToField_glue: ' ',
