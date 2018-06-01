@@ -3961,7 +3961,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:100px;left:0%;width:90%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:100px;left:0%;width:60%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			
@@ -3990,6 +3990,10 @@ function MT__RUN() {
 					// Remove starting commas
 					addField.value = addField.value.replace(/^ *[,]* */g, '');
 					//~ console.log('addField.value:',addField.value);
+					// Replace I with You
+					addField.value = addField.value.replace(/[, ^]I[, $]/gi, ' you ').trim();
+					// Replace my with your
+					addField.value = addField.value.replace(/[, ^]my[, $]/gi, ' your ').trim();
 				},
 				appendToField: true,
 				appendToField_glue: ' ',
