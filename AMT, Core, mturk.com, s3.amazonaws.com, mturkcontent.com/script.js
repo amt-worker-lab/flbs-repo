@@ -3921,7 +3921,7 @@ function MT__RUN() {
 	// Ben
 	// Summarize short answers
 	// TODO: Highlight words most commonly entered, such as Be, Become, Own,
-	//		Etc., etc.
+	//		Etc., etc. Must be longer than one letter, e.g., no "a".
 	var s1 = 'Read the short answer and then write back to the author of the paragraph by';
 	var s2 = 'You mentioned that you want to _________________.';
 	if (ih.indexOf(s1) != -1 && ih.indexOf(s2) != -1)
