@@ -13773,7 +13773,9 @@ Laurens Hammond, Chicago, Ill.**/
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
 			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			var td = document.getElementsByTagName('td');
@@ -13786,7 +13788,7 @@ Laurens Hammond, Chicago, Ill.**/
 			};
 			// DoPast
 			AMT___addUserDecision(
-				'M.Kendall,Jan25,2016',
+				'M.Kendall,Jun2018',
 				function() { return o.u; },
 				["Name(Age)[0]", "Name(Age)[1]"]
 			);
@@ -13814,37 +13816,50 @@ Laurens Hammond, Chicago, Ill.**/
 			function init() {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: o.u,
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
 						if (options.response.status != 200) return false;
 						return true;
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						var rg = [
-							/<meta property="airbedandbreakfast:location:latitude" content="([\d\-\.]+)">/,
-							/<meta property="airbedandbreakfast:location:longitude" content="([\d\-\.]+)">/,
-						];
-						var x;
-						if (x = rg[0].exec(rs)) {
-							o.q[0].value = x[1];
+						//~ var rg = [
+							//~ /<meta property="airbedandbreakfast:location:latitude" content="([\d\-\.]+)">/,
+							//~ /<meta property="airbedandbreakfast:location:longitude" content="([\d\-\.]+)">/,
+						//~ ];
+						var rg = /"listing_lat":([\d\-\.]+),"listing_lng":([\d\-\.]+),/
+							.exec(rs);
+						// OLD AIRBNB LAT/LNG
+						//~ var rg = [
+							//~ /<meta property="airbedandbreakfast:location:latitude" content="([\d\-\.]+)">/,
+							//~ /<meta property="airbedandbreakfast:location:longitude" content="([\d\-\.]+)">/,
+						//~ ];
+						if (rg) {
+							o.q[0].value = rg[1];
+							o.q[1].value = rg[2];
+							if (rg[1].length > 3 && rg[2].length > 3) {
+								AMT___recordAndSubmit();
+								return;
+							}
 						}
-						var y;
-						if (y = rg[1].exec(rs)) {
-							o.q[1].value = y[1];
-						}
-						if (x && y && x[1].length > 3 && y[1].length > 3) {
-							//~ doSubmit();
-							AMT___recordAndSubmit();
-							return;
-						}
+						
 						// Here? Failed...
 						//~ console.log(options);
+						//~ if (
+							//~ rs.indexOf('<div class="panel-header filters-section show-sm">\n        Filters\n      </div>') != -1 && // Is here
+							//~ rs.indexOf('<div id="room" itemscope itemtype="http://schema.org/Product">') == -1 && // Is not here
+							//~ rs.indexOf(' <h4 class="screen-reader-only">\n        Request to Book\n      </h4>') == -1 && // Is not here
+							//~ o.q[0].value == '' &&
+							//~ o.q[1].value == ''
+							//~ )
+						//~ {
+							//~ o.q[0].value = 'N/A';
+							//~ o.q[1].value = 'N/A';
+							//~ AMT___recordAndSubmit();
+						//~ }
 						if (
-							rs.indexOf('<div class="panel-header filters-section show-sm">\n        Filters\n      </div>') != -1 && // Is here
-							rs.indexOf('<div id="room" itemscope itemtype="http://schema.org/Product">') == -1 && // Is not here
-							rs.indexOf(' <h4 class="screen-reader-only">\n        Request to Book\n      </h4>') == -1 && // Is not here
-							o.q[0].value == '' &&
-							o.q[1].value == ''
+							rs.indexOf('listing_lat') == -1
 							)
 						{
 							o.q[0].value = 'N/A';

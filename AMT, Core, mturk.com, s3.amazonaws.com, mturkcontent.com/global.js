@@ -3757,6 +3757,9 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 	var verify = verify_opts();
 	if (!verify) return; // Quit here if necessary
 	
+	// debug
+	console.log(options);
+	
 	// Init
 	read_from_disk();
 	
