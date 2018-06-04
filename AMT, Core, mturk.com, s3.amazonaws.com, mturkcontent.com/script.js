@@ -140500,6 +140500,7 @@ qatar,80
 	{
 		var run = function() {};
 		run.prototype.f = function() {
+			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
 			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
 			//~ GM_addStyle('body {width:18%;margin-top:160px !important;}');

@@ -16565,8 +16565,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		d1.innerHTML = '';
 		var u = 
 			'https://graph.facebook.com/search'+
-			'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
-			'&fields=category,category_list,id,name,likes,talking_about_count,location,link,phone,website'+
+			'?q='+encodeURIComponent(d2.value)+'&type=place'+
+			'&fields=category,category_list,id,name,likes,'+
+				'talking_about_count,location,link,phone,website'+
 			'&limit=8'+
 			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
