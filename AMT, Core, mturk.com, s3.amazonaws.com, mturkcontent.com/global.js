@@ -15260,15 +15260,14 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			fb: false,
 			hoovers: false,
 			google: false,
-			crunchbase: false,
+			yelp: false,
 			
 			/////////////////////////////////////
 			// DEPRECATED
-			
-			// March 2018
-			//~ bbb: false,
 			/////////////////////////////////////
 			
+			//~ crunchbase: false,
+			//~ bbb: false,
 			//~ yelp: false,
 			//~ bw: false,
 		},
@@ -15276,14 +15275,17 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			fb: {num_results: null},
 			hoovers: {num_results: null},
 			google: {num_results: null},
-			crunchbase: {num_results: null},
+			yelp: {num_results: null},
+			
+			
 			
 			/////////////////////////////////////
 			// DEPRECATED
-			
-			// March 2018
-			//~ bbb: {num_results: null},
+			// 
 			/////////////////////////////////////
+			
+			//~ bbb: {num_results: null},
+			//~ crunchbase: {num_results: null},
 			
 			//~ yelp: {},
 			//~ bw: false,
@@ -15353,7 +15355,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		if (!opts.columns.hasOwnProperty('hoovers') || !opts.columns.hoovers) {
 			d1b.style.display = 'none';
 		}
-		if (!opts.columns.hasOwnProperty('bbb') || !opts.columns.bbb) {
+		if (!opts.columns.hasOwnProperty('yelp') || !opts.columns.yelp) {
 			d1c.style.display = 'none';
 		}
 		if (!opts.columns.hasOwnProperty('google') || !opts.columns.google) {
@@ -15385,6 +15387,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			if (opts.columns.hasOwnProperty('hoovers') && opts.columns.hoovers) {
 				hoovers_addr();
 			}
+			if (opts.columns.hasOwnProperty('yelp') && opts.columns.yelp) {
+				yelp_addr();
+			}
 			if (opts.columns.hasOwnProperty('bbb') && opts.columns.bbb) {
 				//DEPRECATING THIS.
 				// MARCH 30, 2018.
@@ -15399,7 +15404,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			// Columns are not specified, so do all.
 			FB_addr();
 			hoovers_addr();
-			crunchbase(); // Replacing bbb_addr
+			yelp_addr();
 			google_addr();
 			
 			
@@ -15407,6 +15412,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			
 			// March 2018
 			// bbb_addr();
+			
+			// June 2018
+			//crunchbase(); // Replacing bbb_addr
 		}
 	}
 	d2.onblur = d2.init;
@@ -16402,26 +16410,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					if(opts.filter_for_only &&
 					   opts.filter_for_only.country &&
 					   opts.filter_for_only.country == 'USA') {
-						//~ if (rslt.Address.toLowerCase().indexOf('united states') == -1) {
-							//~ continue;
-						//~ }					
+
 					}
-					//~ // add location+bold
-					//~ var locSpan = document.createElement('span');
-					//~ var addr_str = rslt.Address + ',' + rslt.City + ',' +
-						//~ rslt.StateProvince;
-					//~ locSpan.innerHTML = (
-						//~ opts.bold_locn_array ?
-							//~ MT__bold(addr_str, opts.bold_locn_array) :
-							//~ addr_str
-					//~ );
-					//~ div.appendChild(locSpan);
-					//~ if (rslt.Phones && rslt.Phones.length) {
-						//~ div.appendChild(document.createElement('br'));
-						//~ div.appendChild(document.createTextNode(
-							//~ rslt.Phones.join(' | ')
-						//~ ));
-					//~ }
 					// add to d1c
 					d1c.appendChild(div);
 				}
@@ -16663,7 +16653,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							opts.o.final_location.name = i.name;
 						}
 						if (i.link) {
-							//~ 
 						}
 						// opts.profile_url
 						opts.profile_url = i.link;
@@ -16702,7 +16691,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								opts.output_elements.country.value = x.country;
 								opts.o.final_location.country = x.country;
 							}
-							if (opts.output_elements.hasOwnProperty('lat') && opts.output_elements.hasOwnProperty('lng')) {
+							if (opts.output_elements.hasOwnProperty('lat') &&
+								opts.output_elements.hasOwnProperty('lng')) {
 								if (x.latitude && x.longitude) {
 									opts.output_elements.lat.value = x.latitude;
 									opts.output_elements.lng.value = x.longitude;
@@ -16741,7 +16731,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							opts.onclick_callback(opts);
 						}
 					}
-					
+					// Filter usa
 					if(opts.filter_for_only &&
 					   opts.filter_for_only.country &&
 					   opts.filter_for_only.country == 'USA') {
@@ -16755,12 +16745,12 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							continue;
 						}
 					}
-					
+					// Append to div
 					div.appendChild(inp);
 					div.appendChild(document.createElement('br'));
 					div.appendChild(document.createTextNode('L:'+r[i].likes));
 					div.appendChild(document.createTextNode(',T:'+r[i].talking_about_count));
-					
+					// Category
 					if (r[i].category) {
 						div.appendChild(document.createTextNode(' [C:'+r[i].category+']'));
 					}
@@ -16773,6 +16763,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							}
 						}
 					}
+					// Location
 					if (r[i].location) {
 						// NEW. JULY 25, 2015.
 						/**
@@ -16809,7 +16800,611 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							div.appendChild(locSpan);
 						}
 					}
+					// Website
+					if (r[i].website && opts.output_elements.hasOwnProperty('website')) {
+						div.appendChild(('W:'+r[i].website).div());
+					}
+					// Add an extra button
+					// e.g. J. Fiske.
+					if (opts.hasOwnProperty('add_button')) {
+						var b = document.createElement('input');
+						b.type = 'button';
+						b.value = opts.add_button.value;
+						b.json_object = r[i];
+						b.onclick = opts.add_button.callback;
+						div.appendChild(''.div()); // add br
+						div.appendChild(b);
+					}
+					// Append
+					d1.appendChild(div);
+					c++; // Increment
+				}
+				// Mark complete
+				complete('fb');
+				if (c == 0) {
+					d1.innerHTML = '0';
+					o.stats.fb.num_results = 0;
+					return;
+				}
+				// Here?
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:1400px;');
+				d1.appendChild(div);
+			}
+		});
+	}
+	function yelp_addr() {
+		// Show status
+		d1c.innerText = 'Search: '+d2.value;
+		//
+		// Skip left side! May 2018.
+		//~ yelp_search_snippet();
+		//~ return;
+		//
+		var auth = {
+			// new
+			consumer_API_KEY_REDACTED_,
+			consumer_API_KEY_REDACTED_,
+			access_API_KEY_REDACTED_,
+			accessToken_API_KEY_REDACTED_,
+			serviceProvider : {
+				signatureMethod : "HMAC-SHA1"
+			}
+		};
+		var terms = d2.value;
+		var near = d2.value;//'San+Francisco';
+		var accessor = {
+			consumerSecret : auth.consumerSecret,
+			tokenSecret : auth.accessTokenSecret
+		};
+		parameters = [];
+		parameters.push(['location', near]);
+		parameters.push(['oauth_consumer_key', auth.consumerKey]);
+		parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+		parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+		parameters.push(['oauth_token', auth.accessToken]);
+		parameters.push(['term', terms]);
+		var message = {
+			'action' : 'https://api.yelp.com/v2/search',
+			'method' : 'GET',
+			'parameters' : parameters
+		};
+		OAuth.setTimestampAndNonce(message);
+		OAuth.SignatureMethod.sign(message, accessor);
+		var parameterMap = OAuth.getParameterMap(message.parameters);
+		console.log(parameterMap);
+		// key,secret,nonce,sig method,timestamp,token,term
+		// "Invalid signature. Expected signature base string: GET&https%3A%2F%2Fapi.yelp.com%2Fv2%2Fsearch&location%3D321%2520Main%2520St%252C%2520El%2520Segundo%2520CA%26oauth_consumer_key%3DjH4j2x4Om5K8JasTVw4dQg%26oauth_consumer_secret%3DpSPCWbafW8-4LrQvUIpIPufvlrw%26oauth_nonce%3D7AWrNd%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1519340833%26oauth_token%3DBIhiKrLfZAVUVTj64kZkLo3Ven3G6Ej_%26term%3DTwo%2520Guns%2520Espresso"
+		// https://api.yelp.com/v2/search
+		//&location=Washignton%2C%20DC
+		//&oauth_consumer__API_KEY_REDACTED_
+		//&oauth_consumer__API_KEY_REDACTED_
+		//&oauth_nonce=Qm2DiL
+		//&oauth_signature_method=HMAC-SHA1
+		//&oauth_timestamp=1526053060
+		//&o_API_KEY_REDACTED_
+		//&term=Cafe%20Milano
+		// May 11, 2018
+		//~ // Solution is to comment out "oauth_signature"!
+		//~ // Why? Meh. Who knows. It works.
+		var p = '?location='+encodeURIComponent(parameterMap['location'])
+			+'&oauth_consumer_key='+encodeURIComponent(parameterMap['oauth_consumer_key'])
+			+'&oauth_consumer_secret='+encodeURIComponent(parameterMap['oauth_consumer_secret'])
+			+'&oauth_nonce='+encodeURIComponent(parameterMap['oauth_nonce'])
+			+'&oauth_signature_method='+encodeURIComponent(parameterMap['oauth_signature_method'])
+			+'&oauth_signature='+encodeURIComponent(parameterMap['oauth_signature'])
+			+'&oauth_timestamp='+encodeURIComponent(parameterMap['oauth_timestamp'])
+			+'&oauth_token='+encodeURIComponent(parameterMap['oauth_token'])
+			+'&term='+encodeURIComponent(parameterMap['term']);
+		
+		new AMT___requests_factory().xhr_with_disk_cache({
+			URL: 'https://api.yelp.com/v2/search' + p,
+			filename: new AMT___requests_factory().md5(
+				'https://api.yelp.com/v2/search|' + d2.value + '|' + d2.value),
+				// Static file name
+			check_pre_write_to_disk: function(options) {
+				// Return TRUE to write to disk.
+				// Return FALSE to not write to disk.
+				var rs = options.response.responseText;
+				if  (
+					rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+					rs.indexOf('"text": "Signature was invalid"') != -1
+					)
+				{
+					d1c.style.backgroundColor = 'yellow';
+					return false;
+				}
+				else
+					return true;
+			},
+			success_callback: function(options) {
+				var rs = options.response.responseText;
+				yelp_success(options.response, d1c);
+			}
+		});
+	}
+	function yelp_success(response, div) {
+		var rs = response.responseText;
+		rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
+		console.log(rs);
+		console.log(rs.businesses);
+		div.innerText = '';
+		// Reset bgcolor of right side.
+		//~ d1b.style.backgroundColor = '';
+		//~ d1b.innerHTML = '';
+		if (!rs.businesses || rs.businesses.length == 0) {
+			console.log('0 left results');
+			div.innerText += '0 results\n';
+			//~ // DO RIGHT
+			//~ yelp_search_snippet();
+			return;
+		}
+		var b = rs.businesses;
+		var auto_found = false;
+		var found_close_enough = false;
+		//~ new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
+		
+		// Make a bold array.
+		var to_bold = d2.value.clean_string_to_array();
+		
+		for (var i in b) {
+			// Remove bad apostrophe's from the title.
+			b[i].name = b[i].name.replace(/’/g, '\'');
+			var fmt_address = '';
+			var fmt_address_match = '';
+			if (b[i].location && b[i].location.display_address &&
+				b[i].location.display_address.length) {
+				var l = b[i].location.display_address; // []
+				if (l.length == 3) {
+					// REMOVE "NEIGHBORHOOD" as this is typically
+					// just the city repeated, or is at best
+					// unnecessary info.
+					// REMOVES array item #2 ([1,2,3])
+					l.splice(1, 1);
+				}
+				var lfmt = [];
+				for (var j in l) {
+					lfmt.push(
+						MT__bold(
+							l[j],
+							to_bold,
+							{style: 'color:blue;text-decoration:none;'}
+						).bold_string
+					);
+					fmt_address_match += l[j];
+				}
+				if (lfmt.length)
+					fmt_address = lfmt.join(',');
+			}
+			// ...
+			var fmt_cat = [];
+			if (b[i].categories) {
+				var c = b[i].categories;
+				for (var j in c) {
+					fmt_cat.push(c[j][0]); // [name,id]
+				}
+			}
+			fmt_cat = fmt_cat.join(','); // Or blank
+			// clean url
+			b[i].url = b[i].url.replace(/\?[\d\D]*/, '');
+			// Div
+			var d = document.createElement('div');
+			d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+			d.className = 'exe '+b[i].url;
+			d.ypurl = b[i].url;
+			d.api_response = b[i];
+			div.appendChild(d);
+			d.innerHTML =
+				MT__bold(b[i].name, to_bold) + '<br>' +
+				fmt_address +'<br>'+
+				'R:'+b[i].review_count; //+'<br>'+
+				//'C:'+fmt_cat;
+			d.onclick = yelp_click;
+			d.onmouseover = d.onmousemove = function() {
+				var x = document.getElementsByClassName(this.className);
+				for (var i=0; i<x.length; i++) {
+					if (x[i].style.backgroundColor == 'teal') continue; // Skip
+					x[i].style.backgroundColor = 'aqua';
+				}
+			}
+			d.onmouseout = function() {
+				var x = document.getElementsByClassName(this.className);
+				for (var i=0; i<x.length; i++) {
+					if (x[i].style.backgroundColor == 'teal') continue; // Skip
+					x[i].style.backgroundColor = '';
+				}
+			}
+		}
+		if (div.innerHTML != '') {
+			var d = document.createElement('div');
+			d.setAttribute('style','height:2000px;');
+			div.appendChild(d);
+		} else {
+			div.appendChild(('<b>' + d2.value + '</b>: 0 results').div({innerHTML:true}));
+		}
+		// If no street from above is close enough based on 
+		// bolding of street string, then run search snippet.
+		//
+		//~ if (!found_close_enough && !auto_found) {
+			// Do not do second column if either:
+			// 1) It has been auto found (auto_found==true).
+			// 2) There is a close enough match in the API serach (found_close_enough==true).
+			//~ yelp_search_snippet();
+		//~ } else if (found_close_enough == true) {
+			//~ d1b.style.backgroundColor = 'aqua';
+			// Debug for testing.
+			//~ alert('DEBUG: Found close enough!')
+		//~ }
+	}
+	function yelp_click(e) {
+		this.style.backgroundColor = 'teal';
+		//~ document.body.style.backgroundColor = 'LightGreen';
+		// NextTab
+		//~ new AMT___core_factory().nextTab();
+		var ar = this.api_response;
+		console.log(ar);
+		//~ o.q[0].value = (a.is_closed) ? 'N' : 'Y';
+		//~ o.q[1].value = a.url;
+		//~ o.q[2].value = a.name;
+		//~ o.q[3].value = a.rating;
+		//~ o.q[4].value = a.address;
+		//~ if (a.phone.length == 10 && /^\d+$/.exec(a.phone)) {
+			//~ var x = /(\d{3})(\d{3})(\d{4})/.exec(a.phone);
+			//~ o.q[5].value = '('+x[1]+') '+x[2]+'-'+x[3];
+		//~ } else if (a.display_phone) {
+			//~ o.q[5].value = a.display_phone;
+		//~ } else if (a.phone) {
+			//~ o.q[5].value = a.phone;
+		//~ }
+
+		//~ // Get profile in order to check "website" field.
+		//~ // As well as add full address.
+		//~ yp_profile(this);
+		// Phone
+		if (ar.phone && opts.output_elements.hasOwnProperty('phone')) {
+			//~ FB_test_phone(ar.phone); // Test
+			opts.output_elements.phone.value = ar.phone;
+			opts.o.final_location.phone = ar.phone;
+		}
+		// Website
+		if (ar.website && opts.output_elements.hasOwnProperty('website')) {
+			//~ opts.output_elements.website.value = ar.website;
+			//~ opts.o.final_location.website = ar.website;
+		}
+		// Name
+		if  (
+			opts.output_elements.hasOwnProperty('name') &&
+			ar.name
+			)
+		{
+			opts.output_elements.name.value = ar.name;
+			opts.o.final_location.name = ar.name;
+		}
+		// opts.profile_url
+		if (ar.link) {
+			opts.profile_url = ar.link;
+		}
+		// ...
+		if (ar.location) {
+			var x = ar.location;
+			if (x.zip) {
+				x.zip = x.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+			}
+			if (x.street) {
+				x.street = x.street.replace(/\s+/g, ' ');
+			}
+			var location = [];
+			
+			if (x.street && opts.output_elements.hasOwnProperty('street')) {
+				opts.output_elements.street.value = x.street;
+				opts.o.final_location.street = x.street;
+			}
+			if (x.city && opts.output_elements.hasOwnProperty('city')) {
+				opts.output_elements.city.value = x.city;
+				opts.o.final_location.city = x.city;
+			}
+			if (x.state && opts.output_elements.hasOwnProperty('state')) {
+				opts.output_elements.state.value = x.state;
+				opts.o.final_location.state = x.state;
+			}
+			else if (x.state && opts.output_elements.hasOwnProperty('state_abbr')) {
+				opts.output_elements.state_abbr.value = x.state;
+				opts.o.final_location.state_abbr = x.state;
+			}
+			if (x.zip && opts.output_elements.hasOwnProperty('zip')) {
+				opts.output_elements.zip.value = x.zip;
+				opts.o.final_location.zip = x.zip;
+			}
+			if (x.country && opts.output_elements.hasOwnProperty('country')) {
+				opts.output_elements.country.value = x.country;
+				opts.o.final_location.country = x.country;
+			}
+			if (opts.output_elements.hasOwnProperty('lat') &&
+				opts.output_elements.hasOwnProperty('lng')) {
+				if (x.latitude && x.longitude) {
+					opts.output_elements.lat.value = x.latitude;
+					opts.output_elements.lng.value = x.longitude;
+					opts.o.final_location.lat = x.latitude;
+					opts.o.final_location.lng = x.longitude;
+				} else {
+					is_geocoding = true;
+					var location =  (x.street ? x.street + ", ": "") +
+									(x.city ? x.city + ", ": "") +
+									(x.zip ? x.zip + ", ": "") +
+									(x.country ? x.country : "");
+					location = location.replace(/, $/,'');		   
+					geocode(location);
+				}
+			}
+			// Full address
+			if (opts.output_elements.hasOwnProperty('full_address')) {
+				if (x.street && x.street != '') location.push(x.street);
+				if (x.city && x.city != '') location.push(x.city);
+				if (x.state && x.state != '') location.push(x.state);
+				if (x.country && x.country != '') location.push(x.country);
+				if (x.zip && x.zip != '') location.push(x.zip);
+				opts.output_elements.full_address.value = location.join(', ');
+				opts.o.final_location.full_address = location.join(', ');
+			}
+			// category
+			if (ar.category) {
+				opts.o.final_location.category = i.category;
+				if (opts.output_elements.hasOwnProperty('category')) {
+					opts.output_elements.full_address.value = i.category;
+				}
+			}
+		}
+	}
+	function yelp_addr_xxx() {
+		d1c.innerHTML = '';
+		var u = 
+			'https://graph.facebook.com/search'+
+			'?q='+encodeURIComponent(d2.value)+'&type=place'+
+			'&fields=category,category_list,id,name,likes,'+
+				'talking_about_count,location,link,phone,website'+
+			'&limit=8'+
+			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+		// XHR
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) {
+					complete('fb');// Mark complete
+					o.stats.fb.num_results = 0;
+					return;
+				}
+				
+				var r = JSON.parse(rs);
+				if (!r.data) {
+					d1.innerHTML = '!r.data';
+					complete('fb');// Mark complete
+					o.stats.fb.num_results = 0;
+					return;
+				}
+				r = r.data;
+				
+				// Loop
+				var c = 0;
+				for (var i in r) {
 					
+					if (r[i].type) {
+						if (r[i].type == 'event') continue;
+					}
+					
+					if (r[i].talking_about_count != null) {
+					} else
+						r[i].talking_about_count = '';
+					if (r[i].likes != null) {
+						//
+					} else {
+						r[i].likes = '';
+					}
+					
+					// Set o.first_fb_or_google_us
+					if 	(
+						c == 0 &&
+						r[i].location &&
+						r[i].location.country &&
+							(
+							r[i].location.country == 'United States'||
+							r[i].location.country == 'US'||
+							r[i].location.country == 'USA'
+							)
+						)
+					{
+						o.first_fb_or_google_us = true;
+					}
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = r[i].name;
+					inp.json_object = r[i];
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						var is_geocoding = false;
+						
+						// focus
+						if (opts.first_element)
+							opts.first_element.focus();
+						
+						// clear
+						clear_output_elements();
+						var i = this.json_object;
+						// Phone
+						if (i.phone && opts.output_elements.hasOwnProperty('phone')) {
+							FB_test_phone(i.phone); // Test
+							opts.output_elements.phone.value = i.phone;
+							opts.o.final_location.phone = i.phone;
+						}
+						// Website
+						if (i.website && opts.output_elements.hasOwnProperty('website')) {
+							opts.output_elements.website.value = i.website;
+							opts.o.final_location.website = i.website;
+						}
+						// Name
+						if  (
+							opts.output_elements.hasOwnProperty('name') &&
+							i.name
+							)
+						{
+							opts.output_elements.name.value = i.name;
+							opts.o.final_location.name = i.name;
+						}
+						if (i.link) {
+						}
+						// opts.profile_url
+						opts.profile_url = i.link;
+						// ...
+						if (i.location) {
+							var x = i.location;
+							if (x.zip) {
+								x.zip = x.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+							}
+							if (x.street) {
+								x.street = x.street.replace(/\s+/g, ' ');
+							}
+							var location = [];
+							
+							if (x.street && opts.output_elements.hasOwnProperty('street')) {
+								opts.output_elements.street.value = x.street;
+								opts.o.final_location.street = x.street;
+							}
+							if (x.city && opts.output_elements.hasOwnProperty('city')) {
+								opts.output_elements.city.value = x.city;
+								opts.o.final_location.city = x.city;
+							}
+							if (x.state && opts.output_elements.hasOwnProperty('state')) {
+								opts.output_elements.state.value = x.state;
+								opts.o.final_location.state = x.state;
+							}
+							else if (x.state && opts.output_elements.hasOwnProperty('state_abbr')) {
+								opts.output_elements.state_abbr.value = x.state;
+								opts.o.final_location.state_abbr = x.state;
+							}
+							if (x.zip && opts.output_elements.hasOwnProperty('zip')) {
+								opts.output_elements.zip.value = x.zip;
+								opts.o.final_location.zip = x.zip;
+							}
+							if (x.country && opts.output_elements.hasOwnProperty('country')) {
+								opts.output_elements.country.value = x.country;
+								opts.o.final_location.country = x.country;
+							}
+							if (opts.output_elements.hasOwnProperty('lat') &&
+								opts.output_elements.hasOwnProperty('lng')) {
+								if (x.latitude && x.longitude) {
+									opts.output_elements.lat.value = x.latitude;
+									opts.output_elements.lng.value = x.longitude;
+									opts.o.final_location.lat = x.latitude;
+									opts.o.final_location.lng = x.longitude;
+								} else {
+									is_geocoding = true;
+									var location =  (x.street ? x.street + ", ": "") +
+													(x.city ? x.city + ", ": "") +
+													(x.zip ? x.zip + ", ": "") +
+													(x.country ? x.country : "");
+									location = location.replace(/, $/,'');		   
+									geocode(location);
+								}
+							}
+							// Full address
+							if (opts.output_elements.hasOwnProperty('full_address')) {
+								if (x.street && x.street != '') location.push(x.street);
+								if (x.city && x.city != '') location.push(x.city);
+								if (x.state && x.state != '') location.push(x.state);
+								if (x.country && x.country != '') location.push(x.country);
+								if (x.zip && x.zip != '') location.push(x.zip);
+								opts.output_elements.full_address.value = location.join(', ');
+								opts.o.final_location.full_address = location.join(', ');
+							}
+							// category
+							if (i.category) {
+								opts.o.final_location.category = i.category;
+								if (opts.output_elements.hasOwnProperty('category')) {
+									opts.output_elements.full_address.value = i.category;
+								}
+							}
+						}
+						// onclick_callback
+						if(opts.hasOwnProperty('onclick_callback') && !is_geocoding) {
+							opts.onclick_callback(opts);
+						}
+					}
+					// Filter usa
+					if(opts.filter_for_only &&
+					   opts.filter_for_only.country &&
+					   opts.filter_for_only.country == 'USA') {
+						if(r[i] && r[i].location && r[i].location.country) {
+							var country = r[i].location.country.toLowerCase();
+							if(country.indexOf('united states') == -1) {
+								continue;
+							}
+						}
+						else if(!r[i].location) {
+							continue;
+						}
+					}
+					// Append to div
+					div.appendChild(inp);
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode('L:'+r[i].likes));
+					div.appendChild(document.createTextNode(',T:'+r[i].talking_about_count));
+					// Category
+					if (r[i].category) {
+						div.appendChild(document.createTextNode(' [C:'+r[i].category+']'));
+					}
+					if (r[i].category_list && r[i].category_list.length) {
+						for (var j in r[i].category_list) {
+							var cg = r[i].category_list[j]
+							if (cg.name != r[i].category) {
+								div.appendChild(document.createElement('br'));
+								div.appendChild(document.createTextNode('  [c:'+cg.name+']'));
+							}
+						}
+					}
+					// Location
+					if (r[i].location) {
+						// NEW. JULY 25, 2015.
+						/**
+						 * e.g. ?? city: "Bay City" country: "United States" latitude: 28.969652956053 longitude: -95.969258666212 state: "TX" street: "3317 Avenue F" zip: "77414"
+						 **/
+						var l = r[i].location;
+						var a = [];
+						if (l.street) {
+							a.push(l.street);
+						}
+						if (l.city) {
+							a.push(l.city);
+							opts.o.final_location.city = l.city;
+						}
+						if (l.state) {
+							a.push(l.state);
+							opts.o.final_location.state = l.state;
+							opts.o.final_location.state_abbr = l.state_abbr; // Same as state here.
+						}
+						if (l.country) {
+							a.push(l.country);
+						}
+						if (l.zip) {
+							a.push(l.zip);
+						}
+						if (a.length) {
+							var tmploc = a.join(', ');
+							var locSpan = document.createElement('span');
+								locSpan.innerHTML =
+									(opts.bold_locn_array) ?
+									'A:' + MT__bold(tmploc, opts.bold_locn_array) :
+									'A:' + tmploc;
+							div.appendChild(document.createElement('br'));
+							div.appendChild(locSpan);
+						}
+					}
+					// Website
 					if (r[i].website && opts.output_elements.hasOwnProperty('website')) {
 						div.appendChild(('W:'+r[i].website).div());
 					}
