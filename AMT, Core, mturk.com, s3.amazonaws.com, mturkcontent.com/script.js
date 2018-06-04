@@ -153971,7 +153971,7 @@ qatar,80
 	}
 	// 	taylor l grisham
 	// 
-	var s = '<li><strong>Do not </strong>include URLs to company aggregators such as Manta.com, Hoovers.com, yp.com/yellowpages.com. We ONLY want the official website</li>\n	<li>If no website can be found, please enter <strong>notavailalbe.com</strong></li>';
+	var s = '<li><strong>Do not </strong>include URLs to company aggregators such as Manta.com, Hoovers.com, yp.com/yellowpages.com. We ONLY want the official website</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
