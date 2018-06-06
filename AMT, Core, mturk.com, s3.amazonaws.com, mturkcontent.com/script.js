@@ -99586,10 +99586,17 @@ Laurens Hammond, Chicago, Ill.**/
 				for (var i in o.q) {
 					if (o.q[i].value.indexOf('null') != -1 ||
 						o.q[i].value.indexOf('undefined') != -1) {
+							// Select One is okay if there are no ratings
+							// for the location.
+						//o.q[i].value.indexOf('select one') != -1
 						o.q[i].focus();
 						return false;
 					}
 					if (o.q[i].value == '') {
+						o.q[i].focus();
+						return false;
+					}
+					if (o.q[i].value.length < 2) {
 						o.q[i].focus();
 						return false;
 					}
@@ -99610,9 +99617,7 @@ Laurens Hammond, Chicago, Ill.**/
 			 */
 			function yelp() {
 				//
-				// Skip left side! May 2018.
-				//~ yelp_search_snippet();
-				//~ return;
+				yelp_search_snippet();
 				//
 				var auth = {
 					// new
@@ -99705,11 +99710,13 @@ Laurens Hammond, Chicago, Ill.**/
 				if (!rs.businesses || rs.businesses.length == 0) {
 					console.log('0 left results');
 					div.innerText = d2.value + '\n'+d2b.value+'\n0\n';
-					// DO RIGHT
-					yelp_search_snippet();
+					//~ // DO RIGHT
+					//~ yelp_search_snippet();
 					return;
 				} else {
-					div.innerText = d2.value + '\n'+d2b.value+'\n';
+					div.appendChild((d2.value + '\n'+d2b.value).div({
+						style: 'background-color:MintCream;border-bottom:1px solid #a2a2a2;'})
+					);
 				}
 				var b = rs.businesses;
 				var auto_found = false;
@@ -99767,7 +99774,7 @@ Laurens Hammond, Chicago, Ill.**/
 					b[i].url = b[i].url.replace(/\?[\d\D]*/, '');
 					// Div
 					var d = document.createElement('div');
-					d.setAttribute('style','border-bottom:1px solid #a2a2a2;border-top:1px solid #a2a2a2;border-collapse: collapse;');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
 					d.className = 'exe '+b[i].url;
 					d.ypurl = b[i].url;
 					d.api_response = b[i];
@@ -99789,8 +99796,7 @@ Laurens Hammond, Chicago, Ill.**/
 						);
 						o.q[1].value = (a.rating+'') +
 							(((a.rating+'').indexOf('.') == -1) ? '.0' : '');
-						console.log((a.rating+'') +
-							(((a.rating+'').indexOf('.') == -1) ? '.0' : ''));
+						try_sbm();
 					}
 					d.onmouseover = d.onmousemove = function() {
 						var x = document.getElementsByClassName(this.className);
@@ -99901,7 +99907,6 @@ Laurens Hammond, Chicago, Ill.**/
 							var locn = rg[i].getElementsByClassName('neighborhood-str-list');
 							var city = rg[i].getElementsByClassName('biz-city');
 							if (!rvct || rvct.length == 0) {
-								console.log(rg[i].innerHTML);
 								rvct = 'N/A';
 							} else {
 								rvct = rvct[0].innerText.replace(/ reviews?/, '').trim();
@@ -99968,10 +99973,13 @@ Laurens Hammond, Chicago, Ill.**/
 									/^https?:\/\/www\.yelp\.com\/biz\/([^\/]+)\/*[\d\D]*$/,
 									'$1'
 								);
-								o.q[1].value = (a.rating+'') +
-									(((a.rating+'').indexOf('.') == -1) ? '.0' : '');
-								console.log((a.rating+'') +
-									(((a.rating+'').indexOf('.') == -1) ? '.0' : ''));
+								if (a.rating == 'N/A') {
+									o.q[1].selectedIndex = 0;
+								} else {
+									o.q[1].value = (a.rating+'') +
+										(((a.rating+'').indexOf('.') == -1) ? '.0' : '');
+								}
+								try_sbm();
 							}
 							d.onmouseover = d.onmousemove = function() {
 								var x = document.getElementsByClassName(this.className);
