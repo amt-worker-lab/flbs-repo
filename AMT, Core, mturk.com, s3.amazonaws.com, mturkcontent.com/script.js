@@ -153668,7 +153668,7 @@ qatar,80
 	}
 	// Matthew Mesher
 	// Find the Company Home Page
-	var s = '<li>If the Business Name implies a regional location (e.g. Acme Ohio), it is OK to supply the headquarter\'s Company Page (e.g. Acme Corp.).</li>\n	<li>Enter whether a Company Page is found with <strong>Y</strong> or <strong>N. </strong></li>\n	<li><u>If not found, stop. Otherwise:</u>&nbsp;Enter the website address of the home page.</li>';
+	var s = '<p>Find the company\'s COUNTRY-SPECIFIC home page, where available. If there is no country-specific home page, then provide the general home page.</p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -153740,9 +153740,9 @@ qatar,80
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // comp, comp+location, comp+industry
-					o.comp+' ("'+o.field4+'" OR "'+o.field4.stateAbbrToFull()+'")',
-					o.comp+' "'+o.field3+'" ("'+o.field4+'" OR "'+o.field4.stateAbbrToFull()+'")',
-					'"'+o.field7+'"'
+					o.comp,
+					o.comp+' ('+o.field6.stateAbbrToFull()+')',
+					o.comp+' ('+o.field4+'" OR "'+o.field6.stateAbbrToFull()+')',
 				],
 				search_results: {
 					//~ use_domain_only: true,
