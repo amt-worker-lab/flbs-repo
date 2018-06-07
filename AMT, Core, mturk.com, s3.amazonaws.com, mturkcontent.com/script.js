@@ -99549,10 +99549,11 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// NA
 			d3b.onclick = function() {
-				//~ this.style.backgroundColor = 'LightGreen';
-				//~ o.q[0].value = 'N/A';
-				//~ o.q[1].value = 'N/A';
-				//~ AMT___recordAndSubmit();
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = 'None';
+				//o.q[1].value = '';
+				o.q[1].selectedIndex = 0;
+				doSubmit();
 			}
 			//
 			var ef = new AMT___events_factory();
