@@ -150845,12 +150845,132 @@ qatar,80
 	 * Shapeless Cookie
 	 * John Johnson
 	 * Sherwood Stranieri
-	 * 
+	 * Chris ""
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
+	// Chris ""
+	// Find the Website Address for Companies
+	var s = 'li>Enter the website address for the <strong>official website </strong>of the company.</li>\n	<li>If the company is an individual unit for example a hotel referencing a specific location, enter the full URL of that location</li>\n	<li>If Best Western Kelowna, include the full address - http://http://www.bestwesternkelownahotel.com</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			// Elements
+			//~ var a = document.getElementsByTagName('p')[0].innerText
+				//~ .replace(/Here's the name of the restaurant:/, '')
+				//~ .trim()
+				//~ .split('\n');
+			var td = document.getElementsByTagName('td')[1].innerText.trim();
+			var o = {
+				comp: td,
+				//~ field2: a[1], // street
+				//~ field3: a[2], // city / st
+				//~ lname: td[5].innerText.trim().string_to_mixed_case(),	// comp
+				//~ degree: td[7].innerText.trim().string_to_mixed_case(),	// industry
+				//~ city: td[9].innerText.trim().string_to_mixed_case(),
+				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
+				boldArray: [],
+				//~ boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('web_url'),
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			console.log(o);
+			AMT___addUserDecision(
+				'Chris_url,2018', function() {
+					return o.comp;
+				}, ['Id(web_url)']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				search: {
+					//~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
+					//~ use_duckduckgo_search_engine: true,
+				},
+				searches:[ // 
+					o.comp,
+					o.spaced,
+					o.comp + ' company'
+					//~ o.comp + ' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
+					//~ o.spaced+' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
+				],
+				
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ onclick_success: function(e) {
+						//~ //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						//~ // url
+						//~ o.q[0].value = this.full_url.replace(/^https?:\/\//i, '');
+						//~ o.q[1].value = this.result_title;
+						//~ if (this.result_title != null) {
+							//~ AMT___recordAndSubmit();
+						//~ }
+						//~ return false; // Stop default submit.
+					//~ },
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+						//~ // Add trailing slash
+						//~ if (url[url.length-1] != '/')
+							//~ url += '/';
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (/\/dir\//.exec(obj.url)) {
+							//~ // ignore .../dir/...
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Sherwood Stranieri
 	// TODO: Add in tripadvisor and yelp - scrape the website from there.
 	var s = '<p><strong style="line-height: 1.6em;">NO Yelp, Facebook, or similar pages</strong><span style="line-height: 1.6em;">&nbsp;- just the actual website of the restaurant.</span></p>\n\n<p><textarea cols="80" name="answer1" rows="1"></textarea></p>';
