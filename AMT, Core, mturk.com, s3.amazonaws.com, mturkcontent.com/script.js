@@ -141226,7 +141226,8 @@ qatar,80
 			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:40px;');
 			document.body.appendChild(dx2);
 			dx2.value = o.comp +', ' + (o.city ? o.city  + ', ' : '') + o.state + ', ' + o.zip;
-			dx2.value = o.comp +', ' + o.state + ', ' + o.zip;
+			dx2.value = o.comp +', ' + o.state + ', ' +
+				o.zip.replace(/^(\d{5})[\d\D]*$/, '$1');
 			dx2.first_click = false; // For first blur
 			var dx3 = document.createElement('div'); // info div
 			dx3.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:100px;border:1px solid blue;background-color:#eee;font-size:1.6em !important;');
