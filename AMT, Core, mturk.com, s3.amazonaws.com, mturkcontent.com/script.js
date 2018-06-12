@@ -99510,8 +99510,9 @@ Laurens Hammond, Chicago, Ill.**/
 			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:60%;height:30px;');
 			document.body.appendChild(d2b);
 			var d2c  = document.createElement('textarea'); // Original company name
-			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:30px;');
+			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:60px;');
 			d2c.disabled = true; // Disable
+			d2c.value = o.comp;
 			document.body.appendChild(d2c);
 			var d3b = document.createElement('input');
 			d3b.setAttribute('style','position:absolute;top:64px;left:0px;width:50%;height:30px;');
@@ -99861,6 +99862,10 @@ Laurens Hammond, Chicago, Ill.**/
 						//'&cflt=restaurants'+
 						'&parent_request_id=&request_origin=user';
 				out.innerText = d2.value + '\n' + d2b.value;
+				//~ out.innerText = '';
+				//~ out.appendChild((d2.value + '\n'+d2b.value).div({
+					//~ style: 'background-color:MintCream;border-bottom:1px solid #a2a2a2;'})
+				//~ );
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -99894,6 +99899,9 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 						//
 						out.innerHTML = '';
+						out.appendChild((d2.value + '\n'+d2b.value).div({
+							style: 'background-color:MintCream;border-bottom:1px solid #a2a2a2;'})
+						);
 						//
 						var dom = new DOMParser().parseFromString(rs,'text/html');
 						var rg = dom.getElementsByClassName('regular-search-result');
