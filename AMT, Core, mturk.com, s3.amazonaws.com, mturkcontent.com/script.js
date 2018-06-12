@@ -99907,6 +99907,16 @@ Laurens Hammond, Chicago, Ill.**/
 							var ph = rg[i].getElementsByClassName('biz-phone');
 							var locn = rg[i].getElementsByClassName('neighborhood-str-list');
 							var city = rg[i].getElementsByClassName('biz-city');
+							var catg = rg[i].getElementsByClassName('category-str-list');
+							if (!catg || !catg.length) {
+								catg = 'C:N/A';
+							} else {
+								catg = 'C:' + catg[0].innerText.trim();
+								//~ var x = 'C:';
+								//~ for (var j=0; j<catg.length; j++) {
+									
+								//~ }
+							}
 							if (!rvct || rvct.length == 0) {
 								rvct = 'N/A';
 							} else {
@@ -99963,7 +99973,8 @@ Laurens Hammond, Chicago, Ill.**/
 									ad + ', ' + locn,
 									o.bold_addr, {style: 'color:blue;'}
 								).bold_string+'<br>'+
-								'&nbsp;R:'+rvct;
+								'&nbsp;R:'+rvct+'<br>'+
+								'&nbsp;'+catg;
 							d.onclick = function() {
 								this.style.backgroundColor = 'teal';
 								document.body.style.backgroundColor = 'LightGreen';
