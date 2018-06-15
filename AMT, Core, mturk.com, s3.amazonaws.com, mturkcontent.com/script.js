@@ -150992,7 +150992,8 @@ qatar,80
 	}
 	// Sherwood Stranieri
 	// TODO: Add in tripadvisor and yelp - scrape the website from there.
-	var s = '<p><strong style="line-height: 1.6em;">NO Yelp, Facebook, or similar pages</strong><span style="line-height: 1.6em;">&nbsp;- just the actual website of the restaurant.</span></p>\n\n<p><textarea cols="80" name="answer1" rows="1"></textarea></p>';
+	//~ var s = '<p><strong style="line-height: 1.6em;">NO Yelp, Facebook, or similar pages</strong><span style="line-height: 1.6em;">&nbsp;- just the actual website of the restaurant.</span></p>\n\n<p><textarea cols="80" name="answer1" rows="1"></textarea></p>';
+	var s = '<p><strong style="line-height: 1.6em;">NO Yelp, Facebook, or similar pages</strong><span style="line-height: 1.6em;">&nbsp;- just the actual website of the restaurant.</span></p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
