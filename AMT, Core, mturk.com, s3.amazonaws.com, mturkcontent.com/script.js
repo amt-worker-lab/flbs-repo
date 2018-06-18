@@ -150890,16 +150890,24 @@ qatar,80
 				//~ .split('\n');
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim(),
-				field2: td[3].innerText.trim(), // street
+				comp: td[5].innerText.trim(),
+				field2: td[7].innerText.trim(), // street 
 				//~ field3: a[2], // city / st
 				boldArray: [],
 				boldArray2: [],
 				//~ boldArray3: [],
 				q: [
-					document.getElementById('web_url'),
+					document.getElementsByName('web_url')[1],
 				],
 			}
+			// City is tacked on.
+			// Fix street, Add a space. 
+			o.field2 = o.field2.replace(/(\d)([a-z])/gi, '$1 $2');
+			// Break camel case words
+			o.field2 = o.field2.replace(/([A-Z][a-z]+)([A-Z][a-z]+)/g, '$1 $2');
+			// State
+			var x = /([A-Z]{2}) \d{4,5}/.exec(o.field2);
+			o.state = (x) ? x[1] : ' company';
 			o.boldArray = o.comp.clean_string_to_array();
 			o.boldArray2= o.field2.clean_string_to_array();
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
@@ -150907,7 +150915,7 @@ qatar,80
 			AMT___addUserDecision(
 				'RonnyEngelsman,2018', function() {
 					return o.comp+o.field2;
-				}, ['Id(web_url)']
+				}, ['Name(web_url)[1]']
 			)
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -150935,14 +150943,14 @@ qatar,80
 				searches:[ // 
 					o.comp,
 					o.comp +' '+ o.field2,
-					o.comp + ' company'
+					o.comp + ' ' + o.state
 					//~ o.comp + ' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 					//~ o.spaced+' ' + (o.field2.replace(/nyc area/i, '(new york | nyc)')),
 				],
 				
 				search_results: {
 					//~ use_domain_only: true,
-					//~ use_full_urls: true,
+					use_full_urls: true,
 					bold: {
 						black: o.boldArray,
 						blue: o.boldArray2,
@@ -150952,7 +150960,24 @@ qatar,80
 						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
 						// url
 						//https://foursquare.com/v/grandmothers-house/4c4c77115609c9b624b69b92
-						o.q[0].value = this.full_url.replace(/\?[\d\D]*$/, '');
+						//~ console.log(e);
+						//~ console.log(this);
+						//~ console.log(this.full_url);
+						//~ console.log(o);
+						//~ console.log(this.full_url.replace(/\\?[\d\D]*$/, ''));
+						//~ console.log(this.full_url.replace(
+							//~ /(https?:\/\/foursquare\.com\/v\/[^\/]+\/[^\/]+)[\d\D]*/,
+							//~ '$1'
+						//~ ));
+						//~ o.q[0].value = this.full_url.replace(/\?[\d\D]*$/, '');
+						o.q[0].value = this.full_url.replace(
+							/(https?:\/\/foursquare\.com\/v\/[^\/]+\/[^\/]+)[\d\D]*/,
+							'$1'
+						);
+						//~ document.getElementById('web_url').value = this.full_url.replace(
+							//~ /(https?:\/\/foursquare\.com\/v\/[^\/]+\/[^\/]+)[\d\D]*/,
+							//~ '$1'
+						//~ );
 						if (/https?:\/\/foursquare\.com\/v\/[^\/]+\/[^\/]+$/i.exec(o.q[0].value)) {
 							AMT___recordAndSubmit();
 						}

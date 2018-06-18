@@ -15240,6 +15240,9 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
  * 
  * 
  * 
+ * @todo
+ * 		Consider adding foursquare.com.
+ * 
  */
 AMT___items_factory.prototype.create_dashboard_find_address = function(options_object) {
 	
