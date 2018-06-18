@@ -150873,6 +150873,7 @@ qatar,80
 	// Ronny Engelsman
 	// Find the Foursquare url for this business
 	var s = '<div class="panel-body" id="instructionBody" style="display: none;">&nbsp;\n<p>Find the business page on foursquare.com for the business details provided below.</p>';
+	var s = '<p>Find the business page on foursquare.com for the business details provided below.</p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
