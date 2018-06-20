@@ -989,7 +989,7 @@ function MT__RUN() {
 			// user dec.
 			AMT___addUserDecision(
 				'MTProjectHIDs,2018', function() {
-					return o.u;
+					return o.name+o.specialty+o.country;
 				}, ['Id(Q1email)','Id(Q2source)']
 			);
 			// height
