@@ -932,38 +932,58 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
 			// Task specific GM
-			GM_addStyle('img {zoom:0.1;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
-			var td = document.getElementsByTagName('td');
+			var b = document.getElementsByTagName('b');
 			var o = {
-				u: td[1].innerText.trim(),
+				name: b[0].innerText.trim(),
+				specialty: b[1].innerText.trim(),
+				country: b[2].innerText.trim(),
 				//~ id: null,
+				bold1: [],
+				bold2: [],
 				q: [
 					document.getElementById('Q1email'),
 					document.getElementById('Q2source'),
 				]
 			}
+			o.bold1 = o.name.clean_string_to_array();
+			o.bold2 = o.specialty.clean_string_to_array();
+			o.bold3 = o.country.clean_string_to_array();
 			/*BEGIN ITEMS*/
 			// Two columns.
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:28px;left:0%;width:50%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				'position:absolute;top:28px;left:0%;width:99%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
 				a: true
 			});
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:26px;');
 			document.body.appendChild(d2);
-			var d1b = ''.div({
-				style:
-				'position:absolute;top:28px;left:50%;width:49%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
-				a: true
-			});
+			//~ var d1b = ''.div({
+				//~ style:
+				//~ 'position:absolute;top:28px;left:50%;width:49%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				//~ a: true
+			//~ });
 			var d2b = document.createElement('textarea');
 			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:26px;');
 			document.body.appendChild(d2b);
 			/*END ITEMS*/
+			// Fill name.
+			var x = o.name.split(' ');
+			if (x.length == 1) {
+				d2.value = o.name; // Last
+				d2b.value = '';
+			} else if (x.length == 2) {
+				d2.value = x[0]; // First
+				d2b.value = x[1]; // Last
+			} else { // 3 or more... E.g., may have middle initial.
+				d2.value = x[0]; // First?
+				d2b.value = x[x.length-1]; // Last?
+			}
+			//
 			AMT___addUserDecision(
 				'MTProjectHIDs,2018', function() {
 					return o.u;
@@ -971,7 +991,7 @@ function MT__RUN() {
 			);
 			var ef = new AMT___events_factory();
 			ef.mouseup__delete_range({
-				elements: [ d2,d2b ],
+				elements: [ d2, d2b ],
 				blur_element: true,
 				remove_whitespace: true,
 			});
@@ -980,12 +1000,16 @@ function MT__RUN() {
 			d2.onblur = d2b.onblur = function(e) {
 				init(this);
 			}
-			
+			// Start
+			init(false);
 			function init(input) {
+				d1.innerText = '...'; // Reset d1.
 				// xhr
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'http://www.daycoproducts.com/parts?oe_number='+
-						encodeURIComponent(o.u),
+					URL: 'https://www.scopus.com/results/authorNamesList.uri?sort=count-f&src=al&sid=cd717ff40bb38c8edf702611fb87d0ba&sot=al&sdt=al&sl=41&s=AUTHLASTNAME%28%29+AND+AUTHFIRST%28%29'
+					+'&st1='+encodeURIComponent(d2.value) // last name
+					+'&st2='+encodeURIComponent(d2b.value) // first name
+					+'&orcidId=&selectionPageSearch=anl&reselectAuthor=false&activeFlag=false&showDocument=false&resultsPerPage=20&offset=1&jtp=false&currentPage=1&previousSelectionCount=0&tooManySelections=false&previousResultCount=0&authSubject=LFSC&authSubject=HLSC&authSubject=PHSC&authSubject=SOSC&exactAuthorSearch=false&showFullList=false&authorPreferredName=&origin=searchauthorfreelookup&affiliationId=&txGid=10ff736c0135c6a5592494ac293350f4',
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
@@ -1003,15 +1027,105 @@ function MT__RUN() {
 							return;
 						}
 						
-						if (rs.indexOf('<div class="no-results">No results</div>') != -1) {
-							o.q[0].value = 0;
-							AMT___recordAndSubmit();
+						//~ if (rs.indexOf('<div class="no-results">No results</div>') != -1) {
+							//~ o.q[0].value = 0;
+							//~ AMT___recordAndSubmit();
+							//~ return;
+						//~ }
+						// Reset d1
+						d1.innerText = '';
+						var d = (o.name + '\n' + o.specialty + '\n' + o.country)
+							.div({
+								style:'border-bottom:1px solid teal;',
+								innerText: true
+							});
+						d1.appendChild(d);
+						
+						// Page results.
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var d = dom.getElementsByClassName('searchArea');
+						if (!d || d.length == 0) {
+							d1.appendChild('0 results!'.div());
 							return;
 						}
-						
-						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						var d = dom.getElementById('results');
-						
+						// Still here.
+						for (var i=0; i<d.length; i++) {
+							var id = d[i].getElementsByName('authorIds');
+							if (!id) {
+								alert('missing authorId');
+							} else {
+								id = id[0].value.trim();
+							}
+							var names = d[i].getElementsByName('authorResultsNamesCol');
+							if (!names) {
+								alert('missing names');
+							} else {
+								names = names[0].innerText.trim();
+							}
+							var spec = d[i].getElementsByName('dataCol4');
+							if (!spec) {
+								alert('missing specs');
+							} else {
+								spec = spec[0].innerText.trim();
+							}
+							var country = d[i].getElementsByName('dataCol7');
+							if (!country) {
+								alert('missing country');
+							} else {
+								country = country[0].innerText.trim();
+							}
+							var out = '';
+							out += 'Name:'+MT__bold(names, o.bold1)+'\n';
+							out += 'Id:'+id+'\n';
+							out += 'Spec.:'+MT__bold(spec, o.bold2)+'\n';
+							out += 'Country:'+country;
+							var d = out.div({
+								style:'border-bottom:1px solid teal;',
+								innerHTML:true
+							});
+							d.authid = id;
+							d.onclick = function() {
+								this.style.backgroundColor = 'teal';
+								profile(this);
+							}
+							d.className = 'exe';
+						}
+					}
+				});
+			}
+			function profile(div) {
+				// Do xhr for h-index value.
+				// Url is like this:
+				// 	https://www.scopus.com/authid/
+				// 	detail.uri?authorId=7201966139
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://www.scopus.com/authid/detail.uri'+
+						'?authorId='+encodeURIComponent(div.authid),
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						// Almost done.
+						var x = /<input type="hidden" name="hSingleIndex" id="hSingleIndexHidden" value="(\d+)"\/>/.exec(rs);
+						if (!x) {
+							alert('missing h index');
+						} else {
+							o.q[0].value = x[1];
+							o.q[1].value = 'https://www.scopus.com/authid/detail.uri?authorId='+div.authid;
+							//~ AMT___recordAndSubmit();
+						}
 					}
 				});
 			}
