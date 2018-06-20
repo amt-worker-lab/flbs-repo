@@ -915,9 +915,109 @@ function MT__RUN() {
 	 * Saransh Chauhan
 	 * Chandler Nunez
 	 * Frank Fatato
-	 * 
+	 * MT Project
 	 * 
 	 */
+	// MT Project
+	// Find Author's h-index
+	// @tags: Simple xhr
+	// 
+	var s = '<h3>Find the author\'s \'h-index\' value.&nbsp; An h-index is a calculation of author citations/publications. Useful sources of h-index include Google Scholar and Scopus, but you can find it elsewhere as long as you provide the source where you got it.&nbsp; Use the name, specialty and country values to make sure you are finding the h-index for the correct author.</h3>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			GM_addStyle('img {zoom:0.1;}');
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				//~ id: null,
+				q: [
+					document.getElementById('Q1email'),
+					document.getElementById('Q2source'),
+				]
+			}
+			/*BEGIN ITEMS*/
+			// Two columns.
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:28px;left:0%;width:50%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:26px;');
+			document.body.appendChild(d2);
+			var d1b = ''.div({
+				style:
+				'position:absolute;top:28px;left:50%;width:49%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:26px;');
+			document.body.appendChild(d2b);
+			/*END ITEMS*/
+			AMT___addUserDecision(
+				'MTProjectHIDs,2018', function() {
+					return o.u;
+				}, ['Id(Q1email)','Id(Q2source)']
+			);
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [ d2,d2b ],
+				blur_element: true,
+				remove_whitespace: true,
+			});
+			d2 .addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.onblur = d2b.onblur = function(e) {
+				init(this);
+			}
+			
+			function init(input) {
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://www.daycoproducts.com/parts?oe_number='+
+						encodeURIComponent(o.u),
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						
+						if (rs.indexOf('<div class="no-results">No results</div>') != -1) {
+							o.q[0].value = 0;
+							AMT___recordAndSubmit();
+							return;
+						}
+						
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var d = dom.getElementById('results');
+						
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// Frank Fatato
 	// Collect Part Data
 	// @tags: Simple xhr
