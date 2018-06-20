@@ -932,6 +932,8 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
 			// Task specific GM
+			GM_addStyle('form {margin-top:1000px;}');
+			GM_addStyle('.exe {padding: 2px 0 2px 0;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			//...
 			
@@ -956,39 +958,49 @@ function MT__RUN() {
 			// Two columns.
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:28px;left:0%;width:99%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				'position:absolute;top:90px;left:0%;width:99%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
 				a: true
 			});
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:26px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
 			document.body.appendChild(d2);
-			//~ var d1b = ''.div({
-				//~ style:
-				//~ 'position:absolute;top:28px;left:50%;width:49%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
-				//~ a: true
-			//~ });
+			var d1b = ''.div({ // info div
+				style:
+				'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:26px;');
+			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:29px;');
 			document.body.appendChild(d2b);
 			/*END ITEMS*/
+			d1b.innerText = o.name+'\n'+o.specialty+'\n'+o.country;
 			// Fill name.
 			var x = o.name.split(' ');
 			if (x.length == 1) {
-				d2.value = o.name; // Last
+				d2.value = o.name; // Last?
 				d2b.value = '';
 			} else if (x.length == 2) {
-				d2.value = x[0]; // First
-				d2b.value = x[1]; // Last
+				d2.value = x[1]; // Last
+				d2b.value = x[0]; // First
 			} else { // 3 or more... E.g., may have middle initial.
-				d2.value = x[0]; // First?
-				d2b.value = x[x.length-1]; // Last?
+				d2.value = x[x.length-1]; // Last?
+				d2b.value = x[0]; // First?
 			}
-			//
+			// user dec.
 			AMT___addUserDecision(
 				'MTProjectHIDs,2018', function() {
 					return o.u;
 				}, ['Id(Q1email)','Id(Q2source)']
 			);
+			// height
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [	d1 ],
+				offset: 90 // offset top
+			});
+			//
 			var ef = new AMT___events_factory();
 			ef.mouseup__delete_range({
 				elements: [ d2, d2b ],
@@ -1034,12 +1046,6 @@ function MT__RUN() {
 						//~ }
 						// Reset d1
 						d1.innerText = '';
-						var d = (o.name + '\n' + o.specialty + '\n' + o.country)
-							.div({
-								style:'border-bottom:1px solid teal;',
-								innerText: true
-							});
-						d1.appendChild(d);
 						
 						// Page results.
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
@@ -1050,45 +1056,56 @@ function MT__RUN() {
 						}
 						// Still here.
 						for (var i=0; i<d.length; i++) {
-							var id = d[i].getElementsByName('authorIds');
+							console.log(d[i]);
+							var id = d[i].getElementsByTagName('input');
 							if (!id) {
 								alert('missing authorId');
 							} else {
 								id = id[0].value.trim();
 							}
-							var names = d[i].getElementsByName('authorResultsNamesCol');
+							var names = d[i].getElementsByClassName('authorResultsNamesCol');
 							if (!names) {
 								alert('missing names');
 							} else {
 								names = names[0].innerText.trim();
 							}
-							var spec = d[i].getElementsByName('dataCol4');
+							var spec = d[i].getElementsByClassName('dataCol4');
 							if (!spec) {
 								alert('missing specs');
 							} else {
 								spec = spec[0].innerText.trim();
 							}
-							var country = d[i].getElementsByName('dataCol7');
+							var country = d[i].getElementsByClassName('dataCol7');
 							if (!country) {
 								alert('missing country');
 							} else {
 								country = country[0].innerText.trim();
 							}
+							var numdocs = d[i].getElementsByClassName('dataCol3');
+							if (!numdocs) {
+								alert('missing numdocs');
+							} else {
+								numdocs = numdocs[0].innerText.trim();
+							}
 							var out = '';
-							out += 'Name:'+MT__bold(names, o.bold1)+'\n';
-							out += 'Id:'+id+'\n';
-							out += 'Spec.:'+MT__bold(spec, o.bold2)+'\n';
-							out += 'Country:'+country;
-							var d = out.div({
+							out += 'Name: '+MT__bold(names, o.bold1)+'<br>';
+							out += 'Id: '+id+'<br>';
+							out += 'Spec.: '+MT__bold(spec, o.bold2)+'<br>';
+							out += 'Country: '+country+'<br>';
+							out += '#Docs: '+numdocs;
+							var dout = out.div({
 								style:'border-bottom:1px solid teal;',
 								innerHTML:true
 							});
-							d.authid = id;
-							d.onclick = function() {
+							dout.authid = id;
+							dout.onclick = function() {
 								this.style.backgroundColor = 'teal';
+								// nextab
+								new AMT___core_factory().nextTab();
 								profile(this);
 							}
-							d.className = 'exe';
+							dout.className = 'exe';
+							d1.appendChild(dout);
 						}
 					}
 				});
@@ -1124,7 +1141,7 @@ function MT__RUN() {
 						} else {
 							o.q[0].value = x[1];
 							o.q[1].value = 'https://www.scopus.com/authid/detail.uri?authorId='+div.authid;
-							//~ AMT___recordAndSubmit();
+							AMT___recordAndSubmit();
 						}
 					}
 				});
