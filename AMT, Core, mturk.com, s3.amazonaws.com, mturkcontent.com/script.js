@@ -151098,9 +151098,132 @@ qatar,80
 	 * Chris ""
 	 * Ronny Engelsman
 	 * Werner
-	 * 
+	 * Max Jacobson
 	 * 
 	 */
+	// Max Jacobson
+	// Find the Website from the Business Name and City
+	var s = '<li>Enter the website address for the <strong>official website </strong>of the business.</li>\n	<li>Include <strong>only the domain of the official website -&nbsp;</strong>&nbsp;e.g. google.com, instead of www.google.com</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			// Elements
+			//~ var a = document.getElementsByTagName('p')[0].innerText
+				//~ .replace(/Here's the name of the restaurant:/, '')
+				//~ .trim()
+				//~ .split('\n');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[3].innerText.trim(),
+				comp_all: td[1].innerText.trim(),
+				//~ field2: td[7].innerText.trim(), // street 
+				//~ field3: a[2], // city / st
+				boldArray: [],
+				boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('web_url'),
+				],
+			}
+			//~ // City is tacked on.
+			//~ // Fix street, Add a space. 
+			//~ o.field2 = o.field2.replace(/(\d)([a-z])/gi, '$1 $2');
+			//~ // Break camel case words
+			//~ o.field2 = o.field2.replace(/([A-Z][a-z]+)([A-Z][a-z]+)/g, '$1 $2');
+			//~ // State
+			//~ var x = /([A-Z]{2}) \d{4,5}/.exec(o.field2);
+			//~ o.state = (x) ? x[1] : ' company';
+			//~ o.boldArray = o.comp.clean_string_to_array();
+			//~ o.boldArray2= o.field2.clean_string_to_array();
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			console.log(o);
+			AMT___addUserDecision(
+				'MaxJacobson-url,2018', function() {
+					return o.comp;
+				}, ['Id(web_url)']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				search: {
+					//~ str_add_to_searches_hidden: ' site:foursquare.com/v/', //
+					//~ use_duckduckgo_search_engine: true,
+				},
+				searches:[ // 
+					o.comp,
+					o.spaced,
+					o.comp_all// + ' company'
+				],
+				
+				search_results: {
+					use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ onclick_success: function(e) {
+						//PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+						// url
+						//~ o.q[0].value = this.full_url.replace(/\?[\d\D]*$/, '');
+						//~ if (/https?:\/\/foursquare\.com\/v\/[^\/]+\/[^\/]+$/i.exec(o.q[0].value)) {
+							//~ AMT___recordAndSubmit();
+						//~ }
+						//~ return false; // Stop default submit.
+					//~ },
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+						//~ // Add trailing slash
+						//~ if (url[url.length-1] != '/')
+							//~ url += '/';
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (/\/dir\//.exec(obj.url)) {
+							//~ // ignore .../dir/...
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Werner
 	// Find the Website Address for Companies
 	var s = '<li>Enter the website address for the <strong>official website </strong>of the company</li>\n	<li>Exclude obvious double entrys&nbsp;</li>';
