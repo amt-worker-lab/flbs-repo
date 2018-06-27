@@ -936,9 +936,9 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
 			// Task specific GM
-			GM_addStyle('form {margin-top:1000px;}');
-			GM_addStyle('.exe {padding: 2px 0 2px 0;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//~ GM_addStyle('form {margin-top:1000px;}');
+			//~ GM_addStyle('.exe {padding: 2px 0 2px 0;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
@@ -957,11 +957,12 @@ function MT__RUN() {
 			// Two columns.
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:90px;left:0%;width:99%;height:370px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				'position:absolute;top:90px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
 				a: true
 			});
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
+			d2.value = o.id;
 			document.body.appendChild(d2);
 			var d1b = ''.div({ // info div
 				style:
@@ -977,13 +978,13 @@ function MT__RUN() {
 				}, ['Id(web_url)','Name(revs)[0]']
 			);
 			// height
-			new AMT___core_factory().el_innerHeight({
-				// This set the elements d1,d1b, and d1c
-				// to fill up the whole window, minus their
-				// distance from page top (top:XX pixels;).
-				elements: [	d1 ],
-				offset: 90 // offset top
-			});
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [	d1 ],
+				//~ offset: 90 // offset top
+			//~ });
 			//
 			var ef = new AMT___events_factory();
 			ef.mouseup__delete_range({
@@ -991,7 +992,7 @@ function MT__RUN() {
 				blur_element: true,
 				remove_whitespace: true,
 			});
-			d2 .addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
 			d2.onblur = function(e) {
 				init(this);
 			}
@@ -1001,8 +1002,10 @@ function MT__RUN() {
 				d1.innerText = '...'; // Reset d1.
 				// xhr
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: ''+encodeURIComponent(d2.value),
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					URL: 'https://www.amazon.com/dp/'+encodeURIComponent(d2.value),
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
 							document.body.style.backgroundColor = 'blue';
@@ -1018,109 +1021,41 @@ function MT__RUN() {
 							document.body.style.backgroundColor = 'blue';
 							return;
 						}
-						
-						//~ if (rs.indexOf('<div class="no-results">No results</div>') != -1) {
-							//~ o.q[0].value = 0;
-							//~ AMT___recordAndSubmit();
-							//~ return;
-						//~ }
-						// Reset d1
 						d1.innerText = '';
-						
 						// Page results.
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						var d = dom.getElementsByClassName('searchArea');
-						if (!d || d.length == 0) {
-							d1.appendChild('0 results!'.div());
+						var d = dom.getElementById('productTitle');
+						if (!d || !d.innerText) {
+							d1.appendChild('No title!'.div());
 							return;
-						}
-						// Still here.
-						for (var i=0; i<d.length; i++) {
-							console.log(d[i]);
-							var id = d[i].getElementsByTagName('input');
-							if (!id) {
-								alert('missing authorId');
-							} else {
-								id = id[0].value.trim();
-							}
-							var names = d[i].getElementsByClassName('authorResultsNamesCol');
-							if (!names) {
-								alert('missing names');
-							} else {
-								names = names[0].innerText.trim();
-							}
-							var spec = d[i].getElementsByClassName('dataCol4');
-							if (!spec) {
-								alert('missing specs');
-							} else {
-								spec = spec[0].innerText.trim();
-							}
-							var country = d[i].getElementsByClassName('dataCol7');
-							if (!country) {
-								alert('missing country');
-							} else {
-								country = country[0].innerText.trim();
-							}
-							var numdocs = d[i].getElementsByClassName('dataCol3');
-							if (!numdocs) {
-								alert('missing numdocs');
-							} else {
-								numdocs = numdocs[0].innerText.trim();
-							}
-							var out = '';
-							out += 'Name: '+MT__bold(names, o.bold1)+'<br>';
-							out += 'Id: '+id+'<br>';
-							out += 'Spec.: '+MT__bold(spec, o.bold2)+'<br>';
-							out += 'Country: '+country+'<br>';
-							out += '#Docs: '+numdocs;
-							var dout = out.div({
-								style:'border-bottom:1px solid teal;',
-								innerHTML:true
-							});
-							dout.authid = id;
-							dout.onclick = function() {
-								this.style.backgroundColor = 'teal';
-								// nextab
-								new AMT___core_factory().nextTab();
-								profile(this);
-							}
-							dout.className = 'exe';
-							d1.appendChild(dout);
-						}
-					}
-				});
-			}
-			function profile(div) {
-				// Do xhr for h-index value.
-				// Url is like this:
-				// 	https://www.scopus.com/authid/
-				// 	detail.uri?authorId=7201966139
-				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'https://www.scopus.com/authid/detail.uri'+
-						'?authorId='+encodeURIComponent(div.authid),
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						var rs = options.response.responseText;
-						if (options.response.status != 200) {
-							document.body.style.backgroundColor = 'blue';
-							//d1.appendChild('!200'.div());
-							return false;
-						}
-						//
-						return true;
-					},
-					success_callback: function(options) {
-						var rs = options.response.responseText;
-						if (options.response.status != 200) {
-							document.body.style.backgroundColor = 'blue';
-							return;
-						}
-						// Almost done.
-						var x = /<input type="hidden" name="hSingleIndex" id="hSingleIndexHidden" value="(\d+)"\/>/.exec(rs);
-						if (!x) {
-							alert('missing h index');
 						} else {
-							o.q[0].value = x[1];
-							o.q[1].value = 'https://www.scopus.com/authid/detail.uri?authorId='+div.authid;
+							o.q[0].value = d.innerText.trim();
+						}
+						var d = dom.getElementById('acrCustomerReviewText');
+						if (!d || !d.innerText) {
+							if (rs.indexOf('Be the first to review this item') != -1) {
+								o.q[1].value = '0';
+							} else {
+								d1.appendChild('No review text!'.div());
+								return;
+							}
+						} else {
+							var x = /^([\d,]+) customer review/.exec(d.innerText.trim());
+							if (!x) {
+								d1.appendChild(
+									('Bad review text: '+d.innerText.trim()).div()
+								);
+								return;
+							} else {
+								o.q[1].value = x[1];
+							}
+						}
+						// Here?
+						if (o.q[0].value.length > 3 && 
+							o.q[0].value != 'null' &&
+							o.q[0].value != 'undefined' &&
+							o.q[1].value.length > 0 &&
+							/^[\d,]+$/.exec(o.q[1].value)) {
 							AMT___recordAndSubmit();
 						}
 					}
