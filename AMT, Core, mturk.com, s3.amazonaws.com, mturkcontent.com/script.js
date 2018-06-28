@@ -917,12 +917,157 @@ function MT__RUN() {
 	 * Frank Fatato
 	 * MT Project
 	 * Juls Kuls
-	 * 
+	 * George O Gaston
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
+	// George O Gaston
+	// 01C2 BWD to SMP XREF
+	// @tags: Simple xhr
+	// 
+	var s = '<div><strong>Instructions</strong></div>\n\n<div>\n<p>Find the STD Part number using the provided BWD part number</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//~ GM_addStyle('form {margin-top:1000px;}');
+			//~ GM_addStyle('.exe {padding: 2px 0 2px 0;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				id: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Part Number')[0],
+				]
+			}
+			//~ o.bold1 = o.name.clean_string_to_array();
+			//~ o.bold2 = o.specialty.clean_string_to_array();
+			//~ o.bold3 = o.country.clean_string_to_array();
+			/*BEGIN ITEMS*/
+			// Two columns.
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:90px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
+			d2.value = o.id;
+			document.body.appendChild(d2);
+			var d1b = ''.div({ // info div
+				style:
+				'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			/*END ITEMS*/
+			d1b.innerText = o.id;
+			// user dec.
+			AMT___addUserDecision(
+				'gaston,2018', function() {
+					return o.id;
+				}, ['Name(Part Number)[0]']
+			);
+			// height
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [	d1 ],
+				//~ offset: 90 // offset top
+			//~ });
+			//
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [ d2 ],
+				blur_element: true,
+				remove_whitespace: true,
+			});
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.onblur = function(e) {
+				init(this);
+			}
+			// Start
+			init(false);
+			function init(input) {
+				d1.innerText = '...'; // Reset d1.
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://ecatalog.smpcorp.com/STD/api/product/partsearch?filter='+
+					encodeURIComponent(d2.value)+
+					'&filterType=s&searchType=x&imageSize=80&start=0&limit=25'+
+					'&sort=1&catFilter=-All-&yearFilter=-All-&makeFilter=-All-'+
+					'&modelFilter=-All-&attrCodeFilter=-All-&attrValueFilter=-All-',
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						d1.innerText = '';
+						// Page results.
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var d = dom.getElementById('productTitle');
+						if (!d || !d.innerText) {
+							d1.appendChild('No title!'.div());
+							return;
+						} else {
+							o.q[0].value = d.innerText.trim();
+						}
+						var d = dom.getElementById('acrCustomerReviewText');
+						if (!d || !d.innerText) {
+							if (rs.indexOf('Be the first to review this item') != -1) {
+								o.q[1].value = '0';
+							} else {
+								d1.appendChild('No review text!'.div());
+								return;
+							}
+						} else {
+							var x = /^([\d,]+) customer review/.exec(d.innerText.trim());
+							if (!x) {
+								d1.appendChild(
+									('Bad review text: '+d.innerText.trim()).div()
+								);
+								return;
+							} else {
+								o.q[1].value = x[1];
+							}
+						}
+						// Here?
+						if (o.q[0].value.length > 3 && 
+							o.q[0].value != 'null' &&
+							o.q[0].value != 'undefined' &&
+							o.q[1].value.length > 0 &&
+							/^[\d,]+$/.exec(o.q[1].value)) {
+							AMT___recordAndSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// Juls Kuls
 	// @tags: Simple xhr
 	// 
