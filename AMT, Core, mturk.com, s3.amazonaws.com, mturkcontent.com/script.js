@@ -998,6 +998,13 @@ function MT__RUN() {
 			}
 			// Start
 			init(false);
+			function try_sbm() {
+				if (o.q[0].value.length > 3 && 
+					o.q[0].value != 'null' &&
+					o.q[0].value != 'undefined') {
+					AMT___recordAndSubmit();
+				}
+			}
 			function init(input) {
 				d1.innerText = '...'; // Reset d1.
 				// xhr
@@ -1026,42 +1033,35 @@ function MT__RUN() {
 							return;
 						}
 						d1.innerText = '';
-						// Page results.
-						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						var d = dom.getElementById('productTitle');
-						if (!d || !d.innerText) {
-							d1.appendChild('No title!'.div());
+						var r = JSON.parse(rs);
+						console.log(r);
+						//
+						if (!r || !r.length) {
+							d1.innerText = '0 length:\n'+rs;
+							if (r.length == 0) {
+								o.q[0].value = 0;
+								AMT___recordAndSubmit();
+							}
 							return;
-						} else {
-							o.q[0].value = d.innerText.trim();
 						}
-						var d = dom.getElementById('acrCustomerReviewText');
-						if (!d || !d.innerText) {
-							if (rs.indexOf('Be the first to review this item') != -1) {
-								o.q[1].value = '0';
-							} else {
-								d1.appendChild('No review text!'.div());
-								return;
+						o.q[0].value = r[0].basePart;
+						if (r[0].mfG_Part.toLowerCase() != o.id.toLowerCase()) {
+							// Any matches?
+							for (var i in r) {
+								if (r[i].mfG_Part.toLowerCase() == o.id.toLowerCase()) {
+									o.q[0].value = r[0].basePart;
+									try_sbm();
+									return;
+								}
 							}
-						} else {
-							var x = /^([\d,]+) customer review/.exec(d.innerText.trim());
-							if (!x) {
-								d1.appendChild(
-									('Bad review text: '+d.innerText.trim()).div()
-								);
-								return;
-							} else {
-								o.q[1].value = x[1];
-							}
+							// Still here?
+							d1.innerText = 'Mfg part mismatch: '+ o.id +'\n'+ rs;
+							o.q[0].value = 0;
+							AMT___recordAndSubmit();
+							return;
 						}
 						// Here?
-						if (o.q[0].value.length > 3 && 
-							o.q[0].value != 'null' &&
-							o.q[0].value != 'undefined' &&
-							o.q[1].value.length > 0 &&
-							/^[\d,]+$/.exec(o.q[1].value)) {
-							AMT___recordAndSubmit();
-						}
+						try_sbm();
 					}
 				});
 			}
