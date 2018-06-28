@@ -924,6 +924,157 @@ function MT__RUN() {
 	 * 
 	 */
 	// George O Gaston
+	// Part number Interchange (wellsve.com)
+	// @tags: Simple xhr
+	// 
+	var s = '<div><strong>Instructions</strong></div>\n\n<div>\n<p>Find the Wells Part Number for the supplied part number.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//~ GM_addStyle('form {margin-top:1000px;}');
+			//~ GM_addStyle('.exe {padding: 2px 0 2px 0;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				id: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Part Number')[0],
+				]
+			}
+			//~ o.bold1 = o.name.clean_string_to_array();
+			//~ o.bold2 = o.specialty.clean_string_to_array();
+			//~ o.bold3 = o.country.clean_string_to_array();
+			/*BEGIN ITEMS*/
+			// Two columns.
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:90px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
+			d2.value = o.id;
+			document.body.appendChild(d2);
+			var d1b = ''.div({ // info div
+				style:
+				'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			/*END ITEMS*/
+			d1b.innerText = o.id;
+			// user dec.
+			AMT___addUserDecision(
+				'gaston-wellsve,2018', function() {
+					return o.id;
+				}, ['Name(Part Number)[0]']
+			);
+			// height
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [	d1 ],
+				//~ offset: 90 // offset top
+			//~ });
+			//
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [ d2 ],
+				blur_element: true,
+				remove_whitespace: true,
+			});
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.onblur = function(e) {
+				init(this);
+			}
+			// Start
+			init(false);
+			function try_sbm() {
+				if (o.q[0].value.length > 2 &&
+					o.q[0].value != 'null' &&
+					o.q[0].value != 'undefined') {
+					AMT___recordAndSubmit();
+				}
+			}
+			function init(input) {
+				d1.innerText = '...'; // Reset d1.
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://www.wellsve.com/parts/index.php',
+					method: 'POST',
+					data: 'XPART_NO='+encodeURIComponent(d2.value),
+					filename: new AMT___requests_factory().md5('gaston_wells_'+d2.value),
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						//~ console.log(options);
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							//d1.appendChild('!200'.div());
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						console.log(options);
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						d1.innerText = '';
+						//~ console.log(rs);
+						if (rs.indexOf('No results found for ') != -1) {
+							o.q[0].value = '0';
+							AMT___recordAndSubmit();
+							return;
+						}
+						// dom
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						// Traverse TRs, looking for correct set of TDs
+						var d = dom.getElementsByClassName('tablesorter');
+						d = d[0];
+						var tr = d.getElementsByTagName('tr');
+						console.log(tr);
+						for (var j=0; j<tr.length; j++) {
+							var td = tr[j].getElementsByTagName('td');
+							if (td.length == 0) continue; // e.g. TH row
+							// if td == bwd
+							// td1 = id
+							// then td2 is VALUE
+							console.log(td);
+							if (td[0].innerText == 'BWD' && 
+								td[1].innerText == o.id && 
+								td[2].innerText.trim().length > 0) {
+								o.q[0].value = td[2].innerText.trim();
+								try_sbm();
+								return;
+							}
+						}
+						//~ for (var i=0; i<d.length; i++) {
+							
+						//~ }
+						// Still here?
+						//...
+						
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	// George O Gaston
 	// 01C2 BWD to SMP XREF
 	// @tags: Simple xhr
 	// 

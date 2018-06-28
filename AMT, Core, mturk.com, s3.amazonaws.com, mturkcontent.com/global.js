@@ -3854,7 +3854,6 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				'&random='+Math.random(),
 			onload: function (response) {
 				var rs = response.responseText;
-				
 				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
 					console.log('-----\nFILE DOES NOT EXIST!\n-----');
 					read_from_xhr();
@@ -3898,7 +3897,7 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 					}
 				}
 			});
-		} else if (options.method == 'post') {
+		} else if (options.method.toLowerCase() == 'post') {
 			GM_xmlhttpRequest({
 				method: 'POST',
 				url: options.URL,
