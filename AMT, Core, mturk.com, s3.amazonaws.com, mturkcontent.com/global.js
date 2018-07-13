@@ -16555,12 +16555,16 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	}
 	function FB_addr() {
 		d1.innerHTML = '';
+		// Drop from limit of 8 to limit of 4.
+		// Apparently there is a new strict limit on # of 
+		// searches. Needs work. July 2018.
+		// See Jason Blackbriar for more detail.
 		var u = 
 			'https://graph.facebook.com/search'+
 			'?q='+encodeURIComponent(d2.value)+'&type=place'+
 			'&fields=category,category_list,id,name,likes,'+
 				'talking_about_count,location,link,phone,website'+
-			'&limit=8'+
+			'&limit=4'+ 
 			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
 		// XHR
