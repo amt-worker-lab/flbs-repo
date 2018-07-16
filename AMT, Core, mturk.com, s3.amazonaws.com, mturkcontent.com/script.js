@@ -100093,13 +100093,14 @@ Laurens Hammond, Chicago, Ill.**/
 	 * 2 Becky's??
 	 * Whitney Gosden (fork Becky)s
 	 * Sherwood Stranieri
-	 * Trident
+	 * Trident aka ""Marketing Red
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
 	// Trident
+	// aka "Marketing Red"
 	// Help campers see campground reviews
 	var s = '<li>Go to <strong><a href="http://yelp.com" target="_blank">Yelp.com</a></strong> and type the campground name and city, state into the search box.<img src="http://refhome.com/mech/1x.jpg" style="border-width: 1px; border-style: solid;"></li>';
 	if  (ih.indexOf(s) != -1)
@@ -100224,7 +100225,8 @@ Laurens Hammond, Chicago, Ill.**/
 			// NA
 			d3b.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				o.q[0].value = 'None';
+				o.q[0].value = 'Not Listed';
+				//~ o.q[0].value = 'None';
 				//o.q[1].value = '';
 				o.q[1].selectedIndex = 0;
 				doSubmit();
