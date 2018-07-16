@@ -100291,10 +100291,43 @@ Laurens Hammond, Chicago, Ill.**/
 			 * NOTE: UPDATE FOR FEB. 22.
 			 * 		Script was not working, solution was https!
 			 * 		Btw, apparently V2 is ending Jun. 2018.
+			 * 
+			 * NOTE: UPDATED JULY 2016 TO VERSION3.
 			 */
 			function yelp() {
 				//
 				yelp_search_snippet();
+				// NEW FOR V3
+				var opts = {
+					server_opts: {
+						url: 'https://api.yelp.com/v3/businesses/search?term='+
+							encodeURIComponent(d2.value)+
+							'&location='+encodeURIComponent(d2b.value),
+						//~ _PROXY_REDACTED__use_proxy: true,
+						//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+						headers_array: [
+							//~ 'Content-Type: application/json; charset=UTF-8',
+							//~ 'Accept: */*',
+							//~ 'X-Requested-With: XMLHttpRequest',
+							//~ 'Connection: keep-alive',
+							'Authorization: Bearer cG1kkq3W9F-insSfzLuQH1rfrgJ-5dXtL_UAs9QmCigA-TT_Bz9CxGAV9BuX7h9XnDRhpneGIfverYOJ15LYcP1CDeJRF_tV1xXtLLsdxUEgSfKiKg414fYTBipMW3Yx',
+						],
+						//~ do_not_save_to_file: true,
+						short_filename:	new AMT___requests_factory().md5(
+								d2.value+'|'+d2b.value
+							) + 'yelp',
+						//~ post_object_as_str:
+							//~ 'term='+encodeURIComponent(d2.value)+
+							//~ '&location='+encodeURIComponent(d2b.value)
+					},
+					callback_function: function(response) {
+						console.log(response);
+						//~ var rs = response.response.responseText;
+						yelp_success(response.response, d1)
+					}
+				};
+				new AMT___requests_factory().server_load_asynchronously2(opts);
+				return;
 				//
 				var auth = {
 					// new
