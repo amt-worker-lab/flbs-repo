@@ -151600,6 +151600,7 @@ qatar,80
 			var o = {
 				comp: td[1].innerText.trim(),
 				citystate: td[5].innerText.trim() + ', ' + td[7].innerText.trim(),
+				state: td[7].innerText.trim(),
 				phone: td[11].innerText.trim(),
 				//~ field2: td[7].innerText.trim(), // street 
 				//~ field3: a[2], // city / st
@@ -151610,6 +151611,8 @@ qatar,80
 					document.getElementById('web_url'),
 				],
 			}
+			// change to full
+			o.state = o.state.stateAbbrToFull();
 			//~ // City is tacked on.
 			//~ // Fix street, Add a space. 
 			//~ o.field2 = o.field2.replace(/(\d)([a-z])/gi, '$1 $2');
@@ -151651,7 +151654,7 @@ qatar,80
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
-					o.comp + ' golf',
+					o.comp + ' "'+o.state+'" golf',
 					o.comp + ' ' + o.citystate + ' golf',
 					o.comp + ' ' + o.phone + ' golf'// + ' company'
 				],
