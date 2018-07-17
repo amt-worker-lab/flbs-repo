@@ -151656,7 +151656,7 @@ qatar,80
 				searches:[ // 
 					o.comp + ' "'+o.state+'" golf',
 					o.comp + ' ' + o.citystate + ' golf',
-					o.comp + ' ' + o.phone + ' golf'// + ' company'
+					o.comp + ' "' + o.phone + '" golf'// + ' company'
 				],
 				
 				search_results: {
