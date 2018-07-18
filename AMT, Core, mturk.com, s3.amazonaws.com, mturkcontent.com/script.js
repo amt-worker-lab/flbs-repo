@@ -100106,7 +100106,7 @@ Laurens Hammond, Chicago, Ill.**/
 	/* Dear Sir or Madam,
 Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am really excited to begin working on the task "Find Hours of business for businesses". When I find the businesses Yelp profile, would it be okay if I add this to the Business Info text boxt? 
 	*/
-	var s = '<p>Google the restaurant as shown and look for the Yelp link or look for it directly in Yelp.</p>\n\n<ol>\n	<li>Search for the business name in Yelp&nbsp;</li>';
+	var s = '<p>Google the restaurant as shown. Look for the hours in the right hand side bar.</p>\n\n<p>Please read and then input opening and closing hours into the fields below.&nbsp; If there are no hours, see if you can find the hours via a quick google search.&nbsp;&nbsp;If the business is closed on that day, please check the box marked closed.</p>';
 	if  (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -100174,14 +100174,14 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1. setAttribute('style','position:absolute;top:98px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d1. setAttribute('style','position:absolute;top:98px;left:0;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:98px;left:50%;width:49%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			d1b.setAttribute('style','position:absolute;top:98px;left:33%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1b);
-			//~ var d1c = document.createElement('div'); // D1c is for address with no name! (the far right column)
-			//~ d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
-			//~ document.body.appendChild(d1c);
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1c);
 			var d2  = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:60%;height:30px;font-size:16px !important;');
 			document.body.appendChild(d2);
@@ -100215,7 +100215,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b//, d1c
+					d1, d1b, d1c
 				],
 				offset: 98 // offset top
 			});
@@ -100226,6 +100226,8 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			//
 			d2.onblur = d2b.onblur = function() {
 				yelp();
+				google_geo();
+				//~ google_addr();
 			}
 			// NA
 			d3b.onclick = function() {
@@ -100260,7 +100262,8 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			}
 			// Init
 			yelp();
-			
+			google_geo();
+			//~ google_addr();
 			/**
 			 * try_sbm
 			 */
@@ -100331,86 +100334,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					}
 				};
 				new AMT___requests_factory().server_load_asynchronously2(opts);
-				return;
-				//
-				//~ var auth = {
-					//~ // new
-					//~ consumer_API_KEY_REDACTED_,
-					//~ consumer_API_KEY_REDACTED_,
-					//~ access_API_KEY_REDACTED_,
-					//~ accessToken_API_KEY_REDACTED_,
-					//~ serviceProvider : {
-						//~ signatureMethod : "HMAC-SHA1"
-					//~ }
-				//~ };
-				//~ var terms = d2.value;
-				//~ var near = d2b.value;//'San+Francisco';
-				//~ var accessor = {
-					//~ consumerSecret : auth.consumerSecret,
-					//~ tokenSecret : auth.accessTokenSecret
-				//~ };
-				//~ parameters = [];
-				//~ parameters.push(['location', near]);
-				//~ parameters.push(['oauth_consumer_key', auth.consumerKey]);
-				//~ parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
-				//~ parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
-				//~ parameters.push(['oauth_token', auth.accessToken]);
-				//~ parameters.push(['term', terms]);
-				//~ var message = {
-					//~ 'action' : 'https://api.yelp.com/v2/search',
-					//~ 'method' : 'GET',
-					//~ 'parameters' : parameters
-				//~ };
-				//~ OAuth.setTimestampAndNonce(message);
-				//~ OAuth.SignatureMethod.sign(message, accessor);
-				//~ var parameterMap = OAuth.getParameterMap(message.parameters);
-				//~ console.log(parameterMap);
-				//~ // key,secret,nonce,sig method,timestamp,token,term
-				//~ // "Invalid signature. Expected signature base string: GET&https%3A%2F%2Fapi.yelp.com%2Fv2%2Fsearch&location%3D321%2520Main%2520St%252C%2520El%2520Segundo%2520CA%26oauth_consumer_key%3DjH4j2x4Om5K8JasTVw4dQg%26oauth_consumer_secret%3DpSPCWbafW8-4LrQvUIpIPufvlrw%26oauth_nonce%3D7AWrNd%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1519340833%26oauth_token%3DBIhiKrLfZAVUVTj64kZkLo3Ven3G6Ej_%26term%3DTwo%2520Guns%2520Espresso"
-				//~ // https://api.yelp.com/v2/search
-				//~ //&location=Washignton%2C%20DC
-				//~ //&oauth_consumer__API_KEY_REDACTED_
-				//~ //&oauth_consumer__API_KEY_REDACTED_
-				//~ //&oauth_nonce=Qm2DiL
-				//~ //&oauth_signature_method=HMAC-SHA1
-				//~ //&oauth_timestamp=1526053060
-				//~ //&o_API_KEY_REDACTED_
-				//~ //&term=Cafe%20Milano
-				//~ // May 11, 2018
-				// Solution is to comment out "oauth_signature"!
-				// Why? Meh. Who knows. It works.
-				//~ var p = '?location='+encodeURIComponent(parameterMap['location'])
-					//~ +'&oauth_consumer_key='+encodeURIComponent(parameterMap['oauth_consumer_key'])
-					//~ +'&oauth_consumer_secret='+encodeURIComponent(parameterMap['oauth_consumer_secret'])
-					//~ +'&oauth_nonce='+encodeURIComponent(parameterMap['oauth_nonce'])
-					//~ +'&oauth_signature_method='+encodeURIComponent(parameterMap['oauth_signature_method'])
-					//~ +'&oauth_signature='+encodeURIComponent(parameterMap['oauth_signature'])
-					//~ +'&oauth_timestamp='+encodeURIComponent(parameterMap['oauth_timestamp'])
-					//~ +'&oauth_token='+encodeURIComponent(parameterMap['oauth_token'])
-					//~ +'&term='+encodeURIComponent(parameterMap['term']);
-				
-				//~ new AMT___requests_factory().xhr_with_disk_cache({
-					//~ URL: 'https://api.yelp.com/v2/search' + p,
-					//~ filename: new AMT___requests_factory().md5(
-						//~ 'https://api.yelp.com/v2/search|' + d2.value + '|' + d2b.value), // Static file name
-					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
-						//~ if  (
-							//~ rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
-							//~ rs.indexOf('"text": "Signature was invalid"') != -1
-							//~ )
-						//~ {
-							//~ d1.style.backgroundColor = 'yellow';
-							//~ return false;
-						//~ }
-						//~ else
-							//~ return true;
-					//~ },
-					//~ success_callback: function(options) {
-						//~ var rs = options.response.responseText;
-						//~ yelp_success(options.response, d1);
-					//~ }
-				//~ });
 			}
 			function yelp_success(response, div) {
 				var rs = response.responseText;
@@ -100924,6 +100847,111 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					}
 				};
 				new AMT___requests_factory().server_load_asynchronously2(opts);
+			}
+		
+			/**
+			 * function Fiber_Data_Co_find_company_addr__google_addr_prof
+			 */
+			function google_addr_prof(el) {
+				el.style.backgroundColor = 'MintCream'; // Update button bgc
+				var id;
+				if (!el.json_response.reference) id = el.json_response.result.reference;
+				else id = el.json_response.reference;
+				var u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+
+					id+'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+				// XHR
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
+						// ...
+						rs = JSON.parse(rs);
+						if (rs.status != 'OK') {
+							console.log(rs.status);
+							return;
+						}
+						console.log(rs);
+						// Update button id/value
+						el.appendChild(document.createElement('br'));
+						el.appendChild(document.createTextNode(rs.result.formatted_address));
+						//el.json_response = rs; // Update this field!
+						
+						// Do something here...
+					}
+				});
+			}
+			// geo
+			function google_geo() {
+				// location, callback_function, return_complete_response, proxy
+				MT___google_api_geocode(d2b.value, google_addr, false, false);
+			}
+			/**
+			 * function google_addr
+			 * 100 000 requests per 24 hour period	
+			 * The Text Search service is subject to a 10-times multiplier.
+			 * The Radar Search Service is subject to a 5-times multiplier
+			 * 0,0 20000000 = world search
+			 */
+			function google_addr(lat,lng) {
+				//~ console.log(ll);
+				d1c.innerHTML = '';
+				var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
+					encodeURIComponent(d2.value)+
+					'&types=establishment&location='+lat+','+lng+'&radius=10'+
+					'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				//encodeURIComponent(d2b.value)
+				// Xhr
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) {
+							return;
+						}
+						rs = JSON.parse(rs);
+						
+						if (rs.status != 'OK') {
+							console.log(rs.status);
+							d1c.innerText = rs.status;
+							return;
+						}
+						rs = rs.predictions;
+						
+						for (var i in rs) {
+							var div = document.createElement('div');
+							div.setAttribute('style',
+								'width:98%;border-bottom:1px solid teal;cursor:pointer;'
+							);
+							div.innerHTML = rs[i].description;
+							//~ (
+								//~ opts.bold_locn_array
+								//~ ? MT__bold(""+rs[i].description, opts.bold_locn_array)
+								//~ : rs[i].description
+							//~ );
+							// Set json_response
+							div.json_response = rs[i];
+							// .onclick
+							div.onclick = function() {
+								console.log(this);
+								console.log(this.json_response);
+								this.style.backgroundColor = 'LightGreen';
+								google_addr_prof(this);
+							}
+							d1c.appendChild(div);
+						}
+						if (rs.length) {
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:1200px;');
+							d1c.appendChild(div);
+						} else {
+							//~ o.stats.google.num_results = 0;
+						}
+					}
+				});
 			}
 		}
 		new run().f();
