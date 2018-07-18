@@ -100853,7 +100853,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			 * function Fiber_Data_Co_find_company_addr__google_addr_prof
 			 */
 			function google_addr_prof(el) {
-				el.style.backgroundColor = 'MintCream'; // Update button bgc
 				var id;
 				if (!el.json_response.reference) id = el.json_response.result.reference;
 				else id = el.json_response.reference;
@@ -100866,6 +100865,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					onload: function(response) {
 						var rs = response.responseText;
 						if (response.status != 200) return;
+						el.style.backgroundColor = 'MintCream'; // Update button bgc
 						// ...
 						rs = JSON.parse(rs);
 						if (rs.status != 'OK') {
@@ -100879,6 +100879,63 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						//el.json_response = rs; // Update this field!
 						
 						// Do something here...
+						if (rs.result.opening_hours) {
+							el.style.backgroundColor = 'teal';
+							// Starts on Monday.
+							var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+							// source code: sunday=0, monday=1, ...
+							// google (and yelp): monday=0, tuesday=1, ...
+							for (var i in rs.hours) {
+								if (rs.hours[i].hours_type == 'REGULAR') {
+									// REGULAR: 
+									// "The type of the opening hours information.
+									// Right now, this is always REGULAR."
+									var is_open_days = {
+										0: false,
+										1: false,
+										2: false,
+										3: false,
+										4: false,
+										5: false,
+										6: false,
+									}
+									for (var j in rs.hours[i].open) {
+										var z = rs.hours[i].open[j];
+										var day = days[z.day];
+										is_open_days[z.day] = true;
+										console.log(z);
+										// Hm, produces: garble
+										//~ console.log(z.start.replace(/^(\d{2})/, '\1:'));
+										//~ console.log(z.end.replace(/^(\d{2})/, '\1:'));
+										// Day class name e.g.: " monday-1-open "
+										var d = {
+											open: document.getElementsByName(' '+day+'-1-open ')[0],
+											close: document.getElementsByName(' '+day+'-1-close ')[0],
+											//~ closed: document.getElementsByName(day+'closed')[0]
+										}
+										// Note times are: 0800, 2100, etc.
+										// So add a colon.
+										//~ d.open.value = z.start.replace(/^(\d{2})/, '\1:');
+										//~ d.close.value = z.end.replace(/^(\d{2})/, '\1:');
+										var x = {
+											//~ s: z.start.slice(0,2) +':'+ z.start.slice(2,2),
+											//~ e: z.end.slice(0,2) +':'+ z.end.slice(2,2)
+											s: z.start[0] + z.start[1] + ':'+ z.start[2] + z.start[3],
+											e: z.end[0] + z.end[1] + ':'+ z.end[2] + z.end[3],
+										}
+										console.log(x);
+										d.open.value = x.s;
+										d.close.value = x.e;
+									}
+									// Check the box if closed.
+									for (var x in is_open_days) {
+										if (!is_open_days[x]) {
+											var day = days[x];
+											document.getElementsByName(day+'-closed')[0].checked = true;
+										}
+									}
+								}
+						}
 					}
 				});
 			}
@@ -100895,14 +100952,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			 * 0,0 20000000 = world search
 			 */
 			function google_addr(lat,lng) {
-				//~ console.log(ll);
 				d1c.innerHTML = '';
 				var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
 					encodeURIComponent(d2.value)+
-					'&types=establishment&location='+lat+','+lng+'&radius=10'+
+					'&types=establishment&location='+lat+','+lng+'&radius=100'+
 					'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-				//encodeURIComponent(d2b.value)
 				// Xhr
 				GM_xmlhttpRequest({ // init
 					method: "GET",
@@ -100926,12 +100981,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							div.setAttribute('style',
 								'width:98%;border-bottom:1px solid teal;cursor:pointer;'
 							);
-							div.innerHTML = rs[i].description;
-							//~ (
-								//~ opts.bold_locn_array
-								//~ ? MT__bold(""+rs[i].description, opts.bold_locn_array)
-								//~ : rs[i].description
-							//~ );
+							div.innerHTML = //rs[i].description;
+							(
+								o.bold_locn
+								? MT__bold(rs[i].description, o.bold_locn)
+								: rs[i].description
+							);
 							// Set json_response
 							div.json_response = rs[i];
 							// .onclick
