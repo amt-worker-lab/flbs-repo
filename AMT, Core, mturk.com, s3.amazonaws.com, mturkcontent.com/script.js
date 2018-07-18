@@ -100872,9 +100872,19 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								// REGULAR: 
 								// "The type of the opening hours information.
 								// Right now, this is always REGULAR."
+								var is_open_days = {
+									0: false,
+									1: false,
+									2: false,
+									3: false,
+									4: false,
+									5: false,
+									6: false,
+								}
 								for (var j in rs.hours[i].open) {
 									var z = rs.hours[i].open[j];
 									var day = days[z.day];
+									is_open_days[z.day] = true;
 									console.log(z);
 									// Hm, produces: garble
 									//~ console.log(z.start.replace(/^(\d{2})/, '\1:'));
@@ -100883,7 +100893,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 									var d = {
 										open: document.getElementsByName(' '+day+'-1-open ')[0],
 										close: document.getElementsByName(' '+day+'-1-close ')[0],
-										closed: document.getElementsByName(day+'closed')[0]
+										//~ closed: document.getElementsByName(day+'closed')[0]
 									}
 									// Note times are: 0800, 2100, etc.
 									// So add a colon.
@@ -100901,6 +100911,13 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 									//~ if ( ... ) {
 										//~ d.closed.checked = true;
 									//~ }
+								}
+								// Check the box if closed.
+								for (var x in is_open_days) {
+									if (!is_open_days[x]) {
+										var day = days[x];
+										document.getElementsByName(day+'-closed')[0].checked = true;
+									}
 								}
 							}
 						}
