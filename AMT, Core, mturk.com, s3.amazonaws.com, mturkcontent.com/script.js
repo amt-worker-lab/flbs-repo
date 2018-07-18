@@ -100773,11 +100773,35 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						}
 						
 						// Biz attributes
+						// Needs a bit of cleaning.
 						var x = dom.getElementsByClassName('ywidget');
 						for (var i=0; i<x.length; i++) {
 							if (x[i].innerText.indexOf('More business info') != -1) {
 								var v = x[i].innerText.replace('More business info', '').trim();
-								document.getElementById('bizinfo').value = v;
+								//~ v = v.replace(/([ ]*\n)*/g, '\n');
+								//~ v = v.replace(/[ ]+/g, ' ');
+								//~ v = v.replace(/\n+/g, '\n');
+								v = v.replace(/[ ]+/g, ' ');
+								v = v.replace(/ +\n/g, '\n');
+								v = v.replace(/\n +/g, '\n');
+								v = v.replace(/\n+/g, '\n');
+								// Now, every other \n needs to be removed.
+								v = v.split('\n');
+								var out = '';
+								var count = 0;
+								for (var j in v) {
+									if (count % 2 == 0)
+										out += v[j] + ' ';
+									else
+										out += v[j] + '\n';
+									count++;
+								}
+								document.getElementById('bizinfo').value = out.trim();
+								if (count % 2 != 0) {
+									alert('ends on odd number!');
+									// QUIT DUE TO INCONSISTENCY.
+									return;
+								}
 								break;
 							}
 						}
@@ -100836,8 +100860,9 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							//~ '&location='+encodeURIComponent(d2b.value)
 					},
 					callback_function: function(response) {
-						console.log(response);
-						var rs = JSON.parse(response.responseText);
+						//~ console.log(response);
+						console.log(response.response.responseText);
+						var rs = JSON.parse(response.response.responseText);
 						console.log(rs);
 						var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 						// source code: sunday=0, monday=1, ...
@@ -100850,14 +100875,29 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								for (var j in rs.hours[i].open) {
 									var z = rs.hours[i].open[j];
 									var day = days[z.day];
+									console.log(z);
+									// Hm, produces: garble
+									//~ console.log(z.start.replace(/^(\d{2})/, '\1:'));
+									//~ console.log(z.end.replace(/^(\d{2})/, '\1:'));
 									// Day class name e.g.: " monday-1-open "
 									var d = {
-										open: document.getElementsByClassName(' '+day+'-1-open ')[0],
-										close: document.getElementsByClassName(' '+day+'-1-close ')[0],
-										closed: document.getElementsByClassName(day+'closed')[0]
+										open: document.getElementsByName(' '+day+'-1-open ')[0],
+										close: document.getElementsByName(' '+day+'-1-close ')[0],
+										closed: document.getElementsByName(day+'closed')[0]
 									}
-									d.open.value = z.start;
-									d.close.value = z.end;
+									// Note times are: 0800, 2100, etc.
+									// So add a colon.
+									//~ d.open.value = z.start.replace(/^(\d{2})/, '\1:');
+									//~ d.close.value = z.end.replace(/^(\d{2})/, '\1:');
+									var x = {
+										//~ s: z.start.slice(0,2) +':'+ z.start.slice(2,2),
+										//~ e: z.end.slice(0,2) +':'+ z.end.slice(2,2)
+										s: z.start[0] + z.start[1] + ':'+ z.start[2] + z.start[3],
+										e: z.end[0] + z.end[1] + ':'+ z.end[2] + z.end[3],
+									}
+									console.log(x);
+									d.open.value = x.s;
+									d.close.value = x.e;
 									//~ if ( ... ) {
 										//~ d.closed.checked = true;
 									//~ }
