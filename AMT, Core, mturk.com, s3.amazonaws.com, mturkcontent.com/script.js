@@ -100590,17 +100590,17 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
+						var mult_str = '<h2>We\'ve found multiple locations matching your search.</h2>';
 						// ...
 						rs = JSON.parse(rs);
 						var map = rs.search_map;
 						//
-						if (rs.hasOwnProperty('search_exception') && rs.search_exception.indexOf('<h2>We\'ve found multiple locations matching your search.</h2>') != -1) {
+						if (rs.hasOwnProperty('search_exception') &&
+							rs.search_exception.indexOf(mult_str) != -1) {
 							out.innerText += '\n"We\'ve found multiple locations matching your search."';
 							return;
 						}
-						//
-						rs = rs.search_results;
-						if (rs.indexOf('<div class="no-results">') != -1) {
+						if (rs.search_results.indexOf('<div class="no-results">') != -1) {
 							out.innerText += '\n0';
 							return;
 						}
@@ -100610,7 +100610,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							style: 'background-color:MintCream;border-bottom:1px solid #a2a2a2;'})
 						);
 						//
-						var dom = new DOMParser().parseFromString(rs,'text/html');
+						var dom = new DOMParser().parseFromString(rs.search_results,'text/html');
 						var rg = dom.getElementsByClassName('regular-search-result');
 						
 						for (var i=0; i<rg.length; i++) {
@@ -100679,6 +100679,8 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								address: ad,
 								locn: locn,
 								phone: ph,
+								// This is from Yelp api ID
+								id: rs.search_map.markers[i].resourceId,
 								// If name contains CLOSED then is_closed=true, else is_closed=false.
 							}
 							out.appendChild(d);
@@ -100756,88 +100758,115 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						
-						
 						var dom = new DOMParser().parseFromString(rs,'text/html');
-						var a = dom.getElementsByClassName('biz-website');
-						var sbm = true;
-						if (a && a.length == 1 && a[0].innerText) {
-							a = a[0].getElementsByTagName('a');
-							if (a && a.length > 0) {
-								// One link.
-								a = /\?url=([^&]+)/.exec(a[0].href);
-								if (a) {
-									a = decodeURIComponent(a[1]);
-									o.q[6].value = a.trim();
-								}
-							}
-							//~ o.q[6].value = a[0].innerText
-								//~ .replace('Business website', '')
-								//~ .trim();
-							
-							//~ o.q[6].focus();
-							// Ensure no other junk in website field.
-							if (o.q[6].value.indexOf(' ') != -1) {
-								sbm = false;
-							}
+						
+						// Biz categories
+						var x = dom.getElementsByClassName('category-str-list');
+						if (!x || x.length == 0) {
+							//o.q[1].value = '';
+							// LEAVE BLANK.
 						} else {
-							console.log("dom.getElementsByClassName('biz-website')",a);
-							console.log("rs.indexOf('biz-website')",rs.indexOf('biz-website'));
-							console.log("rs.indexOf('website')",rs.indexOf('website'));
+							//~ o.q[1].value = 
+							// Remove multi-spaces
+							var x = x[0].innerText.trim().replace(/\s+/g, ' ');
+							document.getElementById('categories').value = x;
 						}
-						// Add full address
-						var a = dom.getElementsByTagName('address');
-						if (a && a.length && a[0].innerText) {
-							//~ try_sbm();
-							o.q[4].value = a[0].innerText.trim()
-								.replace(/\n+/g, ', ') // Add a comma to separate Street from City.
-								.replace(/\s+/g, ' ').trim();
+						
+						// Biz attributes
+						var x = dom.getElementsByClassName('ywidget');
+						for (var i=0; i<x.length; i++) {
+							if (x[i].innerText.indexOf('More business info') != -1) {
+								var v = x[i].innerText.replace('More business info', '').trim();
+								document.getElementById('bizinfo').value = v;
+								break;
+							}
 						}
-						if (rs.indexOf('Yelpers report this location has closed') != -1) {
-							// TESTED
-							//~ sbm = false;
-							//~ o.q[0].focus();
-							//~ o.q[0].style.backgroundColor = 'orange';
-						}
-						if (div.api_response.is_closed) {
-							// TESTED
-							//~ sbm = false;
-							//~ o.q[0].focus();
-							//~ o.q[0].style.backgroundColor = 'pink';
-						}
-						if (sbm) {
-							try_sbm();
-						}
-						// get catg?
-						//~ if (getCategories) {
-							//~ var x = dom.getElementsByClassName('category-str-list');
-							//~ if (!x || x.length == 0) {
-								//~ o.q[1].value = 'N/A';
-							//~ } else {
-								//~ o.q[1].value = x[0].innerText.trim().replace(/\s+/g, ' '); // Remove multi-spaces
-							//~ }
-							//~ // Also do isclosed
-							//~ if (rs.indexOf('Yelpers report this location has closed') != -1) {
-								//~ o.q[0].value = 'N/A';
-								//~ o.q[1].value = 'N/A';
-								//~ AMT___recordAndSubmit();
-							//~ }
-						//~ }
-						//~ var x = dom.getElementsByClassName('business-attribute price-range');
-						//~ if (x.length) {
-							//~ x = x[0].innerText.trim();
-							//~ if (/^\$+$/.exec(x)) { // Is one or more $
-								//~ o.q[0].value = x;
-								//~ try_sbm();
-							//~ } else {
-								//~ // Fail
-							//~ }
-						//~ } else {
-							//~ o.q[0].value = 'N/A'; // No $ on page here.....
-							//~ try_sbm();
-						//~ }
+						
+						// Do api call to get hours
+						// (b/c it is easier than scraping hours)
+						profile_api(div);
 					}
 				});
+			}
+			
+			// yp_profile
+			function profile_api(div) {
+				console.log(div);
+				console.log(div.api_response);
+				//~ new AMT___requests_factory().xhr_with_disk_cache({
+					//~ URL: div.api_response.url,
+					//~ check_pre_write_to_disk: function(options) {
+						//~ // Return TRUE to write to disk.
+						//~ // Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						//~ if  (
+							//~ rs.indexOf('we just need to check that you\'re not a robot') != -1
+							//~ )
+						//~ {
+							//~ div.style.backgroundColor = 'yellow';
+							//~ return false;
+						//~ }
+						//~ else
+							//~ return true;
+					//~ },
+					//~ success_callback: function(options) {
+						//~ var rs = options.response.responseText;
+						//~ var dom = new DOMParser().parseFromString(rs,'text/html');
+					//~ }
+				//~ });
+				var opts = {
+					server_opts: {
+						url: 'https://api.yelp.com/v3/businesses/'+
+							encodeURIComponent(div.api_response.id),
+						//~ _PROXY_REDACTED__use_proxy: true,
+						//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+						headers_array: [
+							//~ 'Content-Type: application/json; charset=UTF-8',
+							//~ 'Accept: */*',
+							//~ 'X-Requested-With: XMLHttpRequest',
+							//~ 'Connection: keep-alive',
+							'Authorization: Bearer cG1kkq3W9F-insSfzLuQH1rfrgJ-5dXtL_UAs9QmCigA-TT_Bz9CxGAV9BuX7h9XnDRhpneGIfverYOJ15LYcP1CDeJRF_tV1xXtLLsdxUEgSfKiKg414fYTBipMW3Yx',
+						],
+						//~ do_not_save_to_file: true,
+						short_filename:	new AMT___requests_factory().md5(
+								div.api_response.id
+							) + 'yelp',
+						//~ post_object_as_str:
+							//~ 'term='+encodeURIComponent(d2.value)+
+							//~ '&location='+encodeURIComponent(d2b.value)
+					},
+					callback_function: function(response) {
+						console.log(response);
+						var rs = JSON.parse(response.responseText);
+						console.log(rs);
+						var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+						// source code: sunday=0, monday=1, ...
+						// yelp: monday=0, tuesday=1, ...
+						for (var i in rs.hours) {
+							if (rs.hours[i].hours_type == 'REGULAR') {
+								// REGULAR: 
+								// "The type of the opening hours information.
+								// Right now, this is always REGULAR."
+								for (var j in rs.hours[i].open) {
+									var z = rs.hours[i].open[j];
+									var day = days[z.day];
+									// Day class name e.g.: " monday-1-open "
+									var d = {
+										open: document.getElementsByClassName(' '+day+'-1-open ')[0],
+										close: document.getElementsByClassName(' '+day+'-1-close ')[0],
+										closed: document.getElementsByClassName(day+'closed')[0]
+									}
+									d.open.value = z.start;
+									d.close.value = z.end;
+									//~ if ( ... ) {
+										//~ d.closed.checked = true;
+									//~ }
+								}
+							}
+						}
+					}
+				};
+				new AMT___requests_factory().server_load_asynchronously2(opts);
 			}
 		}
 		new run().f();
