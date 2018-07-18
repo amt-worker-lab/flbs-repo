@@ -100337,9 +100337,9 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			}
 			function yelp_success(response, div) {
 				var rs = response.responseText;
-				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
+				rs = JSON.parse(rs);
 				console.log(rs);
-				console.log(rs.businesses);
+				//~ console.log(rs.businesses);
 				div.innerText = '';
 				if (!rs.businesses || rs.businesses.length == 0) {
 					console.log('0 left results');
@@ -100437,7 +100437,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					d.onmouseover = d.onmousemove = function() {
 						var x = document.getElementsByClassName(this.className);
 						for (var i=0; i<x.length; i++) {
-							if (x[i].style.backgroundColor == 'teal')
+							if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink')
 								continue;
 							x[i].style.backgroundColor = 'aqua';
 						}
@@ -100445,7 +100445,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					d.onmouseout = function() {
 						var x = document.getElementsByClassName(this.className);
 						for (var i=0; i<x.length; i++) {
-							if (x[i].style.backgroundColor == 'teal')
+							if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink')
 								continue;
 							x[i].style.backgroundColor = '';
 						}
@@ -100618,33 +100618,18 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							d.onclick = function() {
 								yp_profile(this);
 								this.style.backgroundColor = 'teal';
-								//~ document.body.style.backgroundColor = 'LightGreen';
-								//~ console.log(this.api_response);
-								//~ // Fill in details
-								//~ var a = this.api_response;
-								//~ o.q[0].value = a.url.replace(
-									//~ /^https?:\/\/www\.yelp\.com\/biz\/([^\/]+)\/*[\d\D]*$/,
-									//~ '$1'
-								//~ );
-								//~ if (a.rating == 'N/A') {
-									//~ o.q[1].selectedIndex = 0;
-								//~ } else {
-									//~ o.q[1].value = (a.rating+'') +
-										//~ (((a.rating+'').indexOf('.') == -1) ? '.0' : '');
-								//~ }
-								//~ try_sbm();
 							}
 							d.onmouseover = d.onmousemove = function() {
 								var x = document.getElementsByClassName(this.className);
 								for (var i=0; i<x.length; i++) {
-									if (x[i].style.backgroundColor == 'teal') continue; // Skip
+									if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink') continue; // Skip
 									x[i].style.backgroundColor = 'aqua';
 								}
 							}
 							d.onmouseout = function() {
 								var x = document.getElementsByClassName(this.className);
 								for (var i=0; i<x.length; i++) {
-									if (x[i].style.backgroundColor == 'teal') continue; // Skip
+									if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink') continue; // Skip
 									x[i].style.backgroundColor = '';
 								}
 							}
@@ -100661,8 +100646,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			}
 			// yp_profile
 			function yp_profile(div) {
-				console.log(div);
-				console.log(div.api_response);
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: div.api_response.url,
 					check_pre_write_to_disk: function(options) {
@@ -100740,6 +100723,11 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			function profile_api(div) {
 				console.log(div);
 				console.log(div.api_response);
+				// Do not continue if found hours (this is through Google).
+				if (o.found_hours) {
+					div.style.backgroundColor = 'pink';
+					return;
+				}
 				//~ new AMT___requests_factory().xhr_with_disk_cache({
 					//~ URL: div.api_response.url,
 					//~ check_pre_write_to_disk: function(options) {
@@ -100880,61 +100868,50 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						
 						// Do something here...
 						if (rs.result.opening_hours) {
+							o.found_hours = true;
+							console.log(rs.result.opening_hours.weekday_text.toString()); // debug
 							el.style.backgroundColor = 'teal';
 							// Starts on Monday.
-							var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+							//~ var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+							var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday',];
 							// source code: sunday=0, monday=1, ...
-							// google (and yelp): monday=0, tuesday=1, ...
-							for (var i in rs.hours) {
-								if (rs.hours[i].hours_type == 'REGULAR') {
-									// REGULAR: 
-									// "The type of the opening hours information.
-									// Right now, this is always REGULAR."
-									var is_open_days = {
-										0: false,
-										1: false,
-										2: false,
-										3: false,
-										4: false,
-										5: false,
-										6: false,
-									}
-									for (var j in rs.hours[i].open) {
-										var z = rs.hours[i].open[j];
-										var day = days[z.day];
-										is_open_days[z.day] = true;
-										console.log(z);
-										// Hm, produces: garble
-										//~ console.log(z.start.replace(/^(\d{2})/, '\1:'));
-										//~ console.log(z.end.replace(/^(\d{2})/, '\1:'));
-										// Day class name e.g.: " monday-1-open "
-										var d = {
-											open: document.getElementsByName(' '+day+'-1-open ')[0],
-											close: document.getElementsByName(' '+day+'-1-close ')[0],
-											//~ closed: document.getElementsByName(day+'closed')[0]
-										}
-										// Note times are: 0800, 2100, etc.
-										// So add a colon.
-										//~ d.open.value = z.start.replace(/^(\d{2})/, '\1:');
-										//~ d.close.value = z.end.replace(/^(\d{2})/, '\1:');
-										var x = {
-											//~ s: z.start.slice(0,2) +':'+ z.start.slice(2,2),
-											//~ e: z.end.slice(0,2) +':'+ z.end.slice(2,2)
-											s: z.start[0] + z.start[1] + ':'+ z.start[2] + z.start[3],
-											e: z.end[0] + z.end[1] + ':'+ z.end[2] + z.end[3],
-										}
-										console.log(x);
-										d.open.value = x.s;
-										d.close.value = x.e;
-									}
-									// Check the box if closed.
-									for (var x in is_open_days) {
-										if (!is_open_days[x]) {
-											var day = days[x];
-											document.getElementsByName(day+'-closed')[0].checked = true;
-										}
-									}
+							// google is same!!
+							var is_open_days = {
+								0: false,
+								1: false,
+								2: false,
+								3: false,
+								4: false,
+								5: false,
+								6: false,
+							}
+							for (var i in rs.result.opening_hours.periods) {
+								var z = rs.result.opening_hours.periods[i];
+								var day = days[z.open.day];
+								is_open_days[z.open.day] = true;
+								//~ console.log(z);
+								// Day class name e.g.: " monday-1-open "
+								var d = {
+									open: document.getElementsByName(' '+day+'-1-open ')[0],
+									close: document.getElementsByName(' '+day+'-1-close ')[0],
 								}
+								// Note times are: 0800, 2100, etc.
+								// So add a colon.
+								var x = {
+									s: z.open.time[0] + z.open.time[1] + ':'+ z.open.time[2] + z.open.time[3],
+									e: z.close.time[0] + z.close.time[1] + ':'+ z.close.time[2] + z.close.time[3],
+								}
+								d.open.value = x.s;
+								d.close.value = x.e;
+							}
+							// Check the box if closed.
+							//~ console.log(is_open_days);
+							for (var x in is_open_days) {
+								if (!is_open_days[x]) {
+									var day = days[x];
+									document.getElementsByName(day+'-closed')[0].checked = true;
+								}
+							}
 						}
 					}
 				});
@@ -100983,8 +100960,8 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							);
 							div.innerHTML = //rs[i].description;
 							(
-								o.bold_locn
-								? MT__bold(rs[i].description, o.bold_locn)
+								o.bold_addr
+								? MT__bold(rs[i].description, o.bold_addr.concat(o.bold_comp))
 								: rs[i].description
 							);
 							// Set json_response
