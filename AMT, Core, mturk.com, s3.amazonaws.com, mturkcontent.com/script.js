@@ -100197,15 +100197,15 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			document.body.appendChild(d2d);
 			
 			var d3b = document.createElement('input'); // na
-			d3b.setAttribute('style','position:absolute;top:64px;left:0px;width:50%;height:30px;');
+			d3b.setAttribute('style','position:absolute;top:64px;left:50%;width:49%;height:20px;');
 			document.body.appendChild(d3b);
-			d3b.value = 'NA';
+			d3b.value = 'SBM';
 			d3b.type = 'button';
-			var d3c  = document.createElement('textarea'); // Original company name
-			d3c.setAttribute('style','position:absolute;top:64px;left:50%;width:50%;height:30px;');
-			d3c.disabled = true; // Disable
-			d3c.value = o.comp;
-			document.body.appendChild(d2c);
+			//~ var d3c  = document.createElement('textarea'); // Original company name
+			//~ d3c.setAttribute('style','position:absolute;top:64px;left:50%;width:50%;height:30px;');
+			//~ d3c.disabled = true; // Disable
+			//~ d3c.value = o.comp;
+			//~ document.body.appendChild(d3c);
 			/*END ITEMS*/
 			
 			//~ AMT___addUserDecision(
@@ -100242,12 +100242,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			}
 			// NA
 			d3b.onclick = function() {
-				//~ this.style.backgroundColor = 'LightGreen';
+				this.style.backgroundColor = 'LightGreen';
 				//~ o.q[0].value = 'Not Listed';
 				//~ o.q[0].value = 'None';
 				//o.q[1].value = '';
 				//~ o.q[1].selectedIndex = 0;
-				//~ doSubmit();
+				doSubmit();
 			}
 			//
 			var ef = new AMT___events_factory();
@@ -100659,6 +100659,10 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			}
 			// yp_profile
 			function yp_profile(div) {
+				// Go to next tab if hours already set. (Will auto.)
+				if (o.found_hours) {
+					new AMT___core_factory().nextTab();
+				}
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: div.api_response.url,
 					check_pre_write_to_disk: function(options) {
