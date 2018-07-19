@@ -100688,6 +100688,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 				} else {
 					// Hours scroll down
 					document.getElementById('submitButton').scrollIntoView(false);
+					
+					// Now do next tab, if fail get it on next round.
+					// Go next tab.
+					// (as long as not debug)
+					if (!o.debug_24_hours)
+						new AMT___core_factory().nextTab();
 				}
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: div.api_response.url,
@@ -100822,6 +100828,16 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						// Hours?
 						if (!rs.hours) {
 							document.getElementsByName(' sunday-1-open ')[0].style.backgroundColor = 'blue';
+							// Return if necessary.
+							// o.found_hours of course false here.
+							if (!o.found_hours && !o.debug_24_hours) {
+								new AMT___core_factory().
+									iframe2parent__postMessage(
+										{
+											action: 'return_and_accept'
+										}
+									);
+							}
 							return;
 						}
 						
@@ -100846,10 +100862,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 									var z = rs.hours[i].open[j];
 									var day = days[z.day];
 									is_open_days[z.day] = true;
-									console.log(z);
-									// Hm, produces: garble
-									//~ console.log(z.start.replace(/^(\d{2})/, '\1:'));
-									//~ console.log(z.end.replace(/^(\d{2})/, '\1:'));
 									// Day class name e.g.: " monday-1-open "
 									var d = {
 										open: document.getElementsByName(' '+day+'-1-open ')[0],
@@ -100858,8 +100870,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 									}
 									// Note times are: 0800, 2100, etc.
 									// So add a colon.
-									//~ d.open.value = z.start.replace(/^(\d{2})/, '\1:');
-									//~ d.close.value = z.end.replace(/^(\d{2})/, '\1:');
 									var x = {
 										//~ s: z.start.slice(0,2) +':'+ z.start.slice(2,2),
 										//~ e: z.end.slice(0,2) +':'+ z.end.slice(2,2)
@@ -100869,9 +100879,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 									console.log(x);
 									d.open.value = x.s;
 									d.close.value = x.e;
-									//~ if ( ... ) {
-										//~ d.closed.checked = true;
-									//~ }
 								}
 								// Check the box if closed.
 								for (var x in is_open_days) {
@@ -100881,6 +100888,10 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 									}
 								}
 							}
+						}
+						// Success.
+						if (!o.debug_24_hours) {
+							doSubmit();
 						}
 					}
 				};
@@ -100917,7 +100928,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						//el.json_response = rs; // Update this field!
 						
 						// Do something here...
-						var debug_24_hours = false;
+						o.debug_24_hours = false;
 						if (rs.result.opening_hours) {
 							console.log(rs.result.opening_hours.weekday_text.toString()); // debug
 							// Check open 24 hours
@@ -100929,7 +100940,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								if (day.indexOf('Open 24 hours') != -1) {
 									document.getElementsByName(' '+days[i]+'-1-open ')[0].value = '00:00';
 									document.getElementsByName(' '+days[i]+'-1-close ')[0].value = '00:00';
-									debug_24_hours = true;
+									o.debug_24_hours = true;
 									el.appendChild(document.createElement('br'));
 									el.appendChild(document.createTextNode('DEBUG24HOURS'));
 								}
@@ -100976,7 +100987,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							}
 							// Set true, if success to here.
 							// But only if debug-24-hours is turned off.
-							if (!debug_24_hours) {
+							if (!o.debug_24_hours) {
 								o.found_hours = true;
 							}
 						}
