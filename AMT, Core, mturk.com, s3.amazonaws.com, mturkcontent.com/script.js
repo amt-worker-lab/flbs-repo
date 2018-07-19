@@ -100113,7 +100113,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
-			GM_addStyle('#submitButton {width:10%;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('em {font-weight:bold;zoom:2;}');
 			GM_addStyle('#mturk_form {zoom:0.6;}');
@@ -100121,6 +100120,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			// gm specific
 			GM_addStyle('form {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:2000px !important;}');
+			GM_addStyle('#submitButton {width:60%;height:200px;position:absolute;margin-top:-400px !important;}');
 			//
 			var td = document.getElementsByTagName('td');
 			//~ var x = a[0].href.replace(/https:\/\/www\.google\.com\/search\?q=/, '');
@@ -100145,6 +100145,20 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 					//document.getElementsByName('yelprating')[0],
 				]
 			}
+			// Remove ignores
+			if (localStorage['ignore-july-19-2018'] == 'undefined') {
+				localStorage['ignore-july-19-2018'] = '';
+			}
+			//~ console.log(GM_getValue('ignore-july-19-2018'));
+			var x = (localStorage['ignore-july-19-2018']).split('\n');
+			for (var i in x) {
+				o.comp = o.comp.replace(
+					new RegExp('^'+x[i], 'i'),
+					''
+				);
+				o.comp = o.comp.trim();
+			}
+			
 			// Add to o.addr
 			//~ o.addr += ', ' + o.city + ' ' + o.state;
 			for (var i in o.q) {
@@ -100201,6 +100215,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			document.body.appendChild(d3b);
 			d3b.value = 'SBM';
 			d3b.type = 'button';
+			var d3c  = document.createElement('textarea'); // ignore words
+			d3c.setAttribute('style','position:absolute;top:64px;left:0%;width:50%;height:30px;');
+			d3c.disabled = false; // Disable
+			d3c.value = GM_getValue('ignore-july-19-2018');
+			document.body.appendChild(d3c);
+			
 			//~ var d3c  = document.createElement('textarea'); // Original company name
 			//~ d3c.setAttribute('style','position:absolute;top:64px;left:50%;width:50%;height:30px;');
 			//~ d3c.disabled = true; // Disable
@@ -100208,6 +100228,9 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			//~ document.body.appendChild(d3c);
 			/*END ITEMS*/
 			
+			d3c.onblur = function() {
+				localStorage['ignore-july-19-2018'] = this.value.trim();
+			}
 			//~ AMT___addUserDecision(
 				//~ 'WhitneyGosden,Feb22,2018',
 				//~ function() {
@@ -100662,6 +100685,9 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 				// Go to next tab if hours already set. (Will auto.)
 				if (o.found_hours) {
 					new AMT___core_factory().nextTab();
+				} else {
+					// Hours scroll down
+					document.getElementById('submitButton').scrollIntoView(false);
 				}
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: div.api_response.url,
