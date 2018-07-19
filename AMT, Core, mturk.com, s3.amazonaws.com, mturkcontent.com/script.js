@@ -100183,21 +100183,29 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1c);
 			var d2  = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:60%;height:30px;font-size:16px !important;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:50%;height:30px;font-size:16px !important;');
 			document.body.appendChild(d2);
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:60%;height:30px;');
+			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:50%;height:30px;');
 			document.body.appendChild(d2b);
-			var d2c  = document.createElement('textarea'); // Original company name
-			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:60px;');
-			d2c.disabled = true; // Disable
-			d2c.value = o.comp;
+			
+			var d2c = document.createElement('textarea');
+			d2c.setAttribute('style','position:absolute;top:0px;left:50%;width:50%;height:30px;font-size:16px !important;');
 			document.body.appendChild(d2c);
-			var d3b = document.createElement('input');
+			var d2d = document.createElement('textarea');
+			d2d.setAttribute('style','position:absolute;top:32px;left:50%;width:50%;height:30px;');
+			document.body.appendChild(d2d);
+			
+			var d3b = document.createElement('input'); // na
 			d3b.setAttribute('style','position:absolute;top:64px;left:0px;width:50%;height:30px;');
 			document.body.appendChild(d3b);
 			d3b.value = 'NA';
 			d3b.type = 'button';
+			var d3c  = document.createElement('textarea'); // Original company name
+			d3c.setAttribute('style','position:absolute;top:64px;left:50%;width:50%;height:30px;');
+			d3c.disabled = true; // Disable
+			d3c.value = o.comp;
+			document.body.appendChild(d2c);
 			/*END ITEMS*/
 			
 			//~ AMT___addUserDecision(
@@ -100222,12 +100230,15 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			//
 			d2.value  = o.comp;
 			d2b.value = o.locn;
-			//~ d2c.value = o.comp_original; // Original name
+			d2c.value  = o.comp;
+			d2d.value = o.locn;
+			
 			//
 			d2.onblur = d2b.onblur = function() {
 				yelp();
+			}
+			d2c.onblur = d2d.onblur = function() {
 				google_geo();
-				//~ google_addr();
 			}
 			// NA
 			d3b.onclick = function() {
@@ -100242,8 +100253,10 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2c.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2d.addEventListener('keydown', ef.keydown__blur_field, true);
 			ef.mouseup__delete_range({
-				elements: [d2, d2b],
+				elements: [d2, d2b, d2c, d2d],
 				blur_element: true
 			});
 			// submitButton
@@ -100868,11 +100881,22 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						
 						// Do something here...
 						if (rs.result.opening_hours) {
-							o.found_hours = true;
 							console.log(rs.result.opening_hours.weekday_text.toString()); // debug
-							el.style.backgroundColor = 'teal';
+							// Check open 24 hours
+							// Starts with 0: Monday
 							// Starts on Monday.
-							//~ var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+							var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday',];
+							for (var i in rs.result.opening_hours.weekday_text) {
+								var day = rs.result.opening_hours.weekday_text[i];
+								if (day.indexOf('Open 24 hours') != -1) {
+									document.getElementsByName(' '+days[i]+'-1-open ')[0].value = '00:00';
+									document.getElementsByName(' '+days[i]+'-1-close ')[0].value = '00:00';
+								}
+							}
+							
+							
+							el.style.backgroundColor = 'teal';
+							// Starts on Sunday.
 							var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday',];
 							// source code: sunday=0, monday=1, ...
 							// google is same!!
@@ -100889,7 +100913,6 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								var z = rs.result.opening_hours.periods[i];
 								var day = days[z.open.day];
 								is_open_days[z.open.day] = true;
-								//~ console.log(z);
 								// Day class name e.g.: " monday-1-open "
 								var d = {
 									open: document.getElementsByName(' '+day+'-1-open ')[0],
@@ -100905,13 +100928,14 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								d.close.value = x.e;
 							}
 							// Check the box if closed.
-							//~ console.log(is_open_days);
 							for (var x in is_open_days) {
 								if (!is_open_days[x]) {
 									var day = days[x];
 									document.getElementsByName(day+'-closed')[0].checked = true;
 								}
 							}
+							// Set true, if success to here.......
+							o.found_hours = true;
 						}
 					}
 				});
@@ -100919,7 +100943,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			// geo
 			function google_geo() {
 				// location, callback_function, return_complete_response, proxy
-				MT___google_api_geocode(d2b.value, google_addr, false, false);
+				MT___google_api_geocode(d2d.value, google_addr, false, false);
 			}
 			/**
 			 * function google_addr
@@ -100931,7 +100955,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			function google_addr(lat,lng) {
 				d1c.innerHTML = '';
 				var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
-					encodeURIComponent(d2.value)+
+					encodeURIComponent(d2c.value)+
 					'&types=establishment&location='+lat+','+lng+'&radius=100'+
 					'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
