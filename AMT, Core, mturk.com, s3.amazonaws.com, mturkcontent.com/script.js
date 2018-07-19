@@ -100739,6 +100739,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 				// Do not continue if found hours (this is through Google).
 				if (o.found_hours) {
 					div.style.backgroundColor = 'pink';
+					doSubmit(); // SUBMIT HERE. Looks okay.
 					return;
 				}
 				//~ new AMT___requests_factory().xhr_with_disk_cache({
@@ -100788,6 +100789,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						console.log(response.response.responseText);
 						var rs = JSON.parse(response.response.responseText);
 						console.log(rs);
+						// Hours?
+						if (!rs.hours) {
+							document.getElementsByName(' sunday-1-open ')[0].style.backgroundColor = 'blue';
+							return;
+						}
+						
 						var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 						// source code: sunday=0, monday=1, ...
 						// yelp: monday=0, tuesday=1, ...
