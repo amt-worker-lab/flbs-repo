@@ -100146,10 +100146,10 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 				]
 			}
 			// Remove ignores
-			if (localStorage['ignore-july-19-2018'] == 'undefined') {
+			if (localStorage['ignore-july-19-2018'] == undefined) {
 				localStorage['ignore-july-19-2018'] = '';
 			}
-			//~ console.log(GM_getValue('ignore-july-19-2018'));
+			console.log(GM_getValue('ignore-july-19-2018'));
 			var x = (localStorage['ignore-july-19-2018']).split('\n');
 			for (var i in x) {
 				o.comp = o.comp.replace(
@@ -100218,7 +100218,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			var d3c  = document.createElement('textarea'); // ignore words
 			d3c.setAttribute('style','position:absolute;top:64px;left:0%;width:50%;height:30px;');
 			d3c.disabled = false; // Disable
-			d3c.value = GM_getValue('ignore-july-19-2018');
+			d3c.value = localStorage['ignore-july-19-2018'];
 			document.body.appendChild(d3c);
 			
 			//~ var d3c  = document.createElement('textarea'); // Original company name
