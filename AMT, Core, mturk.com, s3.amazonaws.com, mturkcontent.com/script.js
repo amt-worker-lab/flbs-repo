@@ -100887,6 +100887,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						//el.json_response = rs; // Update this field!
 						
 						// Do something here...
+						var debug_24_hours = false;
 						if (rs.result.opening_hours) {
 							console.log(rs.result.opening_hours.weekday_text.toString()); // debug
 							// Check open 24 hours
@@ -100898,9 +100899,11 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								if (day.indexOf('Open 24 hours') != -1) {
 									document.getElementsByName(' '+days[i]+'-1-open ')[0].value = '00:00';
 									document.getElementsByName(' '+days[i]+'-1-close ')[0].value = '00:00';
+									debug_24_hours = true;
+									el.appendChild(document.createElement('br'));
+									el.appendChild(document.createTextNode('DEBUG24HOURS'));
 								}
 							}
-							
 							
 							el.style.backgroundColor = 'teal';
 							// Starts on Sunday.
@@ -100941,8 +100944,11 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 									document.getElementsByName(day+'-closed')[0].checked = true;
 								}
 							}
-							// Set true, if success to here.......
-							o.found_hours = true;
+							// Set true, if success to here.
+							// But only if debug-24-hours is turned off.
+							if (!debug_24_hours) {
+								o.found_hours = true;
+							}
 						}
 					}
 				});
