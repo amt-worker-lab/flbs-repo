@@ -102134,6 +102134,8 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								console.log(this);
 								console.log(this.json_response);
 								this.style.backgroundColor = 'LightGreen';
+								// nextTab
+								new AMT___core_factory().nextTab();
 								google_addr_prof(this);
 							}
 							d1.appendChild(div);
