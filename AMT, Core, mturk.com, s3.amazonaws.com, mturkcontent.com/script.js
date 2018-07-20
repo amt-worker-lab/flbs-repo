@@ -101837,7 +101837,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 				comp: td[1].innerText.trim(),
 				locn: td[3].innerText.trim() + ', ' +
 					  td[5].innerText.trim(),
-				
+				state: td[5].innerText.trim().state_full_to_abbr(),
 				bold_addr: [],
 				bold_comp: [],
 				
@@ -102110,7 +102110,13 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						}
 						rs = rs.predictions;
 						
+						var found = false;
 						for (var i in rs) {
+							// DESCRIPTION MUST CONTAIN STATE ABBR.
+							if (rs[i].description.indexOf(o.state) == -1) {
+								continue; // SKIP!
+							}
+							found = true; // Update found.
 							var div = document.createElement('div');
 							div.setAttribute('style',
 								'width:98%;border-bottom:1px solid teal;cursor:pointer;'
@@ -102132,12 +102138,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							}
 							d1.appendChild(div);
 						}
-						if (rs.length) {
+						if (rs.length && found) {
 							var div = document.createElement('div');
 							div.setAttribute('style', 'height:1200px;');
 							d1.appendChild(div);
 						} else {
-							//~ o.stats.google.num_results = 0;
+							d1.innerText = 'No in-state results!';
 						}
 					}
 				});
@@ -157247,7 +157253,7 @@ qatar,80
 	}
 	// Fritz&Hammer Crowdsourcing
 	// Find the website for a company
-	var s = '<p>As a convenience, we have provided a <a>Google web search</a> link. This will bring you to a list of search results, which you can click through to find the online presence for that company. If these results are not helpful, please perform your own search, perhaps adding terms to distinguish companies from other possible results. For example, if the company name is simply <em>Lemonade</em>, the initial search may include results for the beverage. You can make the term more precise by adding "company" or other terms to the search.</p>';
+	var s = '<p>As a convenience, we have provided several <a>Google web search</a> links. These will bring you to a list of search results, which you can examine and click through to find the online presence for that company. If these results are not helpful, please perform your own search, perhaps adding terms to distinguish companies from other possible results. ';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -157261,7 +157267,8 @@ qatar,80
 			//~ var td = document.getElementsByTagName('td');
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
 			var h4 = document.getElementsByTagName('h4')[0];
-			var h5 = document.getElementById('location');
+			var h5 = document.getElementsByTagName('h5')[0];
+			//~ var h5 = document.getElementById('location');
 			var o = {
 				comp: h4.innerText.trim().string_to_mixed_case(),	// comp
 				field2: h5.innerText.trim().string_to_mixed_case(),	// industry
@@ -157283,11 +157290,11 @@ qatar,80
 				//~ );
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			console.log(o);
-			//~ AMT___addUserDecision(
-				//~ 'taylorgrisham,2017', function() {
-					//~ return o.comp;
-				//~ }, ['Id(web_url)']
-			//~ )
+			AMT___addUserDecision(
+				'fritz-findurl,2018', function() {
+					return o.comp;
+				}, ['Id(entity_url)']
+			)
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
