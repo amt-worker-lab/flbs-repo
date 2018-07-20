@@ -102054,12 +102054,17 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						// 0.5 x 2 = 1 rounded = 1 halved = 0.5
 						if (rs.result.rating) {
 							var tmpr = Math.round(rs.result.rating * 2) / 2;
+							tmpr += ((tmpr+'').indexOf('.') == -1) ? '.0' : '';
 							console.log(tmpr);
 							o.q[1].value = tmpr;
 							if (o.q[1].options[o.q[1].selectedIndex].innerText != tmpr) {
 								o.q[1].style.border = '2px solid blue';
 								return;
 							}
+						} else {
+							//alert('no rating?');
+							o.q[1].selectedIndex = 0;
+							//return;
 						}
 						if (rs.result.place_id.length > 10)
 							doSubmit();
@@ -102077,12 +102082,14 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			 * The Text Search service is subject to a 10-times multiplier.
 			 * The Radar Search Service is subject to a 5-times multiplier
 			 * 0,0 20000000 = world search
+			 * 
+			 * NOTE: Types does not equal ONLY establishment !!!
 			 */
 			function google_addr(lat,lng) {
 				d1.innerHTML = '';
 				var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
 					encodeURIComponent(d2.value)+
-					'&types=establishment&location='+lat+','+lng+'&radius=100'+
+					'&types=&location='+lat+','+lng+'&radius=100'+
 					'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
 				// Xhr
