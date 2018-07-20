@@ -102031,6 +102031,10 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							console.log(rs.status);
 							return;
 						}
+						if (!rs.result) {
+							console.log(rs.status);
+							return;
+						}
 						console.log(rs);
 						// Update button id/value
 						el.appendChild(document.createElement('br'));
@@ -102038,6 +102042,27 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						//el.json_response = rs; // Update this field!
 						
 						// Do something here...
+						// Fill in the place id from JS attribute.
+						o.q[0].value = rs.result.place_id;
+						// And round rating.
+						// Idea: Well, needs to be rounded to 0.5.
+						// So, double, round, then halve!
+						// E.g. 1.3 x 2 = 2.6 rounded = 3 halved = 1.5
+						// 1.2 x 2 = 2.4 rounded = 2 halved = 1
+						// 1.0 x 2 = 2 rounded = 2 halved = 1
+						// 0.2 x 2 = 0.4 rounded = 0 halved = 0
+						// 0.5 x 2 = 1 rounded = 1 halved = 0.5
+						if (rs.result.rating) {
+							var tmpr = Math.round(rs.result.rating * 2) / 2;
+							console.log(tmpr);
+							o.q[1].value = tmpr;
+							if (o.q[1].options[o.q[1].selectedIndex].innerText != tmpr) {
+								o.q[1].style.border = '2px solid blue';
+								return;
+							}
+						}
+						if (rs.result.place_id.length > 10)
+							doSubmit();
 					}
 				});
 			}
