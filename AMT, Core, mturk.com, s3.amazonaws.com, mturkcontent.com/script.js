@@ -102283,7 +102283,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 	// Marketing Red
 	// This code is from Lena (above).
 	// Search for company on TRIPADVISOR. (Not yelp.)
-	var s = '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1. Go to <strong><a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank">https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder</a></strong> and search for the campground listed.</p>';
+	var s = '1. Go to <strong><a href="http://www.tripadvisor.com/Widgets" target="_blank">https://www.tripadvisor.com/Widgets</a></strong> and search for the campground.</span></p>';
 	if  (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -102308,7 +102308,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 				comp: td[1].innerText.trim(),
 				locn: td[3].innerText.trim() + ', ' +
 					  td[5].innerText.trim(),
-				state: td[5].innerText.trim().state_full_to_abbr(),
+				state: td[5].innerText.trim(),//.state_full_to_abbr(),
 				bold_addr: [],
 				bold_comp: [],
 				
@@ -102410,15 +102410,15 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			//~ d3c.onblur = function() {
 				//~ localStorage['ignore-july-19-2018'] = this.value.trim();
 			//~ }
-			//~ AMT___addUserDecision(
-				//~ 'WhitneyGosden,Feb22,2018',
-				//~ function() {
-					//~ return o.comp+'|'+o.addr;
-				//~ },
-				//~ ['Name(yelpdollarsigns)[0]',
-				 //~ 'Name(yelpcuisine)[0]',
-				//~ ]
-			//~ );
+			AMT___addUserDecision(
+				'mr-tripadvisor,2018',
+				function() {
+					return o.comp+'|'+o.locn;
+				},
+				['Id(tripadvisor_code)',
+				 'Name(tripadvisorrating)[0]',
+				]
+			);
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -102479,12 +102479,111 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 			trip_adv();
 			
 			/**
+			 * function ta_profile
+			 * 
+			 */
+			function ta_embed(div) {
+				// 
+				console.log(div.json_response);
+				//return;
+				
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://www.tripadvisor.com/'+
+					'WidgetEmbed-selfserveprop?embed=true&display_version=2'+
+					'&locationId='+div.json_response.value+'&lang=en_US&year=&rating=true'+
+					'&nreviews=5&writereviewlink=true&popIdx=true&iswide=false'+
+					'&linkingreviewtype=&border=false',
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						console.log(options);
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						////
+						o.q[0].value = rs;
+						ta_rating(div);
+					}
+				});
+			}
+			/**
+			 * function ta_profile
+			 * 
+			 */
+			function ta_rating(div) {
+				// 
+				//~ console.log(div.json_response);
+				//return;
+				
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://www.tripadvisor.com/WidgetEmbed-selfserveprop?'+
+					'display=true&locationId='+div.json_response.value+
+					'&lang=en_US&display_version=2&rating=true&nreviews=5'+
+					'&writereviewlink=true&popIdx=true&iswide=false&border=false',
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						console.log(options);
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						
+						// pull out ratings
+						var r = /<span class="ui_bubble_rating bubble_([\d]{2})"><\/span>/
+							.exec(rs);
+						if (r) {
+							var rating = r[1];
+							// Add a period.
+							o.q[1].value = rating[0] +'.'+ rating[1];
+							var test = o.q[1].options[ o.q[1].selectedIndex ].innerText;
+							if (test == rating[0] +'.'+ rating[1] &&
+								o.q[0].value.length > 20) {
+								AMT___recordAndSubmit();
+								//~ document.body.style.backgroundColor = 'blue';
+							}
+						} else if (rs.indexOf('rating') == -1) {
+							// no rating included?
+							document.body.style.backgroundColor = 'blue';
+							o.q[1].selectedIndex = 0;
+							if (o.q[0].value.length > 20)
+								AMT___recordAndSubmit();
+						} else {
+							document.body.style.backgroundColor = 'pink';
+						}
+					}
+				});
+			}
+			/**
 			 * function trip_adv
 			 * 
 			 */
 			function trip_adv() {
 				d1.innerHTML = '';
-				var u= 'https://www.tripadvisor.com/TypeAheadJson?action=API&uiOrigin=Widgets&hglt=true&urlList=false&details=true&interleaved=true&scoreThreshold=0.8&query='+encodeURIComponent(d2.value)+','+encodeURIComponent(d2B.value)+'&types=hotel%2Cattr%2Ceat';
+				var u= 'https://www.tripadvisor.com/TypeAheadJson?action=API&uiOrigin=Widgets&hglt=true&urlList=false&details=true&interleaved=true&scoreThreshold=0.8&query='+encodeURIComponent(d2.value)+','+encodeURIComponent(d2b.value)+'&types=hotel%2Cattr%2Ceat';
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
 				// Xhr
 				GM_xmlhttpRequest({ // init
@@ -102506,7 +102605,7 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 						var found = false;
 						for (var i in rs) {
 							// DESCRIPTION MUST CONTAIN STATE ABBR.
-							if (rs[i].description.indexOf(o.state) == -1) {
+							if (rs[i].name.indexOf(o.state) == -1) {
 								continue; // SKIP!
 							}
 							found = true; // Update found.
@@ -102524,12 +102623,12 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 							div.json_response = rs[i];
 							// .onclick
 							div.onclick = function() {
-								console.log(this);
+								//~ console.log(this);
 								console.log(this.json_response);
 								this.style.backgroundColor = 'LightGreen';
 								// nextTab
 								new AMT___core_factory().nextTab();
-								google_addr_prof(this);
+								ta_embed(this);
 							}
 							d1.appendChild(div);
 						}
