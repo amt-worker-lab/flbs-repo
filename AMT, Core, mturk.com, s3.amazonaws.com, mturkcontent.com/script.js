@@ -923,7 +923,9 @@ function MT__RUN() {
 	 * 
 	 * 
 	 */
-	// 
+	// Melissa Kendall
+	// VRBO.com
+	// @tags: Simple xhr
 	var s = '<p>1. Copy the provided URL string&nbsp;into a Chrome browser to view the Source Code for a property listing on HomeAway/VRBO.com.</p>\n\n<p>2. Hit Ctrl+F and enter "unitApiUrl" to find that field within the source code. It will look like this:</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -1030,13 +1032,16 @@ function MT__RUN() {
 						if (r) {
 							o.q[0].value = r[1];
 							AMT___recordAndSubmit();
+						} else if (rs.indexOf('unitApiUrl') == -1) {
+							o.q[0].value = 'N/A';
+							AMT___recordAndSubmit();
 						} else {
-							new AMT___core_factory().
-								iframe2parent__postMessage(
-									{
-										action: 'return_and_accept'
-									}
-								);
+							//~ new AMT___core_factory().
+								//~ iframe2parent__postMessage(
+									//~ {
+										//~ action: 'return_and_accept'
+									//~ }
+								//~ );
 						}
 					}
 				});
@@ -102247,6 +102252,273 @@ Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am 
 								o.bold_addr
 								? MT__bold(rs[i].description, o.bold_addr.concat(o.bold_comp))
 								: rs[i].description
+							);
+							// Set json_response
+							div.json_response = rs[i];
+							// .onclick
+							div.onclick = function() {
+								console.log(this);
+								console.log(this.json_response);
+								this.style.backgroundColor = 'LightGreen';
+								// nextTab
+								new AMT___core_factory().nextTab();
+								google_addr_prof(this);
+							}
+							d1.appendChild(div);
+						}
+						if (rs.length && found) {
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:1200px;');
+							d1.appendChild(div);
+						} else {
+							d1.innerText = 'No in-state results!';
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
+	// Marketing Red
+	// This code is from Lena (above).
+	// Search for company on TRIPADVISOR. (Not yelp.)
+	var s = '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1. Go to <strong><a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank">https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder</a></strong> and search for the campground listed.</p>';
+	if  (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('em {font-weight:bold;zoom:2;}');
+			GM_addStyle('#mturk_form {zoom:0.6;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:1000px !important;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			// gm specific
+			GM_addStyle('form {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:2000px !important;}');
+			GM_addStyle('#submitButton {width:60%;height:200px;position:absolute;margin-top:-400px !important;}');
+			//
+			var td = document.getElementsByTagName('td');
+			//~ var x = a[0].href.replace(/https:\/\/www\.google\.com\/search\?q=/, '');
+			//~ var x = a[0].href.replace('https://www.google.com/search?q=','');
+			//~ x = decodeURIComponent(x).replace(/\s+/, ' ').trim();
+			//~ x = x.split('+');
+			var o = { // 
+				comp: td[1].innerText.trim(),
+				locn: td[3].innerText.trim() + ', ' +
+					  td[5].innerText.trim(),
+				state: td[5].innerText.trim().state_full_to_abbr(),
+				bold_addr: [],
+				bold_comp: [],
+				
+				//~ // For auto
+				//~ comp_cln: null,
+				//~ addr_cln: null,
+				
+				q: [
+					document.getElementById('tripadvisor_code'),
+					document.getElementsByName('tripadvisorrating')[0],
+				]
+			}
+			// Remove ignores
+			if (localStorage['ignore-mr-july-19-2018'] == undefined) {
+				localStorage['ignore-mr-july-19-2018'] = '';
+			}
+			console.log(GM_getValue('ignore-mr-july-19-2018'));
+			var x = (localStorage['ignore-mr-july-19-2018']).split('\n');
+			for (var i in x) {
+				o.comp = o.comp.replace(
+					new RegExp('^'+x[i], 'i'),
+					''
+				);
+				o.comp = o.comp.trim();
+			}
+			
+			// Add to o.addr
+			//~ o.addr += ', ' + o.city + ' ' + o.state;
+			for (var i in o.q) {
+				o.q[i].value = '';
+			}
+			o.comp = o.comp.replace(/&/g, ' and '); // Try this to improve yield...
+			// state or state abbr
+			//~ var abbr = o.state.state_full_to_abbr();
+			//~ if (abbr != o.state_abbr) {
+				//~ o.state_abbr = abbr;
+				//~ o.addr = o.addr.replace(o.state, o.state_abbr);
+				//~ // Put abbreviated state into address. Yelp is abbreviated. So this helps with auto.
+			//~ }
+			//
+			o.bold_addr = o.locn.clean_string_to_array();
+			o.bold_comp = o.comp.clean_string_to_array();
+			// add apostrophes
+			// Note that yelp has LAAAMMMEE apostrophes: "’", not "'"
+			//~ for (var i in o.bold_comp) {
+				//~ var finalTwo = o.bold_comp[i].slice(-2).toLowerCase();
+				//~ var finalOne = o.bold_comp[i].slice(-1).toLowerCase();
+				//~ if (finalTwo.indexOf("’s") == -1 && 
+					//~ finalOne == 's') {
+					//~ o.bold_comp.push(o.bold_comp[i].replace(/s$/, "’s"));
+				//~ }
+			//~ }
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1. setAttribute('style','position:absolute;top:98px;left:0;width:99%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			
+			//~ var d1b = document.createElement('div');
+			//~ d1b.setAttribute('style','position:absolute;top:98px;left:33%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			//~ document.body.appendChild(d1b);
+			//~ var d1c = document.createElement('div');
+			//~ d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			//~ document.body.appendChild(d1c);
+			
+			var d2  = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:99%;height:30px;font-size:16px !important;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:99%;height:30px;');
+			document.body.appendChild(d2b);
+			
+			//~ var d2c = document.createElement('textarea');
+			//~ d2c.setAttribute('style','position:absolute;top:0px;left:50%;width:50%;height:30px;font-size:16px !important;');
+			//~ document.body.appendChild(d2c);
+			//~ var d2d = document.createElement('textarea');
+			//~ d2d.setAttribute('style','position:absolute;top:32px;left:50%;width:50%;height:30px;');
+			//~ document.body.appendChild(d2d);
+			
+			//~ var d3b = document.createElement('input'); // sbm
+			//~ d3b.setAttribute('style','position:absolute;top:64px;left:50%;width:49%;height:20px;');
+			//~ document.body.appendChild(d3b);
+			//~ d3b.value = 'SBM';
+			//~ d3b.type = 'button';
+			var d3c  = document.createElement('textarea'); // original
+			d3c.setAttribute('style','position:absolute;top:64px;left:0%;width:99%;height:30px;');
+			d3c.disabled = true; // Disable
+			//~ d3c.value = localStorage['ignore-july-19-2018'];
+			d3c.value = o.comp;
+			document.body.appendChild(d3c);
+			
+			//~ var d3c  = document.createElement('textarea'); // Original company name
+			//~ d3c.setAttribute('style','position:absolute;top:64px;left:50%;width:50%;height:30px;');
+			//~ d3c.disabled = true; // Disable
+			//~ d3c.value = o.comp;
+			//~ document.body.appendChild(d3c);
+			/*END ITEMS*/
+			
+			//~ d3c.onblur = function() {
+				//~ localStorage['ignore-july-19-2018'] = this.value.trim();
+			//~ }
+			//~ AMT___addUserDecision(
+				//~ 'WhitneyGosden,Feb22,2018',
+				//~ function() {
+					//~ return o.comp+'|'+o.addr;
+				//~ },
+				//~ ['Name(yelpdollarsigns)[0]',
+				 //~ 'Name(yelpcuisine)[0]',
+				//~ ]
+			//~ );
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 98 // offset top
+			});
+			//
+			d2.value  = o.comp;
+			d2b.value = o.locn;
+			//~ d2c.value  = o.comp;
+			//~ d2d.value = o.locn;
+			
+			//
+			d2.onblur = d2b.onblur = function() {
+				trip_adv();
+			}
+			//~ d2c.onblur = d2d.onblur = function() {
+				//~ google_geo();
+			//~ }
+			// NA
+			//~ d3b.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ o.q[0].value = 'Not Listed';
+				//~ o.q[0].value = 'None';
+				//o.q[1].value = '';
+				//~ o.q[1].selectedIndex = 0;
+				//~ doSubmit();
+			//~ }
+			//
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ d2c.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ d2d.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2, d2b],
+				blur_element: true
+			});
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				document.body.style.backgroundColor = 'LightGreen';
+				doSubmit();
+				return false;
+			}
+			// Init
+			trip_adv();
+			
+			/**
+			 * function trip_adv
+			 * 
+			 */
+			function trip_adv() {
+				d1.innerHTML = '';
+				var u= 'https://www.tripadvisor.com/TypeAheadJson?action=API&uiOrigin=Widgets&hglt=true&urlList=false&details=true&interleaved=true&scoreThreshold=0.8&query='+encodeURIComponent(d2.value)+','+encodeURIComponent(d2B.value)+'&types=hotel%2Cattr%2Ceat';
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				// Xhr
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) {
+							return;
+						}
+						rs = JSON.parse(rs);
+						
+						if (!rs.results || !rs.results.length) {
+							d1.innerText = 'No results!';
+							return;
+						}
+						rs = rs.results;
+						
+						var found = false;
+						for (var i in rs) {
+							// DESCRIPTION MUST CONTAIN STATE ABBR.
+							if (rs[i].description.indexOf(o.state) == -1) {
+								continue; // SKIP!
+							}
+							found = true; // Update found.
+							var div = document.createElement('div');
+							div.setAttribute('style',
+								'width:98%;border-bottom:1px solid teal;cursor:pointer;'
+							);
+							div.innerHTML = //rs[i].description;
+							(
+								o.bold_addr
+								? MT__bold(rs[i].name, o.bold_addr.concat(o.bold_comp))
+								: rs[i].name
 							);
 							// Set json_response
 							div.json_response = rs[i];
