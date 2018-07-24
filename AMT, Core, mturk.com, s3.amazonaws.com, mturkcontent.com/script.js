@@ -923,6 +923,127 @@ function MT__RUN() {
 	 * 
 	 * 
 	 */
+	// 
+	var s = '<p>1. Copy the provided URL string&nbsp;into a Chrome browser to view the Source Code for a property listing on HomeAway/VRBO.com.</p>\n\n<p>2. Hit Ctrl+F and enter "unitApiUrl" to find that field within the source code. It will look like this:</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//~ GM_addStyle('form {margin-top:1000px;}');
+			//~ GM_addStyle('.exe {padding: 2px 0 2px 0;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[1].innerText.trim().replace(/^view-source:/, ''),
+				q: [
+					document.getElementById('companyName'),
+				]
+			}
+			//~ o.bold1 = o.name.clean_string_to_array();
+			//~ o.bold2 = o.specialty.clean_string_to_array();
+			//~ o.bold3 = o.country.clean_string_to_array();
+			//~ /*BEGIN ITEMS*/
+			//~ // Two columns.
+			//~ var d1 = ''.div({
+				//~ style:
+				//~ 'position:absolute;top:90px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				//~ a: true
+			//~ });
+			//~ var d2 = document.createElement('textarea');
+			//~ d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
+			//~ d2.value = o.id;
+			//~ document.body.appendChild(d2);
+			//~ var d1b = ''.div({ // info div
+				//~ style:
+				//~ 'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				//~ a: true
+			//~ });
+			//~ /*END ITEMS*/
+			//~ d1b.innerText = o.id;
+			// user dec.
+			AMT___addUserDecision(
+				'mk-vrbo,2018', function() {
+					return o.url;
+				}, ['Id(companyName)']
+			);
+			// height
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [	d1 ],
+				//~ offset: 90 // offset top
+			//~ });
+			//
+			//~ var ef = new AMT___events_factory();
+			//~ ef.mouseup__delete_range({
+				//~ elements: [ d2 ],
+				//~ blur_element: true,
+				//~ remove_whitespace: true,
+			//~ });
+			//~ d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ d2.onblur = function(e) {
+				//~ init(this);
+			//~ }
+			// Start
+			init(false);
+			//~ function try_sbm() {
+				//~ if (o.q[0].value.length > 2 &&
+					//~ o.q[0].value != 'null' &&
+					//~ o.q[0].value != 'undefined') {
+					//~ AMT___recordAndSubmit();
+				//~ }
+			//~ }
+			function init(input) {
+				//~ d1.innerText = '...'; // Reset d1.
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.url,
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						console.log(options);
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						
+						var r = /"unitApiUrl":"([^"]+)"/.exec(rs);
+						if (r) {
+							o.q[0].value = r[1];
+							AMT___recordAndSubmit();
+						} else {
+							new AMT___core_factory().
+								iframe2parent__postMessage(
+									{
+										action: 'return_and_accept'
+									}
+								);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// George O Gaston
 	// Part number Interchange (wellsve.com)
 	// @tags: Simple xhr
