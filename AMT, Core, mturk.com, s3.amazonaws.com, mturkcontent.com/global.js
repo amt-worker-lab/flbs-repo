@@ -16559,6 +16559,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		// Apparently there is a new strict limit on # of 
 		// searches. Needs work. July 2018.
 		// See Jason Blackbriar for more detail.
+		// Remove type=place, July 2018
 		var u = 
 			'https://graph.facebook.com/search'+
 			'?q='+encodeURIComponent(d2.value)+'&type=place'+

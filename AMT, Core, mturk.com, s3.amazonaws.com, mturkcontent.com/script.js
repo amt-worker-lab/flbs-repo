@@ -16528,8 +16528,26 @@ Laurens Hammond, Chicago, Ill.**/
 									console.log(response.data.text_range);
 									var r = response.data.text_range.trim();
 									if (o.q[0].value == '') {
+										// Auto-fill with comma or dash.
+										// e.g. bill smith - president
+										// e.g. bill smith, president
+										// e.g. bill smith, president, ceo, & founder
+										if (r.indexOf(',') != -1 ||
+											r.indexOf('-') != -1) {
+											var x = /^([^,\-]+)([\d\D]+)/.exec(r);
+											if (x) {
+												var nm = x[0].trim().split(' ');
+												o.q[0].value =
+													nm[0].replace(/,$/,'').trim();
+												o.q[1].value =
+													nm[nm.length-1].replace(/,$/,'').trim();
+												o.q[2].value =
+													x[1].replace(/^[,-]+ */, '');
+											}
+										}
+										
 										// auto-fill if there is a space.
-										if (/^\w+ \w+[,\n]/.exec(r)) {
+										else if (/^\w+ \w+[,\n]/.exec(r)) {
 											var x = /(^\w+) (\w+)[,\n]([\d\D]+)/.exec(r);
 											o.q[0].value = x[1];
 											o.q[1].value = x[2];
@@ -16547,24 +16565,9 @@ Laurens Hammond, Chicago, Ill.**/
 									} else { // else always overwrite
 										o.q[2].value = response.data.text_range.trim().replace(/,$/,'');
 									}
-									o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
+									o.q[3].value = response.data.url
+										.replace(/###tabId[\d\D]+/,'');
 								}
-								//~ else if(response.removeThisUtilityTab) {
-									//~ o.killTabCounter++;
-									//~ o.finishedLoadingCounter++;
-									//~ if(o.killTabCounter == numToExpect) {
-										//~ document.body.style.backgroundColor = 'silver';
-										//~ AMT___Floater.skip();
-									//~ }
-								//~ }
-								//~ else if(response.found) {
-									//~ o.finishedLoadingCounter++;
-								//~ }
-								
-								//~ if(o.finishedLoadingCounter == numToExpect && o.killTabCounter != numToExpect) {
-									//~ document.body.style.backgroundColor = 'white';
-									//~ AMT___Floater.accept();
-								//~ }
 							}
 						);
 					}
