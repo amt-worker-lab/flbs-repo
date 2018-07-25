@@ -16533,16 +16533,17 @@ Laurens Hammond, Chicago, Ill.**/
 										// e.g. bill smith, president
 										// e.g. bill smith, president, ceo, & founder
 										if (r.indexOf(',') != -1 ||
-											r.indexOf('-') != -1) {
-											var x = /^([^,\-]+)([\d\D]+)/.exec(r);
+											r.indexOf('-') != -1 ||
+											r.indexOf('–') != -1) {
+											var x = /^([^,\-\–]+)([\d\D]+)/.exec(r);
 											if (x) {
-												var nm = x[0].trim().split(' ');
+												var nm = x[1].trim().split(' ');
 												o.q[0].value =
 													nm[0].replace(/,$/,'').trim();
 												o.q[1].value =
 													nm[nm.length-1].replace(/,$/,'').trim();
 												o.q[2].value =
-													x[1].replace(/^[,-]+ */, '');
+													x[2].replace(/^[,-–]+ */, '');
 											}
 										}
 										
