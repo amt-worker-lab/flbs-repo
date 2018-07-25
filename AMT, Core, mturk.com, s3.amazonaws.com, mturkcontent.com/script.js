@@ -142482,6 +142482,162 @@ qatar,80
 	 * 
 	 * 
 	 */
+	// TC Research
+	// Find phone numbers of mental health practicioners
+	s = '<li><strong>IMPORTANT: Phone numbers from the psychology today website are NOT valid and won\'t be accepted as a valid HIT.</strong></li>\n	<li>If you are unable to find the phone number please fill the phone number field with zeros, people who submit only zero numbers will be banned from this HIT.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
+			//~ GM_addStyle('body {width:18%;margin-top:160px !important;}');
+			//~ GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			//~ GM_addStyle('input {height:auto !important;padding:0 !important;width:100%;}');// ADD WIDTH
+			
+			//~ GM_addStyle('table {position:absolute;top:0px;left:50%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#mturk_form {margin-top:1000px !important;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#workContent {position:absolute;top:0;left:0;}'); // MOVE THIS DOWN
+			// TASK SPECIFIC CSS
+			GM_addStyle('#Phone_Number {position:absolute !important;top:0px;left:50%;}');
+			GM_addStyle('#Facebook_URL {position:absolute !important;top:34px;left:50%;}');
+			GM_addStyle('table {width:50% !important;}');
+			
+			// Task code
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var t = document.getElementsByTagName('td');
+			var o = {
+				comp: t[3].innerText.trim(),
+				addr: t[5].innerText.trim().replace(/ *(\d{4,5})(-\d+|)$/,''), // remove zip
+				//~ city: t[5].innerText.trim(),
+				//~ state: t[7].innerText.trim().stateAbbrToFull(),
+				//~ country: t[9].innerText.trim(),
+				//~ zip: t[11].innerText.trim(),
+				//~ state: t[3].innerText.trim().stateAbbrToFull(),
+				q: [
+					document.getElementById('phone_number'),
+				]
+			}
+			//~ o.zip = o.zip.replace(/^(\d{5})[\d\D]*/, '$1'); // Remove trailing from zip, eg 12903-3929
+			//~ o.str = o.comp +', '+o.addr+', '+o.city+', '+o.state+', '+o.country;
+			//~ if (o.city == o.state) {
+				//~ o.str = o.comp +', '+o.addr+', '+o.city+', '+o.country;
+			//~ }
+			/*BEGIN ITEMS*/
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:222px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('textarea');
+			dx2.setAttribute('style','position:absolute;top:180px;left:0%;width:100%;height:40px;font-size:1.2em !important;');
+			document.body.appendChild(dx2);
+			dx2.value = o.comp + ', ' + o.addr;
+			//~ dx2.value = o.comp;
+			//~ var dx3 = document.createElement('input'); // info div
+			//~ dx3.value = 'N/A';
+			//~ dx3.type = 'button';
+			//~ dx3.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:150px !important;');
+			//~ document.body.appendChild(dx3);
+			/*END ITEMS*/
+			AMT___addUserDecision(
+				'tcresearch,2018', function() {
+					return o.comp+o.addr;
+				}, ['Id(phone_Number)']
+			)
+			//~ dx3.innerText = o.zip;
+			var ef = new AMT___events_factory();
+			dx2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: dx2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			// onclick
+			//~ dx3.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+			//~ }
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					dx1
+				],
+				offset: 220 // offset top
+			});
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (!/^\(\d{3}\)-\d{3}-\d{4}$/.exec(o.q[0].value)) {
+					return false;
+				}
+				AMT___recordAndSubmit(); // Still here? Submit.
+				return false;
+			}
+			// try_sbm
+			function try_sbm() {
+				//~ for (var i in o.q) {
+					//~ o.q[i].value = o.q[i].value.trim();
+					//~ if (/[\D]/.exec(o.q[i].value)) return false; // Contains non-digit
+					//~ if (o.q[i].value == '') return false;
+					//~ if (o.q[i].value.length < 2) return false;
+				//~ }
+				//~ doSubmit(); // Still here? Submit.
+				if (/^\(\d{3}\)-\d{3}-\d{4}$/.exec(o.q[0].value)) {
+					document.body.style.backgroundColor = 'LightGreen';
+					AMT___recordAndSubmit();
+				}
+			}
+			
+			// Opts
+			// TODO#1: RUN ONLY GOOGLE, OR SET UP FACEBOOK AND RUN ONLY GOOGLE/FB.
+			// TODO#2: Preview mode skip when COUNTRY!=USA.
+			// #3:On Google, show by line, e.g.: Street Address:698. From:
+			// adr_address: "<span class="street-address">698</span> <span class="extended-address">Azu</span>, <span class="locality">Hanno</span>, <span class="region">Saitama Prefecture</span> <span class="postal-code">357-0046</span>, <span class="country-name">Japan</span>"
+			// TODO: Add display:none if phone==null
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					//~ street: o.q[0],
+					phone: o.q[0],
+				},
+				onclick_callback: function(opts) { // (opts)
+					console.log(opts);
+					console.log(opts.profile_url);
+					// Convert phone to formatting if 10 digits.
+					// Otherwise, leave phone as is.
+					if (opts.o.final_location.phone) {
+						var y = opts.o.final_location.phone.replace(/[^\d]/g, '');
+						var x = /^(\d{3})(\d{3})(\d{4})$/.exec(y);
+						if (x) {
+							// turn into 000-000-0000
+							o.q[0].value = '('+x[1]+')-'+x[2]+'-'+x[3];
+							//~ //doSubmit();
+							try_sbm();
+						} else {
+							// Do not change it!
+						}
+					}
+					//~ if (/facebook/i.exec(opts.profile_url)) {
+						// https://www.facebook.com/pages/Great-Lakes-Community-Center/159970488141530
+						//~ o.q[1].value = opts.profile_url;
+					//~ }
+					
+				}
+			};
+			new AMT___items_factory().create_dashboard_find_address(opts);
+		}
+		new run().f();
+		return;
+	}
 	// Brandon Walker
 	// Uncover phone number or Facebook URL for breweries, bars, restaurants, and shops
 	// 
