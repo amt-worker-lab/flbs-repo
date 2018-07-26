@@ -16389,6 +16389,14 @@ Laurens Hammond, Chicago, Ill.**/
 					document.getElementById('source-url'),
 				],
 			}
+			if (o.url == '') {
+				new AMT___core_factory().
+					iframe2parent__postMessage(
+						{
+							action: 'return_and_accept'
+						}
+					);
+			}
 			if (!/^https?:\/\//i.exec(o.url)) {
 				o.url = 'http://'+o.url;
 			}
@@ -16568,6 +16576,7 @@ Laurens Hammond, Chicago, Ill.**/
 									}
 									o.q[3].value = response.data.url
 										.replace(/###tabId[\d\D]+/,'');
+									o.q[2].focus();
 								}
 							}
 						);
