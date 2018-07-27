@@ -14750,8 +14750,126 @@ Laurens Hammond, Chicago, Ill.**/
 		return;
 	}
 	// Melissa Kendall
-	// Find the Latitude/Longitude of Airbnb Property
+	// Easy! Find the Lowest Rate Available on HomeAway.com
+	// @tags: simple_xhr
 	// 
+	s = '<p><span style="font-family:verdana,geneva,sans-serif;"><strong>Please follow the&nbsp;steps below to help us find the lowest rate available for this&nbsp;city on HomeAway.com.</strong></span></p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
+			GM_addStyle('.panel {position:absolute;top:1400px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Notes')[0],
+					document.getElementsByName('Notes')[1],
+				],
+			};
+			// DoPast
+			AMT___addUserDecision(
+				'M.Kendall-homeaway,Jul2018',
+				function() { return o.u; },
+				["Name(Notes)[0]", "Name(Notes)[1]"]
+			);
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[0].value != '' && o.q[1].value != '') {
+					AMT___recordAndSubmit();
+				}
+				return false;
+			}
+			o.q[0].ondblclick = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ o.q[0].value = 'N/A';
+				//~ o.q[1].value = 'N/A';
+				//~ AMT___recordAndSubmit();
+				//~ return false;
+			}
+			document.body.ondblclick = function() {
+				window.open(o.u, '_blank');
+			}
+			init();
+			function init() {
+				// init url: https://www.homeaway.com/results/keywords:Eclectic%2C+AL%2C+USA/filter:27?view=l
+				// Request URL: https://www.homeaway.com/imperius/ajax/map/results/filter:27/keywords:Eclectic%2C+AL%2C+USA/@,,,,z/page:1?view=l&_=1532714456862
+				
+				var x = /keywords:([^\/]+)\/filter:27(\?view=l|\/page:1\?view=l)/
+					.exec(o.u);
+				if (!x || !x[1]) {
+					alert('!x');
+					return;
+				}
+				var u = 'https://www.homeaway.com/imperius/ajax/map/results/filter:27/keywords:'+x[1]+'/@,,,,z/page:1?view=l&_=1532714456862&orderBy=prices&ascending=true';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						if (options.response.status != 200) return false;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						
+						if (rs.results &&
+							rs.results.hits &&
+							rs.results.hits.length)
+						{
+							var rslt = rs.results.hits[0];
+							//o.q[1].value = 
+							o.q[0].value = 
+								rslt.averagePrice.currencySymbol + 
+								rslt.averagePrice.value;
+							if (/^\$\d+$/.exec(o.q[0].value)) {
+								AMT___recordAndSubmit();
+							} else {
+								console.log(o.q[0].value);
+							}
+							
+							// list is pre-sorted!
+							//~ var low = 99999999999;
+							//~ var lrslt = null;
+							//~ //var firstResDebug = true;
+							//~ for (var i in rs.results.hits) {
+								//~ var h = rs.results.hits[i];
+								//~ if (!h.averagePrice) continue; // Skip unknowns
+								//~ if (h.averagePrice.value < low) {
+									//~ low = h.averagePrice.value;
+									//~ lrslt = h;
+									//~ if (i != 0) {
+										//~ firstResDebug = false;
+										//~ alert('not first?');
+										//~ //return;
+									//~ }
+								//~ }
+							//~ }
+							//~ console.log(lrslt);
+							//~ if (lrslt) {
+								//~ o.q[0].value = o.q[1].value = 
+									//~ lrslt.averagePrice.currencySymbol + 
+									//~ lrslt.averagePrice.value;
+								//~ //AMT___recordAndSubmit();
+							//~ }
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
+	// Melissa Kendall
+	// Find the Latitude/Longitude of Airbnb Property
+	// @tags: simple_xhr
 	// 
 	s = 'PLEASE NOTE: I only want you to get the latitude and longitude values for each property from the page source on Airbnb. Please don\'t try to "guesstimate" them&nbsp;based on the location of the map.';
 	if (ih.indexOf(s) != -1) {
