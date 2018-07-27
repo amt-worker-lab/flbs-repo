@@ -936,8 +936,8 @@ function MT__RUN() {
 			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
 			// Task specific GM
 			//~ GM_addStyle('form {margin-top:1000px;}');
-			//~ GM_addStyle('.exe {padding: 2px 0 2px 0;}');
-			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.exe {padding: 2px 0 2px 0;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
@@ -946,6 +946,7 @@ function MT__RUN() {
 				comp: td[1].innerText.trim(),
 				form: td[3].innerText.trim(),
 				date: td[5].innerText.trim().split('/'),
+				bold: [],
 				q: [
 					document.getElementById('web_url'),
 				]
@@ -954,14 +955,15 @@ function MT__RUN() {
 				alert('diff. form?');
 				return;
 			}
-			if (date.length != 2) {
+			if (o.date.length != 2) {
 				alert('date format 1?');
 				return;
 			}
-			if (!/\d{1,2}/.exec(date[0]) || !/\d{4}/.exec(date[1])) {
+			if (!/\d{1,2}/.exec(o.date[0]) || !/\d{4}/.exec(o.date[1])) {
 				alert('date format 2?');
 				return;
 			}
+			o.bold = o.comp.clean_string_to_array();
 			//~ o.bold1 = o.name.clean_string_to_array();
 			//~ o.bold2 = o.specialty.clean_string_to_array();
 			//~ o.bold3 = o.country.clean_string_to_array();
@@ -969,45 +971,45 @@ function MT__RUN() {
 			// Two columns.
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:90px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				'position:absolute;top:90px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
 				a: true
 			});
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
 			d2.value = o.comp;
 			document.body.appendChild(d2);
-			var d1b = ''.div({ // info div
-				style:
-				'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
-				a: true
-			});
+			//~ var d1b = ''.div({ // info div
+				//~ style:
+				//~ 'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				//~ a: true
+			//~ });
 			/*END ITEMS*/
 			//~ d1b.innerText = o.id;
 			// user dec.
 			AMT___addUserDecision(
 				'rachael-g,2018', function() {
-					return o.url;
+					return o.comp+o.date;
 				}, ['Id(web_url)']
 			);
 			// height
-			//~ new AMT___core_factory().el_innerHeight({
-				//~ // This set the elements d1,d1b, and d1c
-				//~ // to fill up the whole window, minus their
-				//~ // distance from page top (top:XX pixels;).
-				//~ elements: [	d1 ],
-				//~ offset: 90 // offset top
-			//~ });
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [	d1 ],
+				offset: 90 // offset top
+			});
 			//
-			//~ var ef = new AMT___events_factory();
-			//~ ef.mouseup__delete_range({
-				//~ elements: [ d2 ],
-				//~ blur_element: true,
-				//~ remove_whitespace: true,
-			//~ });
-			//~ d2.addEventListener('keydown', ef.keydown__blur_field, true);
-			//~ d2.onblur = function(e) {
-				//~ init(this);
-			//~ }
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				elements: [ d2 ],
+				blur_element: true,
+				remove_whitespace: true,
+			});
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.onblur = function(e) {
+				init(this);
+			}
 			// Start
 			init(false);
 			//~ function try_sbm() {
@@ -1019,10 +1021,10 @@ function MT__RUN() {
 			//~ }
 			function init(input) {
 				// Always goes to 31, b/c site seems to allow it.
-				//~ d1.innerText = '...'; // Reset d1.
+				d1.innerText = '...'; // Reset d1.
 				// xhr
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'https://www.sedar.com/FindCompanyDocuments.do?lang=EN&page_no=1&company_search=Limited&document_selection=16&industry_group=A&FromMonth='+date[0]+'&FromDate=01&FromYear='+date[1]+'&ToMonth='+date[0]+'&ToDate=31&ToYear='+date[1]+'&Variable=Issuer&Search=Search',
+					URL: 'https://www.sedar.com/FindCompanyDocuments.do?lang=EN&page_no=1&company_search='+encodeURIComponent(d2.value.trim())+'&document_selection=16&industry_group=A&FromMonth='+o.date[0]+'&FromDate=01&FromYear='+o.date[1]+'&ToMonth='+o.date[0]+'&ToDate=31&ToYear='+o.date[1]+'&Variable=Issuer&Search=Search',
 					check_pre_write_to_disk: function(options) {
 						// Return TRUE to write to disk.
 						// Return FALSE to not write to disk.
@@ -1041,35 +1043,65 @@ function MT__RUN() {
 							document.body.style.backgroundColor = 'blue';
 							return;
 						}
+						d1.innerText = '';
 						
 						// dom
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						var tr = dom.getElementsByClassName('rt');
-						if (tr[2]) {
-							tr = tr[2];
-							var td = tr.getElementsByTagName('td');
-							if (td.length == 6) {
-								if (td[4].innerText.trim() == 'PDF') {
-									
+						var found = false;
+						for (var i=0; i<tr.length; i++) {
+							var t = tr[i];
+							var td = t.getElementsByTagName('td');
+							console.log('td',td);
+							if (td.length == 6 &&
+								td[4].innerText.trim() == 'PDF' &&
+								td[3].innerText.trim() == 'Notice of the meeting and record date - English'
+								)
+							{
+								var f = td[3].getElementsByTagName('form');
+								console.log('f',f);
+								if (f &&
+									f.length == 1 &&
+									f[0].action &&
+									/\/GetFile\.do\?lang=EN&docClass=16&issuerNo=\d+&issuerType=03&projectNo=\d+&docId=\d+/.exec(f[0].action)
+									)
+								{
+									var x = f[0].action.replace(/^https:\/\/s3\.amazonaws\.com\//, '');
+									console.log('f.action', x);
+									if (x.indexOf('http') == -1 &&
+										x.indexOf('HTTP') == -1
+										)
+									{
+										found = true;
+										var d = (MT__bold(
+												td[0].innerText.trim(),
+												o.bold)
+											)
+											.div({
+												style:'border-bottom:1px solid teal',
+												innerHTML:true});
+										d.sid = 'https://www.sedar.com/'+x;
+										d.className = 'exe';
+										d.onclick = function() {
+											o.q[0].value = this.sid;
+											this.style.backgroundColor = 'LightGreen';
+											AMT___recordAndSubmit();
+										}
+										d1.appendChild(d);
+									}
 								}
 							}
 						}
-						
-						var r = /"unitApiUrl":"([^"]+)"/.exec(rs);
-						if (r) {
-							o.q[0].value = r[1];
-							AMT___recordAndSubmit();
-						} else if (rs.indexOf('unitApiUrl') == -1) {
-							o.q[0].value = 'N/A';
-							AMT___recordAndSubmit();
-						} else {
+						if (!found) {
+							d1.innerText = d2.value + '\n0 results!';
+						}
+						//	AMT___recordAndSubmit();
 							//~ new AMT___core_factory().
 								//~ iframe2parent__postMessage(
 									//~ {
 										//~ action: 'return_and_accept'
 									//~ }
 								//~ );
-						}
 					}
 				});
 			}
