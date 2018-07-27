@@ -14758,6 +14758,7 @@ Laurens Hammond, Chicago, Ill.**/
 		var run = function() {};
 		run.prototype.f = function() {
 			console.log('');
+			//~ alert('The website homeaway.com is returning inconsistent results! Not going to go for this as of now. Ex: Try opening ');return;
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
 			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
@@ -14796,6 +14797,7 @@ Laurens Hammond, Chicago, Ill.**/
 				window.open(o.u, '_blank');
 			}
 			init();
+			// TRY #1, USING https://www.homeaway.com/serp/g POST
 			function init() {
 				// init url: https://www.homeaway.com/results/keywords:Eclectic%2C+AL%2C+USA/filter:27?view=l
 				// Request URL: https://www.homeaway.com/imperius/ajax/map/results/filter:27/keywords:Eclectic%2C+AL%2C+USA/@,,,,z/page:1?view=l&_=1532714456862
@@ -14806,7 +14808,7 @@ Laurens Hammond, Chicago, Ill.**/
 					alert('!x');
 					return;
 				}
-				var u = 'https://www.homeaway.com/imperius/ajax/map/results/filter:27/keywords:'+x[1]+'/@,,,,z/page:1?view=l&_=1532714456862&orderBy=prices&ascending=true';
+				var u = 'https://www.homeaway.com/imperius/ajax/map/results/filter:27/keywords:'+x[1]+'/@,,,,z/page:1?view=l&_=1532714456862';//&orderBy=prices&ascending=true
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) {
@@ -14824,45 +14826,119 @@ Laurens Hammond, Chicago, Ill.**/
 							rs.results.hits &&
 							rs.results.hits.length)
 						{
-							var rslt = rs.results.hits[0];
+							//~ var rslt = rs.results.hits[0];
 							//o.q[1].value = 
-							o.q[0].value = 
-								rslt.averagePrice.currencySymbol + 
-								rslt.averagePrice.value;
-							if (/^\$\d+$/.exec(o.q[0].value)) {
-								AMT___recordAndSubmit();
-							} else {
-								console.log(o.q[0].value);
-							}
+							//~ o.q[0].value = 
+								//~ rslt.averagePrice.currencySymbol + 
+								//~ rslt.averagePrice.value;
+							//~ if (/^\$\d+$/.exec(o.q[0].value)) {
+								//~ AMT___recordAndSubmit();
+							//~ } else {
+								//~ console.log(o.q[0].value);
+							//~ }
 							
-							// list is pre-sorted!
-							//~ var low = 99999999999;
-							//~ var lrslt = null;
-							//~ //var firstResDebug = true;
-							//~ for (var i in rs.results.hits) {
-								//~ var h = rs.results.hits[i];
-								//~ if (!h.averagePrice) continue; // Skip unknowns
-								//~ if (h.averagePrice.value < low) {
-									//~ low = h.averagePrice.value;
-									//~ lrslt = h;
-									//~ if (i != 0) {
-										//~ firstResDebug = false;
+							// list is pre-sorted???!
+							
+							
+							var low = 99999999999;
+							var lrslt = null;
+							//var firstResDebug = true;
+							for (var i in rs.results.hits) {
+								var h = rs.results.hits[i];
+								if (!h.averagePrice) continue; // Skip unknowns
+								if (h.averagePrice.value < low) {
+									low = h.averagePrice.value;
+									lrslt = h;
+									if (i != 0) {
+										firstResDebug = false;
 										//~ alert('not first?');
-										//~ //return;
-									//~ }
-								//~ }
-							//~ }
-							//~ console.log(lrslt);
-							//~ if (lrslt) {
-								//~ o.q[0].value = o.q[1].value = 
-									//~ lrslt.averagePrice.currencySymbol + 
-									//~ lrslt.averagePrice.value;
-								//~ //AMT___recordAndSubmit();
-							//~ }
+										//return;
+									}
+								}
+							}
+							console.log(lrslt);
+							if (lrslt) {
+								o.q[0].value = 
+									lrslt.averagePrice.currencySymbol + 
+									lrslt.averagePrice.value;
+								AMT___recordAndSubmit();
+								//o.q[1].value = 
+							}
 						}
 					}
 				});
 			}
+			// TRY #1, USING https://www.homeaway.com/imperius/ajax/map...
+			/*function init() {
+				// init url: https://www.homeaway.com/results/keywords:Eclectic%2C+AL%2C+USA/filter:27?view=l
+				// Request URL: https://www.homeaway.com/imperius/ajax/map/results/filter:27/keywords:Eclectic%2C+AL%2C+USA/@,,,,z/page:1?view=l&_=1532714456862
+				
+				var x = /keywords:([^\/]+)\/filter:27(\?view=l|\/page:1\?view=l)/
+					.exec(o.u);
+				if (!x || !x[1]) {
+					alert('!x');
+					return;
+				}
+				var u = 'https://www.homeaway.com/imperius/ajax/map/results/filter:27/keywords:'+x[1]+'/@,,,,z/page:1?view=l&_=1532714456862';//&orderBy=prices&ascending=true
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						if (options.response.status != 200) return false;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						
+						if (rs.results &&
+							rs.results.hits &&
+							rs.results.hits.length)
+						{
+							//~ var rslt = rs.results.hits[0];
+							//o.q[1].value = 
+							//~ o.q[0].value = 
+								//~ rslt.averagePrice.currencySymbol + 
+								//~ rslt.averagePrice.value;
+							//~ if (/^\$\d+$/.exec(o.q[0].value)) {
+								//~ AMT___recordAndSubmit();
+							//~ } else {
+								//~ console.log(o.q[0].value);
+							//~ }
+							
+							// list is pre-sorted???!
+							
+							
+							var low = 99999999999;
+							var lrslt = null;
+							//var firstResDebug = true;
+							for (var i in rs.results.hits) {
+								var h = rs.results.hits[i];
+								if (!h.averagePrice) continue; // Skip unknowns
+								if (h.averagePrice.value < low) {
+									low = h.averagePrice.value;
+									lrslt = h;
+									if (i != 0) {
+										firstResDebug = false;
+										//~ alert('not first?');
+										//return;
+									}
+								}
+							}
+							console.log(lrslt);
+							if (lrslt) {
+								o.q[0].value = 
+									lrslt.averagePrice.currencySymbol + 
+									lrslt.averagePrice.value;
+								AMT___recordAndSubmit();
+								//o.q[1].value = 
+							}
+						}
+					}
+				});
+			}*/
 		}
 		new run().f();
 		return;
