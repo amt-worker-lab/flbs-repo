@@ -921,8 +921,161 @@ function MT__RUN() {
 	 * 
 	 * 
 	 * 
-	 * 
 	 */
+	// Rachel Geoffroy
+	// VRBO.com
+	// @tags: Simple xhr
+	var s = '<p background-color:="" font-size:="" helvetica="" style="box-sizing: border-box; margin: 0px 0px 10px; color: rgb(51, 51, 51); font-family: "><span background-color:="" font-size:="" helvetica="" style="box-sizing: border-box;"><strong>Very Important:&nbsp;</strong>Click on the&nbsp;</span><a style="box-sizing: border-box; color: rgb(66, 139, 202); background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; font-family: Arial; font-size: 12px;" title="&amp;docClass=16&amp;issuerNo=00007764&amp;issuerType=03&amp;projectNo=02571735&amp;docId=4038281">Notice of the meeting and record date - English</a><span background-color:="" font-size:="" helvetica="" style="box-sizing: border-box;">&nbsp;in the&nbsp;search results</span></p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:600px !important;}');
+			// Task specific GM
+			//~ GM_addStyle('form {margin-top:1000px;}');
+			//~ GM_addStyle('.exe {padding: 2px 0 2px 0;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				form: td[3].innerText.trim(),
+				date: td[5].innerText.trim().split('/'),
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			if (o.form != 'Notice of the meeting and record date') {
+				alert('diff. form?');
+				return;
+			}
+			if (date.length != 2) {
+				alert('date format 1?');
+				return;
+			}
+			if (!/\d{1,2}/.exec(date[0]) || !/\d{4}/.exec(date[1])) {
+				alert('date format 2?');
+				return;
+			}
+			//~ o.bold1 = o.name.clean_string_to_array();
+			//~ o.bold2 = o.specialty.clean_string_to_array();
+			//~ o.bold3 = o.country.clean_string_to_array();
+			/*BEGIN ITEMS*/
+			// Two columns.
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:90px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
+			d2.value = o.comp;
+			document.body.appendChild(d2);
+			var d1b = ''.div({ // info div
+				style:
+				'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true
+			});
+			/*END ITEMS*/
+			//~ d1b.innerText = o.id;
+			// user dec.
+			AMT___addUserDecision(
+				'rachael-g,2018', function() {
+					return o.url;
+				}, ['Id(web_url)']
+			);
+			// height
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [	d1 ],
+				//~ offset: 90 // offset top
+			//~ });
+			//
+			//~ var ef = new AMT___events_factory();
+			//~ ef.mouseup__delete_range({
+				//~ elements: [ d2 ],
+				//~ blur_element: true,
+				//~ remove_whitespace: true,
+			//~ });
+			//~ d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ d2.onblur = function(e) {
+				//~ init(this);
+			//~ }
+			// Start
+			init(false);
+			//~ function try_sbm() {
+				//~ if (o.q[0].value.length > 2 &&
+					//~ o.q[0].value != 'null' &&
+					//~ o.q[0].value != 'undefined') {
+					//~ AMT___recordAndSubmit();
+				//~ }
+			//~ }
+			function init(input) {
+				// Always goes to 31, b/c site seems to allow it.
+				//~ d1.innerText = '...'; // Reset d1.
+				// xhr
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://www.sedar.com/FindCompanyDocuments.do?lang=EN&page_no=1&company_search=Limited&document_selection=16&industry_group=A&FromMonth='+date[0]+'&FromDate=01&FromYear='+date[1]+'&ToMonth='+date[0]+'&ToDate=31&ToYear='+date[1]+'&Variable=Issuer&Search=Search',
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						console.log(options);
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return;
+						}
+						
+						// dom
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var tr = dom.getElementsByClassName('rt');
+						if (tr[2]) {
+							tr = tr[2];
+							var td = tr.getElementsByTagName('td');
+							if (td.length == 6) {
+								if (td[4].innerText.trim() == 'PDF') {
+									
+								}
+							}
+						}
+						
+						var r = /"unitApiUrl":"([^"]+)"/.exec(rs);
+						if (r) {
+							o.q[0].value = r[1];
+							AMT___recordAndSubmit();
+						} else if (rs.indexOf('unitApiUrl') == -1) {
+							o.q[0].value = 'N/A';
+							AMT___recordAndSubmit();
+						} else {
+							//~ new AMT___core_factory().
+								//~ iframe2parent__postMessage(
+									//~ {
+										//~ action: 'return_and_accept'
+									//~ }
+								//~ );
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// Melissa Kendall
 	// VRBO.com
 	// @tags: Simple xhr
