@@ -944,6 +944,7 @@ function MT__RUN() {
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.trim(),
+				original_comp: td[1].innerText.trim(),
 				form: td[3].innerText.trim(),
 				date: td[5].innerText.trim().split('/'),
 				bold: [],
@@ -964,6 +965,11 @@ function MT__RUN() {
 				return;
 			}
 			o.bold = o.comp.clean_string_to_array();
+			// remove from comp
+			o.comp = o.comp.replace(/ +(inc|comp|ltd|corp)\./gi, ' ');
+			o.comp = o.comp.replace(/(previously |formerly )/gi, '');
+			o.comp = o.comp.trim();
+			
 			//~ o.bold1 = o.name.clean_string_to_array();
 			//~ o.bold2 = o.specialty.clean_string_to_array();
 			//~ o.bold3 = o.country.clean_string_to_array();
@@ -971,13 +977,19 @@ function MT__RUN() {
 			// Two columns.
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:90px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				'position:absolute;top:120px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
 				a: true
 			});
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:89px;');
+			d2.setAttribute('style','position:absolute;top:30px;left:0%;width:99%;height:89px;');
 			d2.value = o.comp;
 			document.body.appendChild(d2);
+			// Show original
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:29px;');
+			d2b.value = o.original_comp;
+			d2b.disabled = true;
+			document.body.appendChild(d2b);
 			//~ var d1b = ''.div({ // info div
 				//~ style:
 				//~ 'position:absolute;top:30px;left:0%;width:99%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;',
@@ -997,7 +1009,7 @@ function MT__RUN() {
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [	d1 ],
-				offset: 90 // offset top
+				offset: 120 // offset top
 			});
 			//
 			var ef = new AMT___events_factory();
