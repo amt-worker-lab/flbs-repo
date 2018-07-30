@@ -100643,6 +100643,8 @@ Laurens Hammond, Chicago, Ill.**/
 	// Utilizes API endpoint: GET https://api.yelp.com/v3/businesses/{id}
 	// @fork: Lena Gershkovich
 	// @tags: find_hours, hours, latest_hours, google_hours, yelp_hours
+	// Note: Maybe no N/A's ??
+	//		"If there are no hours, please find the hours by any means necessary (tripadvisor, yelp search, foursquare search, etc)."
 	var s = '<p>Google the venue as shown. Look for the hours in the right hand side bar.</p>\n\n<p>Please read and then input opening and closing hours into the fields below.&nbsp;&nbsp;&nbsp;If the business is closed on that day, please check the box marked closed.</p>';
 	if  (ih.indexOf(s) != -1)
 	{
@@ -100669,7 +100671,8 @@ Laurens Hammond, Chicago, Ill.**/
 				locn: td[3].innerText.trim() + ', ' +
 					  td[5].innerText.trim() + ', ' +
 					  td[7].innerText.trim(),
-				
+				city: td[5].innerText.trim(),
+				state: td[7].innerText.trim(),
 				bold_addr: [],
 				bold_comp: [],
 				
@@ -101188,6 +101191,11 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// yp_profile
 			function yp_profile(div) {
+				if (div.api_response.review_count == 'N/A') {
+					//
+					div.innerText = 'No reviews!';
+					return;
+				}
 				// Go to next tab if hours already set. (Will auto.)
 				if (o.found_hours) {
 					new AMT___core_factory().nextTab();
@@ -101200,11 +101208,6 @@ Laurens Hammond, Chicago, Ill.**/
 					// (as long as not debug)
 					if (!o.debug_24_hours)
 						new AMT___core_factory().nextTab();
-				}
-				if (div.review_count == 'N/A') {
-					//
-					div.innerText = 'No reviews!';
-					return;
 				}
 				profile_api(div);
 				// quit here!
@@ -101480,6 +101483,8 @@ Laurens Hammond, Chicago, Ill.**/
 							// But only if debug-24-hours is turned off.
 							if (!o.debug_24_hours) {
 								o.found_hours = true;
+								// Submit here (new, not in Lena)
+								doSubmit();
 							}
 						}
 					}
@@ -101496,6 +101501,10 @@ Laurens Hammond, Chicago, Ill.**/
 			 * The Text Search service is subject to a 10-times multiplier.
 			 * The Radar Search Service is subject to a 5-times multiplier
 			 * 0,0 20000000 = world search
+			 * 
+			 * Auto in the following cases:
+			 *  var to_match = o.name + ', ' + o.city + ', ' + o.state + ', USA' ;
+			 * 	rs[i].description == to_match
 			 */
 			function google_addr(lat,lng) {
 				d1c.innerHTML = '';
@@ -101522,7 +101531,15 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 						rs = rs.predictions;
 						
+						var found_in_state = false;
+						var auto_found = false;
 						for (var i in rs) {
+							// only do in-state!
+							if (rs[i].description.indexOf(o.state) == -1) {
+								continue;
+							} else {
+								found_in_state = true;
+							}
 							var div = document.createElement('div');
 							div.setAttribute('style',
 								'width:98%;border-bottom:1px solid teal;cursor:pointer;'
@@ -101543,13 +101560,23 @@ Laurens Hammond, Chicago, Ill.**/
 								google_addr_prof(this);
 							}
 							d1c.appendChild(div);
+							if (!auto_found) {
+								var to_match = o.comp + ', ' + o.city + ', ' + o.state + ', USA' ;
+								if (rs[i].description.toLowerCase() == to_match.toLowerCase()) {
+									auto_found = true;
+									div.click();
+								}
+							}
 						}
-						if (rs.length) {
+						if (found_in_state) { // rs.length && 
 							var div = document.createElement('div');
 							div.setAttribute('style', 'height:1200px;');
 							d1c.appendChild(div);
-						} else {
+						} else if (!found_in_state && rs.length){
 							//~ o.stats.google.num_results = 0;
+							d1c.innerText = 'No results in state!';
+						} else {
+							d1c.innerText = 'No results!';
 						}
 					}
 				});
