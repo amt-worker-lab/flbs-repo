@@ -975,7 +975,7 @@ function MT__RUN() {
 				a: true
 			});
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:29px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:89px;');
 			d2.value = o.comp;
 			document.body.appendChild(d2);
 			//~ var d1b = ''.div({ // info div
