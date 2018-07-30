@@ -100634,13 +100634,934 @@ Laurens Hammond, Chicago, Ill.**/
 	 * Sherwood Stranieri
 	 * Trident aka ""Marketing Red
 	 * Lena Gershkovich
-	 * 
+	 * Bruno Germansderfer
 	 * 
 	 * 
 	 */
+	// Bruno Germansderfer
+	// Find Hours of business
+	// Utilizes API endpoint: GET https://api.yelp.com/v3/businesses/{id}
+	// @fork: Lena Gershkovich
+	// @tags: find_hours, hours, latest_hours, google_hours, yelp_hours
+	var s = '<p>Google the venue as shown. Look for the hours in the right hand side bar.</p>\n\n<p>Please read and then input opening and closing hours into the fields below.&nbsp;&nbsp;&nbsp;If the business is closed on that day, please check the box marked closed.</p>';
+	if  (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('em {font-weight:bold;zoom:2;}');
+			GM_addStyle('#mturk_form {zoom:0.6;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:1000px !important;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			// gm specific
+			GM_addStyle('form {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:2000px !important;}');
+			GM_addStyle('#submitButton {width:60%;height:200px;position:absolute;margin-top:-400px !important;}');
+			//
+			var td = document.getElementsByTagName('td');
+			//~ var x = a[0].href.replace(/https:\/\/www\.google\.com\/search\?q=/, '');
+			//~ var x = a[0].href.replace('https://www.google.com/search?q=','');
+			//~ x = decodeURIComponent(x).replace(/\s+/, ' ').trim();
+			//~ x = x.split('+');
+			var o = { // 
+				comp: td[1].innerText.trim(),
+				locn: td[3].innerText.trim() + ', ' +
+					  td[5].innerText.trim() + ', ' +
+					  td[7].innerText.trim(),
+				
+				bold_addr: [],
+				bold_comp: [],
+				
+				//~ // For auto
+				//~ comp_cln: null,
+				//~ addr_cln: null,
+				
+				q: [
+					//document.getElementById('yelpid'),
+					//document.getElementsByName('yelprating')[0],
+				]
+			}
+			// Remove ignores
+			if (localStorage['ignore-july-19-2018'] == undefined) {
+				localStorage['ignore-july-19-2018'] = '';
+			}
+			console.log(GM_getValue('ignore-july-19-2018'));
+			var x = (localStorage['ignore-july-19-2018']).split('\n');
+			for (var i in x) {
+				o.comp = o.comp.replace(
+					new RegExp('^'+x[i], 'i'),
+					''
+				);
+				o.comp = o.comp.trim();
+			}
+			
+			// Add to o.addr
+			//~ o.addr += ', ' + o.city + ' ' + o.state;
+			for (var i in o.q) {
+				o.q[i].value = '';
+			}
+			o.comp = o.comp.replace(/&/g, ' and '); // Try this to improve yield...
+			// state or state abbr
+			//~ var abbr = o.state.state_full_to_abbr();
+			//~ if (abbr != o.state_abbr) {
+				//~ o.state_abbr = abbr;
+				//~ o.addr = o.addr.replace(o.state, o.state_abbr);
+				//~ // Put abbreviated state into address. Yelp is abbreviated. So this helps with auto.
+			//~ }
+			//
+			o.bold_addr = o.locn.clean_string_to_array();
+			o.bold_comp = o.comp.clean_string_to_array();
+			// add apostrophes
+			// Note that yelp has LAAAMMMEE apostrophes: "’", not "'"
+			//~ for (var i in o.bold_comp) {
+				//~ var finalTwo = o.bold_comp[i].slice(-2).toLowerCase();
+				//~ var finalOne = o.bold_comp[i].slice(-1).toLowerCase();
+				//~ if (finalTwo.indexOf("’s") == -1 && 
+					//~ finalOne == 's') {
+					//~ o.bold_comp.push(o.bold_comp[i].replace(/s$/, "’s"));
+				//~ }
+			//~ }
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1. setAttribute('style','position:absolute;top:98px;left:0;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:98px;left:33%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1b);
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1c);
+			var d2  = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:50%;height:30px;font-size:16px !important;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:50%;height:30px;');
+			document.body.appendChild(d2b);
+			
+			var d2c = document.createElement('textarea');
+			d2c.setAttribute('style','position:absolute;top:0px;left:50%;width:50%;height:30px;font-size:16px !important;');
+			document.body.appendChild(d2c);
+			var d2d = document.createElement('textarea');
+			d2d.setAttribute('style','position:absolute;top:32px;left:50%;width:50%;height:30px;');
+			document.body.appendChild(d2d);
+			
+			var d3b = document.createElement('input'); // na
+			d3b.setAttribute('style','position:absolute;top:64px;left:50%;width:49%;height:20px;');
+			document.body.appendChild(d3b);
+			d3b.value = 'SBM';
+			d3b.type = 'button';
+			var d3c  = document.createElement('textarea'); // ignore words
+			d3c.setAttribute('style','position:absolute;top:64px;left:0%;width:50%;height:30px;');
+			d3c.disabled = false; // Disable
+			d3c.value = localStorage['ignore-july-19-2018'];
+			document.body.appendChild(d3c);
+			
+			//~ var d3c  = document.createElement('textarea'); // Original company name
+			//~ d3c.setAttribute('style','position:absolute;top:64px;left:50%;width:50%;height:30px;');
+			//~ d3c.disabled = true; // Disable
+			//~ d3c.value = o.comp;
+			//~ document.body.appendChild(d3c);
+			/*END ITEMS*/
+			
+			d3c.onblur = function() {
+				localStorage['ignore-july-19-2018'] = this.value.trim();
+			}
+			//~ AMT___addUserDecision(
+				//~ 'WhitneyGosden,Feb22,2018',
+				//~ function() {
+					//~ return o.comp+'|'+o.addr;
+				//~ },
+				//~ ['Name(yelpdollarsigns)[0]',
+				 //~ 'Name(yelpcuisine)[0]',
+				//~ ]
+			//~ );
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b, d1c
+				],
+				offset: 98 // offset top
+			});
+			//
+			d2.value  = o.comp;
+			d2b.value = o.locn;
+			d2c.value  = o.comp;
+			d2d.value = o.locn;
+			
+			//
+			d2.onblur = d2b.onblur = function() {
+				yelp();
+			}
+			d2c.onblur = d2d.onblur = function() {
+				google_geo();
+			}
+			// NA
+			d3b.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				//~ o.q[0].value = 'Not Listed';
+				//~ o.q[0].value = 'None';
+				//o.q[1].value = '';
+				//~ o.q[1].selectedIndex = 0;
+				doSubmit();
+			}
+			//
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2c.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2d.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2, d2b, d2c, d2d],
+				blur_element: true
+			});
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				document.body.style.backgroundColor = 'LightGreen';
+				doSubmit();
+				return false;
+			}
+			// Init
+			yelp();
+			google_geo();
+			//~ google_addr();
+			/**
+			 * try_sbm
+			 */
+			function try_sbm() {
+				//~ for (var i in o.q) {
+					//~ if (o.q[i].value.indexOf('null') != -1 ||
+						//~ o.q[i].value.indexOf('undefined') != -1) {
+							//~ // Select One is okay if there are no ratings
+							//~ // for the location.
+						//~ //o.q[i].value.indexOf('select one') != -1
+						//~ o.q[i].focus();
+						//~ return false;
+					//~ }
+					//~ if (o.q[i].value == '') {
+						//~ o.q[i].focus();
+						//~ return false;
+					//~ }
+					//~ if (o.q[i].value.length < 2) {
+						//~ o.q[i].focus();
+						//~ return false;
+					//~ }
+				//~ }
+				//~ // Still here?
+				//~ AMT___recordAndSubmit();
+				//~ doSubmit();
+			}
+			/**
+			 * function yelp
+			 *
+			 * e.g. http://api.yelp.com/v2/search/?term=home depot&location=San Francisco, CA&limit=10&radius_filter=30000
+			 * TODO: Error message for 25,000 API limit?
+			 * 
+			 * NOTE: UPDATE FOR FEB. 22.
+			 * 		Script was not working, solution was https!
+			 * 		Btw, apparently V2 is ending Jun. 2018.
+			 * 
+			 * NOTE: UPDATED JULY 2016 TO VERSION3.
+			 */
+			function yelp() {
+				//
+				yelp_search_snippet();
+				// NEW FOR V3
+				var opts = {
+					server_opts: {
+						url: 'https://api.yelp.com/v3/businesses/search?term='+
+							encodeURIComponent(d2.value)+
+							'&location='+encodeURIComponent(d2b.value),
+						//~ _PROXY_REDACTED__use_proxy: true,
+						//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+						headers_array: [
+							'Authorization: Bearer cG1kkq3W9F-insSfzLuQH1rfrgJ-5dXtL_UAs9QmCigA-TT_Bz9CxGAV9BuX7h9XnDRhpneGIfverYOJ15LYcP1CDeJRF_tV1xXtLLsdxUEgSfKiKg414fYTBipMW3Yx',
+						],
+						//~ do_not_save_to_file: true,
+						short_filename:	new AMT___requests_factory().md5(
+								d2.value+'|'+d2b.value
+							) + 'yelp',
+						//~ post_object_as_str:
+							//~ 'term='+encodeURIComponent(d2.value)+
+							//~ '&location='+encodeURIComponent(d2b.value)
+					},
+					callback_function: function(response) {
+						console.log(response);
+						yelp_success(response.response, d1)
+					}
+				};
+				new AMT___requests_factory().server_load_asynchronously2(opts);
+			}
+			function yelp_success(response, div) {
+				var rs = response.responseText;
+				rs = JSON.parse(rs);
+				console.log(rs);
+				div.innerText = '';
+				if (!rs.businesses || rs.businesses.length == 0) {
+					console.log('0 left results');
+					div.innerText = d2.value + '\n'+d2b.value+'\n0\n';
+					//~ // DO RIGHT
+					//~ yelp_search_snippet();
+					return;
+				} else {
+					div.appendChild((d2.value + '\n'+d2b.value).div({
+						style: 'background-color:MintCream;border-bottom:1px solid #a2a2a2;'})
+					);
+				}
+				var b = rs.businesses;
+				var auto_found = false;
+				var found_close_enough = false;
+				//~ new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
+				for (var i in b) {
+					// AUTO + CLEAN
+					b[i].name = yelp_clean_name(b[i].name);
+					var fmt_address = '';
+					var fmt_address_match = '';
+					if (b[i].location && b[i].location.display_address &&
+						b[i].location.display_address.length) {
+						var l = b[i].location.display_address; // []
+						if (l.length == 3) {
+							// REMOVE "NEIGHBORHOOD" as this is typically just the city repeated, or is at best unnecessary info.
+							// REMOVES array item #2 ([1,2,3])
+							l.splice(1, 1);
+						}
+						var lfmt = [];
+						for (var j in l) {
+							lfmt.push(
+								MT__bold(l[j], o.bold_addr,
+									{style: 'color:blue;text-decoration:none;'}
+								).bold_string
+							);
+							fmt_address_match += l[j];
+						}
+						if (lfmt.length)
+							fmt_address = lfmt.join(',');
+					}
+					// ...
+					var fmt_cat = [];
+					if (b[i].categories) {
+						var c = b[i].categories;
+						for (var j in c) {
+							fmt_cat.push(c[j][0]); // [name,id]
+						}
+					}
+					fmt_cat = fmt_cat.join(','); // Or blank
+					// clean url
+					b[i].url = b[i].url.replace(/\?[\d\D]*/, '');
+					// Div
+					var d = document.createElement('div');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+					d.className = 'exe '+b[i].url;
+					d.ypurl = b[i].url;
+					d.api_response = b[i];
+					div.appendChild(d);
+					d.innerHTML =
+						MT__bold(b[i].name, o.bold_comp) + '<br>' +
+						fmt_address +'<br>'+
+						'R:'+b[i].review_count; //+'<br>'+
+						//'C:'+fmt_cat;
+					d.onclick = function() {
+						yp_profile(this);
+						this.style.backgroundColor = 'teal';
+					}
+					d.onmouseover = d.onmousemove = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; i++) {
+							if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink')
+								continue;
+							x[i].style.backgroundColor = 'aqua';
+						}
+					}
+					d.onmouseout = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; i++) {
+							if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink')
+								continue;
+							x[i].style.backgroundColor = '';
+						}
+					}
+				}
+				if (div.innerHTML != '') {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:2000px;');
+					div.appendChild(d);
+				} else {
+					div.appendChild(
+						('<b>' + d2.value + '</b>: 0 results')
+						.div({innerHTML:true})
+					);
+				}
+				// If no street from above is close enough based on 
+				// bolding of street string, then run search snippet.
+				//
+				if (!found_close_enough && !auto_found) {
+					// Do not do second column if either:
+					// 1) It has been auto found (auto_found==true).
+					// 2) There is a close enough match in the API serach (found_close_enough==true).
+					//~ yelp_search_snippet();
+				} else if (found_close_enough == true) {
+					//~ d1b.style.backgroundColor = 'aqua';
+				}
+			}
+			function yelp_clean_name(name) {
+				// AUTO + CLEAN
+				name = name.replace(/’/g, '\'');
+				name = name.replace(/^The Home Depot$/, 'Home Depot');
+				name = name.replace(/^Lowe's Home Improvement( Warehouse[\d\D]*|)$/, 'Lowe\'s');
+				name = name.replace(/^Lowe's Home Improvement( of[\d\D]*)$/, 'Lowe\'s');
+				return name;
+			}
+			/**
+			 * function yelp_search_snippet
+			 * 
+			 * NOTE: THIS IS THE RIGHT SIDE!
+			 */
+			function yelp_search_snippet() {
+				var out = d1b;
+				u = 'http://www.yelp.com/search/snippet'+
+						'?find_desc='+encodeURIComponent(d2.value) +
+						'&find_loc='+ encodeURIComponent(d2b.value)+
+						//'&cflt=restaurants'+
+						'&parent_request_id=&request_origin=user';
+				out.innerText = d2.value + '\n' + d2b.value;
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							rs.indexOf('"text": "Signature was invalid"') != -1
+							)
+						{
+							d1b.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var mult_str = '<h2>We\'ve found multiple locations matching your search.</h2>';
+						// ...
+						rs = JSON.parse(rs);
+						var map = rs.search_map;
+						//
+						if (rs.hasOwnProperty('search_exception') &&
+							rs.search_exception.indexOf(mult_str) != -1) {
+							out.innerText += '\n"We\'ve found multiple locations matching your search."';
+							return;
+						}
+						if (rs.search_results.indexOf('<div class="no-results">') != -1) {
+							out.innerText += '\n0';
+							return;
+						}
+						//
+						out.innerHTML = '';
+						out.appendChild((d2.value + '\n'+d2b.value).div({
+							style: 'background-color:MintCream;border-bottom:1px solid #a2a2a2;'})
+						);
+						//
+						var dom = new DOMParser().parseFromString(rs.search_results,'text/html');
+						var rg = dom.getElementsByClassName('regular-search-result');
+						
+						for (var i=0; i<rg.length; i++) {
+							console.log(rg[i]);
+							var u    = rg[i].getElementsByClassName('biz-name')[0];
+							var rvct = rg[i].getElementsByClassName('review-count');
+							var rtg  = /(\d\.\d) stars? rating/.exec(rg[i].innerHTML);
+							var ad = rg[i].getElementsByTagName('address');
+							var ph = rg[i].getElementsByClassName('biz-phone');
+							var locn = rg[i].getElementsByClassName('neighborhood-str-list');
+							var city = rg[i].getElementsByClassName('biz-city');
+							var catg = rg[i].getElementsByClassName('category-str-list');
+							if (!catg || !catg.length) {
+								catg = 'C:N/A';
+							} else {
+								catg = 'C:' + catg[0].innerText.trim();
+								//~ var x = 'C:';
+								//~ for (var j=0; j<catg.length; j++) {
+									
+								//~ }
+							}
+							if (!rvct || rvct.length == 0) {
+								rvct = 'N/A';
+							} else {
+								rvct = rvct[0].innerText.replace(/ reviews?/, '').trim();
+							}
+							if (!rtg || rtg.length == 0) {
+								console.log(rg[i].innerHTML);
+								rtg = 'N/A';
+							} else {
+								rtg = rtg[1].replace(/\.0/, '');
+							}
+							if (!ad || ad.length == 0 || !ad[0].innerText) {
+								ad = '';
+							} else 
+								ad = ad[0].innerText.replace(/\s+/g, ' ').trim();
+							if (!ph || ph.length == 0 || !ph[0].innerText) {
+								ph = '';
+							} else 
+								ph = ph[0].innerText.replace(/\s+/g, ' ').trim();
+							if (!locn || locn.length == 0 || !locn[0].innerText) {
+								locn = '';
+							} else 
+								locn = locn[0].innerText.replace(/\s+/g, ' ').trim();
+							if (!city || city.length == 0 || !city[0].innerText) {
+								// nothing
+							} else {
+								city = city[0].innerText.replace(/\s+/g, ' ').trim();
+								locn += (locn == '') ? city : ', '+city;
+							}
+							// Div
+							var d = document.createElement('div');
+							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+							d.className = 'exe https://www.yelp.com'+u.getAttribute('href')
+								.replace(/\?[\d\D]*/, '');
+							d.api_response = {
+								name: u.innerText.trim()
+									.replace(/ - CLOSED/, '')
+									.replace(/\s+/, ' '),
+								url: 'https://www.yelp.com'+
+									u.getAttribute('href')
+									.replace(/\?[\d\D]*/, ''),
+								review_count: rvct,
+								rating: rtg,
+								is_closed: (u.innerText.indexOf('CLOSED') != -1) ? true : false,
+								address: ad,
+								locn: locn,
+								phone: ph,
+								// This is from Yelp api ID
+								id: rs.search_map.markers[i].resourceId,
+								// If name contains CLOSED then is_closed=true, else is_closed=false.
+							}
+							out.appendChild(d);
+							d.innerHTML =
+								MT__bold(u.innerText.trim(), o.bold_comp) + '<br>&nbsp;' +
+								MT__bold(
+									ad + ', ' + locn,
+									o.bold_addr, {style: 'color:blue;'}
+								).bold_string+'<br>'+
+								'&nbsp;R:'+rvct+'<br>'+
+								'&nbsp;'+catg;
+							d.onclick = function() {
+								yp_profile(this);
+								this.style.backgroundColor = 'teal';
+							}
+							d.onmouseover = d.onmousemove = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; i++) {
+									if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink') continue; // Skip
+									x[i].style.backgroundColor = 'aqua';
+								}
+							}
+							d.onmouseout = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; i++) {
+									if (x[i].style.backgroundColor == 'teal' || x[i].style.backgroundColor == 'pink') continue; // Skip
+									x[i].style.backgroundColor = '';
+								}
+							}
+						}
+						if (d1b.innerHTML != '') {
+							var d = document.createElement('div');
+							d.setAttribute('style','height:2000px;');
+							d1b.appendChild(d);
+						} else {
+							d1b.appendChild(('<b>' + d2.value + '</b>: 0 results').div({innerHTML:true}));
+						}
+					}
+				});
+			}
+			// yp_profile
+			function yp_profile(div) {
+				// Go to next tab if hours already set. (Will auto.)
+				if (o.found_hours) {
+					new AMT___core_factory().nextTab();
+				} else {
+					// Hours scroll down
+					document.getElementById('submitButton').scrollIntoView(false);
+					
+					// Now do next tab, if fail get it on next round.
+					// Go next tab.
+					// (as long as not debug)
+					if (!o.debug_24_hours)
+						new AMT___core_factory().nextTab();
+				}
+				if (div.review_count == 'N/A') {
+					//
+					div.innerText = 'No reviews!';
+					return;
+				}
+				profile_api(div);
+				// quit here!
+				return;
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: div.api_response.url,
+					check_pre_write_to_disk: function(options) {
+						// Return TRUE to write to disk.
+						// Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1
+							)
+						{
+							div.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs,'text/html');
+						
+						//~ // Biz categories
+						//~ var x = dom.getElementsByClassName('category-str-list');
+						//~ if (!x || x.length == 0) {
+							//~ //o.q[1].value = '';
+							//~ // LEAVE BLANK.
+						//~ } else {
+							//~ // Remove multi-spaces
+							//~ var x = x[0].innerText.trim().replace(/\s+/g, ' ');
+							//~ document.getElementById('categories').value = x;
+						//~ }
+						
+						//~ // Biz attributes
+						//~ // Needs a bit of cleaning.
+						//~ var x = dom.getElementsByClassName('ywidget');
+						//~ for (var i=0; i<x.length; i++) {
+							//~ if (x[i].innerText.indexOf('More business info') != -1) {
+								//~ var v = x[i].innerText.replace('More business info', '').trim();
+								//~ v = v.replace(/[ ]+/g, ' ');
+								//~ v = v.replace(/ +\n/g, '\n');
+								//~ v = v.replace(/\n +/g, '\n');
+								//~ v = v.replace(/\n+/g, '\n');
+								//~ // Now, every other \n needs to be removed.
+								//~ v = v.split('\n');
+								//~ var out = '';
+								//~ var count = 0;
+								//~ for (var j in v) {
+									//~ if (count % 2 == 0)
+										//~ out += v[j] + ' ';
+									//~ else
+										//~ out += v[j] + '\n';
+									//~ count++;
+								//~ }
+								//~ document.getElementById('bizinfo').value = out.trim();
+								//~ if (count % 2 != 0) {
+									//~ alert('ends on odd number!');
+									//~ // QUIT DUE TO INCONSISTENCY.
+									//~ return;
+								//~ }
+								//~ break;
+							//~ }
+						//~ }
+						
+						// Do api call to get hours
+						// (b/c it is easier than scraping hours)
+						profile_api(div);
+					}
+				});
+			}
+			
+			// yp_profile
+			function profile_api(div) {
+				console.log(div);
+				console.log(div.api_response);
+				// Do not continue if found hours (this is through Google).
+				if (o.found_hours) {
+					div.style.backgroundColor = 'pink';
+					
+					
+					//~ doSubmit(); // SUBMIT HERE. Looks okay.
+					return;
+				}
+				var opts = {
+					server_opts: {
+						url: 'https://api.yelp.com/v3/businesses/'+
+							encodeURIComponent(div.api_response.id),
+						//~ _PROXY_REDACTED__use_proxy: true,
+						//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+						headers_array: [
+							'Authorization: Bearer cG1kkq3W9F-insSfzLuQH1rfrgJ-5dXtL_UAs9QmCigA-TT_Bz9CxGAV9BuX7h9XnDRhpneGIfverYOJ15LYcP1CDeJRF_tV1xXtLLsdxUEgSfKiKg414fYTBipMW3Yx',
+						],
+						//~ do_not_save_to_file: true,
+						short_filename:	new AMT___requests_factory().md5(
+								div.api_response.id
+							) + 'yelp',
+						//~ post_object_as_str:
+							//~ 'term='+encodeURIComponent(d2.value)+
+							//~ '&location='+encodeURIComponent(d2b.value)
+					},
+					callback_function: function(response) {
+						//~ console.log(response);
+						console.log(response.response.responseText);
+						var rs = JSON.parse(response.response.responseText);
+						console.log(rs);
+						// Hours?
+						if (!rs.hours) {
+							document.getElementsByName(' sunday-1-open ')[0].style.backgroundColor = 'blue';
+							// Return if necessary.
+							// o.found_hours of course false here.
+							if (!o.found_hours && !o.debug_24_hours) {
+								new AMT___core_factory().
+									iframe2parent__postMessage(
+										{
+											action: 'return_and_accept'
+										}
+									);
+							}
+							return;
+						}
+						
+						var days = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+						// source code: sunday=0, monday=1, ...
+						// yelp: monday=0, tuesday=1, ...
+						for (var i in rs.hours) {
+							if (rs.hours[i].hours_type == 'REGULAR') {
+								// REGULAR: 
+								// "The type of the opening hours information.
+								// Right now, this is always REGULAR."
+								var is_open_days = {
+									0: false,
+									1: false,
+									2: false,
+									3: false,
+									4: false,
+									5: false,
+									6: false,
+								}
+								for (var j in rs.hours[i].open) {
+									var z = rs.hours[i].open[j];
+									var day = days[z.day];
+									is_open_days[z.day] = true;
+									// Day class name e.g.: " monday-1-open "
+									var d = {
+										open: document.getElementsByName(' '+day+'-1-open ')[0],
+										close: document.getElementsByName(' '+day+'-1-close ')[0],
+									}
+									// Note times are: 0800, 2100, etc.
+									// So add a colon.
+									var x = {
+										s: z.start[0] + z.start[1] + ':'+ z.start[2] + z.start[3],
+										e: z.end[0] + z.end[1] + ':'+ z.end[2] + z.end[3],
+									}
+									console.log(x);
+									d.open.value = x.s;
+									d.close.value = x.e;
+								}
+								// Check the box if closed.
+								for (var x in is_open_days) {
+									if (!is_open_days[x]) {
+										var day = days[x];
+										document.getElementsByName(day+'-closed')[0].checked = true;
+									}
+								}
+							}
+						}
+						// Success.
+						if (!o.debug_24_hours) {
+							//~ doSubmit();
+							document.style.backgroundColor = 'LightGreen';
+						}
+					}
+				};
+				new AMT___requests_factory().server_load_asynchronously2(opts);
+			}
+		
+			/**
+			 * function Fiber_Data_Co_find_company_addr__google_addr_prof
+			 */
+			function google_addr_prof(el) {
+				var id;
+				if (!el.json_response.reference) id = el.json_response.result.reference;
+				else id = el.json_response.reference;
+				var u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+
+					id+'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+				// XHR
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
+						el.style.backgroundColor = 'MintCream'; // Update button bgc
+						// ...
+						rs = JSON.parse(rs);
+						if (rs.status != 'OK') {
+							console.log(rs.status);
+							return;
+						}
+						console.log(rs);
+						// Update button id/value
+						el.appendChild(document.createElement('br'));
+						el.appendChild(document.createTextNode(rs.result.formatted_address));
+						//el.json_response = rs; // Update this field!
+						
+						// Do something here...
+						o.debug_24_hours = false;
+						if (!rs.result.opening_hours) {
+							el.appendChild(document.createElement('br'));
+							el.appendChild(document.createElement('br'));
+							el.appendChild(document.createTextNode('No hours!'));
+							el.style.backgroundColor = 'pink';
+						} else {
+							console.log(rs.result.opening_hours.weekday_text.toString()); // debug
+							// Check open 24 hours
+							// Starts with 0: Monday
+							// Starts on Monday.
+							var days = ['monday','tuesday','wednesday',
+								'thursday','friday','saturday','sunday',];
+							for (var i in rs.result.opening_hours.weekday_text) {
+								var day = rs.result.opening_hours.weekday_text[i];
+								if (day.indexOf('Open 24 hours') != -1) {
+									document.getElementsByName(' '+days[i]+'-1-open ')[0].value = '00:00';
+									document.getElementsByName(' '+days[i]+'-1-close ')[0].value = '00:00';
+									o.debug_24_hours = true;
+									el.appendChild(document.createElement('br'));
+									el.appendChild(document.createTextNode('DEBUG24HOURS'));
+								}
+							}
+							
+							el.style.backgroundColor = 'teal';
+							// Starts on Sunday.
+							var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday',];
+							// source code: sunday=0, monday=1, ...
+							// google is same!!
+							var is_open_days = {
+								0: false,
+								1: false,
+								2: false,
+								3: false,
+								4: false,
+								5: false,
+								6: false,
+							}
+							for (var i in rs.result.opening_hours.periods) {
+								var z = rs.result.opening_hours.periods[i];
+								var day = days[z.open.day];
+								is_open_days[z.open.day] = true;
+								// Day class name e.g.: " monday-1-open "
+								var d = {
+									open: document.getElementsByName(' '+day+'-1-open ')[0],
+									close: document.getElementsByName(' '+day+'-1-close ')[0],
+								}
+								// Note times are: 0800, 2100, etc.
+								// So add a colon.
+								var x = {
+									s: z.open.time[0] + z.open.time[1] + ':'+ z.open.time[2] + z.open.time[3],
+									e: z.close.time[0] + z.close.time[1] + ':'+ z.close.time[2] + z.close.time[3],
+								}
+								d.open.value = x.s;
+								d.close.value = x.e;
+							}
+							// Check the box if closed.
+							for (var x in is_open_days) {
+								if (!is_open_days[x]) {
+									var day = days[x];
+									document.getElementsByName(day+'-closed')[0].checked = true;
+								}
+							}
+							// Set true, if success to here.
+							// But only if debug-24-hours is turned off.
+							if (!o.debug_24_hours) {
+								o.found_hours = true;
+							}
+						}
+					}
+				});
+			}
+			// geo
+			function google_geo() {
+				// location, callback_function, return_complete_response, proxy
+				MT___google_api_geocode(d2d.value, google_addr, false, false);
+			}
+			/**
+			 * function google_addr
+			 * 100 000 requests per 24 hour period	
+			 * The Text Search service is subject to a 10-times multiplier.
+			 * The Radar Search Service is subject to a 5-times multiplier
+			 * 0,0 20000000 = world search
+			 */
+			function google_addr(lat,lng) {
+				d1c.innerHTML = '';
+				var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
+					encodeURIComponent(d2c.value)+
+					'&types=establishment&location='+lat+','+lng+'&radius=100'+
+					'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				// Xhr
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) {
+							return;
+						}
+						rs = JSON.parse(rs);
+						
+						if (rs.status != 'OK') {
+							console.log(rs.status);
+							d1c.innerText = rs.status;
+							return;
+						}
+						rs = rs.predictions;
+						
+						for (var i in rs) {
+							var div = document.createElement('div');
+							div.setAttribute('style',
+								'width:98%;border-bottom:1px solid teal;cursor:pointer;'
+							);
+							div.innerHTML = //rs[i].description;
+							(
+								o.bold_addr
+								? MT__bold(rs[i].description, o.bold_addr.concat(o.bold_comp))
+								: rs[i].description
+							);
+							// Set json_response
+							div.json_response = rs[i];
+							// .onclick
+							div.onclick = function() {
+								console.log(this);
+								console.log(this.json_response);
+								this.style.backgroundColor = 'LightGreen';
+								google_addr_prof(this);
+							}
+							d1c.appendChild(div);
+						}
+						if (rs.length) {
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:1200px;');
+							d1c.appendChild(div);
+						} else {
+							//~ o.stats.google.num_results = 0;
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
 	// Lena Gershkovich
 	// Find Hours of business for businesses
 	// Utilizes API endpoint: GET https://api.yelp.com/v3/businesses/{id}
+	// @tags: find_hours, hours, latest_hours, google_hours, yelp_hours
 	/* Dear Sir or Madam,
 Thank you for posting tasks on Amazon's Mechanical Turk mturk.com website. I am really excited to begin working on the task "Find Hours of business for businesses". When I find the businesses Yelp profile, would it be okay if I add this to the Business Info text boxt? 
 	*/
