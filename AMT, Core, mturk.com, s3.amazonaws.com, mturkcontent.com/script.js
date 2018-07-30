@@ -101561,8 +101561,19 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							d1c.appendChild(div);
 							if (!auto_found) {
+								var d = rs[i].description.toLowerCase();
 								var to_match = o.comp + ', ' + o.city + ', ' + o.state + ', USA' ;
-								if (rs[i].description.toLowerCase() == to_match.toLowerCase()) {
+								if (d == to_match.toLowerCase()) {
+									// exact match, no street issue
+									auto_found = true;
+									div.click();
+								} else if (
+									d.indexOf(o.comp.toLowerCase()+', ') == 0 && 
+									d.indexOf((o.city + ', ' + o.state + ', USA').toLowerCase()) != -1
+									)
+								{
+									// street issue, partial match
+									// starts with company and comma, contains city/state
 									auto_found = true;
 									div.click();
 								}
