@@ -75642,8 +75642,6 @@ Laurens Hammond, Chicago, Ill.**/
 			 * NOTE: To be appeneded to page.
 			 */
 			function coordinates_to_output(coors) {
-				//~ console.log(coors);
-				//~ alert(coors);
 				var str = '';
 				var p1 = null;
 				var p2 = null;
