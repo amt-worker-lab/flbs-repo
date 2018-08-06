@@ -75650,12 +75650,6 @@ Laurens Hammond, Chicago, Ill.**/
 				var co = new Array();
 				for (var i=0; i<coors.length; i++) {
 					var latlng = coors[i];
-					//~ var latlng = coors[i].latlng;
-					//~ var latlng = coors[i].latLng;
-					//~ console.log('coordinates_to_output:latlng');
-					//~ console.log(latlng);
-					//~ console.log(coors);
-					//~ console.log(coors[i]);
 					var newstr = latlng.lat() + ',' + latlng.lng()+';';
 					str += newstr;
 					co.push(newstr);
@@ -75751,13 +75745,6 @@ Laurens Hammond, Chicago, Ill.**/
 				});
 				// Window focus....
 				window.focus();
-				// ..
-				// ..
-				//~ console.log(drawingManager);//.setMap(map);
-				//~ var drawingManager = new google.maps.drawing.DrawingManager({
-					//~ drawingMode: null,
-				//~ });
-				//~ drawingManager.setMap(map);
 			}
 			function getCenterBeforeChiosRuns() {
 				// Create script var for
@@ -75869,6 +75856,10 @@ Laurens Hammond, Chicago, Ill.**/
 						// And this caused 100% cpu for some reason.
 						map.setZoom(obj.sv_initial_zoom * 1);
 						map.setCenter(new google.maps.LatLng(lat,lng));
+						// Setting gesture handling here finally solved
+						// the issue! Wow wow wow!
+						// Turned this off August 2018.
+						map.set('gestureHandling','greedy');
 						//return;
 						google.maps.event.addListener(
 							map.streetView,
@@ -76173,15 +76164,15 @@ Laurens Hammond, Chicago, Ill.**/
 				
 				// Only add user decision if not running @ dev.
 				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-					AMT___addUserDecision('Chios Polygon - Quality Control',
-						function() {
-							return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
-						},
-						[
-							'Id(polygon)',
-							'Id(reasons)'
-						]
-					);
+					//~ AMT___addUserDecision('Chios Polygon - Quality Control',
+						//~ function() {
+							//~ return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
+						//~ },
+						//~ [
+							//~ 'Id(polygon)',
+							//~ 'Id(reasons)'
+						//~ ]
+					//~ );
 				}
 				
 				// o.button_cannot_find
@@ -76266,7 +76257,18 @@ Laurens Hammond, Chicago, Ill.**/
 					//~ document.getElementById('d4').innerHTML += 'Was Returned'
 				//~ });
 				
-				console.log('is this code running?');
+				console.log('here is map3:',map);
+				//~ console.log('here is map3:',map.set);
+				//~ console.log('here is map3:',map.setOptions);
+				//~ console.log('here is map3:',map.setOptions({gestureHandling: 'greedy'}));
+				//~ map.gestureHandling = 'greedy';
+				//~ var map = new google.maps.Map(document.getElementById('map'), {
+					//~ gestureHandling: 'greedy'
+				  //~ }
+				 //~ );
+				//~ var n = document.getElementById('map').getMap();
+				//~ n.setOptions({gestureHandling: 'greedy'});
+				
 				
 				// innerHeight
 				new AMT___core_factory().el_innerHeight({
@@ -76415,23 +76417,33 @@ Laurens Hammond, Chicago, Ill.**/
 								// place the yellow box underneath
 								// so it does not block.
 								js_append(function (object) {
-									var mi = new google.maps.MarkerImage(
-										object.__host__+"/media/images/Yellow_dot.svg",
-										new google.maps.Size(1, 1),
-										new google.maps.Point(0, 0),
-										new google.maps.Point(8, 8)
-									);
-									var m = new google.maps.Marker({
-										position: new google.maps.LatLng(object.lat,object.lng),
-										map: map,
-										icon: mi,
-									});
-									m.setMap(map);
-								}, JSON.stringify({lat:n.geometry.location.lat,lng:n.geometry.location.lng,__host__:MT___host}));
+										var mi = new google.maps.MarkerImage(
+											object.__host__+"/media/images/Yellow_dot.svg",
+											new google.maps.Size(1, 1),
+											new google.maps.Point(0, 0),
+											new google.maps.Point(8, 8)
+										);
+										var m = new google.maps.Marker({
+											position: new google.maps.LatLng(object.lat,object.lng),
+											map: map,
+											icon: mi,
+										});
+										m.setMap(map);
+										map.set('gestureHandling', 'greedy');
+									},
+									JSON.stringify(
+										{
+											lat:n.geometry.location.lat,
+											lng:n.geometry.location.lng,
+											__host__:MT___host
+										}
+									)
+								);
 							}
-							//~ if (xo.markers.nearby_searches.length) {
-								//~ add_static_img();
-							//~ }
+							js_append(
+								function (object) { map.set('gestureHandling','greedy') }, null);
+							js_append(
+								function (object) { console.log('here is map3:',map); }, null);
 						}
 					});
 				}
@@ -76499,6 +76511,7 @@ Laurens Hammond, Chicago, Ill.**/
 					console.log("Calling: AMT__setUtilityTabs");
 					return;
 					
+					// DO NOT SET UTIL TABS
 					// AMT__setUtilityTabs
 					AMT__setUtilityTabs([
 						{
@@ -76754,24 +76767,9 @@ Laurens Hammond, Chicago, Ill.**/
 										
 										
 
-					
-										
-										//console.log(angleShower);
 										return;
 									}
 								);
-								
-							//~ 
-							//~ // Go to map view
-							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
-								//~ x[i].click();
-							//~ }
-							//~ 
-							//~ // Go to satellite
-							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
-								//~ x[i].click();
-							//~ }
-						//};
 						
 						
 						AMT___RunPageScript(function() {
@@ -76786,25 +76784,6 @@ Laurens Hammond, Chicago, Ill.**/
 					//...
 					// Go to map view
 					else if (char == 'b' || char == 'B') {
-						//~ var x=document.getElementsByTagName('div');
-						//~ for (var i in x) {
-							//~ if (i == 'length') break;
-							//~ 
-							// Go to map view
-							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
-								//~ x[i].click();
-								//~ o.curr_map_view = 'map';
-								//~ 
-								//~ break;
-									//~ 
-							//~ }
-							//~ 
-							//~ // Go to satellite
-							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
-								//~ x[i].click();
-								//~ o.curr_map_view = null;
-								//~ break;
-							//~ }
 							AMT___RunPageScript(function() {
 								if(map.getMapTypeId() != 'roadmap') {
 									map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
@@ -76812,19 +76791,10 @@ Laurens Hammond, Chicago, Ill.**/
 									map.setMapTypeId(google.maps.MapTypeId.HYBRID);
 								}
 							});
-						//~ };
 					}
 					
 					// Go to satellite
 					else if (char == 'x' || char == 'X') {
-						//~ var x=document.getElementsByTagName('div');
-						//~ for (var i in x) {
-							//~ if (i == 'length') break;
-							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show 45 degree view') {
-								//~ x[i].click();
-								//~ break;
-							//~ }
-						//~ };
 						
 						AMT___RunPageScript(function() {
 							console.log('map.getTilt' + map.getTilt()*1);
@@ -77028,20 +76998,6 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 			}
 			
-			//~ // Coordinates 
-			//~ //
-			//~ //
-			//~ var reg = /<span[^>]*>or coordinates<\/span><strong[^>]*>([^<]+)<\/strong>/.exec(ih);
-			//~ var coords = ['', '']; 
-			//~ var hc = false;
-			//~ if (reg) {
-				//~ var coords = __js_clean_html_str(reg[1]).trim(); // e.g. &nbsp;35.340335,&nbsp;-119.050648&nbsp;
-				//~ coords = coords.split(',');
-				//~ hc = true;
-			//~ } else {
-				//~ //
-			//~ }
-			
 			// Script var
 			//
 			//
@@ -77132,6 +77088,14 @@ Laurens Hammond, Chicago, Ill.**/
 			   d5.appendChild(opt);
 			}
 			
+			//~ // set?
+			//~ document.getElementById('map').setOptions('gestureHandling','greedy');
+			//~ setInterval(function() {
+					//~ var sc = document.createElement('script');
+					//~ sc.innerText = 'map.set("gestureHandling","greedy");';
+					//~ document.body.appendChild(sc);
+				//~ }, 500);
+				
 			function js_append(func, values) {
 				// ...
 				var code = '(' + func + ')('+values+');';
@@ -77163,7 +77127,6 @@ Laurens Hammond, Chicago, Ill.**/
 				loader_func1();
 				// Append loader2
 				setTimeout(function() {
-					//js_append(loader_func2, JSON.stringify({lat:lat, lng:lng}));
 					getCenterBeforeChiosRuns();
 				}, 2000);
 			}, false);
@@ -77209,7 +77172,7 @@ Laurens Hammond, Chicago, Ill.**/
 					zoom: 18,
 					mapTypeId: google.maps.MapTypeId.HYBRID,
 					//~ gestureHandling: 'greedy',
-					gestureHandling: 'greedy'
+					//~ gestureHandling: 'greedy'
 				};
 				map = new google.maps.Map(
 					document.getElementById('map'),
@@ -77270,6 +77233,26 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 				
 				map.setCenter(latLngOnPage);
+				
+				var sc = document.createElement('script');
+				sc.innerText = 'map=document.getElementById("map");map.set(\'gestureHandling\',: \'greedy\');console.log(\'here is the map2:\',map);';
+				document.body.appendChild(sc);
+				//~ setTimeout(function() {
+					//~ var sc = document.createElement('script');
+					//~ sc.innerText = 'map.setOptions({gestureHandling: \'greedy\'});';
+					//~ document.body.appendChild(sc);
+					
+					//~ var m = document.getElementById('map');
+					//~ m.setOptions({gestureHandling: 'greedy'});
+				//~ }, 4000);
+				//~ setTimeout(function() {
+					//~ var sc = document.createElement('script');
+					//~ sc.innerText = 'map.set("gestureHandling", \'greedy\');';
+					//~ document.body.appendChild(sc);
+					
+					//~ var m = document.getElementById('map');
+					//~ m.setOptions({gestureHandling: 'greedy'});
+				//~ }, 8000);
 			}
 			/**
 			 * getCenterBeforeChiosRuns
@@ -77426,9 +77409,9 @@ Laurens Hammond, Chicago, Ill.**/
 				inp.onclick = runAfterGettingCenter;
 				
 				//Draw a marker onto the map for center of map
-				AMT___RunPageScript("function() {"+
-				"}"
-				);
+				//~ AMT___RunPageScript("function() {"+
+				//~ "}"
+				//~ );
 				
 				//Draw a marker onto the map for lat/lng
 				AMT___RunPageScript("function() {"+
@@ -77442,243 +77425,243 @@ Laurens Hammond, Chicago, Ill.**/
 				
 				//AMT___RunPageScript
 				AMT___RunPageScript("function() {"+
-							"window.setTimeout(function() {"+
-							
-							
-								"window.mouseMoveShowRect = false;" +
-								"window.demoPolyLine = new google.maps.Polyline({"+
-												"     path:[],"+
-												"     clickable:true,"+
-												"	  strokeWeight:3,"+
-												"	  strokeColor:'#00FFFF'});"+
-								"google.maps.event.addListener(window.demoPolyLine, 'rightclick', function(e) {"+
-									"console.log(e.latLng);"+
-									"google.maps.event.trigger(map, 'rightclick', e);"+
-								"});"+
-								"window.getLatLngByOffset = function( map, offsetX, offsetY ){"+
-									"var currentBounds = map.getBounds();"+
-									"var topLeftLatLng = new google.maps.LatLng( currentBounds.getNorthEast().lat(),"+
-																				"currentBounds.getSouthWest().lng());"+
-									"var point = map.getProjection().fromLatLngToPoint( topLeftLatLng );"+
-									"point.x += offsetX / ( 1<<map.getZoom() );"+
-									"point.y += offsetY / ( 1<<map.getZoom() );"+
-									"return map.getProjection().fromPointToLatLng( point );"+
-								"};"+
-								"document.getElementById('map').addEventListener('mousemove', function(e) {"+
-									//"console.log(e);"+
-									"if(window.mouseMoveShowRect) {" +
-										//"console.log('mouseMoveShowRect');"+
-										"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
-										"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
-										"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
-										"var lat = latLng.lat();"+
-										"var lng = latLng.lng();"+
-										"var diffLat = lat - window.threeRectPoints[1].position.lat();"+
-											"var diffLng = lng - window.threeRectPoints[1].position.lng();"+
-											"var newLatLng = {"+
-													"lat: diffLat + window.threeRectPoints[0].position.lat(),"+
-													"lng: diffLng + window.threeRectPoints[0].position.lng()"+
-												"};"+
-											
-
-											"	window.demoPolyLine.setPath(["+
-											"	  window.threeRectPoints[0].position,"+
-											"	  newLatLng,"+
-											"	  {lat:lat,lng:lng}," +
-											"	  window.threeRectPoints[1].position]);"+
-											"	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
-								"}});"+
-							
-								"var lat = map.getCenter().lat();" +
-								"var lng = map.getCenter().lng();" +
-								"map.setTilt(45);"+
-								"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
-								
-								"var marker2 = new google.maps.Marker({"+
-										"position: new google.maps.LatLng(lat,lng),"+
-										"map: map,"+
-										"title: 'testing2',"+
-									"});"+
-								"document.getElementById('latlng_starting_value').value = lat + ';' + lng;" +
-								"document.getElementById('latlng_starting_value').click();"+
-								
-								"var marker = new google.maps.Marker({"+
-								"		position: new google.maps.LatLng(lat,lng),"+
-								"		map: map,"+
-								"		title: 'testing'"+
-								"	});"+
-								"map.setMapTypeId(google.maps.MapTypeId.HYBRID);"+
-								"map.setZoom(("+AMT__Global_Vars.scriptVars.InitialChiosZoom+")*1);"+
-								"map.setCenter(new google.maps.LatLng(lat,lng));" +
-								
-								"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
-									"if(window.notFirstDrop == undefined && google.maps.geometry && google.maps.geometry.spherical) {"+
-										"var toLoc = new google.maps.LatLng(lat,lng);"+
-										"var fromLoc = this.getPosition();"+
-										"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
-										"map.streetView.setPov({heading:heading, pitch:0});"+
-										"window.notFirstDrop = true;"+
-									"}});"+
-								"function orientToFirstPoint() {" +
-									"var toLoc = new google.maps.LatLng(lat,lng);"+
-									"var fromLoc = map.streetView.getPosition();"+
-									"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
-									"map.streetView.setPov({heading:heading, pitch:0});"+
-								"};"+
-								"window.addEventListener('keypress', function(e) {"+
-									"if(e.keyCode == 115) {"+
-										"orientToFirstPoint();"+
-									"}"+
-								"});"+
-								"window.addEventListener('keydown', function(e) {"+
-									"if(e.keyCode == 16) {"+
-										"window.shiftKey = true;"+
-									"}"+
-								"});"+
-								"window.addEventListener('keyup', function(e) {"+
-									"if(e.keyCode == 16) {"+
-										"window.shiftKey = false;"+
-									"}"+
-								"});"+
-								"window.threeRectPoints = [];"+
-								"window.fourLines = [];"+
-								"window.markerImage = new google.maps.MarkerImage('"+MT___host+"/media/images/Yellow_dot.svg',"+
-									"new google.maps.Size(16, 16),"+
-									"new google.maps.Point(0, 0),"+
-									"new google.maps.Point(8, 8));"+
-								// RIGHT CLICK
-								"google.maps.event.addListener(map, 'rightclick', function(e) {"+
-									"map.set('disableDoubleClickZoom', true);"+			
+					"window.setTimeout(function() {"+
+					
+						"window.mouseMoveShowRect = false;" +
+						"window.demoPolyLine = new google.maps.Polyline({"+
+										"     path:[],"+
+										"     clickable:true,"+
+										"	  strokeWeight:3,"+
+										"	  strokeColor:'#00FFFF'});"+
+						"google.maps.event.addListener(window.demoPolyLine, 'rightclick', function(e) {"+
+							"google.maps.event.trigger(map, 'rightclick', e);"+
+						"});"+
+						"window.getLatLngByOffset = function( map, offsetX, offsetY ){"+
+							"var currentBounds = map.getBounds();"+
+							"var topLeftLatLng = new google.maps.LatLng( currentBounds.getNorthEast().lat(),"+
+							"currentBounds.getSouthWest().lng());"+
+							"var point = map.getProjection().fromLatLngToPoint( topLeftLatLng );"+
+							"point.x += offsetX / ( 1<<map.getZoom() );"+
+							"point.y += offsetY / ( 1<<map.getZoom() );"+
+							"return map.getProjection().fromPointToLatLng( point );"+
+						"};"+
+						"document.getElementById('map').addEventListener('mousemove', function(e) {"+
+							//"console.log(e);"+
+							"if(window.mouseMoveShowRect) {" +
+								//"console.log('mouseMoveShowRect');"+
+								"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
+								"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
+								"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
+								"var lat = latLng.lat();"+
+								"var lng = latLng.lng();"+
+								"var diffLat = lat - window.threeRectPoints[1].position.lat();"+
+									"var diffLng = lng - window.threeRectPoints[1].position.lng();"+
+									"var newLatLng = {"+
+											"lat: diffLat + window.threeRectPoints[0].position.lat(),"+
+											"lng: diffLng + window.threeRectPoints[0].position.lng()"+
+										"};"+
 									
-									"if(!window.shiftKey) {"+
-									"	var m = new google.maps.Marker({"+
-									"		position: e.latLng,"+
-									"		map: map,"+
-									"		icon: window.markerImage"+
-									"	});"+ 
+
+									"	window.demoPolyLine.setPath(["+
+									"	  window.threeRectPoints[0].position,"+
+									"	  newLatLng,"+
+									"	  {lat:lat,lng:lng}," +
+									"	  window.threeRectPoints[1].position]);"+
+									"	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
+						"}});"+
+					
+						"var lat = map.getCenter().lat();" +
+						"var lng = map.getCenter().lng();" +
+						"map.setTilt(45);"+
+						"map.setOptions({gestureHandling: 'greedy'});"+
+						"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
+						
+						"var marker2 = new google.maps.Marker({"+
+								"position: new google.maps.LatLng(lat,lng),"+
+								"map: map,"+
+								"title: 'testing2',"+
+							"});"+
+						"document.getElementById('latlng_starting_value').value = lat + ';' + lng;" +
+						"document.getElementById('latlng_starting_value').click();"+
+						
+						"var marker = new google.maps.Marker({"+
+						"		position: new google.maps.LatLng(lat,lng),"+
+						"		map: map,"+
+						"		title: 'testing'"+
+						"	});"+
+						"map.setMapTypeId(google.maps.MapTypeId.HYBRID);"+
+						"map.setZoom(("+AMT__Global_Vars.scriptVars.InitialChiosZoom+")*1);"+
+						"map.setCenter(new google.maps.LatLng(lat,lng));" +
+						"map.set('gestureHandling','greedy');console.log('here is the map:',map);" +
+						
+						"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
+							"if(window.notFirstDrop == undefined && google.maps.geometry && google.maps.geometry.spherical) {"+
+								"var toLoc = new google.maps.LatLng(lat,lng);"+
+								"var fromLoc = this.getPosition();"+
+								"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
+								"map.streetView.setPov({heading:heading, pitch:0});"+
+								"window.notFirstDrop = true;"+
+							"}});"+
+						"function orientToFirstPoint() {" +
+							"var toLoc = new google.maps.LatLng(lat,lng);"+
+							"var fromLoc = map.streetView.getPosition();"+
+							"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
+							"map.streetView.setPov({heading:heading, pitch:0});"+
+						"};"+
+						"window.addEventListener('keypress', function(e) {"+
+							"if(e.keyCode == 115) {"+
+								"orientToFirstPoint();"+
+							"}"+
+						"});"+
+						"window.addEventListener('keydown', function(e) {"+
+							"if(e.keyCode == 16) {"+
+								"window.shiftKey = true;"+
+							"}"+
+						"});"+
+						"window.addEventListener('keyup', function(e) {"+
+							"if(e.keyCode == 16) {"+
+								"window.shiftKey = false;"+
+							"}"+
+						"});"+
+						"window.threeRectPoints = [];"+
+						"window.fourLines = [];"+
+						"window.markerImage = new google.maps.MarkerImage('"+MT___host+"/media/images/Yellow_dot.svg',"+
+							"new google.maps.Size(16, 16),"+
+							"new google.maps.Point(0, 0),"+
+							"new google.maps.Point(8, 8));"+
+						// RIGHT CLICK
+						"google.maps.event.addListener(map, 'rightclick', function(e) {"+
+							"map.set('disableDoubleClickZoom', true);"+			
+							
+							"if(!window.shiftKey) {"+
+							"	var m = new google.maps.Marker({"+
+							"		position: e.latLng,"+
+							"		map: map,"+
+							"		icon: window.markerImage"+
+							"	});"+ 
+							
+							"   if(window.threeRectPoints.length < 3) {"+
+									"window.threeRectPoints.push(m);"+
 									
-									"   if(window.threeRectPoints.length < 3) {"+
-											"window.threeRectPoints.push(m);"+
-											
 
-											"if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {"+
-											"	var polyline = new google.maps.Polyline({"+
-											"   	path:["+
-											"			m.position,"+
-											"			window.threeRectPoints[window.threeRectPoints.length-2].position],"+
-											"		strokeWeight:3,"+
-											"		strokeColor:'#00FF00'});"+
-											"	polyline.setMap(map);"+
-											"	window.fourLines.push(polyline);"+
-											"}"+
-											
-											"if(window.threeRectPoints.length == 3) {"+
-												"var diffLat = window.threeRectPoints[2].position.lat() - window.threeRectPoints[1].position.lat();"+
-												"var diffLng = window.threeRectPoints[2].position.lng() - window.threeRectPoints[1].position.lng();"+
-												"var newLatLng = {"+
-													"lat: diffLat + window.threeRectPoints[0].position.lat(),"+
-													"lng: diffLng + window.threeRectPoints[0].position.lng()"+
-												"};"+
-													
-													
-												"var randOff = 0.00000898472*1;"+ //1 meter is 1/111,300
-												"var w = randOff * Math.sqrt(Math.random());"+
-												"var t = 2 * Math.PI * Math.random();"+
-												"var x = newLatLng.lat*1 + w*Math.cos(t);"+
-												"var y = newLatLng.lng*1 + w*Math.sin(t);"+
-												"newLatLng = {lat:x,lng:y};"+
-
-												"var lastPoint = new google.maps.Marker({"+
-												"		position: newLatLng,"+
-												"		map: map,"+
-												"		icon: window.markerImage"+
-												"	});"+
-												"window.threeRectPoints.push(lastPoint);"+
-												
-												"var polyline = new google.maps.Polyline({"+
-												"     path:["+
-												"	  window.threeRectPoints[2].position,"+
-												"	  window.threeRectPoints[3].position],"+
-												"	  strokeWeight:3,"+
-												"	  strokeColor:'#00FF00'});"+
-												"	polyline.setMap(map);"+
-												"	window.fourLines.push(polyline);"+
-												"	var polyline = new google.maps.Polyline({"+
-												"     path:["+
-												"	  window.threeRectPoints[3].position,"+
-												"	  window.threeRectPoints[0].position],"+
-												"	  strokeWeight:3,"+
-												"	  strokeColor:'#00FF00'});"+
-												"polyline.setMap(map);"+
-												"window.fourLines.push(polyline);"+
-												
-												"var x = document.getElementsByName('Q6MultiLineTextInput')[0];"+
-												"x.value = '';"+
-												"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
-													"x.value += window.threeRectPoints[i].position.lng() + ',' + window.threeRectPoints[i].position.lat() +',0 ';"+
-												"}"+
-												"x.value += window.threeRectPoints[0].position.lng() + ',' + window.threeRectPoints[0].position.lat()+',0 ';"+
-												"x.value = x.value.trim();"+
-											"}"+ 
-										"}"+
-										"else {"+
-												"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
-													"window.threeRectPoints[i].setMap(null);"+
-													"window.fourLines[i].setMap(null);"+
-												"}"+
-												"window.threeRectPoints = [];"+
-												"window.fourLines = [];"+
-												"window.threeRectPoints.push(m);"+
-										"}"+
-									"if(window.threeRectPoints.length == 2) {" +
-										"window.mouseMoveShowRect = true;" +
-										"} else {window.mouseMoveShowRect = false;window.demoPolyLine.setMap(null);}"+
-									"} else {"+
-										"var panorama = map.getStreetView();"+
-										"panorama.setPosition(e.latLng);"+
-										"var toggle = panorama.getVisible();"+
-										"if (toggle == false) {"+
-											"panorama.setVisible(true);"+
-										"} else {"+
-											"panorama.setVisible(false);"+
-										"}"+
-										"return false;"+
-									 "}"+
+									"if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {"+
+									"	var polyline = new google.maps.Polyline({"+
+									"   	path:["+
+									"			m.position,"+
+									"			window.threeRectPoints[window.threeRectPoints.length-2].position],"+
+									"		strokeWeight:3,"+
+									"		strokeColor:'#00FF00'});"+
+									"	polyline.setMap(map);"+
+									"	window.fourLines.push(polyline);"+
 									"}"+
-								");"+
-								"displayNewCoors = function(coors) {\n"+
-									"var str = '';"+
-									"var p1 = null;"+
-									"var p2 = null;"+
-									"var co = new Array();"+
-									"for (var i =0; i < coors.getLength(); i++) {\n"+
-										"if(i == 1) {p1 = coors.getAt(i)};"+
-										"if(i == coors.getLength()-1) {p2 = coors.getAt(i)};"+
-										"var latlng = coors.getAt(i);"+
-										"str += latlng.lat() + ',' + latlng.lng() + ',0 ';"+
-									"};\n"+
-									 
-									"var latlng1 = coors.getAt(0);"+
-									"var latlng2 = coors.getAt(coors.getLength()-1);"+
-									"if(latlng1.lat() != latlng2.lat() ||"+
-										"latlng1.lng() != latlng2.lng()) {\n"+
-										"str += coors.getAt(0).lat() + ',' + coors.getAt(0).lng() + ',0 ';"+
-									"};"+
 									
-									"var polyline = new google.maps.Polyline({"+
-												"     path:["+
-												"	  coors.getAt(0),"+
-												"	  coors.getAt(coors.getLength()-1)],"+
-												"	  strokeWeight:3,"+
-												"	  strokeColor:'#FFFFFF'});\n"+
-									"polyline.setMap(map);"+
-									"document.getElementsByName('Q6MultiLineTextInput')[0].value = str.trim();"+
-								"};"+
+									"if(window.threeRectPoints.length == 3) {"+
+										"var diffLat = window.threeRectPoints[2].position.lat() - window.threeRectPoints[1].position.lat();"+
+										"var diffLng = window.threeRectPoints[2].position.lng() - window.threeRectPoints[1].position.lng();"+
+										"var newLatLng = {"+
+											"lat: diffLat + window.threeRectPoints[0].position.lat(),"+
+											"lng: diffLng + window.threeRectPoints[0].position.lng()"+
+										"};"+
+											
+											
+										"var randOff = 0.00000898472*1;"+ //1 meter is 1/111,300
+										"var w = randOff * Math.sqrt(Math.random());"+
+										"var t = 2 * Math.PI * Math.random();"+
+										"var x = newLatLng.lat*1 + w*Math.cos(t);"+
+										"var y = newLatLng.lng*1 + w*Math.sin(t);"+
+										"newLatLng = {lat:x,lng:y};"+
 
-								// STREET VIEW LAYER
-								"var streetViewLayer = new google.maps.StreetViewCoverageLayer();"+
-								"streetViewLayer.setMap(map);"+
-							"},2000)}");
+										"var lastPoint = new google.maps.Marker({"+
+										"		position: newLatLng,"+
+										"		map: map,"+
+										"		icon: window.markerImage"+
+										"	});"+
+										"window.threeRectPoints.push(lastPoint);"+
+										
+										"var polyline = new google.maps.Polyline({"+
+										"     path:["+
+										"	  window.threeRectPoints[2].position,"+
+										"	  window.threeRectPoints[3].position],"+
+										"	  strokeWeight:3,"+
+										"	  strokeColor:'#00FF00'});"+
+										"	polyline.setMap(map);"+
+										"	window.fourLines.push(polyline);"+
+										"	var polyline = new google.maps.Polyline({"+
+										"     path:["+
+										"	  window.threeRectPoints[3].position,"+
+										"	  window.threeRectPoints[0].position],"+
+										"	  strokeWeight:3,"+
+										"	  strokeColor:'#00FF00'});"+
+										"polyline.setMap(map);"+
+										"window.fourLines.push(polyline);"+
+										
+										"var x = document.getElementsByName('Q6MultiLineTextInput')[0];"+
+										"x.value = '';"+
+										"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
+											"x.value += window.threeRectPoints[i].position.lng() + ',' + window.threeRectPoints[i].position.lat() +',0 ';"+
+										"}"+
+										"x.value += window.threeRectPoints[0].position.lng() + ',' + window.threeRectPoints[0].position.lat()+',0 ';"+
+										"x.value = x.value.trim();"+
+									"}"+ 
+								"}"+
+								"else {"+
+										"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
+											"window.threeRectPoints[i].setMap(null);"+
+											"window.fourLines[i].setMap(null);"+
+										"}"+
+										"window.threeRectPoints = [];"+
+										"window.fourLines = [];"+
+										"window.threeRectPoints.push(m);"+
+								"}"+
+							"if(window.threeRectPoints.length == 2) {" +
+								"window.mouseMoveShowRect = true;" +
+								"} else {window.mouseMoveShowRect = false;window.demoPolyLine.setMap(null);}"+
+							"} else {"+
+								"var panorama = map.getStreetView();"+
+								"panorama.setPosition(e.latLng);"+
+								"var toggle = panorama.getVisible();"+
+								"if (toggle == false) {"+
+									"panorama.setVisible(true);"+
+								"} else {"+
+									"panorama.setVisible(false);"+
+								"}"+
+								"return false;"+
+							 "}"+
+							"}"+
+						");"+
+						"displayNewCoors = function(coors) {\n"+
+							"var str = '';"+
+							"var p1 = null;"+
+							"var p2 = null;"+
+							"var co = new Array();"+
+							"for (var i =0; i < coors.getLength(); i++) {\n"+
+								"if(i == 1) {p1 = coors.getAt(i)};"+
+								"if(i == coors.getLength()-1) {p2 = coors.getAt(i)};"+
+								"var latlng = coors.getAt(i);"+
+								"str += latlng.lat() + ',' + latlng.lng() + ',0 ';"+
+							"};\n"+
+							 
+							"var latlng1 = coors.getAt(0);"+
+							"var latlng2 = coors.getAt(coors.getLength()-1);"+
+							"if(latlng1.lat() != latlng2.lat() ||"+
+								"latlng1.lng() != latlng2.lng()) {\n"+
+								"str += coors.getAt(0).lat() + ',' + coors.getAt(0).lng() + ',0 ';"+
+							"};"+
+							
+							"var polyline = new google.maps.Polyline({"+
+										"     path:["+
+										"	  coors.getAt(0),"+
+										"	  coors.getAt(coors.getLength()-1)],"+
+										"	  strokeWeight:3,"+
+										"	  strokeColor:'#FFFFFF'});\n"+
+							"polyline.setMap(map);"+
+							"document.getElementsByName('Q6MultiLineTextInput')[0].value = str.trim();"+
+						"};"+
+
+						// STREET VIEW LAYER
+						"var streetViewLayer = new google.maps.StreetViewCoverageLayer();"+
+						"streetViewLayer.setMap(map);"+
+					"}, 2000)}");
 			}
 			/**
 			 * runAfterGettingCenter
@@ -77991,25 +77974,8 @@ Laurens Hammond, Chicago, Ill.**/
 				var sc = document.createElement('script');
 				sc.innerText = 'google.maps.event.trigger(map, "resize");';
 				document.body.appendChild(sc);
-				//~ var sc = document.createElement('script');
-				//~ sc.innerText = 'map=document.getElementById("map");map.set(\'gestureHandling\',: \'greedy\');';
-				//~ document.body.appendChild(sc);
-				setTimeout(function() {
-					var sc = document.createElement('script');
-					sc.innerText = 'map.setOptions({gestureHandling: \'greedy\'});';
-					document.body.appendChild(sc);
-					
-					var m = document.getElementById('map');
-					m.setOptions({gestureHandling: 'greedy'});
-				}, 4000);
-				setTimeout(function() {
-					//~ var sc = document.createElement('script');
-					//~ sc.innerText = 'map.set("gestureHandling", \'greedy\');';
-					//~ document.body.appendChild(sc);
-					
-					var m = document.getElementById('map');
-					m.setOptions({gestureHandling: 'greedy'});
-				}, 8000);
+				
+				
 			}
 		}
 		new run().f();
