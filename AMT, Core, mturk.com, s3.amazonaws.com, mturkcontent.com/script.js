@@ -77208,21 +77208,32 @@ Laurens Hammond, Chicago, Ill.**/
 				var mapOptions = {
 					zoom: 18,
 					mapTypeId: google.maps.MapTypeId.HYBRID,
-					
+					//~ gestureHandling: 'greedy',
+					gestureHandling: 'greedy'
 				};
 				map = new google.maps.Map(
 					document.getElementById('map'),
 					mapOptions
+					
 				);
+				
 				
 				// Add lisenter to polygon complete
 				drawingManager.setMap(map);
-				google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
-					if (event.type == google.maps.drawing.OverlayType.POLYLINE) {
-						coors = event.overlay.getPath();
-						displayNewCoors(coors);
+				google.maps.event.addListener(drawingManager, 'overlaycomplete',
+					function(event) {
+						if (event.type == google.maps.drawing.OverlayType.POLYLINE) {
+							coors = event.overlay.getPath();
+							displayNewCoors(coors);
+						}
 					}
-				})
+				);
+				
+				//~ map.addEventListener('wheel', wheelEventTest, true);         
+				//~ function wheelEventTest(event) {
+					//~ // Set the ctrlKey property to true to avoid having to press ctrl to zoom in/out.
+					//~ Object.defineProperty(event, 'ctrlKey', { value: true });
+				//~ }
 
 				/////////////////////////////////////////////////////////////////////
 				function displayNewCoors(coors) {
@@ -77537,7 +77548,8 @@ Laurens Hammond, Chicago, Ill.**/
 									"new google.maps.Point(8, 8));"+
 								// RIGHT CLICK
 								"google.maps.event.addListener(map, 'rightclick', function(e) {"+
-									"map.set('disableDoubleClickZoom', true);"+								
+									"map.set('disableDoubleClickZoom', true);"+			
+									
 									"if(!window.shiftKey) {"+
 									"	var m = new google.maps.Marker({"+
 									"		position: e.latLng,"+
@@ -77607,7 +77619,6 @@ Laurens Hammond, Chicago, Ill.**/
 												"}"+
 												"x.value += window.threeRectPoints[0].position.lng() + ',' + window.threeRectPoints[0].position.lat()+',0 ';"+
 												"x.value = x.value.trim();"+
-												//~ "x.value+= '\\n' + tgid.value.trim();"+
 											"}"+ 
 										"}"+
 										"else {"+
@@ -77690,22 +77701,17 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 				};
 				console.log(o);
-				//~ if(o.name.toLowerCase() == 'marshalls') {
-					//~ document.body.style.backgroundColor = 'green';
-				//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
-					//~ document.body.style.backgroundColor = 'pink';
-				//~ }
 				
 				// Only add user decision if not running @ dev.
 				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-					AMT___addUserDecision('WeFi - Quality Control',
-						function() {
-							return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
-						},
-						[
-							'Name(Q6MultiLineTextInput)[0]'
-						]
-					);
+					//~ AMT___addUserDecision('WeFi - Quality Control',
+						//~ function() {
+							//~ return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
+						//~ },
+						//~ [
+							//~ 'Name(Q6MultiLineTextInput)[0]'
+						//~ ]
+					//~ );
 				}
 				
 				/** TESTING // ... script
@@ -77887,10 +77893,7 @@ Laurens Hammond, Chicago, Ill.**/
 								"dst = Math.round(dst*100)/100;"+
 								"var d4 = document.getElementById('d4');"+
 								"d4.innerText += '('+dst+' mi)';"+
-								//~ "dstShower.setAttribute('style','position:absolute;left:30%;width:10%;top:28px;height:28px;line-height:28px;');"+
-								//~ "dstShower.setAttribute('id','dstShower');"+
-								//~ "document.body.appendChild(dstShower);"+
-								//~ "dstShower.innerText = dst +' mi';"+
+
 								"function difference(link) {"+
 									"var pano = map.streetView;"+
 									"return Math.abs(pano.pov.heading%360 - link.heading);"+
@@ -77988,6 +77991,25 @@ Laurens Hammond, Chicago, Ill.**/
 				var sc = document.createElement('script');
 				sc.innerText = 'google.maps.event.trigger(map, "resize");';
 				document.body.appendChild(sc);
+				//~ var sc = document.createElement('script');
+				//~ sc.innerText = 'map=document.getElementById("map");map.set(\'gestureHandling\',: \'greedy\');';
+				//~ document.body.appendChild(sc);
+				setTimeout(function() {
+					var sc = document.createElement('script');
+					sc.innerText = 'map.setOptions({gestureHandling: \'greedy\'});';
+					document.body.appendChild(sc);
+					
+					var m = document.getElementById('map');
+					m.setOptions({gestureHandling: 'greedy'});
+				}, 4000);
+				setTimeout(function() {
+					//~ var sc = document.createElement('script');
+					//~ sc.innerText = 'map.set("gestureHandling", \'greedy\');';
+					//~ document.body.appendChild(sc);
+					
+					var m = document.getElementById('map');
+					m.setOptions({gestureHandling: 'greedy'});
+				}, 8000);
 			}
 		}
 		new run().f();
