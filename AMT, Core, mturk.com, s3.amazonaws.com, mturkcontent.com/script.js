@@ -154974,7 +154974,7 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
-					str_add_to_searches_hidden: ' site:grubhub.com/', //
+					str_add_to_searches_hidden: ' url:grubhub.com/restaurant/', //
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
