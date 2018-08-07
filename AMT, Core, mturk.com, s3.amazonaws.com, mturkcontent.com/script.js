@@ -154926,8 +154926,8 @@ qatar,80
 			var o = {
 				comp: td[1].innerText.trim(),
 				addr: td[3].innerText.trim(),
-				city: td[5].innerText.trim(),
-				state: td[7].innerText.trim(),
+				city: td[7].innerText.trim(),
+				state: td[9].innerText.trim(),
 				boldArray: [],
 				boldArray2: [],
 				//~ boldArray3: [],
@@ -154974,13 +154974,14 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
-					str_add_to_searches_hidden: ' site:grubhub.com/restaurant/', //
+					str_add_to_searches_hidden: ' site:grubhub.com/', //
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
-					o.comp + ' ' + o.addr,
-					o.comp + ' ' + o.city,
-					o.spaced + ' ' + o.state,
+					o.comp + ', ' + o.addr,
+					o.comp + ', ' + o.city,
+					o.comp + ', ' + o.city +
+						', ('+o.state+' OR '+o.state.stateAbbrToFull()+')',
 				],
 				
 				search_results: {
