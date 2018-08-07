@@ -154896,12 +154896,17 @@ qatar,80
 	 * Max Jacobson
 	 * Adam Crabbe
 	 * Olivier Berger
+	 * Food Genius
+	 * 
+	 * 
+	 * 
+	 * 
 	 * 
 	 * 
 	 */
-	// Olivier Berger
-	// Find the gallery website link
-	var s = "<p>Hi Everyone, we're building a centralized&nbsp;repository&nbsp;of&nbsp;artist resumes from around the world. We're based out of Toronto, Canada. Thank you for your contribution.</p>";
+	// Food Genius
+	// Acquire the GrubHub URL for the restaurant provided.
+	var s = '<div>Only the GrubHub URL associated with the specific restaurant below.&nbsp;<strong>The submitted URL must begin with "https://wwww.grubhub.com/restaurant/".</strong></div>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -154920,11 +154925,14 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.trim(),
+				addr: td[3].innerText.trim(),
+				city: td[5].innerText.trim(),
+				state: td[7].innerText.trim(),
 				boldArray: [],
 				boldArray2: [],
 				//~ boldArray3: [],
 				q: [
-					document.getElementById('galleryname'),
+					document.getElementById('webpage_url'),
 				],
 			}
 			// change to full
@@ -154942,9 +154950,9 @@ qatar,80
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			console.log(o);
 			AMT___addUserDecision(
-				'OlivierBerger-url,2018', function() {
+				'FoodGenius-grubhub-url,2018', function() {
 					return o.comp;
-				}, ['Id(galleryname)']
+				}, ['Id(webpage_url)']
 			)
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -154966,18 +154974,18 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				search: {
-					//~ str_add_to_searches_hidden: ' site:foursquare.com/v/', //
+					str_add_to_searches_hidden: ' site:grubhub.com/restaurant/', //
 					//~ use_duckduckgo_search_engine: true,
 				},
 				searches:[ // 
-					o.comp,
-					o.comp + ' gallery',
-					o.spaced + ' gallery',
+					o.comp + ' ' + o.addr,
+					o.comp + ' ' + o.city,
+					o.spaced + ' ' + o.state,
 				],
 				
 				search_results: {
 					//use_domain_only: true,
-					//~ use_full_urls: true,
+					use_full_urls: true,
 					bold: {
 						black: o.boldArray,
 						//~ blue: o.boldArray2,
