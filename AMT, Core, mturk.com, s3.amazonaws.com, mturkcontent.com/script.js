@@ -13838,6 +13838,88 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();
 	}
+	/**
+	 * @client Prospect Smarter
+	 */
+	// Prospect Smarter
+	// Test scrape... Works ok...
+	// @tags simple_xhr
+	// https://www.zillow.com/homes/6621-Messer-Dr,-Seffner,-FL-33584_rb/
+	s = '<a href="https://soapbox.wistia.com/videos/p4JfvFcGCy" target="blank">Please view this video</a>&nbsp;so you can see where on the listing to look for this information.</p>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[1].href.replace(/^https:\/\/www\.zillow\.com\/homes\//i, ''),
+				q: [
+					document.getElementById('web_url'),
+				],
+			}
+			console.log(o);
+			//https://www.zillow.com/homes/6621-Messer-Dr,-Seffner,-FL-33584_rb/
+			o.u += '_rb';
+			
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://www.zillow.com/homes/'+o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'black';
+						return false;
+					}
+					//~ else { // Reset localStorage!
+						//~ localStorage['ko'] = '0';
+					//~ }
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					//console.log(options);
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//
+					//~ var d = dom.getElementsByClassName('zsg-tooltip-launch zsg-tooltip-launch_keyword');
+					//~ var d = dom.getElementsByClassName('main-row status-icon-row home-summary-row');
+					var d = dom.getElementById('listing-icon');
+					if (d) {
+						console.log(d);
+						//~ d = d[0].innerText.trim();
+						d = d.innerText.trim();
+						console.log(d);
+						if (d.indexOf('For Sale by Owner') != -1) {
+							document.getElementById('category1').click();
+						} else if (d.indexOf('Sold') != -1) {
+							document.getElementById('category2').click();
+						} else if (d.indexOf('For Sale by Agent') != -1) {
+							document.getElementById('category3').click();
+						} else if (d.indexOf('Off Market') != -1) {
+							document.getElementById('category4').click();
+							doSubmit();
+						}
+						//~ switch (d.innerText.trim()) {
+							//~ case :
+								
+								//~ break;
+							//~ case 'Sold':
+								
+								//~ break;
+							//~ case :
+								
+								//~ break;
+							//~ case 'None of the Above':
+							//~ case 'Off Market':
+								
+								//~ break;
+							//~ default:
+								//~ break;
+						//~ }
+					}
+					
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// Prospect Smarter
 	// Test scrape... Works ok...
 	//
