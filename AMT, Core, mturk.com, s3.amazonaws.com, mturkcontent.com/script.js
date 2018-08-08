@@ -157500,18 +157500,12 @@ qatar,80
 			// STORE A RESULT IF RETURN AND ACCEPT!
 			//
 			//~ AMT__Global_Vars.showPastReturnsContent = true;
-			AMT___doPastBehavior('kronopin-findurl,2018',1, 'Do Not Submit', function (rslt) {
-				//~ alert(rslt);
-				console.log(rslt); // obj
-				//~ if(!rslt) {
-				//~ } else {
-					//~ console.log(rslt);
-					//~ if(rslt.outputs[1].value == 'Could not find company website') {
-						//~ dbug.value += "Website Unfound";
-						//~ document.body.style.backgroundColor = 'silver';
-					//~ }
-				//~ }
-			}, true);
+			AMT___doPastBehavior(
+				'kronopin-findurl,2018',1,'Do Not Submit',
+				function (rslt) {
+					console.log(rslt); // obj
+				}, true
+			);
 			// Wait for gid to load.
 			// NOTE: GID takes a moment to come in.
 			// 		This is likely because it is being passed
