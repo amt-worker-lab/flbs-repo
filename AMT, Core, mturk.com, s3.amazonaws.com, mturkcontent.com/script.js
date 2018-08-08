@@ -100808,6 +100808,10 @@ Laurens Hammond, Chicago, Ill.**/
 	/**
 	 * Yelp biz profile search
 	 * Updated to Yelp API: VERSION 3 (July 2018)
+	 * Yelp latest
+	 * yelp v3
+	 * yelp fusion
+	 * API_V2_IS_DEPRECATED
 	 * 
 	 * Chios
 	 * Brendan
@@ -145460,6 +145464,11 @@ qatar,80
 					document.getElementById('Field3'),
 				]
 			}
+			// fix zip when it is missing a leading zero.
+			// Todo: Fix for 00000, 00001, etc.
+			if (/^\d{4}$/.exec(o.zip)) {
+				o.zip = '0'+o.zip;
+			}
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
 			dx1.setAttribute('style','position:absolute;top:158px;left:0%;width:99%;height:600px;border:1px dashed blue;');
@@ -145569,8 +145578,12 @@ qatar,80
 						return;
 					}
 					// Convert phone to three fields
-					opts.o.final_location.phone = opts.o.final_location.phone.replace(/[^\d]/g, '');
-					var x = /^(\d{3})(\d{3})(\d{4})$/.exec(opts.o.final_location.phone);
+					var tmpphone = opts.o.final_location.phone.replace(/[^\d]/g, '');
+					if (tmpphone.length == 11 && tmpphone[0] == '1') {
+						// Remove the country extension
+						tmpphone = tmpphone.slice(1);
+					}
+					var x = /^(\d{3})(\d{3})(\d{4})$/.exec(tmpphone);
 					if (x) {
 						o.q[0].value = x[1];
 						o.q[1].value = x[2];

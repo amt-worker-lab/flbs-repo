@@ -16854,6 +16854,40 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			near = x.slice(1).join(',');
 			terms = x[0];
 		}
+	
+		// NEW FOR V3
+		// TODO, Make filename contain a WEEK code, so that
+		// files are only cached for a max of ONE WEEK.
+		var opts = {
+			server_opts: {
+				url: 'https://api.yelp.com/v3/businesses/search?term='+
+					encodeURIComponent(terms)+
+					'&location='+encodeURIComponent(near),
+				//~ _PROXY_REDACTED__use_proxy: true,
+				//~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
+				headers_array: [
+					'Authorization: Bearer cG1kkq3W9F-insSfzLuQH1rfrgJ-5dXtL_UAs9QmCigA-TT_Bz9CxGAV9BuX7h9XnDRhpneGIfverYOJ15LYcP1CDeJRF_tV1xXtLLsdxUEgSfKiKg414fYTBipMW3Yx',
+				],
+				//~ do_not_save_to_file: true,
+				short_filename:	new AMT___requests_factory().md5(
+						d2.value
+					) + 'yelp',
+				//~ post_object_as_str:
+					//~ 'term='+encodeURIComponent(d2.value)+
+					//~ '&location='+encodeURIComponent(d2b.value)
+			},
+			callback_function: function(response) {
+				console.log(response);
+				yelp_success(response.response, d1c)
+			}
+		};
+		new AMT___requests_factory().server_load_asynchronously2(opts);
+		
+		return;
+		// ===================
+		//OLD CODE BELOW THIS
+		// Aug 2018
+		// ===================
 		
 		
 		//
