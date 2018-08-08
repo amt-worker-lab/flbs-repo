@@ -13886,7 +13886,7 @@ Laurens Hammond, Chicago, Ill.**/
 					// owner
 					var d = dom.getElementById('listing-icon');
 					var sale = 'For Sale by Owner';
-					if (d.innerText.trim().indexOf(sale) == 0) {
+					if (d && d.innerText.trim().indexOf(sale) == 0) {
 						document.getElementById('category1').click();
 						doSubmit();
 						return;
@@ -13914,6 +13914,16 @@ Laurens Hammond, Chicago, Ill.**/
 						d = d[0].innerText.trim();
 						if (d.indexOf('For Sale') != -1) {
 							document.getElementById('category3').click();
+							doSubmit();
+							return;
+						}
+					}
+					// Pending (N/a)
+					var d = dom.getElementsByClassName('status-icon-row for-sale-row home-summary-row');
+					if (d && d.length) {
+						d = d[0].innerText.trim();
+						if (d.indexOf('Pending') != -1) {
+							document.getElementById('category4').click();
 							doSubmit();
 							return;
 						}
