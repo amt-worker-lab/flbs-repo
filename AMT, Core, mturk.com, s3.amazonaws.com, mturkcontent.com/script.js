@@ -13880,39 +13880,43 @@ Laurens Hammond, Chicago, Ill.**/
 					//
 					//~ var d = dom.getElementsByClassName('zsg-tooltip-launch zsg-tooltip-launch_keyword');
 					//~ var d = dom.getElementsByClassName('main-row status-icon-row home-summary-row');
+					
+					
+					
+					// owner
 					var d = dom.getElementById('listing-icon');
-					if (d) {
-						console.log(d);
-						//~ d = d[0].innerText.trim();
-						d = d.innerText.trim();
-						console.log(d);
-						if (d.indexOf('For Sale by Owner') != -1) {
-							document.getElementById('category1').click();
-						} else if (d.indexOf('Sold') != -1) {
-							document.getElementById('category2').click();
-						} else if (d.indexOf('For Sale by Agent') != -1) {
-							document.getElementById('category3').click();
-						} else if (d.indexOf('Off Market') != -1) {
+					var sale = 'For Sale by Owner';
+					if (d.innerText.trim().indexOf(sale) == 0) {
+						document.getElementById('category1').click();
+						doSubmit();
+						return;
+					}
+					// Sold
+					var sold = '<span id="listing-icon" data-icon-class="zsg-icon-recently-sold" class="zsg-icon-recently-sold recently-sold"></span>';
+					if (rs.indexOf(sold) != -1) {
+						document.getElementById('category2').click();
+						doSubmit();
+						return;
+					}
+					// off market
+					var d = dom.getElementsByClassName('zsg-tooltip-launch zsg-tooltip-launch_keyword');
+					if (d && d.length) {
+						d = d[0].innerText.trim();
+						if (d.indexOf('Off Market') != -1) {
 							document.getElementById('category4').click();
 							doSubmit();
+							return;
 						}
-						//~ switch (d.innerText.trim()) {
-							//~ case :
-								
-								//~ break;
-							//~ case 'Sold':
-								
-								//~ break;
-							//~ case :
-								
-								//~ break;
-							//~ case 'None of the Above':
-							//~ case 'Off Market':
-								
-								//~ break;
-							//~ default:
-								//~ break;
-						//~ }
+					}
+					// For sale (other, which means apparently agent)
+					var d = dom.getElementsByClassName('status-icon-row for-sale-row home-summary-row');
+					if (d && d.length) {
+						d = d[0].innerText.trim();
+						if (d.indexOf('For Sale') != -1) {
+							document.getElementById('category3').click();
+							doSubmit();
+							return;
+						}
 					}
 					
 				}
