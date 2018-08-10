@@ -5616,9 +5616,260 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	// Leeron Azoulai
+	// Find pH values for Retail Products
+	// @tags pdf ocr
+	// 
+	var s = '<p>Find the pH value for the given product.</p>\n\n<ul>\n	<li>Make sure you can see the embedded PDF (if you can\'t, click on the link for the Safety Data Sheet below).</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important;}');// Move content to bottom...
+			GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');// Move content to bottom...
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Elements
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[1].href,
+				image_divs: [], // To be filled...
+				first_keypress: false, // To be updated...
+				rotation: 0, // Sets image rotation
+				selected_image: null, // To be filled...
+				q: [
+					document.getElementById('ph_value_input')
+				],
+			}
+			console.log(o);
+			AMT___addUserDecision(
+				'LeeronAzoulai,2018', function() {
+					return o.u;
+				}, ['Id(ph_value_input)']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:99%;height:600px;\
+				overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// // pdftotext
+			//~ new AMT___requests_factory().io__command_line_request({
+				//~ filename: o.u,
+				//~ command: 'pdftotext',
+				//~ callback: pdftotext
+			//~ });
+			new AMT___requests_factory().pdftotext({
+				url: o.u,
+				callback: success
+			});
+			function success(init_object) {
+				//~ console.log(init_object);
+				//~ console.log(init_object.rs);
+				
+				var rs = init_object.rs;
+				
+				// Remove everything before Section 9.
+				var rgx = /section[\r\n\t\s]+9[\d\D]+/i.exec(rs);
+				var output_rs = rs;
+				if (rgx) {
+					output_rs = rgx[0];
+				} else {
+					
+				}
+				//= rs.replace(/(section[\r\n\t\s]+9)/i, 'Section 9');
+				d1.innerText = output_rs;
+				
+				// Auto
+				// Ignores "(depending on typical dilution)"
+				// Example string: pH: . . . 1.5 to 2.5(depending on typical dilution)
+
+				var rgx_a = /pH:[ \.]+([\d\.]+) *(to|\-) *([\d\.]+)/i.exec(output_rs);
+				if (rgx_a) {
+					o.q[0].value = rgx_a[1]+'-'+rgx_a[3];
+				}
+				//
+			}
+			
+			return;
+			
+			// Init pdf loader
+			AMT___requests_factory.prototype.pdfimages({
+				url: o.u,
+				callback: function(response) {
+					var rs = response.responseText;
+					// Return if an error occurs.
+					if (rs == 'Error: No files converted!') {
+						new AMT___core_factory().
+							iframe2parent__postMessage( //
+								{
+									action: 'return_and_accept'
+								}
+							);
+						return;
+					}
+					// Load images.
+					for (var i=0; i<=parseInt(rs); i++) {
+						// Div.
+						// TODO: Add rotate 90-degrees.
+						var d = document.createElement('div');
+						d.setAttribute('style',
+							'border:1px solid #444;display:inline;cursor:pointer;');
+						d.appendChild(document.createTextNode(i));
+						d.num = i;
+						d.scrolled = false
+						d.onclick = function(e) {
+							this.expand();
+						}
+						var n = document.createElement('img');
+						n.setAttribute('style', 'max-height:200px;');
+						n.src = MT___host+'/mturk/.cached/'+response.filename+'-'+i+'.png';
+						n.pdiv = d;
+						n.onclick = function(e) {
+							// Stop click.
+							e.stopPropagation();
+							e.preventDefault();
+							// Set first keypress to false, as it is
+							// no longer necessary.
+							o.first_keypress = true;
+							// Call div expand when image onclick.
+							this.pdiv.expand();
+						}
+						d.appendChild(n);
+						d.image = n; // Set image.
+						// Add to main div.
+						d1.appendChild(d);
+						// Add to data structure.
+						o.image_divs.push(d);
+						// Expand method.
+						// This also minimizes other images.
+						d.expand = function(e) {
+							o.selected_image = this.num // update global var
+							if (this.is_expanded) {
+								// Scroll image.
+								if (!this.scrolled) {	// to bottom
+									this.image.scrollIntoView(false);
+									this.scrolled = true;
+								} else {				// to top 
+									this.image.scrollIntoView(true);
+									this.scrolled = false;
+								}
+								// Re-focus on input.
+								o.q[0].focus();
+								return;
+							}
+							for (var i in o.image_divs) {
+								o.image_divs[i].image.setAttribute('style',
+									'max-height:2px;max-width:2px;');
+								o.image_divs[i].is_expanded = false;
+							}
+							this.is_expanded = true;
+							this.image.src = MT___host+'/mturk/.cached/'+
+								response.filename+'full-'+this.num+'.png';
+							this.image.setAttribute('style',
+								'max-height:1600px;max-width:85%;');
+								//~ 'max-height:1200px;max-width:70%;');
+							// Re-focus on input.
+							o.q[0].focus();
+						}
+					}
+					// Append spacer div.
+					d1.appendChild(''.div({style:'height:2000px'}));
+				}
+			});
+			// Turn off form submit.
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			// Watch for keypresses.
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				console.log(c);
+				var cstr = String.fromCharCode(e.keyCode);
+				console.log(cstr);
+				// Enter key
+				if (c == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+					// Good to go?
+					// Digit with option decimal and up to
+					// two decimals.
+					if (/^\d+(\.\d{1,2}|)$/.exec(o.q[0].value)) {
+						AMT___recordAndSubmit();
+					}
+					return false;
+				}
+				// First keydown?
+				// Expand the selected image.
+				// Minimize the other images.
+				//~ if (/^\d$/.exec(cstr)) {
+				if (!o.first_keypress && /^\d$/.exec(cstr)) {
+					e.stopPropagation();
+					e.preventDefault();
+					// If image [int] exists then expand it.
+					// Otherwise, turn off first_keypress.
+					// Note: Still ignores the last keypress!
+					if (o.image_divs[ parseInt(cstr) ])
+						o.image_divs[ parseInt(cstr) ].expand();
+					o.first_keypress = true;
+					o.q[0].focus();
+				}
+				// Rotate?
+				if (cstr == '+') {
+					e.stopPropagation();
+					e.preventDefault();
+					o.rotation += 90;
+					if (o.rotation == 360) {
+						o.rotation = 0; // probably unnecessary
+					}
+					GM_addStyle('img {transform:rotate('+o.rotation+'deg);}');
+				}
+				// Change to next image.
+				if (cstr == '-') {
+					e.stopPropagation();
+					e.preventDefault();
+					if (o.image_divs[o.selected_image+1])
+						o.image_divs[o.selected_image+1].expand();
+				}
+				// Change to previous image.
+				if (cstr == '*') {
+					e.stopPropagation();
+					e.preventDefault();
+					if (o.image_divs[o.selected_image-1])
+						o.image_divs[o.selected_image-1].expand();
+				}
+				// Move down to bottom of image.
+				// (same as clicking big image)
+				if (cstr == '/') {
+					e.stopPropagation();
+					e.preventDefault();
+					o.image_divs[o.selected_image].expand();
+				}
+			}, false);
+		}
+		new run().f();
+		return;
+	}
 	// Emily Zong
 	// Enter up to five data point from a PDF
-	//
+	// @tags pdfimages
 	// 
 	var s = '<p>Overview: <strong>TVD (sometimes called True Vertical Depth, Vertical Depth)</strong> is typically the fourth column of a directional survey. There can be anywhere from 1 to 5 directional survey documents in a single PDF.&nbsp;</p>';
 	if (ih.indexOf(s) != -1
@@ -11220,16 +11471,6 @@ function MT__RUN() {
 				style: 'position:absolute;top:0px;left:0px;width:100%;height:200px;background-color:#eee;border:1px solid blue;',
 				a: true});
 			/*END ITEMS*/
-			// open the pdf for debugging
-			//~ x[0].onclick = function() {
-				//~ window.open(x[0].src);
-			//~ }
-			//~ var n = new AMT___requests_factory().pdfocr({
-				//~ url: o.p,
-				//~ callback: success,
-				//~ //goodchars_file: 'goodchars_VKapadia',
-				//~ //psm: 6//11//5,
-			//~ });
 			
 			new AMT___requests_factory().pdftotext({
 				url: o.url,
@@ -11244,9 +11485,6 @@ function MT__RUN() {
 					.replace(/\d+\.\d+\.\d+\n+Flight Planner \d+\.\d+\.\d+ - \d+\.\d+\.\d+ \d+:\d+:\d+ - Wilfried Haferland - [\w\d\-]+/, '')
 					.trim();
 				
-				//~ return;
-				
-				//~ var r = /^Heubach\n{2}([A-Z]{4})\n{2}([^\n]+)*/.exec(rs);
 				// Split by double-space, then have us edit.
 				rs = rs.split('\n\n');
 				var inp = 0;
@@ -11267,8 +11505,6 @@ function MT__RUN() {
 				var sbm = true;
 				for (var i in rs) {
 					rs[i] = rs[i].trim();
-					//console.log('line:',rs[i]);
-					//console.log('"next" is:',next);
 					if (i==0) continue; // skip first
 					if (i==1) { //code
 						o.q[0].value = rs[i].replace(/\n/g, ' ');
@@ -11702,20 +11938,12 @@ function MT__RUN() {
 				}
 			}
 			function fill_in_fields(line, html_line, num) {
-				//~ // num is optional
-				//~ if (words_el) {
-					//~ var words_el = words_el
-				//~ } else {
-				//~ }
 				var from_manual_entry = false;
 				if (!html_line) {
 					var html_line = o.q[num].wellName.html_line;
 					from_manual_entry = true; // Set to true now.
 				}
 				console.log(html_line);
-				//~ if (!html_line.getElementsByClassName) {
-					//~ return;
-				//~ }
 				
 				// If false then it does not matter at this point.
 				// Just define it to avoid error.
