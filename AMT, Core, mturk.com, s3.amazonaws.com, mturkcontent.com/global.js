@@ -11,7 +11,8 @@
  * 
  */
 // Changed back to http from https, Spring 2018.
-var MT___host = 'http://192.168.1.2';
+// Changed to 1.69 from 1.2, Sept. 2018.
+var MT___host = 'http://192.168.1.69';
 
 /**
  * AMT__GLOBAL_VARS
