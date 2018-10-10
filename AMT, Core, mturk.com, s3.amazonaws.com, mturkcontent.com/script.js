@@ -76256,12 +76256,33 @@ Laurens Hammond, Chicago, Ill.**/
 						window.mousePosition.clientY = e.clientY;
 					}, false);
 					window.setTimeout(function() {
+						// Map is limited in scope in their latest
+						// code. Let's make it global again.
+						// Fastest way is to simply fix the function
+						// and then call it again (re-initializing map).
+						// It's a "page reload" but may be best solution
+						// for now.
+						// Utilize textContent.
+						var map;
+						var x = initMap
+							.toString()
+							.replace(/var map;/, '');
+						console.log(x);
+						//~ js_append2('function initMap2(){'+x+'}');
+						var script = document.createElement('script');
+						script.textContent = 'function initMap2(){'+x+'}';
+						(document.head||document.documentElement).appendChild(script);
+						script.parentNode.removeChild(script);
+						//~ initMap.textContent = x;
+						initMap2();
 						// ---------------------------------------------
 						// OLD VERSION, STOPPED AS OF OCT. 2018.
 						// ---------------------------------------------
-										//~ var lat = map.getCenter().lat(); 
-										//~ var lng = map.getCenter().lng(); 
+										var lat = map.getCenter().lat(); 
+										var lng = map.getCenter().lng(); 
 						// ---------------------------------------------
+						var lat = myLatLng[0];
+						var lng = myLatLng[0];
 						
 						map.setTilt(45);
 						if(obj.sv_start_in_top_down != 0) {
