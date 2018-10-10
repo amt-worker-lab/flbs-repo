@@ -76255,26 +76255,8 @@ Laurens Hammond, Chicago, Ill.**/
 						window.mousePosition.clientX = e.clientX;
 						window.mousePosition.clientY = e.clientY;
 					}, false);
-					window.setTimeout(function() {
-						// Map is limited in scope in their latest
-						// code. Let's make it global again.
-						// Fastest way is to simply fix the function
-						// and then call it again (re-initializing map).
-						// It's a "page reload" but may be best solution
-						// for now.
-						// Utilize textContent.
-						var map;
-						var x = initMap
-							.toString()
-							.replace(/var map;/, '');
-						console.log(x);
-						//~ js_append2('function initMap2(){'+x+'}');
-						var script = document.createElement('script');
-						script.textContent = 'function initMap2(){'+x+'}';
-						(document.head||document.documentElement).appendChild(script);
-						script.parentNode.removeChild(script);
-						//~ initMap.textContent = x;
-						initMap2();
+					// Redraw the map after a timeout.
+					function redrawMap() {
 						// ---------------------------------------------
 						// OLD VERSION, STOPPED AS OF OCT. 2018.
 						// ---------------------------------------------
@@ -76534,14 +76516,40 @@ Laurens Hammond, Chicago, Ill.**/
 						
 						var streetViewLayer = new google.maps.StreetViewCoverageLayer();
 						streetViewLayer.setMap(map);
-					}, 2000);
+					}
+					// Set a timeout to start the process of modifications.
+					window.setTimeout(function() {
+						// Map is limited in scope in their latest
+						// code. Let's make it global again.
+						// Fastest way is to simply fix the function
+						// and then call it again (re-initializing map).
+						// It's a "page reload" but may be best solution
+						// for now.
+						// Utilize textContent.
+						var map;
+						var oldCoordinates;
+						var myLatLng;
+						var x = initMap
+							.toString()
+							.replace(/var map;/, '')
+							.replace(/var oldCoordinates/, 'oldCoordinates')
+							.replace(/var myLatLng/, 'myLatLng')
+							.replace(/function initMap/, 'function initMap2');
+						console.log(x);
+						var script = document.createElement('script');
+						script.textContent = x;
+						(document.head||document.documentElement).appendChild(script);
+						script.parentNode.removeChild(script);
+						initMap2();
+						window.setTimeout(redrawMap, 1200);
+					}, 400);
 				}
 			}
 			
 			
-			// ............
+			// ---------------------------------------------------------
 			// Init
-			// ............
+			// ---------------------------------------------------------
 			// Append helper function: add_editable_polygon
 			js_append2(add_editable_polygon);
 			// Append helper function: coordinates_to_output
@@ -76551,8 +76559,8 @@ Laurens Hammond, Chicago, Ill.**/
 			// Run chios
 			getCenterBeforeChiosRuns();
 			
+			// Function to run after center?
 			function runAfterGettingCenter() {
-				
 				GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:10px;}');
 				GM_addStyle('body {margin-top:0px;}');
 				GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
@@ -76573,14 +76581,20 @@ Laurens Hammond, Chicago, Ill.**/
 				// Sometimes the first <b> on the page will be
 				// a note rather than the name!
 				var b		= document.getElementsByTagName('b');
-				var name	= b[0].innerText.trim();
-				var addr	= b[1].innerText.trim();
-				var btns	= document.getElementsByTagName('button');
-				// Is this one with b[1] b[2]?
-				if (b[1].parentNode.innerText.indexOf('Address:') == -1) {
-					name = b[1].innerText.trim();
-					addr = b[2].innerText.trim();
+				var name, addr, btns;
+				if (b.length == 1) {
+					name = b[0].innerText.trim();
+					addr = '';
+				} else if (b.length > 1) {
+					name = b[0].innerText.trim();
+					addr = b[1].innerText.trim();
+					// If more <B>, try validating correct content.
+					if (b[1].parentNode.innerText.indexOf('Address:') == -1) {
+						name = b[1].innerText.trim();
+						addr = b[2].innerText.trim();
+					}
 				}
+				btns = document.getElementsByTagName('button');
 				
 				// vars
 				var o = {
