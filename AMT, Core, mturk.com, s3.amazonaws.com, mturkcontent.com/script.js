@@ -75988,6 +75988,7 @@ Laurens Hammond, Chicago, Ill.**/
 	var s16 = 'and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	var s17 = '<p>If polygon includes parking lot it will be rejected - this is different than our usual tasks</p>\n\n<p>The target store to be geofenced: ';
 	var s18 = '<p>If polygon does not include&nbsp;parking lot it will be rejected</p>\n\n<p>The target store to be geofenced: <b></b></p>\n\n<p>Address: <b>';
+	var s19 = '<li>Redraw the current polygon retaining the original shape WITHOUT any OVERLAPPING lines.</li>\n	<li>Draw a COMPLETE polygon around the target store and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	
 	if  (
 		ih.indexOf(s)  != -1 ||
@@ -76007,7 +76008,8 @@ Laurens Hammond, Chicago, Ill.**/
 		ih.indexOf(s15) != -1 ||
 		ih.indexOf(s16) != -1 ||
 		ih.indexOf(s17) != -1 ||
-		ih.indexOf(s18) != -1
+		ih.indexOf(s18) != -1 ||
+		ih.indexOf(s19) != -1
 		)
 	{
 		var run = function() {};
@@ -76254,8 +76256,13 @@ Laurens Hammond, Chicago, Ill.**/
 						window.mousePosition.clientY = e.clientY;
 					}, false);
 					window.setTimeout(function() {
-						var lat = map.getCenter().lat(); 
-						var lng = map.getCenter().lng(); 
+						// ---------------------------------------------
+						// OLD VERSION, STOPPED AS OF OCT. 2018.
+						// ---------------------------------------------
+										//~ var lat = map.getCenter().lat(); 
+										//~ var lng = map.getCenter().lng(); 
+						// ---------------------------------------------
+						
 						map.setTilt(45);
 						if(obj.sv_start_in_top_down != 0) {
 							map.setTilt(0);
@@ -76672,18 +76679,16 @@ Laurens Hammond, Chicago, Ill.**/
 					d4.id = 'd4';
 				}
 				
-				////////////////////
+				////////////////////////////////////////////////////////
 				// showPastReturns
-				////////////////////
-				//~ showPastReturns(name + addr, function() {
-					//~ document.body.style.backgroundColor = 'aqua';
-					//~ document.getElementById('d4').innerHTML += 'Was Returned'
-				//~ });
+				////////////////////////////////////////////////////////
+							//~ showPastReturns(name + addr, function() {
+								//~ document.body.style.backgroundColor = 'aqua';
+								//~ document.getElementById('d4').innerHTML += 'Was Returned'
+							//~ });
+				////////////////////////////////////////////////////////
 				
 				console.log('here is map3:',map);
-				//~ console.log('here is map3:',map.set);
-				//~ console.log('here is map3:',map.setOptions);
-				//~ console.log('here is map3:',map.setOptions({gestureHandling: 'greedy'}));
 				//~ map.gestureHandling = 'greedy';
 				//~ var map = new google.maps.Map(document.getElementById('map'), {
 					//~ gestureHandling: 'greedy'
