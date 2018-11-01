@@ -75989,6 +75989,7 @@ Laurens Hammond, Chicago, Ill.**/
 	var s17 = '<p>If polygon includes parking lot it will be rejected - this is different than our usual tasks</p>\n\n<p>The target store to be geofenced: ';
 	var s18 = '<p>If polygon does not include&nbsp;parking lot it will be rejected</p>\n\n<p>The target store to be geofenced: <b></b></p>\n\n<p>Address: <b>';
 	var s19 = '<li>Redraw the current polygon retaining the original shape WITHOUT any OVERLAPPING lines.</li>\n	<li>Draw a COMPLETE polygon around the target store and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
+	var s20 = '<li>Some areas of map will allow you to use Satellite view at a 45 degree angle, <u>please do NOT draw the polygon in this view.</u> If you use the 45 degree view to identify the store name, uncheck the box and use the overhead Satellite view when drawing your polygon.</li>';
 	
 	if  (
 		ih.indexOf(s)  != -1 ||
@@ -76526,23 +76527,29 @@ Laurens Hammond, Chicago, Ill.**/
 						// It's a "page reload" but may be best solution
 						// for now.
 						// Utilize textContent.
-						var map;
-						var oldCoordinates;
-						var myLatLng;
-						var x = initMap
-							.toString()
-							.replace(/var map;/, '')
-							.replace(/var oldCoordinates/, 'oldCoordinates')
-							.replace(/var myLatLng/, 'myLatLng')
-							.replace(/function initMap/, 'function initMap2');
-						console.log(x);
-						var script = document.createElement('script');
-						script.textContent = x;
-						(document.head||document.documentElement).appendChild(script);
-						script.parentNode.removeChild(script);
-						initMap2();
-						window.setTimeout(redrawMap, 1200);
-					}, 400);
+						try {
+							if (initMap) {
+								var map;
+								var oldCoordinates;
+								var myLatLng;
+								var x = initMap
+									.toString()
+									.replace(/var map;/, '')
+									.replace(/var oldCoordinates/, 'oldCoordinates')
+									.replace(/var myLatLng/, 'myLatLng')
+									.replace(/function initMap/, 'function initMap2');
+								console.log(x);
+								var script = document.createElement('script');
+								script.textContent = x;
+								(document.head||document.documentElement).appendChild(script);
+								script.parentNode.removeChild(script);
+								initMap2();
+							}
+						} catch (e) {
+							//
+						}
+						window.setTimeout(redrawMap, 400);
+					}, 200);
 				}
 			}
 			
