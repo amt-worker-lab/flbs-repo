@@ -76622,7 +76622,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// vars
 				var o = {
 					lat: null,
-					lon: null,
+					lng: null,
 					centerMapLat: this.value.match(/^[^;]+/)[0],
 					centerMapLng: this.value.match(/[^;]+$/)[0],
 					name: name,
@@ -76637,8 +76637,10 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 				};
 				// Sometimes addr is a lat / lng.
-				// <b>32.2879980503,-110.965091288</b>
-				var addrll = /^([\d,\-]+),([\d,\-]+)$/.exec(o.addr);
+				//		<b>32.2879980503,-110.965091288</b>
+				// 		or
+				//		<b>32.2879980503, -110.965091288</b>
+				var addrll = /^([\d,\-\.]+), *([\d,\-\.]+)$/.exec(o.addr);
 				if (addrll) {
 					o.lat = addrll[1];
 					o.lng = addrll[2];
@@ -76864,7 +76866,15 @@ Laurens Hammond, Chicago, Ill.**/
 					//MT___google_api_geocode(o.addr, geocodze_result, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
 					console.log('this is o');
 					console.log(o);
-					geocode_result(o.centerMapLat, o.centerMapLng);
+					if (o.centerMapLat && o.centerMapLng &&
+						o.centerMapLat != 'undefined' &&
+						o.centerMapLng != 'undefined') {
+						geocode_result(o.centerMapLat, o.centerMapLng);
+					} else if (o.lat && o.lng) {
+						geocode_result(o.lat, o.lng);
+					} else {
+						console.log('No existing lat/lng.');
+					}
 				}
 				/**
 				 * function check_near
@@ -76874,15 +76884,12 @@ Laurens Hammond, Chicago, Ill.**/
 					// ...
 					// xhr_with_disk_cache
 					new AMT___requests_factory().xhr_with_disk_cache({
-						URL:	'https://maps.googleapis.com/maps/api/place/radarsearch/json'+
+						//~ URL:	'https://maps.googleapis.com/maps/api/place/radarsearch/json'+
+						URL:	'https://maps.googleapis.com/maps/api/place/nearbysearch/json'+
 								'?location='+encodeURIComponent(lat)+','+encodeURIComponent(lng)+
 								'&radius=5000&keyword='+encodeURIComponent(o.name)+
 								'&key=_GOOGLE_API_KEY_REDACTED_',
 						check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-							//~ var rs = options.response.responseText;
-							//~ if (options.response.status != 200) {
-								//~ add_static_img(); // Add basic image....
-							//~ }
 							return true;
 						},
 						success_callback: function(options) {
@@ -76945,7 +76952,9 @@ Laurens Hammond, Chicago, Ill.**/
 					script.parentNode.removeChild(script);
 				}
 				/**
-				 * function geocode_result
+				 * Does not actually run a geocode, as of now.
+				 * 
+				 * @brief It did at one point.
 				 * 
 				 * @param lat
 				 * @param lng
@@ -76963,12 +76972,11 @@ Laurens Hammond, Chicago, Ill.**/
 						return;
 					}
 					console.log('Google Lat/Lng:' + lat + ',' + lng);
-					
 					new AMT___core_factory().createScriptVar('InitialChiosZoom', 18, false);
 					console.log('careful look at me');
 					console.log(AMT__Global_Vars);
 					
-					check_near(lat,lng);
+					check_near(lat, lng);
 					
 					// UPDATE
 					o.search.withNameSearch =
