@@ -76142,31 +76142,47 @@ Laurens Hammond, Chicago, Ill.**/
 					console.log(this);
 					google.maps.event.addListener(path, 'insert_at', function(){
 						// New point
-						//~ if (!this.hasOwnProperty('b')) {
-							//~ alert('Google Maps changed key from b to __ ???');
-							//~ return;
-						//~ }
+						var c;
+						if (!this.hasOwnProperty('b') &&
+							!this.hasOwnProperty('j')) {
+							console.log('check new prop:', this);
+							alert('Google Maps changed key from b to __ ??');
+							return;
+						} else if (this.hasOwnProperty('b')) {
+							c = this.b;
+						} else if (this.hasOwnProperty('j')) {
+							c = this.j;
+						}
 						coordinates_to_output(this.b);
 					});
 					google.maps.event.addListener(path, 'remove_at', function(){
 						// Point was removed
-						//~ if (!this.hasOwnProperty('b')) {
-							//~ alert('Google Maps changed key from b to __ ???');
-							//~ return;
-						//~ }
+						var c;
+						if (!this.hasOwnProperty('b') &&
+							!this.hasOwnProperty('j')) {
+							console.log('check new prop:', this);
+							alert('Google Maps changed key from b to __ ??');
+							return;
+						} else if (this.hasOwnProperty('b')) {
+							c = this.b;
+						} else if (this.hasOwnProperty('j')) {
+							c = this.j;
+						}
 						coordinates_to_output(this.b);
 					});
 					google.maps.event.addListener(path, 'set_at', function(c){
-						//~ if (!this.hasOwnProperty('b')) {
-							//~ alert('Google Maps changed key from b to __ ???');
-							//~ return;
-						//~ }
-						console.log('---DEBUG: this.j and this---');
-						console.log(this);
-						console.log(this.j);
-						console.log(c);
-						coordinates_to_output(this.b);
-						
+						var c;
+						if (!this.hasOwnProperty('b') &&
+							!this.hasOwnProperty('j')) {
+							console.log('check new prop:', this);
+							alert('Google Maps changed key from b to __ ??');
+							return;
+						} else if (this.hasOwnProperty('b')) {
+							c = this.b;
+						} else if (this.hasOwnProperty('j')) {
+							c = this.j;
+						}
+						coordinates_to_output(c);
 					});
 				});
 				// Window focus....
