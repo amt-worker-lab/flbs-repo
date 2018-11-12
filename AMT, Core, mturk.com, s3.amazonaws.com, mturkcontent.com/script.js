@@ -45,6 +45,8 @@ function MT__RUN() {
 			// Task specific GM
 			GM_addStyle('img:hover {cursor:pointer;border:2px solid blue;}');
 			GM_addStyle('.img-responsive {max-width: none !important;}');
+			//~ GM_addStyle('input[type="radio"] {zoom:4em;}');
+			//~ GM_addStyle('input[type="text"] {zoom:4em;}');
 			//...
 			
 			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
@@ -76,17 +78,19 @@ function MT__RUN() {
 				e.stopPropagation();
 				e.preventDefault();
 				if (o.q[2].value.trim() == '') {
-					return false;
-				} else {
-					doSubmit();
-				}
+					o.q[2].value = 'UNKNOWN';
+					//return false;
+				}// else {
+				//	doSubmit();
+				//}
+				doSubmit();
 				return false;
 			}
 			
 			
 			// text field
 			o.q[2].focus();
-			setInterval(function() {o.q[2].focus();}, 2000);
+			var xint = setInterval(function() {o.q[2].focus();}, 1000);
 			//~ setTimeout(function() {o.q[2].focus();}, 2000);
 			//~ setTimeout(function() {o.q[2].focus();}, 4000);
 			//~ setTimeout(function() {o.q[2].focus();}, 6000);
@@ -97,15 +101,36 @@ function MT__RUN() {
 			var img = document.getElementsByTagName('img')[0];
 			img.style.width = '100%'; // initial width
 			img.onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (e.shiftKey) {
+					this.counter = 100; // reset zoom as well
+					if (!this.counterRotate) {
+						this.counterRotate = 90;
+					} else {
+						this.counterRotate+=90;
+					}
+					this.setAttribute('style',
+						'-webkit-transform: rotate('+this.counterRotate+'deg);width:100%;'
+					);
+					//~ -moz-transform: rotate(90deg);
+					//~ -o-transform: rotate(90deg);
+					//~ -ms-transform: rotate(90deg);
+					//~ transform: rotate(90deg);
+					return;
+				}
 				if (!this.counter) {
 					this.counter = 160;
 				} else {
 					this.counter+=60;
 				}
 				this.style.width = this.counter+'%';
-				e.stopPropagation();
-				e.preventDefault();
-				//~ o.q[2].focus();
+				this.style.marginLeft = '-' + this.counter / 6 +'%';
+				this.style.marginTop = '-' + this.counter / 6 +'%';
+				
+				// Clear interval and then focus manually
+				clearInterval(xint);
+				o.q[2].focus();
 				return false;
 			}
 			
