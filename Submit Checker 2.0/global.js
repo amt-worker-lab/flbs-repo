@@ -36,7 +36,7 @@ function HIT(rew, reqId, reqName, jName,gId, hId, dur, worker) {
  * 
  */
 //
-var MT___host = 'http://192.168.1.2';
+var MT___host = 'http://192.168.1.69';
 
 /**
  * 
@@ -247,7 +247,7 @@ AMT__Global_Vars.initializeTabId = function() {
 		var gId = AMT__Global_Vars.groupId;
 		var hId = AMT__Global_Vars.hitId;
 		AMT__Global_Vars.hitRecordDetails = new HIT(rew, reqId, reqName,jName, gId, hId, dur);
-		var irurl = 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' +
+		var irurl = 'http://192.168.1.69/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' +
 				AMT__Global_Vars.computerId + '&HIT=' +
 				encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails));
 		//console.log('AMT__Global_Vars.hitRecordDetails', AMT__Global_Vars.hitRecordDetails);
