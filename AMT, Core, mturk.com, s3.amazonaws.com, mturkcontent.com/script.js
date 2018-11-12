@@ -97,6 +97,20 @@ function MT__RUN() {
 			//~ setTimeout(function() {o.q[2].focus();}, 8000);
 			//~ setTimeout(function() {o.q[2].focus();}, 10000);
 			
+			/**
+			 * window.onkeyup
+			 */
+			window.addEventListener('keyup', function(e) {
+				// Submit button (CTRL key)
+				console.log(e.keyCode);
+				if (e.keyCode == 17) {
+					e.stopPropagation();
+					e.preventDefault();
+					document.getElementsByTagName('img')[0].click();
+					return false;
+				}
+			});
+					
 			// Image
 			var img = document.getElementsByTagName('img')[0];
 			img.style.width = '100%'; // initial width
@@ -120,13 +134,13 @@ function MT__RUN() {
 					return;
 				}
 				if (!this.counter) {
-					this.counter = 160;
+					this.counter = 180;
 				} else {
-					this.counter+=60;
+					this.counter+=80;
 				}
 				this.style.width = this.counter+'%';
-				this.style.marginLeft = '-' + this.counter / 6 +'%';
-				this.style.marginTop = '-' + this.counter / 6 +'%';
+				this.style.marginLeft = '-' + this.counter / 8 +'%';
+				this.style.marginTop = '-' + this.counter / 8 +'%';
 				
 				// Clear interval and then focus manually
 				clearInterval(xint);
