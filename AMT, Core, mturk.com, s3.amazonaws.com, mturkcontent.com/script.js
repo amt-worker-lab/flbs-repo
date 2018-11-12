@@ -26,10 +26,92 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
+	
 	/**
 	 * TASKS
 	 * 
 	 */
+	
+	// "Becky"
+	var s = '<p>Given the image of an item, add the Brand of the item.</p>\n\n<ul>\n	<li>If the item does not have a brand, type "UNKNOWN" into \'Item Brand\'</li>\n	<li>Mark how confident you are in your Brand identification.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:2000px !important;}');
+			// Task specific GM
+			GM_addStyle('img:hover {cursor:pointer;border:2px solid blue;}');
+			GM_addStyle('.img-responsive {max-width: none !important;}');
+			//...
+			
+			new AMT___core_factory().createScriptVar('EnableTabsQ', '0');
+			var o = {
+				q: [
+					document.getElementById('option1'),
+					document.getElementById('option2'),
+					document.getElementById('tag1'),
+				],
+			}
+			o.q[0].checked = true; // High confidence.
+			
+			// unknown
+			var d1 = document.createElement('input');
+			d1.type = 'button';
+			d1.value = 'UNKNOWN';
+			d1.setAttribute('style',
+				'position:absolute;top:0px;\
+				left:80%;width:20%;height:100px;');
+			document.body.appendChild(d1);
+			d1.onclick = function(e) {
+				this.style.backgroundColor = 'lightgreen';
+				o.q[2].value = 'UNKNOWN';
+				doSubmit();
+			}
+			
+			// submit
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[2].value.trim() == '') {
+					return false;
+				} else {
+					doSubmit();
+				}
+				return false;
+			}
+			
+			
+			// text field
+			o.q[2].focus();
+			setInterval(function() {o.q[2].focus();}, 2000);
+			//~ setTimeout(function() {o.q[2].focus();}, 2000);
+			//~ setTimeout(function() {o.q[2].focus();}, 4000);
+			//~ setTimeout(function() {o.q[2].focus();}, 6000);
+			//~ setTimeout(function() {o.q[2].focus();}, 8000);
+			//~ setTimeout(function() {o.q[2].focus();}, 10000);
+			
+			// Image
+			var img = document.getElementsByTagName('img')[0];
+			img.style.width = '100%'; // initial width
+			img.onclick = function(e) {
+				if (!this.counter) {
+					this.counter = 160;
+				} else {
+					this.counter+=60;
+				}
+				this.style.width = this.counter+'%';
+				e.stopPropagation();
+				e.preventDefault();
+				//~ o.q[2].focus();
+				return false;
+			}
+			
+		}
+		new run().f();
+	}
 	
 	// Melissa Kendall
 	// Easy! Find the Pet Policy for a Vacation Rental on Airbnb.com.
