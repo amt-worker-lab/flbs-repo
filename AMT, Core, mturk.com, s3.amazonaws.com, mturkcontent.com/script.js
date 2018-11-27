@@ -219199,7 +219199,8 @@ qatar,80
 	// Kronopin (aka)
 	// 3I2IYPM3ZTX3XI6LHP7MND84RC9J84
 	//
-	s='<b>Your task is to determine the "<em>Employees on LinkedIn</em>"&nbsp;a company has displayed&nbsp;on its LinkedIn page.</b>';
+	//~ s='<b>Your task is to determine the "<em>Employees on LinkedIn</em>"&nbsp;a company has displayed&nbsp;on its LinkedIn page.</b>';
+	s='<b>Your task is to determine the number of "<u><em>Employees</em></u>"&nbsp;a company displays&nbsp;on its LinkedIn page. </b></span></h2>';
 	if (ih.indexOf(s) != -1) {
 		
 		var run = function() {};
@@ -219239,14 +219240,7 @@ qatar,80
 			//
 			company_employees_submit__init();
 			
-			//~ AMT___POPUP__initializeGlobals(
-				//~ function() {
-					//~ company_employees_submit__init();
-				//~ }
-			//~ );
-			//
 			function company_employees_submit__init() {
-			
 				var c = 1;
 				var x;
 				for (var i in a) {
@@ -219258,12 +219252,6 @@ qatar,80
 					}
 					x = x[1];
 					company_employees_cached(x, c);
-					//company_employees(x, c);
-					//kronopin_linkedin_company_employees(x,c);
-					//if (AMT___POPUP___PROXY_REDACTED_ != '')
-					//	company_employees_cached(x, c);
-					//else
-					//	company_employees(x, c);
 					c++;
 				}
 			}
@@ -219289,8 +219277,7 @@ qatar,80
 					}
 					// Is preview (This is for pre-caching the task!)
 					if (AMT__Global_Vars.isPreview) {
-						//~ AMT___Floater.skip();
-						//~ return;
+						
 					}
 					// Let's go!
 					submitted = true;
@@ -219307,16 +219294,12 @@ qatar,80
 							console.log('x');
 							return;
 						}
-						
 						if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
-							//debug = true;
 							document.getElementById('Q'+count+'Url').value = rs;
 							company_employees_submit();
-							// test do not submit
 						}
 						else { // download new
 							company_employees(companyId, count);
-							//kronopin_linkedin_company_employees(companyId,count);
 						}
 						
 					}
@@ -219325,161 +219308,61 @@ qatar,80
 			/**
 			 * function company_employees_tor
 			 */
-			//~ function company_employees_tor(obj_complete) {
-				
-			//~ }
 			/**
 			 * function company_employees
 			 */
 			function company_employees(companyId, count) {
-				//
+				// use curl
+				var cp = "'https://www.linkedin.com/voyager/api/search/blended?count=10&origin=OTHER&queryContext=List(spellCorrectionEnabled-%3Etrue,relatedSearchesEnabled-%3Etrue,kcardTypes-%3EPROFILE%7CCOMPANY)&q=all&filters=List(currentCompany-%3E"+encodeURIComponent(companyId)+",resultType-%3EPEOPLE)&start=0' -H 'accept-encoding: gzip, deflate, br' -H 'x-li-lang: en_US' -H 'accept-language: en-US,en;q=0.9' -H 'x-requested-with: XMLHttpRequest' -H 'cookie: bcookie=\"v=2&81090a5b-4b76-437b-842b-6df76217affa\"; bscookie=\"v=1&20180816011019971c6fd2-945a-4b8a-887f-65622d0b83caAQFhGJv7wMDLk17oaVRm_kZ-NPafE7xT\"; lang=\"v=2&lang=en-us\"; _ga=GA1.2.1165727113.1534381513; liap=true; JSESSIONID=\"ajax:0268920862508380693\"; fcookie=AQGFpmdhR5lY1gAAAWVGGAOITMx3Hm2bFjrTlS2wTAQAOQJK_x32W899XdslO4_vHK2-rJFzxLFu_YFwiqVAhuHOkXybt958VVNlCZCeonE357mCdakyEBjs6IvLIGI6L7z0z4BAsZpg3E7afq-d17c7xNBauMYIm4QyVLCAhf97aOQJHuYW1SrglwgdeFzd1ikZ6YWApettMN0dA9J8jEHYbaLTkkV7CcrQibU9RH74E/xIhd4zR9/ag/p+Q3wpXPDSKXbC4FKUAFaEKpBma/wKtVjb4Ux/6uHOw==; org_tcphc=true; spectroscopyId=da60c9c7-b226-46b5-ab49-f6705e082027; visit=\"v=1&M\"; li_at=AQEDASYBhUgDFFMcAAABZUYUj-wAAAFneeUKq04AzIeJn0Pz2Qul5SV4ztPmRMqzlbn2C5qWZFjtViREhq90nay_Vc_3E0ZqhwIcvXoPZOBQpHk2c9wsctO3yM3UmNFHHy8BRg7TMpOAa0fhuz9xSPqs; sl=\"v=1&W2Ylm\"; _lipt=CwEAAAFnVdiP5T5rpFyKkknQ2O_SRrKabff9ZN59SmnhuHSLjSXQb2NHODIEIYSlzfpfyUCTEtO6OGFPYQoP_tzJSQyiMzUbuIIYLbEeHbxVNmu2s2kjJpcbyyPmvk-PR6Jlt5sUiAwdYvmDebV4mFyE67H25k7QLFiSXsGM_Eqiu6Iawl1o58nIsDICfYSQzfe5v8fLbKLKEzxFzSJEuB-FWmLwhmIoo9vM1nJLsdJsAaMXE7n5LjMo9Lfx5aMwAYWY3nFFBrGXM3Y4liwmKPMxHpU; SID=5e9cb704-0232-4b7b-9611-b4762efc321f; VID=V_2018_11_27_07_3210; _gat=1; RT=s=1543333978036&r=https%3A%2F%2Fdeveloper.linkedin.com%2Fdocs%2Fbest-practices-apps\; lidc=\"b=OB64:g=1154:u=33:i=1543334000:t=1543419912:s=AQGGu9qM2vKTI753Yl_x7tOZlHiAQwiB\"' -H 'x-restli-protocol-version: 2.0.0' -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36' -H 'x-li-page-instance: urn:li:page:d_flagship3_search_srp_people;6WFXPxrXS/Ou3ypI7usu5A==' -H 'accept: application/vnd.linkedin.normalized+json+2.1' -H 'csrf-token: ajax:0268920862508380693' -H 'x-li-track: {\"clientVersion\":\"1.2.4413\",\"osName\":\"web\",\"timezoneOffset\":-6,\"deviceFormFactor\":\"DESKTOP\",\"mpName\":\"voyager-web\"}' -H 'authority: www.linkedin.com' -H 'referer: https://www.linkedin.com/company/bmj-group/' --compressed"
+				var opts = {
+					short_filename: 'test', // Overwrite is okay
+					do_not_save_to_file: true, // Overwrite is okay
+					curl_cmdline: cp,
+				}
+				opts = JSON.stringify(opts);
+				var data = 'AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts)+'&random=';
+				
+				// Make the request
 				GM_xmlhttpRequest({
-					method: "GET",
-					
-					//url: 'http://www.linkedin.com/vsearch/pj?f_CC='+companyId+'&trk=rr_connectedness',
-					url: 'https://www.linkedin.com/company/'+companyId,
-					headers:{
-							"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-							"Cache-Control":"max-age=0",						
-						},
+					method: "POST",
+					url: MT___host + '/mturk/util.php',
+					data: data,
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
 					onload: function(response) {
 						var rs = response.responseText;
+						if (/^\d{3}$/.exec(rs)) { // If status code is returned
+							// Display output
+							//
+							return;
+						}
+						rs = JSON.parse(rs);
+						//console.log(companyId, count);
+						if (rs.data.paging.total) {
+							document.getElementById('Q'+count+'Url').value =
+								rs.data.paging.total;
+							// test sbm
+							company_employees_submit();
+						}
 						runs++;
-						// !=200
-						if (response.status != 200) {
-							console.log('x'+runs);
-							console.log(rs);
-							// try again?
-							if (runs < 10) {
-								//company_employees(companyId, count);
-							}
-							if(!gavePink) {
-								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-								gavePink = true;
-							}
-							document.body.style.backgroundColor = 'pink';
-							return;
-						}
-						//
-						var reg;
-						var num;
-						//reg = /<a class="density" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
-						//~ reg = /"remainingAlsoViewedCount":[\d]+,"employeeCount":([\d]+),"description":"/.exec(rs);
-						// Scrape <code>.... <code id="stream-right-rail-embed-id-content">...--></code>
-						//var x = /<code id="stream-right-rail-embed-id-content"><!--[^>] --></code>/
-						var x = /<code id="stream-right-rail-embed-id-content"><!--((.|\s)*?(?=--><\/code>)|$)/.exec(rs);
-						if (!x) {
-							if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
-								document.getElementById('Q'+count+'Url').value = 0;
-								if (rs.indexOf('We\'re sorry, but the company you are looking for is not active.') != -1)
-									company_employees_submit();
-								else
-									document.body.style.backgroundColor = 'yellow';
-								return;
-							} else { // Invalid page!
-								document.body.style.backgroundColor = 'pink';
-								return;
-							}
-						}
-						x = JSON.parse(x[1]);console.log(x);
-						if (x.companyId && x.companyId == companyId) {
-							var num;
-							if (x.employeeCount && /^\d+$/.exec(x.employeeCount)) {
-								num = x.employeeCount;
-							} else {
-								num = 0;
-								if (x.employeeCount) { // What would be here? May never know.......
-									document.body.style.backgroundColor = 'blue';
-									return;
-								}
-							}
-							// format
-							num = MT___numberWithCommas(num);
-							// save
-							if (/^[\d,]+$/.exec(num)) {
-								document.getElementById('Q'+count+'Url').value = num;
-								if (num == 0) {
-									company_employees_submit();
-								} else {
-									GM_xmlhttpRequest({
-										method: "GET",
-										url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
-										onload: function(response) {
-											var rs = response.responseText;
-											if (response.status != 200) {
-												console.log('x');
-												return;
-											}
-											company_employees_submit();
-										}
-									});
-								}
-							}
-						} else {
-							console.log(x);
-							document.body.style.backgroundColor = 'teal';
-							return;
-						}
-						return;
-						// old.......
-						//
-						//
-						//
-						//
-						reg = /,"employeeCount":([\d]+),/.exec(rs);
-						if (!reg) {
-							if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
-								num = 0;
-							} else { // invalid page!
-								document.body.style.backgroundColor = 'pink';
-								return;
-							}
-						} else {
-							num = reg[1].replace(/[^\d]/g, '');
-							// Check more than one?
-							var x = rs.match(/,"employeeCount":([\d]+),/g);
-							if (!x) {
-								document.body.style.backgroundColor = 'teal';
-								return;
-							} else if (x.length != 1) {
-								document.body.style.backgroundColor = 'aqua';
-								return;
-							}
-						}
-						//
-						if (/^\d+$/.exec(num)) {
-							// format
-							num = MT___numberWithCommas(num);
-							// save
-							if (/^[\d,]+$/.exec(num)) {
-								
-								document.getElementById('Q'+count+'Url').value = num;
-								if(num == 0) {
-									company_employees_submit();
-								}
-								else {
-									GM_xmlhttpRequest({
-										method: "GET",
-										url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
-										
-										onload: function(response) {
-											var rs = response.responseText;
-											if (response.status != 200) {
-												console.log('x');
-												return;
-											}
-											company_employees_submit();
-										}
-									});
-								}
-							}
-						}
-						else
-						{
-							console.log(rs);
-						}
+						// format
+							//~ num = MT___numberWithCommas(num);
+							//~ GM_xmlhttpRequest({
+								//~ method: "GET",
+								//~ url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
+								//~ onload: function(response) {
+									//~ var rs = response.responseText;
+									//~ if (response.status != 200) {
+										//~ console.log('x');
+										//~ return;
+									//~ }
+									//~ company_employees_submit();
+								//~ }
+							//~ });
 					}
 				});
+							
 			}
 		}
 		new run().f();
