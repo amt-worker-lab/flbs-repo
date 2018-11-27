@@ -219212,12 +219212,14 @@ qatar,80
 			GM_addStyle('table {position:absolute;top:1000px;}');
 			
 			var runs = 0;
-			var a = document.getElementsByTagName('a');
 			var debug = false;
 			var submitted = false;
-			
-			
 			var gavePink = false;
+			var o = {
+				q: {
+					// dict lookup
+				}
+			}
 			
 			// move h2 down
 			document.getElementsByTagName('h2')[0].style.marginTop = '60px';
@@ -219243,6 +219245,7 @@ qatar,80
 			function company_employees_submit__init() {
 				var c = 1;
 				var x;
+				var a = document.getElementsByTagName('a');
 				for (var i in a) {
 					if (!a[i]) continue;
 					if (!a[i].href) continue;
@@ -219251,9 +219254,11 @@ qatar,80
 						continue;
 					}
 					x = x[1];
+					o.q[x] = a[i].parentNode.getElementsByTagName('input')[0];
 					company_employees_cached(x, c);
 					c++;
 				}
+				console.log(o);
 			}
 			//
 			function company_employees_submit() { 
@@ -219338,12 +219343,14 @@ qatar,80
 							return;
 						}
 						rs = JSON.parse(rs);
-						//console.log(companyId, count);
-						if (rs.data.paging.total) {
-							document.getElementById('Q'+count+'Url').value =
-								rs.data.paging.total;
+						console.log(companyId, count);
+						if (   rs.data.paging.hasOwnProperty('total')
+							&& /^[\d,]+$/.exec(rs.data.paging.total)) {
+							o.q[companyId].value = MT___numberWithCommas(rs.data.paging.total);
 							// test sbm
 							company_employees_submit();
+						} else {
+							console.log('Could not find');
 						}
 						runs++;
 						// format
