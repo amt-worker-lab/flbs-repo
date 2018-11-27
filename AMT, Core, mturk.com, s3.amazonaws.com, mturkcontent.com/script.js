@@ -219216,6 +219216,8 @@ qatar,80
 			var submitted = false;
 			var gavePink = false;
 			var o = {
+				unique: {}, // all results ought to likely be unique, otherwise, try once more
+							// Bug: CURL seems to be retrieving a cached object occasionally from LI
 				q: {
 					// dict lookup
 				}
@@ -219255,7 +219257,7 @@ qatar,80
 					}
 					x = x[1];
 					o.q[x] = a[i].parentNode.getElementsByTagName('input')[0];
-					company_employees_cached(x, c);
+					company_employees_cached(x);
 					c++;
 				}
 				console.log(o);
@@ -219264,10 +219266,16 @@ qatar,80
 			function company_employees_submit() { 
 				var sbm = true;
 				var all_zeros = true;
+				// A "10" means a rate limit by LI, i.e., no data available.
 				for (var i=1; i<=6; i++) {
 					if (!/^[\d,]+$/.exec(document.getElementById('Q'+i+'Url').value)) {
 						sbm = false;
 						break;
+					}
+					if (document.getElementById('Q'+i+'Url').value == 10) {
+						sbm = false;
+						document.getElementById('Q'+i+'Url').style.border = '2px solid blue';
+						//~ break;
 					}
 					if (document.getElementById('Q'+i+'Url').value != 0) {
 						all_zeros = false;
@@ -219289,26 +219297,27 @@ qatar,80
 					doSubmit();
 				}
 			}
-			function company_employees_cached(companyId, count) {
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: MT___host+'/mturk/util.php?mt__read_cache='+companyId,
-					onload: function(response) {
-						var rs = response.responseText;
-						if (response.status != 200) {
-							console.log('x');
-							return;
-						}
-						if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
-							document.getElementById('Q'+count+'Url').value = rs;
-							company_employees_submit();
-						}
-						else { // download new
-							company_employees(companyId, count);
-						}
+			function company_employees_cached(companyId) {
+				company_employees(companyId);
+				//~ GM_xmlhttpRequest({
+					//~ method: "GET",
+					//~ url: MT___host+'/mturk/util.php?mt__read_cache='+companyId,
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ if (response.status != 200) {
+							//~ console.log('x');
+							//~ return;
+						//~ }
+						//~ if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
+							//~ document.getElementById('Q'+count+'Url').value = rs;
+							//~ company_employees_submit();
+						//~ }
+						//~ else { // download new
+							//~ company_employees(companyId);
+						//~ }
 						
-					}
-				});
+					//~ }
+				//~ });
 			}
 			/**
 			 * function company_employees_tor
@@ -219316,7 +219325,7 @@ qatar,80
 			/**
 			 * function company_employees
 			 */
-			function company_employees(companyId, count) {
+			function company_employees(companyId) {
 				// use curl
 				var cp = "'https://www.linkedin.com/voyager/api/search/blended?count=10&origin=OTHER&queryContext=List(spellCorrectionEnabled-%3Etrue,relatedSearchesEnabled-%3Etrue,kcardTypes-%3EPROFILE%7CCOMPANY)&q=all&filters=List(currentCompany-%3E"+encodeURIComponent(companyId)+",resultType-%3EPEOPLE)&start=0' -H 'accept-encoding: gzip, deflate, br' -H 'x-li-lang: en_US' -H 'accept-language: en-US,en;q=0.9' -H 'x-requested-with: XMLHttpRequest' -H 'cookie: bcookie=\"v=2&81090a5b-4b76-437b-842b-6df76217affa\"; bscookie=\"v=1&20180816011019971c6fd2-945a-4b8a-887f-65622d0b83caAQFhGJv7wMDLk17oaVRm_kZ-NPafE7xT\"; lang=\"v=2&lang=en-us\"; _ga=GA1.2.1165727113.1534381513; liap=true; JSESSIONID=\"ajax:0268920862508380693\"; fcookie=AQGFpmdhR5lY1gAAAWVGGAOITMx3Hm2bFjrTlS2wTAQAOQJK_x32W899XdslO4_vHK2-rJFzxLFu_YFwiqVAhuHOkXybt958VVNlCZCeonE357mCdakyEBjs6IvLIGI6L7z0z4BAsZpg3E7afq-d17c7xNBauMYIm4QyVLCAhf97aOQJHuYW1SrglwgdeFzd1ikZ6YWApettMN0dA9J8jEHYbaLTkkV7CcrQibU9RH74E/xIhd4zR9/ag/p+Q3wpXPDSKXbC4FKUAFaEKpBma/wKtVjb4Ux/6uHOw==; org_tcphc=true; spectroscopyId=da60c9c7-b226-46b5-ab49-f6705e082027; visit=\"v=1&M\"; li_at=AQEDASYBhUgDFFMcAAABZUYUj-wAAAFneeUKq04AzIeJn0Pz2Qul5SV4ztPmRMqzlbn2C5qWZFjtViREhq90nay_Vc_3E0ZqhwIcvXoPZOBQpHk2c9wsctO3yM3UmNFHHy8BRg7TMpOAa0fhuz9xSPqs; sl=\"v=1&W2Ylm\"; _lipt=CwEAAAFnVdiP5T5rpFyKkknQ2O_SRrKabff9ZN59SmnhuHSLjSXQb2NHODIEIYSlzfpfyUCTEtO6OGFPYQoP_tzJSQyiMzUbuIIYLbEeHbxVNmu2s2kjJpcbyyPmvk-PR6Jlt5sUiAwdYvmDebV4mFyE67H25k7QLFiSXsGM_Eqiu6Iawl1o58nIsDICfYSQzfe5v8fLbKLKEzxFzSJEuB-FWmLwhmIoo9vM1nJLsdJsAaMXE7n5LjMo9Lfx5aMwAYWY3nFFBrGXM3Y4liwmKPMxHpU; SID=5e9cb704-0232-4b7b-9611-b4762efc321f; VID=V_2018_11_27_07_3210; _gat=1; RT=s=1543333978036&r=https%3A%2F%2Fdeveloper.linkedin.com%2Fdocs%2Fbest-practices-apps\; lidc=\"b=OB64:g=1154:u=33:i=1543334000:t=1543419912:s=AQGGu9qM2vKTI753Yl_x7tOZlHiAQwiB\"' -H 'x-restli-protocol-version: 2.0.0' -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36' -H 'x-li-page-instance: urn:li:page:d_flagship3_search_srp_people;6WFXPxrXS/Ou3ypI7usu5A==' -H 'accept: application/vnd.linkedin.normalized+json+2.1' -H 'csrf-token: ajax:0268920862508380693' -H 'x-li-track: {\"clientVersion\":\"1.2.4413\",\"osName\":\"web\",\"timezoneOffset\":-6,\"deviceFormFactor\":\"DESKTOP\",\"mpName\":\"voyager-web\"}' -H 'authority: www.linkedin.com' -H 'referer: https://www.linkedin.com/company/bmj-group/' --compressed"
 				var opts = {
@@ -219343,10 +219352,28 @@ qatar,80
 							return;
 						}
 						rs = JSON.parse(rs);
-						console.log(companyId, count);
+						console.log(companyId);
 						if (   rs.data.paging.hasOwnProperty('total')
 							&& /^[\d,]+$/.exec(rs.data.paging.total)) {
 							o.q[companyId].value = MT___numberWithCommas(rs.data.paging.total);
+							if (rs.data.paging.total == 10) { // Rate Limit
+								company_employees_submit();
+								return;
+							}
+							// unique?
+							for (var i in o.unique) {
+								if (o.unique[i] == rs.data.paging.total) {
+									o.unique[i] = 'RESET';// Toggle to only fire once!
+														  // i.e., if two are actually both e.g. 538!
+									company_employees(i);
+									company_employees(companyId);
+									return; // Exit.
+								}
+							}
+							// Still here.
+							if (!o.unique.hasOwnProperty(companyId)) {
+								o.unique[companyId] = rs.data.paging.total;
+							}
 							// test sbm
 							company_employees_submit();
 						} else {
