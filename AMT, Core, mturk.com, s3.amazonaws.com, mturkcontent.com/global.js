@@ -19309,64 +19309,61 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function array_startPage_results(rs) {
 		// NEW NOV 28 2018
 		//~ var r = /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/;
-		var r = /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/;
+		
+		var dom = new DOMParser().parseFromString(rs, 'text/html');
+		console.log(dom);
+		
+		//var r = /<ol class="list-flat">((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
 		var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
-		if(!(rslts = r.exec(rs))) {
-			//~ alert('No match');
+		if(rs.indexOf(not_enough_results_str) != -1) {
 			return [];
 		}
 		
 		// Not enough results.
 		// not_enough_results_str
 		// Returns []
-		if (rs.indexOf(not_enough_results_str) != -1)
-			return [];
+		//~ if (rs.indexOf(not_enough_results_str) != -1)
+			//~ return [];
 		
 		//Assume we have 1-10 results
 
 		//r.lastIndex = 0;	<-- no need, not testing
 		
-		var ol = rslts[0];
+		//var ol = rslts[0];
 		
-		// 1 = url
-		// 2 = body
-		var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3[^>]*><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
-		var content;
+		var ol = dom.getElementsByClassName('list-flat')[1];
+		console.log(ol);
+		var rslt = ol.getElementsByClassName('search-result search-item');
+		console.log(rslt);
 		var arr = [];
-		while(content = contentReg.exec(ol)) {
-			// What is the website "title", or i.e. result title.
-			// Save this as rs[i][2]
-			// Where rs[i][0] = url
-			// And   rs[i][1] = body
-			// ex: <span class="result_url_heading">Got Questions - Try Alpha</span>
-			var wt = /<span class="result_url_heading">([^<]+)<\/span>/.exec(content[0]);
-			if (wt) {
-				//console.log(wt);
-				wt = __js_clean_html_str(wt[1]);
-			} else {
-				wt = null; // Else set to null.
-			}//console.log(wt);
+		
+		for (var i=0; i<rslt.length; i++) {
 			
-			content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
-			content[2] = content[2].replace(/<\/b>/gi, '(``)');
-			content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
-			content[2] = content[2].replace(/<script>[^<]+<\/script>/g, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
-			content[2] = content[2].replace(/<[^>]+>/g, ' ');
-			content[2] = content[2].replace(/[<>]/g, ' ');
+			// link
+			var link = rslt[i].getElementsByTagName('a')[0];
+			
+			// BODY
+			var body = rslt[i].innerHTML;
+			body = body.replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
+			body = body.replace(/<\/b>/gi, '(``)');
+			body = body.replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
+			body = body.replace(/<script>[^<]+<\/script>/gi, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
+			body = body.replace(/<[^>]+>/g, ' ');
+			body = body.replace(/[<>]/g, ' ');
+			body = body.replace(/Anonymous View/, ' ');
 			// Clean it now
-			content[2] = __js_clean_html_str(content[2]);
+			body = __js_clean_html_str(body);
 			// Replace B
-			content[2] = content[2].replace(/\(``\)/g, '</b>');
-			content[2] = content[2].replace(/\(`\)/g, '<b>');
-			
+			body = body.replace(/\(``\)/g, '</b>');
+			body = body.replace(/\(`\)/g, '<b>');
 			// URLs ?
 			if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
 				// Works?
 				// http at start, to - -
-				content[2] = content[2].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+				body = body.replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
 				// www at start, to - -
-				content[2] = content[2].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+				body = body.replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
 			}
 			
 			/////////////////////////
@@ -19376,9 +19373,60 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			// aka result title.
 			/////////////////////////
 			arr.push([
-				content[1], content[2], wt
+				link.href, body, link.innerText.trim()
 			]);
 		}
+		
+		//~ // 1 = url
+		//~ // 2 = body
+		//~ var contentReg = /<li class="search-result search-item">[\r\n\s\t]*<h3[^>]*><a href="([^"]+)"[^>]*>([^<]+)((.|\s)*?(?=<\/li>|$)|$)/g;
+		//~ var content;
+		//~ var arr = [];
+		//~ while(content = contentReg.exec(ol)) {
+			//~ // What is the website "title", or i.e. result title.
+			//~ // Save this as rs[i][2]
+			//~ // Where rs[i][0] = url
+			//~ // And   rs[i][1] = body
+			
+			//~ // ex: <span class="result_url_heading">Got Questions - Try Alpha</span>
+			//~ // ex: <span class="result_url_heading">Bidder | Define Bidder at Dictionary.com</span>
+			
+			
+			//~ console.log(content);
+			
+			
+			//~ content[2] = content[3].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
+			//~ content[3] = content[3].replace(/<\/b>/gi, '(``)');
+			//~ content[3] = content[3].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
+			//~ content[3] = content[3].replace(/<script>[^<]+<\/script>/gi, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
+			//~ content[3] = content[3].replace(/<[^>]+>/g, ' ');
+			//~ content[3] = content[3].replace(/[<>]/g, ' ');
+			//~ content[3] = content[3].replace(/Anonymous View/, ' ');
+			//~ // Clean it now
+			//~ content[3] = __js_clean_html_str(content[3]);
+			//~ // Replace B
+			//~ content[3] = content[3].replace(/\(``\)/g, '</b>');
+			//~ content[3] = content[3].replace(/\(`\)/g, '<b>');
+			
+			//~ // URLs ?
+			//~ if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+				//~ // Works?
+				//~ // http at start, to - -
+				//~ content[3] = content[3].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+				//~ // www at start, to - -
+				//~ content[3] = content[3].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+			//~ }
+			
+			//~ /////////////////////////
+			//~ // New, March 23
+			//~ // Add third item to return,
+			//~ // which is the website "title",
+			//~ // aka result title.
+			//~ /////////////////////////
+			//~ arr.push([
+				//~ content[1], content[3], __js_clean_html_str(content[2])
+			//~ ]);
+		//~ }
 		return arr;
 	}
 	this.array_startPage_results = array_startPage_results;

@@ -155616,7 +155616,7 @@ qatar,80
 				
 				search_results: {
 					use_domain_only: true,
-					use_full_urls: true,
+					use_full_urls: false,
 					bold: {
 						black: o.boldArray,
 						//~ blue: o.boldArray2,
