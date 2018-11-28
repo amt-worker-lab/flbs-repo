@@ -19209,7 +19209,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		this.obj_vars.headers_array = [
 			'Cookie:preferences=lang_homepageEEEs/air/eng/N1NsslEEE1N1Nfont_sizeEEEmediumN1Nrecent_results_filterEEE1N1Nlanguage_uiEEEenglishN1Ndisable_open_in_new_windowEEE1N1Ndisable_family_filterEEE1N1Nnum_of_resultsEEE10N1N'
 		];
-		this.obj_vars.catch_success = '<!DOCTYPE HTML>';
+		//this.obj_vars.catch_success = '<!DOCTYPE HTML>';
+		this.obj_vars.catch_success = '<HTML';
 	}
 	
 	// duckDuckGo == true
@@ -19306,6 +19307,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// UPDATE TO startpage results container June 11, 2015.
 	//
 	function array_startPage_results(rs) {
+		// NEW NOV 28 2018
+		//~ var r = /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/;
 		var r = /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
 		var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
