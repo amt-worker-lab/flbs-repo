@@ -76765,6 +76765,16 @@ Laurens Hammond, Chicago, Ill.**/
 				if (addrll) {
 					o.lat = addrll[1];
 					o.lng = addrll[2];
+				} else {
+					// LL is in source as:
+					//   map.setCenter(new google.maps.LatLng(37.1101694, -113.57394440000002));
+					var addrll = /map\.setCenter\(new google\.maps\.LatLng\(([\d,\-\.]+), *([\d,\-\.]+)\)\);/.exec(ih);
+					if (addrll) {
+						o.lat = addrll[1];
+						o.lng = addrll[2];
+					} else {
+						//
+					}
 				}
 				
 				//~ if(o.name.toLowerCase() == 'marshalls') {
@@ -76877,7 +76887,6 @@ Laurens Hammond, Chicago, Ill.**/
 				 //~ );
 				//~ var n = document.getElementById('map').getMap();
 				//~ n.setOptions({gestureHandling: 'greedy'});
-				
 				
 				// innerHeight
 				new AMT___core_factory().el_innerHeight({
