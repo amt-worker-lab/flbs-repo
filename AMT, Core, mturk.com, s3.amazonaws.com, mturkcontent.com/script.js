@@ -76395,21 +76395,21 @@ Laurens Hammond, Chicago, Ill.**/
 					}, false);
 					// Redraw the map after a timeout.
 					function redrawMap() {
+						var lat = map.getCenter().lat(); 
+						var lng = map.getCenter().lng(); 
 						// ---------------------------------------------
-						// OLD VERSION, STOPPED AS OF OCT. 2018.
-						// ---------------------------------------------
-										var lat = map.getCenter().lat(); 
-										var lng = map.getCenter().lng(); 
-						// ---------------------------------------------
-						var lat = myLatLng[0];
-						var lng = myLatLng[0];
+						//~ var lat = myLatLng[0];
+						//~ var lng = myLatLng[0];
+						//~ window.lat = lat;
+						//~ window.lng = lng;
+						//~ console.log('window',window);
 						
 						map.setTilt(45);
 						if(obj.sv_start_in_top_down != 0) {
 							map.setTilt(0);
 						}
 						var marker2 = new google.maps.Marker({
-							position: new google.maps.LatLng(lat,lng),
+							position: new google.maps.LatLng(lat, lng),
 							map: map,
 							title: 'testing2',
 						});
@@ -76435,23 +76435,24 @@ Laurens Hammond, Chicago, Ill.**/
 						google.maps.event.addListener(
 							map.streetView,
 							'visible_changed',
-							function(){
+							function() {
 								console.log('visible changed');
-								if(window.notFirstDrop == undefined) {
-									console.log('first drop');
-									var toLoc = new google.maps.LatLng(lat,lng);
+								if (window.notFirstDrop == undefined) {
+									//~ console.log('first dropaaa');
+									//~ console.log('lat1', window.lat, 'lng2', window.lng);
+									var toLoc = new google.maps.LatLng(lat, lng);
 									var fromLoc = this.getPosition();
 									var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);
-									console.log(fromLoc);
-									console.log(toLoc);
-									console.log(heading);
+									//~ console.log(fromLoc);
+									//~ console.log(toLoc);
+									//~ console.log(heading);
 									map.streetView.setPov({heading:heading, pitch:0});
 									window.notFirstDrop = true;
 								}
 							}
 						);
 						function orientToFirstPoint() {
-							var toLoc = new google.maps.LatLng(lat,lng);
+							var toLoc = new google.maps.LatLng(lat, lng);
 							var fromLoc = map.streetView.getPosition();
 							var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);
 							map.streetView.setPov({heading:heading, pitch:0});
@@ -77052,7 +77053,7 @@ Laurens Hammond, Chicago, Ill.**/
 										});
 										m.setMap(map);
 										map.set('gestureHandling', 'greedy');
-										console.log(mi);
+										//~ console.log(mi);
 										console.log(m);
 									},
 									JSON.stringify(
@@ -78089,6 +78090,7 @@ Laurens Hammond, Chicago, Ill.**/
 					
 						"var lat = map.getCenter().lat();" +
 						"var lng = map.getCenter().lng();" +
+						"console.log('lat is ',lat,'lng is ',lng);" +
 						"map.setTilt(45);"+
 						"map.setOptions({gestureHandling: 'greedy'});"+
 						"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
@@ -78114,6 +78116,7 @@ Laurens Hammond, Chicago, Ill.**/
 						"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
 							"if(window.notFirstDrop == undefined && google.maps.geometry && google.maps.geometry.spherical) {"+
 								"var toLoc = new google.maps.LatLng(lat,lng);"+
+								"console.log('lat is ',lat,'lng is ',lng);" +
 								"var fromLoc = this.getPosition();"+
 								"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
 								"map.streetView.setPov({heading:heading, pitch:0});"+
@@ -78158,9 +78161,8 @@ Laurens Hammond, Chicago, Ill.**/
 							"	});"+ 
 							
 							"   if(window.threeRectPoints.length < 3) {"+
+							
 									"window.threeRectPoints.push(m);"+
-									
-
 									"if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {"+
 									"	var polyline = new google.maps.Polyline({"+
 									"   	path:["+
