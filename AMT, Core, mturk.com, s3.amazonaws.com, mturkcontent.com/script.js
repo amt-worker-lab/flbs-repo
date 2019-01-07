@@ -76328,7 +76328,8 @@ Laurens Hammond, Chicago, Ill.**/
 				AMT___RunPageScript("function() {"+"}");
 				
 				js_append(map_drawing_tools,
-					JSON.stringify({ // Object to pass in....... (Stringified)
+					JSON.stringify({
+						// Object to pass in....... (Stringified)
 						sv_start_in_top_down: AMT__Global_Vars.scriptVars['Start in top-down view'],
 						sv_initial_zoom: AMT__Global_Vars.scriptVars.InitialChiosZoom,
 						sv_host: MT___host,
@@ -76477,7 +76478,7 @@ Laurens Hammond, Chicago, Ill.**/
 									console.log('shiftup');
 								}
 							});
-						}, 1000);
+						}, 400);
 						window.threeRectPoints = [];
 						window.fourLines = [];
 						window.markerImage = new google.maps.MarkerImage(
@@ -76659,6 +76660,30 @@ Laurens Hammond, Chicago, Ill.**/
 						var streetViewLayer = new google.maps.StreetViewCoverageLayer();
 						streetViewLayer.setMap(map);
 					}
+					
+					
+					try {
+						if (initMap) {
+							var map;
+							var oldCoordinates;
+							var myLatLng;
+							var x = initMap
+								.toString()
+								.replace(/var map;/, '')
+								.replace(/var oldCoordinates/, 'oldCoordinates')
+								.replace(/var myLatLng/, 'myLatLng')
+								.replace(/function initMap/, 'function initMap2');
+							console.log('initMap:',x);
+							var script = document.createElement('script');
+							script.textContent = x;
+							(document.head||document.documentElement).appendChild(script);
+							script.parentNode.removeChild(script);
+							initMap2();
+						}
+					} catch (e) {
+						//
+					}
+					redrawMap();
 					// Set a timeout to start the process of modifications.
 					window.setTimeout(function() {
 						// Map is limited in scope in their latest
@@ -76668,30 +76693,10 @@ Laurens Hammond, Chicago, Ill.**/
 						// It's a "page reload" but may be best solution
 						// for now.
 						// Utilize textContent.
-						try {
-							if (initMap) {
-								var map;
-								var oldCoordinates;
-								var myLatLng;
-								var x = initMap
-									.toString()
-									.replace(/var map;/, '')
-									.replace(/var oldCoordinates/, 'oldCoordinates')
-									.replace(/var myLatLng/, 'myLatLng')
-									.replace(/function initMap/, 'function initMap2');
-								console.log(x);
-								var script = document.createElement('script');
-								script.textContent = x;
-								(document.head||document.documentElement).appendChild(script);
-								script.parentNode.removeChild(script);
-								initMap2();
-							}
-						} catch (e) {
-							//
-						}
+						
 						//~ window.setTimeout(redrawMap, 400);
 						//~ window.setTimeout(redrawMap, 800);
-						window.setTimeout(redrawMap, 1200); // Having some issue registering "shiftup" and "shiftdown", may be because of lag, try redrawing again.......
+						//~ window.setTimeout(redrawMap, 1200); // Having some issue registering "shiftup" and "shiftdown", may be because of lag, try redrawing again.......
 					}, 200);
 				}
 			}
