@@ -51879,7 +51879,7 @@ Laurens Hammond, Chicago, Ill.**/
 			if (e == 13) {
 				//~ document.getElementById('submitButton').click();
 				//~ event.preventDefault();
-				//~ event.stopPropogation();
+				//~ event.stopPropagation();
 				return false;
 			}
 		}, true);
@@ -75855,7 +75855,7 @@ Laurens Hammond, Chicago, Ill.**/
 				window.onContextMenu = function(e) {
 					console.log('context menu fired for body');
 					e.preventDefault();
-					e.stopPropogation();
+					e.stopPropagation();
 					return false;
 				}
 				
@@ -76463,13 +76463,15 @@ Laurens Hammond, Chicago, Ill.**/
 							} else if(e.keyCode == 70) {  }
 						});
 						window.addEventListener('keydown', function(e) {
-							if(e.keyCode == 16) {
+							console.log('e.shiftKey?1?',e.shiftKey);
+							if (e.keyCode == 16) {
 								window.shiftKey = true;
 								console.log('shiftdown');
 							}
 						});
 						window.addEventListener('keyup', function(e) {
-							if(e.keyCode == 16) {
+							console.log('e.shiftKey?2?',e.shiftKey);
+							if (e.keyCode == 16) {
 								window.shiftKey = false;
 								console.log('shiftup');
 							}
@@ -76481,6 +76483,7 @@ Laurens Hammond, Chicago, Ill.**/
 							new google.maps.Size(1, 1),
 							new google.maps.Point(0, 0),
 							new google.maps.Point(8, 8));
+						console.log('ADDING EVENT LISTENER FOR RIGHTCLICK');
 						google.maps.event.addListener(map, 'rightclick', function(e) {
 							console.log('-----------');
 							console.log(window.threeRectPoints);
@@ -76614,8 +76617,6 @@ Laurens Hammond, Chicago, Ill.**/
 								}
 								return false;
 							}
-							//~ e.stopPropagation();
-							//~ e.preventDefault();
 							console.log(e); //?
 							return false;
 						});
@@ -76686,7 +76687,9 @@ Laurens Hammond, Chicago, Ill.**/
 						} catch (e) {
 							//
 						}
-						window.setTimeout(redrawMap, 400);
+						//~ window.setTimeout(redrawMap, 400);
+						//~ window.setTimeout(redrawMap, 800);
+						window.setTimeout(redrawMap, 1200); // Having some issue registering "shiftup" and "shiftdown", may be because of lag, try redrawing again.......
 					}, 200);
 				}
 			}
@@ -76917,10 +76920,15 @@ Laurens Hammond, Chicago, Ill.**/
 				});
 				
 				// window.onContextMenu
+				document.oncontextmenu = 
+				document.onContextMenu =
+				window.oncontextmenu =
 				window.onContextMenu = function(e) {
 					console.log('context menu fired for body');
-					e.preventDefault();
-					e.stopPropogation();
+					if (e.preventDefault)
+						e.preventDefault();
+					if (e.stopPropagation)
+						e.stopPropagation();
 					return false;
 				}
 				
@@ -76934,8 +76942,10 @@ Laurens Hammond, Chicago, Ill.**/
 						(new AMT___core_factory()).nextTab({focusOnPage: true});
 						AMT___recordAndSubmit();
 					}
-					e.preventDefault();
-					e.stopPropagation();
+					if (e.preventDefault)
+						e.preventDefault();
+					if (e.stopPropagation)
+						e.stopPropagation();
 					return false;
 				}
 				
@@ -77260,7 +77270,8 @@ Laurens Hammond, Chicago, Ill.**/
 				
 				/**
 				 * window.onkeydown
-				 * This is somewhat different from keypress. For example "e.keyCode" for CTRL only comes in 
+				 * This is somewhat different from keypress.
+				 * For example "e.keyCode" for CTRL only comes in 
 				 * on keydown NOT keypress. Er wtf?
 				 */
 				window.addEventListener('keyup', function(e) {
@@ -78009,12 +78020,13 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					else if (char == 'v' || char == 'V') {
 						AMT___RunPageScript(function() {
-							if(!map.getHeading() && map.getHeading() != 0) {
+							if (!map.getHeading() && map.getHeading() != 0) {
 								map.setHeading(-90);
 							}
 							else { 
 								map.setHeading(map.getHeading() - 90);
-							}						});
+							}						
+						});
 					}
 				}, false);
 				
@@ -78334,17 +78346,19 @@ Laurens Hammond, Chicago, Ill.**/
 				});
 				// window.onContextMenu
 				window.onContextMenu = function(e) {
-					e.preventDefault();
-					e.stopPropogation();
+					if (e.preventDefault)
+						e.preventDefault();
+					if (e.stopPropagation)
+						e.stopPropagation();
 					return false;
 				}
 				// submitButton
 				document.getElementById('submitButton').onclick = try_sbm;
 				function try_sbm(e) {
-					if (e) {
+					if (e.preventDefault)
 						e.preventDefault();
+					if (e.stopPropagation)
 						e.stopPropagation();
-					}
 					// Run here if not running @ dev.
 					if (!AMT__Global_Vars.core.is_running_on_local_dev) {
 						if (o.q.value.trim() == '' && o.q.value.length > 10)
@@ -78816,8 +78830,10 @@ Laurens Hammond, Chicago, Ill.**/
 		// ""	.onfocus select
 		for (var i in out_complete) {
 			out_complete[i].inp.onclick = out_complete[i].inp.onfocus = function(e) {
-				e.stopPropagation();
-				e.preventDefault();
+				if (e.preventDefault)
+					e.preventDefault();
+				if (e.stopPropagation)
+					e.stopPropagation();
 				this.select();
 				return false;
 			}
@@ -174409,7 +174425,7 @@ qatar,80
 			o.sb.onclick = function(e) {
 				new AMT___core_factory().nextTab();
 				
-				e.stopPropogation();
+				e.stopPropagation();
 				e.preventDefault();
 				try {
 				
