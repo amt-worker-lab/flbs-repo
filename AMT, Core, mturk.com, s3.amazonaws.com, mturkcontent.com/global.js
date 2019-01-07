@@ -521,7 +521,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}
 	}
 	if(request.focusOnPage) {
-		//~ console.log('told to focus on page');
+		console.log('told to focus on page');
 		//~ console.log('AMT__Global_Vars.isTopWindow' + AMT__Global_Vars.isTopWindow + ' == request.isTopWindow' + request.isTopWindow);
 		if(!AMT__Global_Vars.isTopWindow == !request.isTopWindow) {
 			// TURNED OFF FOR NEWLINE FINANCIAL,
@@ -565,18 +565,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//document.body.focus();
 			document.getElementsByTagName('iframe')[0].focus();
 			console.log('NextTab Iframe Focus:' + document.getElementsByTagName('iframe')[0]);
-			//~ console.log(document.getElementsByTagName('iframe')[0]);
 		} else if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' && !AMT__Global_Vars.isTopWindow){
 			window.focus();
 			console.log('NextTab Iframe Focus (window):' + window);
 		}
 	}
 	else if(request.switchTabNotifier) {
-		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
-		//~ console.log(AMT__Global_Vars.isSubmitting)
-		//~ console.log(AMT__Global_Vars.numSubmitQueries)
-		//~ console.log(!AMT__Global_Vars.isPreview)
-		//~ console.log(AMT__Global_Vars.toggle_ntpassby == 'On')
 		if(AMT__Global_Vars.copyInp) {
 			console.log(AMT__Global_Vars.copyInp);
 			chrome.extension.sendRequest({copyInp: AMT__Global_Vars.copyInp}, function(rs){/**squelch rs**/ AMT__Global_Vars.copyInp = false; });
