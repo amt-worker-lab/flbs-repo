@@ -76436,16 +76436,10 @@ Laurens Hammond, Chicago, Ill.**/
 							map.streetView,
 							'visible_changed',
 							function() {
-								console.log('visible changed');
 								if (window.notFirstDrop == undefined) {
-									//~ console.log('first dropaaa');
-									//~ console.log('lat1', window.lat, 'lng2', window.lng);
 									var toLoc = new google.maps.LatLng(lat, lng);
 									var fromLoc = this.getPosition();
 									var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);
-									//~ console.log(fromLoc);
-									//~ console.log(toLoc);
-									//~ console.log(heading);
 									map.streetView.setPov({heading:heading, pitch:0});
 									window.notFirstDrop = true;
 								}
@@ -76460,22 +76454,30 @@ Laurens Hammond, Chicago, Ill.**/
 						window.addEventListener('keypress', function(e) {
 							if(e.keyCode == 115) {
 								orientToFirstPoint();
-							} else if(e.keyCode == 70) {  }
+							} else if(e.keyCode == 70) {}
 						});
-						window.addEventListener('keydown', function(e) {
-							console.log('e.shiftKey?1?',e.shiftKey);
-							if (e.keyCode == 16) {
-								window.shiftKey = true;
-								console.log('shiftdown');
-							}
-						});
-						window.addEventListener('keyup', function(e) {
-							console.log('e.shiftKey?2?',e.shiftKey);
-							if (e.keyCode == 16) {
-								window.shiftKey = false;
-								console.log('shiftup');
-							}
-						});
+						
+						window.setInterval(function() {
+							// Setting this inside of an interval.
+							// B/c, every once and a while, on Windoze,
+							// a tab comes around where it's not set.
+							// And only gets set after hitting F12.
+							// Hrm.
+							window.addEventListener('keydown', function(e) {
+								console.log('e.shiftKey?1?',e.shiftKey);
+								if (e.keyCode == 16) {
+									window.shiftKey = true;
+									console.log('shiftdown');
+								}
+							});
+							window.addEventListener('keyup', function(e) {
+								console.log('e.shiftKey?2?',e.shiftKey);
+								if (e.keyCode == 16) {
+									window.shiftKey = false;
+									console.log('shiftup');
+								}
+							});
+						}, 1000);
 						window.threeRectPoints = [];
 						window.fourLines = [];
 						window.markerImage = new google.maps.MarkerImage(
