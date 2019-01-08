@@ -76371,6 +76371,7 @@ Laurens Hammond, Chicago, Ill.**/
 						console.log('e.shiftKey?1?',e.shiftKey);
 						if (e.keyCode == 16 || e.shiftKey) {
 							window.shiftKey = true;
+							d4.innerText = 'sdown';
 							console.log('shiftdown');
 						}
 					});
@@ -76378,6 +76379,7 @@ Laurens Hammond, Chicago, Ill.**/
 						console.log('e.shiftKey?2?',e.shiftKey);
 						if (e.keyCode == 16 || e.shiftKey) {
 							window.shiftKey = false;
+							d4.innerText = 'sup';
 							console.log('shiftup');
 						}
 					});
@@ -76909,7 +76911,8 @@ Laurens Hammond, Chicago, Ill.**/
 				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
 					var d4 = document.createElement('div');
 					d4.setAttribute('style',
-						'position:absolute;top:20px;left:42%;width:40%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
+						'position:absolute;top:20px;left:42%;width:40%;\
+						height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
 					);
 					document.body.appendChild(d4);
 					d4.id = 'd4';
