@@ -76358,6 +76358,25 @@ Laurens Hammond, Chicago, Ill.**/
 						console.log(e.latLng);
 						google.maps.event.trigger(map, 'rightclick', e);
 					});
+					window.addEventListener('keypress', function(e) {
+						if(e.keyCode == 115) {
+							orientToFirstPoint();
+						} else if(e.keyCode == 70) {}
+					});
+					window.addEventListener('keydown', function(e) {
+						console.log('e.shiftKey?1?',e.shiftKey);
+						if (e.keyCode == 16) {
+							window.shiftKey = true;
+							console.log('shiftdown');
+						}
+					});
+					window.addEventListener('keyup', function(e) {
+						console.log('e.shiftKey?2?',e.shiftKey);
+						if (e.keyCode == 16) {
+							window.shiftKey = false;
+							console.log('shiftup');
+						}
+					});
 					window.getLatLngByOffset = function( map, offsetX, offsetY ){
 						var currentBounds = map.getBounds();
 						var topLeftLatLng = new google.maps.LatLng( currentBounds.getNorthEast().lat(),
@@ -76398,16 +76417,11 @@ Laurens Hammond, Chicago, Ill.**/
 					function redrawMap() {
 						var lat = map.getCenter().lat(); 
 						var lng = map.getCenter().lng(); 
-						// ---------------------------------------------
-						//~ var lat = myLatLng[0];
-						//~ var lng = myLatLng[0];
-						//~ window.lat = lat;
-						//~ window.lng = lng;
-						//~ console.log('window',window);
 						
-						map.setTilt(45);
 						if(obj.sv_start_in_top_down != 0) {
 							map.setTilt(0);
+						} else {
+							map.setTilt(45);
 						}
 						var marker2 = new google.maps.Marker({
 							position: new google.maps.LatLng(lat, lng),
@@ -76452,33 +76466,34 @@ Laurens Hammond, Chicago, Ill.**/
 							var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);
 							map.streetView.setPov({heading:heading, pitch:0});
 						};
-						window.addEventListener('keypress', function(e) {
-							if(e.keyCode == 115) {
-								orientToFirstPoint();
-							} else if(e.keyCode == 70) {}
-						});
 						
-						window.setInterval(function() {
+						//~ window.addEventListener('keypress', function(e) {
+							//~ if(e.keyCode == 115) {
+								//~ orientToFirstPoint();
+							//~ } else if(e.keyCode == 70) {}
+						//~ });
+						//~ window.addEventListener('keydown', function(e) {
+							//~ console.log('e.shiftKey?1?',e.shiftKey);
+							//~ if (e.keyCode == 16) {
+								//~ window.shiftKey = true;
+								//~ console.log('shiftdown');
+							//~ }
+						//~ });
+						//~ window.addEventListener('keyup', function(e) {
+							//~ console.log('e.shiftKey?2?',e.shiftKey);
+							//~ if (e.keyCode == 16) {
+								//~ window.shiftKey = false;
+								//~ console.log('shiftup');
+							//~ }
+						//~ });
+						//~ window.setInterval(function() {
 							// Setting this inside of an interval.
 							// B/c, every once and a while, on Windoze,
 							// a tab comes around where it's not set.
 							// And only gets set after hitting F12.
 							// Hrm.
-							window.addEventListener('keydown', function(e) {
-								console.log('e.shiftKey?1?',e.shiftKey);
-								if (e.keyCode == 16) {
-									window.shiftKey = true;
-									console.log('shiftdown');
-								}
-							});
-							window.addEventListener('keyup', function(e) {
-								console.log('e.shiftKey?2?',e.shiftKey);
-								if (e.keyCode == 16) {
-									window.shiftKey = false;
-									console.log('shiftup');
-								}
-							});
-						}, 400);
+							
+						//~ }, 400);
 						window.threeRectPoints = [];
 						window.fourLines = [];
 						window.markerImage = new google.maps.MarkerImage(
@@ -76491,7 +76506,6 @@ Laurens Hammond, Chicago, Ill.**/
 							console.log('-----------');
 							console.log(window.threeRectPoints);
 							console.log(window.threeRectPoints.length);
-							//~ console.log(e.latLng);
 							map.set('disableDoubleClickZoom', true);
 							// Do non-shift key behavior.
 							// (i.e. make three points)
@@ -76505,10 +76519,10 @@ Laurens Hammond, Chicago, Ill.**/
 									zIndex: 50,
 								});
 							
-							   if(window.threeRectPoints.length < 3) {
+							   if (window.threeRectPoints.length < 3) {
 									window.threeRectPoints.push(m);
 									
-									if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {
+									if (window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {
 										var polyline = new google.maps.Polyline({
 										path:[
 												m.position,
@@ -76519,7 +76533,7 @@ Laurens Hammond, Chicago, Ill.**/
 										window.fourLines.push(polyline);
 									}
 									
-									if(window.threeRectPoints.length == 3) {
+									if (window.threeRectPoints.length == 3) {
 										var diffLat = window.threeRectPoints[2].position.lat() - window.threeRectPoints[1].position.lat();
 										var diffLng = window.threeRectPoints[2].position.lng() - window.threeRectPoints[1].position.lng();
 										var newLatLng = {
@@ -76663,29 +76677,35 @@ Laurens Hammond, Chicago, Ill.**/
 					
 					
 					try {
-						if (initMap) {
-							var map;
-							var oldCoordinates;
-							var myLatLng;
-							var x = initMap
-								.toString()
-								.replace(/var map;/, '')
-								.replace(/var oldCoordinates/, 'oldCoordinates')
-								.replace(/var myLatLng/, 'myLatLng')
-								.replace(/function initMap/, 'function initMap2');
-							console.log('initMap:',x);
-							var script = document.createElement('script');
-							script.textContent = x;
-							(document.head||document.documentElement).appendChild(script);
-							script.parentNode.removeChild(script);
-							initMap2();
-						}
+						//~ if (initMap) {
+							//~ var map;
+							//~ var oldCoordinates;
+							//~ var myLatLng;
+							//~ var x = initMap
+								//~ .toString()
+								//~ .replace(/var map;/, '')
+								//~ .replace(/var oldCoordinates/, 'oldCoordinates')
+								//~ .replace(/var myLatLng/, 'myLatLng')
+								//~ .replace(/function initMap/, 'function initMap2');
+							//~ console.log('initMap:',x);
+							//~ var script = document.createElement('script');
+							//~ script.textContent = x;
+							//~ (document.head||document.documentElement).appendChild(script);
+							//~ script.parentNode.removeChild(script);
+							//initMap2();
+						//~ }
 					} catch (e) {
 						//
 					}
 					redrawMap();
+					
+					
+					// THEY WENT BACK TO PREVIOUS CODE,
+					// MAP IS NOT LONGER SCOPED OUT.
+					//xxxxxxxxxxx
 					// Set a timeout to start the process of modifications.
-					window.setTimeout(function() {
+					//~ window.setTimeout(function() {
+						
 						// Map is limited in scope in their latest
 						// code. Let's make it global again.
 						// Fastest way is to simply fix the function
@@ -76697,7 +76717,8 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ window.setTimeout(redrawMap, 400);
 						//~ window.setTimeout(redrawMap, 800);
 						//~ window.setTimeout(redrawMap, 1200); // Having some issue registering "shiftup" and "shiftdown", may be because of lag, try redrawing again.......
-					}, 200);
+					//~ }, 200);
+					//xxxxxxxxxxx
 				}
 			}
 			
