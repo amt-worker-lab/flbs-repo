@@ -76889,7 +76889,10 @@ Laurens Hammond, Chicago, Ill.**/
 				/*BEGIN ITEMS*/
 				// Middle line
 				var middleLine = document.createElement('div');
-				middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
+				middleLine.setAttribute('style',
+					'position:absolute;top:78px;width:1px;left:50%;\
+					height:50px;background-color:blue;z-index:9999999;visibility:visible;'
+				);
 				document.body.appendChild(middleLine);
 				// Chios submitted check
 				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
