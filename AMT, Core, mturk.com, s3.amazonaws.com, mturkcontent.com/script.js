@@ -76816,15 +76816,15 @@ Laurens Hammond, Chicago, Ill.**/
 				
 				// Only add user decision if not running @ dev.
 				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-					//~ AMT___addUserDecision('Chios Polygon - Quality Control',
-						//~ function() {
-							//~ return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
-						//~ },
-						//~ [
-							//~ 'Id(polygon)',
-							//~ 'Id(reasons)'
-						//~ ]
-					//~ );
+					AMT___addUserDecision('Chios Polygon - Quality Control',
+						function() {
+							return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
+						},
+						[
+							'Id(polygon)',
+							'Id(reasons)'
+						]
+					);
 				}
 				
 				// o.button_cannot_find
