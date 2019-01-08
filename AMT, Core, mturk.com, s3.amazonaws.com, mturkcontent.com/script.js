@@ -76878,10 +76878,6 @@ Laurens Hammond, Chicago, Ill.**/
 					x.innerText = name + '\n' + x.innerText;
 				}
 				
-				/** TESTING // ... script
-				var d = document.createElement('script');
-				//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
-				document.body.appendChild(d);*/
 				//~ // BING
 				//~ var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
 				//~ var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
