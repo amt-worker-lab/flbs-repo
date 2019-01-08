@@ -76471,33 +76471,6 @@ Laurens Hammond, Chicago, Ill.**/
 							map.streetView.setPov({heading:heading, pitch:0});
 						};
 						
-						//~ window.addEventListener('keypress', function(e) {
-							//~ if(e.keyCode == 115) {
-								//~ orientToFirstPoint();
-							//~ } else if(e.keyCode == 70) {}
-						//~ });
-						//~ window.addEventListener('keydown', function(e) {
-							//~ console.log('e.shiftKey?1?',e.shiftKey);
-							//~ if (e.keyCode == 16) {
-								//~ window.shiftKey = true;
-								//~ console.log('shiftdown');
-							//~ }
-						//~ });
-						//~ window.addEventListener('keyup', function(e) {
-							//~ console.log('e.shiftKey?2?',e.shiftKey);
-							//~ if (e.keyCode == 16) {
-								//~ window.shiftKey = false;
-								//~ console.log('shiftup');
-							//~ }
-						//~ });
-						//~ window.setInterval(function() {
-							// Setting this inside of an interval.
-							// B/c, every once and a while, on Windoze,
-							// a tab comes around where it's not set.
-							// And only gets set after hitting F12.
-							// Hrm.
-							
-						//~ }, 400);
 						window.threeRectPoints = [];
 						window.fourLines = [];
 						window.markerImage = new google.maps.MarkerImage(
@@ -76508,18 +76481,37 @@ Laurens Hammond, Chicago, Ill.**/
 						console.log('ADDING EVENT LISTENER FOR RIGHTCLICK');
 						/////////
 						// SET TRUE
-						window.shiftKey = true;
+						//~ window.shiftKey = true;
 						/////////
 						google.maps.event.addListener(map, 'rightclick', function(e) {
+							window.addEventListener('keydown', function(e) {
+								console.log('e.shiftKey?1?',e.shiftKey);
+								if (e.keyCode == 16 || e.shiftKey) {
+									window.shiftKey = true;
+									console.log('shiftdown');
+								}
+							});
+							window.addEventListener('keyup', function(e) {
+								console.log('e.shiftKey?2?',e.shiftKey);
+								if (e.keyCode == 16 || e.shiftKey) {
+									window.shiftKey = false;
+									console.log('shiftup');
+								}
+							});
+							
+							
 							console.log('-----------');
-							console.log(window.threeRectPoints);
-							console.log(window.threeRectPoints.length);
 							map.set('disableDoubleClickZoom', true);
 							// Do non-shift key behavior.
 							// (i.e. make three points)
-							if(!window.shiftKey) {
-								drawingManager.setDrawingMode(null);// Stop any drawing mode!
-								if (window.editablePolygon) window.editablePolygon.setMap(null); // Clear any previously made editable boxes!
+							if (!window.shiftKey) {
+								// Stop any drawing mode!
+								drawingManager.setDrawingMode(null);
+								if (window.editablePolygon)
+									// Clear any previously made editable boxes!
+									window.editablePolygon.setMap(null);
+								
+								// Add a marker.
 								var m = new google.maps.Marker({
 									position: e.latLng,
 									map: map,
@@ -76532,11 +76524,13 @@ Laurens Hammond, Chicago, Ill.**/
 									
 									if (window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {
 										var polyline = new google.maps.Polyline({
-										path:[
+											path:[
 												m.position,
-												window.threeRectPoints[window.threeRectPoints.length-2].position],
-											strokeWeight:3,
-											strokeColor:'#00FF00'});
+												window.threeRectPoints[window.threeRectPoints.length-2].position
+											],
+											strokeWeight: 3,
+											strokeColor: '#00FF00'
+										});
 										polyline.setMap(map);
 										window.fourLines.push(polyline);
 									}
@@ -76585,6 +76579,12 @@ Laurens Hammond, Chicago, Ill.**/
 										});
 										polyline.setMap(map);
 										window.fourLines.push(polyline);
+										
+										// MAJOR BUG FIXED HERE
+										// WAS NOT RESETTING POLYGON INPUT
+										// FIELD VALUE!!!
+										document.getElementById('polygon').value = '';// !!!!!!!!!!
+										
 										// d3
 										// Reset the value???
 										// I.e., reset the final geocode value.
@@ -76632,6 +76632,7 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							// Do shift key behavior.
 							if (window.shiftKey) {
+								//~ window.shiftKey = false; //RESET??
 								var panorama = map.getStreetView();
 								panorama.setPosition(e.latLng);
 								var toggle = panorama.getVisible();
