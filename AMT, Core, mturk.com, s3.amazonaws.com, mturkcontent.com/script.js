@@ -76486,22 +76486,6 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ window.shiftKey = true;
 						/////////
 						google.maps.event.addListener(map, 'rightclick', function(e) {
-							window.addEventListener('keydown', function(e) {
-								console.log('e.shiftKey?1?',e.shiftKey);
-								if (e.keyCode == 16 || e.shiftKey) {
-									window.shiftKey = true;
-									console.log('shiftdown');
-								}
-							});
-							window.addEventListener('keyup', function(e) {
-								console.log('e.shiftKey?2?',e.shiftKey);
-								if (e.keyCode == 16 || e.shiftKey) {
-									window.shiftKey = false;
-									console.log('shiftup');
-								}
-							});
-							
-							
 							console.log('-----------');
 							map.set('disableDoubleClickZoom', true);
 							// Do non-shift key behavior.
@@ -76645,7 +76629,7 @@ Laurens Hammond, Chicago, Ill.**/
 								}
 								return false;
 							}
-							console.log(e); //?
+							//~ console.log(e); //?
 							return false;
 						});
 						displayNewCoors = function(coors) {
