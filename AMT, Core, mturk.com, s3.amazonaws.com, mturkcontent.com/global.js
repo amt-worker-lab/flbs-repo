@@ -526,7 +526,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		if(!AMT__Global_Vars.isTopWindow == !request.isTopWindow) {
 			// TURNED OFF FOR NEWLINE FINANCIAL,
 			// ON FEB 10, 2017.
-			//~ window.focus();
+			window.focus();
 		}
 	}
 	if(request['Record Job Timings']) {
