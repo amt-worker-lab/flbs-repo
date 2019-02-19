@@ -7,6 +7,7 @@
  * 
  * Note: On starting scrapy...
  * 		cd /home/dave/share/Development/scrapy/
+ *		source venv/bin/activate
  * 		./start-scrapyd.sh
  * 		cd scrapy_amt/
  *		scrapyd-deploy
@@ -6960,10 +6961,11 @@ function init__scrapy() {
 	}
 	// David Tera
 	// Find the Website and Email address of company based on company information
-	// 
+	// Updated for Feb. 2019
 	// 
 	var s = '<li><strong>If there is no website address provided here, find their official site through Google.</strong></li>\n	<li>If you don\'t find the company, you can add "architecture" after the name. These are all architects.</li>';
 	var s2 = '	<li>If there is no website address provided here for the company&nbsp;OR the link goes to a portfolio site,&nbsp;<strong>find their official site through Google or through a link provided at the portfolio site.</strong></li>';
+	var s2 = '<li><strong>Enter the official contact email address for the person or company.</strong></li>\n	<li>If there are multiple contact emails, please look for "Marketing" or "PR" or "Communications" email address.</li>'
 	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1)
 	{
 		var run = function() {}
@@ -7163,11 +7165,17 @@ function init__scrapy() {
 									 *  url: "https://www.facebook.com/VaultCrossfit/info
 									 * }
 									 */
-									if (callback_obj.matches && callback_obj.matches.length && o.try_autos) {
+									if (callback_obj.matches
+										&& callback_obj.matches.length) {
+										if (!o.try_autos) {
+											// quit here
+											addToTabsQ();
+											return false;
+										}
 										var mt = callback_obj.matches;
 										var reg = new RegExp(
 											//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-											'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+											'^(Marketing|PR|publicrelations|communications|comms)@' +
 											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 											'i'
 										);

@@ -6855,7 +6855,7 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:0px;left:0%;width:100%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:0px;left:5%;width:95%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
 			/*End Items*/
