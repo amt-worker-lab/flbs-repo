@@ -19314,6 +19314,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
 		if(rs.indexOf(not_enough_results_str) != -1) {
 			return [];
+		} else if (rs.indexOf('Sorry, there are no results for this search.') != -1) {
+			return [];
 		}
 		
 		// Not enough results.
@@ -19332,9 +19334,9 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		console.log(ol);
 		
 		// Quick bypass of start page, no results??? Needs checking
-		//~ if (ol.getElementsByClassName) {
-			
-		//~ }
+		if (ol.getElementsByClassName) {
+			return [];
+		}
 		
 		var rslt = ol.getElementsByClassName('search-result search-item');
 		console.log(rslt);
