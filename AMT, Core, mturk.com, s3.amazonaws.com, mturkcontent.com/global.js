@@ -19187,7 +19187,9 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			
 			// CAPTCHA, 2 DIFFERENT STRINGS FROM THE CAPTCHA ENTER PAGE.
 			'As part of StartPage\'s ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user.', // Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
-			'<h2 >Please enter the text below to continue using StartPage.</h2>'
+			'<h2 >Please enter the text below to continue using StartPage.</h2>',
+			
+			'We apologize for the inconvenience: to prevent possible abuse of the Startpage.com service, your Internet connection has been prevented from accessing it.'
 		]
 		// UPDATE
 		// As part of StartPage's ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
@@ -19328,6 +19330,12 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		
 		var ol = dom.getElementsByClassName('list-flat')[1];
 		console.log(ol);
+		
+		// Quick bypass of start page, no results??? Needs checking
+		//~ if (ol.getElementsByClassName) {
+			
+		//~ }
+		
 		var rslt = ol.getElementsByClassName('search-result search-item');
 		console.log(rslt);
 		var arr = [];
