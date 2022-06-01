@@ -12,7 +12,9 @@
  */
 // Changed back to http from https, Spring 2018.
 // Changed to 1.69 from 1.2, Sept. 2018.
-var MT___host = 'http://192.168.1.69';
+// Changed to localhost Jun 2022
+//~ var MT___host = 'http://192.168.1.69';
+var MT___host = 'http://localhost';
 
 /**
  * AMT__GLOBAL_VARS
