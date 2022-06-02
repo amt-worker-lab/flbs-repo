@@ -21980,11 +21980,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// TD days
 				var td = document.createElement('td');
 				td.innerText = Object.keys(row.high_water_marks).length;
-				//td.setAttribute('style', 'width: 20%;\
-					//~ overflow: hidden;\
-					//~ text-overflow: ellipsis;\
-					//~ white-space: nowrap;');
-				//~ td.hide_show = row.requester_id;
 				tr.appendChild(td);
 				// TD last day
 				var td = document.createElement('td');
@@ -22095,8 +22090,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			''
 		);
 		// Set tr DB row
-		tr.db_obj = row;//console.log(row);
-		//~ tr.className = 'show_tasks_table_row';
+		tr.db_obj = row;
 		
 		// Set globals!
 		if (!isIgnored)
@@ -22106,26 +22100,25 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Add to global!
 		tasks_obj.table_rows[ row.db_id ] = tr;
 		
-		// Set functions
+		// Set functions & attributes
 		tr.f = { tr: tr }; //.....
 		tr.f.hide = function() {
 			this.tr.style.display = 'none';
 			this.tr.hidden_tr.display = 'none';
-			//~ this.tr.style.visibility = 'hidden';
-			//~ this.tr.hidden_tr.style.visibility = 'hidden';
 		}
 		tr.f.show = function() {
 			this.tr.style.display = 'table-row';
 			this.tr.hidden_tr.display = 'table-row';
-			//~ this.tr.style.visibility = 'visible';
-			//~ this.tr.hidden_tr.style.visibility = 'visible';
 		}
+		tr.hits_available = row.hits_available;
 		//Skip?
 		// AMT Front Page Threshold (0+)
 		// Less than threshold?
 		tr.f.check_sv_hide = function() {
+			console.log('check_sv_hide');
 			if (this.tr.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
 				this.tr.f.hide();
+				console.log('hide');
 			} else {
 				this.tr.f.show();
 			}
@@ -22221,13 +22214,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tr.appendChild(td);
 		var a_gid;
 		if (row.group_id != '' && row.group_id != null) {
-			a_gid			= document.createElement('a');
-			a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
+			a_gid = document.createElement('a');
+			a_gid.href = 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
 			a_gid.setAttribute('class','cont_link');
-			a_gid.target	= '_blank';
+			a_gid.target = '_blank';
 			a_gid.innerText = '▶' + row.title; // "Black right-pointing triangle" // __js_clean_html_str
 		} else
-			a_gid			= document.createTextNode(row.title); // __js_clean_html_str
+			a_gid = document.createTextNode(row.title); // __js_clean_html_str
 		td.appendChild(a_gid);
 		/**
 		// TODO
@@ -22268,9 +22261,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+row.requester_id;
 			a_rid.setAttribute('class','cont_link');
 			a_rid.target	= '_blank';
-			a_rid.innerText = row.requester_name; // __js_clean_html_str
+			a_rid.innerText = row.requester_name;
 		} else
-			var a_rid		= document.createTextNode(row.requester_name); // __js_clean_html_str
+			var a_rid		= document.createTextNode(row.requester_name);
 		td.appendChild(a_rid);
 		
 		// Available
@@ -22485,36 +22478,27 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					
 					// By day
 					if (time_span > 86400) {
-					
 						var last_day = null;
 						for (var i in rows) {
-							
 							var time	= rows[i]['d']; // date
 							var nt		= rows[i]['h']; // num tasks
-							
 							var day = days_of_week[ new Date(time * 1000).getDay() ];
-							
 							if (last_day != day) {
 								labels.push(day);
 								last_day = day;
 							} else {
 								labels.push('');
 							}
-							
 							num_tasks.push(nt);
 						}
 					}
 					// By hour
 					else {
-						
 						var last_hour = null;
 						for (var i in rows) {
-							
 							var time	= rows[i]['d']; // date
 							var nt		= rows[i]['h']; // num tasks
-							
 							var hour = new Date(time * 1000).getHours();
-							
 							if (hour == 0)
 								hour = '12a'
 							else if (hour < 12)
@@ -22523,20 +22507,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 								hour += 'p'
 							else
 								hour = (hour*1 - 12) + 'p';
-							
-							
-							
 							if (last_hour != hour) {
 								labels.push(hour);
 								last_hour = hour;
 							} else {
 								labels.push('');
 							}
-							
 							num_tasks.push(nt);
 						}
 					}
-					
 					
 					// Data
 					var data = {
