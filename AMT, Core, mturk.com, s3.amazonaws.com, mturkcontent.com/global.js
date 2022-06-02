@@ -22110,7 +22110,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			this.tr.style.display = 'table-row';
 			this.tr.hidden_tr.display = 'table-row';
 		}
-		////tr.hits_available = row.hits_available;
 		//Skip?
 		// AMT Front Page Threshold (0+)
 		// Less than threshold?
@@ -22118,7 +22117,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			console.log('check_sv_hide', this.tr.hits_available);
 			if (this.tr.hits_available.innerText*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
 				this.tr.f.hide();
-				console.log('hide');
 			} else {
 				this.tr.f.show();
 			}
