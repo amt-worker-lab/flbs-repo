@@ -32,6 +32,19 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// "Alexander Gutin"
+	var s = '<p>Once ChatGPT responds, click the <b>Copy code</b> link (see screenshot below). This will copy the text in the black box to your clipboard. Now <i>paste (Ctrl + V)</i> the code <i>exactly</i> as it is on your keyboard here:</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			alert('hi');
+			console.log('hi');
+			
+		}
+		new run().f();
+	}
+	
 	// "Becky"
 	var s = '<p>Given the image of an item, add the Brand of the item.</p>\n\n<ul>\n	<li>If the item does not have a brand, type "UNKNOWN" into \'Item Brand\'</li>\n	<li>Mark how confident you are in your Brand identification.</li>';
 	if (ih.indexOf(s) != -1)
@@ -39017,44 +39030,45 @@ Laurens Hammond, Chicago, Ill.**/
 				});
 				
 				// HIGHLIGHT FIELDS WHEN REGEX FAILS!!!
+				// BROKEN.
+				//~ // ...
+				//~ var reg = /(\d+) *: *([\w\d]+) *+(\d+)/.exec(rs);
+				//~ if (reg) {
+					//~ o.q[0].value = reg[1].toUpperCase() + ':' + reg[2].replace(/0/g, 'O'); // to upper! // 0 to O!!!
+					//~ o.q[1].value = reg[3]; 
+				//~ } else {
+					//~ o.q[0].style.border = '2px solid blue';
+					//~ o.q[1].style.border = '2px solid blue';
+				//~ }
 				
-				// ...
-				var reg = /(\d+) *: *([\w\d]+) *+(\d+)/.exec(rs);
-				if (reg) {
-					o.q[0].value = reg[1].toUpperCase() + ':' + reg[2].replace(/0/g, 'O'); // to upper! // 0 to O!!!
-					o.q[1].value = reg[3]; 
-				} else {
-					o.q[0].style.border = '2px solid blue';
-					o.q[1].style.border = '2px solid blue';
-				}
-				
-				var reg = /(\d+\/\d+\/\d+)/.exec(rs);
-				if (reg) {
-					o.q[2].value = reg[1];
-				} else {
+				//~ var reg = /(\d+\/\d+\/\d+)/.exec(rs);
+				//~ if (reg) {
+					//~ o.q[2].value = reg[1];
+				//~ } else {
 					
-				}
+				//~ }
 				
-				var reg = /(\+ *\d+) *(\+ *\d+ *\. *\d+)/.exec(rs);
-				if (reg) {
-					o.q[3].value = reg[1].replace(/ /g, '');
-					o.q[4].value = reg[2].replace(/ /g, '');
-				} else {
+				//~ var reg = /(\+ *\d+) *(\+ *\d+ *\. *\d+)/.exec(rs);
+				//~ if (reg) {
+					//~ o.q[3].value = reg[1].replace(/ /g, '');
+					//~ o.q[4].value = reg[2].replace(/ /g, '');
+				//~ } else {
 					
-				}
+				//~ }
 				
-				// 0.4% OR 12% OR 1 2 % OR 1. 2%, etc.
-				var reg = /(\d+ms) +(\d+[ \.\d]+%)/.exec(rs);
-				if (reg) {
-					o.q[5].value = reg[1].replace(/ /g, '');
-					o.q[6].value = reg[2].replace(/ /g, '');
-				} else {
+				//~ // 0.4% OR 12% OR 1 2 % OR 1. 2%, etc.
+				//~ var reg = /(\d+ms) +(\d+[ \.\d]+%)/.exec(rs);
+				//~ if (reg) {
+					//~ o.q[5].value = reg[1].replace(/ /g, '');
+					//~ o.q[6].value = reg[2].replace(/ /g, '');
+				//~ } else {
 					
-				}
+				//~ }
 				
 			}
 		}
-		new run().f()
+		// Broken Jan. 2023
+		//~ new run().f()
 		return;
 	}
 	
