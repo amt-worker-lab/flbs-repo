@@ -131,43 +131,57 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			},
 			onload: function(response) {
 				console.log(response);
-				sendResponse({response:response});
-				//~ chrome.extension.sendMessage(response);
-				//~ chrome.runtime.sendMessage(response);
-				return;
+				sendResponse(response);
+				return true;
 			}
 		});
-		return;
+		return true;
+	}
+	if (request.loadFrontPage_content) {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: request.loadFrontPage_content.host,
+			timeout: 4000,
+			ontimeout: function() {
+				console.log('MT___page1_async_last_update:ontimeout');
+			},
+			onerror: function() {
+				console.log('MT___page1_async_last_update:onerror');
+			},
+			onload: function(response) {
+				//~ console.log(response);
+				sendResponse(response);
+				return true;
+			}
+		});
+		return true;
 	}
 });
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-	//~ console.log(request);
-	if (request.loadFrontPage) {
-		//~ console.log(request.loadFrontPage.host);
-		//~ console.log(request.loadFrontPage);
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url: request.loadFrontPage.host,
-			timeout: 4000,
-			ontimeout: function() {
-				console.log('MT___page1_async_last_update:ontimeout');
-				//~ last_update_check_host({status: 0});
-			},
-			onerror: function() {
-				console.log('MT___page1_async_last_update:onerror');
-				//~ last_update_check_host({status: 0});
-			},
-			onload: function(response) {
-				console.log(response);
-				sendResponse(response);
-				//~ chrome.extension.sendMessage(response);
-				//~ chrome.runtime.sendMessage(response);
-				return;
-			}
-		});
-		return;
-	}
+	//~ if (request.loadFrontPage) {
+		//~ GM_xmlhttpRequest({
+			//~ method: 'GET',
+			//~ url: request.loadFrontPage.host,
+			//~ timeout: 4000,
+			//~ ontimeout: function() {
+				//~ console.log('MT___page1_async_last_update:ontimeout');
+				//last_update_check_host({status: 0});
+			//~ },
+			//~ onerror: function() {
+				//~ console.log('MT___page1_async_last_update:onerror');
+				//last_update_check_host({status: 0});
+			//~ },
+			//~ onload: function(response) {
+				//~ console.log(response);
+				//~ sendResponse(response);
+				//chrome.extension.sendMessage(response);
+				//chrome.runtime.sendMessage(response);
+				//~ return true;
+			//~ }
+		//~ });
+		//~ return true;
+	//~ }
 	
 	/**
 	 * request.nextTab

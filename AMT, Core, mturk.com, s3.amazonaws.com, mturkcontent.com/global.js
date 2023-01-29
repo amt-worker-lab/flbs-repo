@@ -21179,24 +21179,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var host_ = MT___page1_host +
 			'?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+
 			'&' + Math.random() * 10000;
-		//~ chrome.tabs.query({active: true, currentWindow: true},function(tabs) {
-			//~ chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
-				//~ console.log(response);
-			//~ });
-		//~ });
-		chrome.runtime.sendMessage({loadFrontPage: {host: host_}},
+		
+		chrome.extension.sendMessage({loadFrontPage: {host: host_}},
 			function(response) { 
 				console.log(response);
 				MT___page1_async_last_update_onload(response);
 			}
 		);
-		//~ chrome.extension.sendMessage({loadFrontPage: {host: host_}},
-			//~ function(response) { 
-				//~ console.log(response);
-				//~ MT___page1_async_last_update_onload(response);
-				
-			//~ }
-		//~ );
 
 		// Xhr
 		//~ GM_xmlhttpRequest({
@@ -22616,77 +22605,96 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			}
 		}
 	}
+	
+	/**
+	 * function MT___page1_async()
+	 */
+	function MT___page1_async_onload(response) {
+		var rs = response.responseText;
+		if (!show_latest_check_host(response)) {
+			return;
+		}
+		
+		// Set the timestamp #2
+		tasks_obj.last_update_2 = tasks_obj.last_update;
+		
+		// Parse
+		rs = JSON.parse(rs);
+		console.log(rs); // Comment out to debug.......
+		
+		// THIS IS WHERE THE TABLE WILL BE.
+		// FOR EACH RETURNED JOB IN "rs",
+		// CHECK FOR MATCHING JOB IN TABLE.
+		// The match is made by database ID
+		// of job. If a match is made then
+		// only UPDATE the row in the table.
+		// Else if there is no match, add
+		// a row to the table.
+		
+		// Has new alertable?
+		// Also updates current_db_ids.
+		has_new_alertable(rs);
+		
+		// New APR. 16, 2015: Set HA to '----' rather than delete. 
+		// Loop through all table rows and check 
+		// against current_db_ids to ensure that all rows
+		// in table are still active.
+		// Delete all non-active/removed jobs from table.
+		check_stale();
+		
+		// Loop through response object and check if table elements
+		// contain this task. If so then update table entry.
+		// However, if it does not exist in either table, determine which
+		// table it ought to go in and put it there!
+		update_rows(rs);
+		
+		// If first run ...
+		// Then load full graph data.
+		// Else if there are any new tasks
+		// then get full initial history for them.
+		//
+		// Update tasks_obj.firstRun to false.
+		// For all future runs any new rows
+		// will be insertBefore (top of table)
+		// rather than appendChild.
+		if (tasks_obj.isFirstRun) {
+			tasks_obj.isFirstRun = false;
+			tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
+			
+			// init graph?
+			// xx
+		} else if (tasks_obj.current_init_history_ids.length) {
+			// init graph?
+			// xx
+		}
+	}
+	
 	/**
 	 * function MT___page1_async()
 	 */
 	function MT___page1_async() {
 		
+		// load from bg page (Jan. 2023)
+		var host_ = MT___page1_host + '?show_all=' + tasks_obj.last_update_2 +
+			'&last_comment_retrieved=' + tasks_obj.comments_timestamp +
+			'&' + Math.random();
+		chrome.extension.sendMessage({loadFrontPage_content: {host: host_}},
+			function(response) { 
+				//~ console.log(response);
+				MT___page1_async_onload(response);
+			}
+		);
+		
 		// load
 		// @show_all
 		// @last_comment_retrieved
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url: MT___page1_host + '?show_all='+tasks_obj.last_update_2+'&last_comment_retrieved='+tasks_obj.comments_timestamp+'&' + Math.random(),
-			onload: function (response) {
-				var rs = response.responseText;
-				if (!show_latest_check_host(response)) {
-					return;
-				}
+		//~ GM_xmlhttpRequest({
+			//~ method: 'GET',
+			//~ url: ,
+			//~ onload: function (response) {
 				
-				// Set the timestamp #2
-				tasks_obj.last_update_2 = tasks_obj.last_update;
-				
-				// Parse
-				rs = JSON.parse(rs);
-				console.log(rs); // Comment out to debug.......
-				
-				// THIS IS WHERE THE TABLE WILL BE.
-				// FOR EACH RETURNED JOB IN "rs",
-				// CHECK FOR MATCHING JOB IN TABLE.
-				// The match is made by database ID
-				// of job. If a match is made then
-				// only UPDATE the row in the table.
-				// Else if there is no match, add
-				// a row to the table.
-				
-				// Has new alertable?
-				// Also updates current_db_ids.
-				has_new_alertable(rs);
-				
-				// New APR. 16, 2015: Set HA to '----' rather than delete. 
-				// Loop through all table rows and check 
-				// against current_db_ids to ensure that all rows
-				// in table are still active.
-				// Delete all non-active/removed jobs from table.
-				check_stale();
-				
-				// Loop through response object and check if table elements
-				// contain this task. If so then update table entry.
-				// However, if it does not exist in either table, determine which
-				// table it ought to go in and put it there!
-				update_rows(rs);
-				
-				// If first run ...
-				// Then load full graph data.
-				// Else if there are any new tasks
-				// then get full initial history for them.
-				//
-				// Update tasks_obj.firstRun to false.
-				// For all future runs any new rows
-				// will be insertBefore (top of table)
-				// rather than appendChild.
-				if (tasks_obj.isFirstRun) {
-					tasks_obj.isFirstRun = false;
-					tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
-					
-					// init graph?
-					// xx
-				} else if (tasks_obj.current_init_history_ids.length) {
-					// init graph?
-					// xx
-				}
-			}
-		});
+			//~ }
+		//~ });
 	}
 	
 	
