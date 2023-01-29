@@ -113,8 +113,62 @@ eventList.forEach(function(e) {
 	//~ }, 4000);
 //~ });
 
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	if (request.loadFrontPage) {
+		//~ console.log(request.loadFrontPage.host);
+		//~ console.log(request.loadFrontPage);
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: request.loadFrontPage.host,
+			timeout: 4000,
+			ontimeout: function() {
+				console.log('MT___page1_async_last_update:ontimeout');
+				//~ last_update_check_host({status: 0});
+			},
+			onerror: function() {
+				console.log('MT___page1_async_last_update:onerror');
+				//~ last_update_check_host({status: 0});
+			},
+			onload: function(response) {
+				console.log(response);
+				sendResponse({response:response});
+				//~ chrome.extension.sendMessage(response);
+				//~ chrome.runtime.sendMessage(response);
+				return;
+			}
+		});
+		return;
+	}
+});
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+	//~ console.log(request);
+	if (request.loadFrontPage) {
+		//~ console.log(request.loadFrontPage.host);
+		//~ console.log(request.loadFrontPage);
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: request.loadFrontPage.host,
+			timeout: 4000,
+			ontimeout: function() {
+				console.log('MT___page1_async_last_update:ontimeout');
+				//~ last_update_check_host({status: 0});
+			},
+			onerror: function() {
+				console.log('MT___page1_async_last_update:onerror');
+				//~ last_update_check_host({status: 0});
+			},
+			onload: function(response) {
+				console.log(response);
+				sendResponse(response);
+				//~ chrome.extension.sendMessage(response);
+				//~ chrome.runtime.sendMessage(response);
+				return;
+			}
+		});
+		return;
+	}
+	
 	/**
 	 * request.nextTab
 	 */
@@ -207,8 +261,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 /**
  * chrome.extension.onRequest.addListener
  * Listen for messages from core-mturk scripts
- * 
- * 
  * 
  */
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
@@ -1184,8 +1236,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//~ }
 	//~ }
 	
-	
-	
+	// Need to add this to fix (Jan. 2023)
+	// "Unchecked runtime.lastError: Could not establish connection. Receiving end does not exist."
+	return true;
 	
 });
 /**

@@ -21128,71 +21128,95 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * 
 	 * "?last_update=" VERSUS tasks_obj.last_update
 	 */
+	function MT___page1_async_last_update_onload(response) {
+		console.log(response);
+		var rs = response.responseText;
+		// last_update_check_host
+		// Returns false if response.status != 200
+		if (!last_update_check_host(response)) {
+			return;
+		}
+		
+		/**
+		 * Response is object
+		 *	{
+		 *	h: int, (hits available updated, integer)
+		 *	j: int,	(jobs updated, integer)?
+		 *	 
+		 *	c: int (comments, NEW :), integer) 
+		 *	}
+		 * 
+		 * e.g: [{"j":"1424490769","h":"1424491009","c":"12435678"}] 
+		 * 
+		 * @var tasks_obj.last_update
+		 * 
+		 */
+		rs = JSON.parse(rs);
+		
+		// Does DB match local DB-updated timestamp?
+		//
+		//
+		if (rs[0].h != tasks_obj.last_update) {
+			console.log('last_update != database. Begin db full.');
+			// ...
+			tasks_obj.last_update = rs[0].h;
+			MT___page1_async(); // run full
+		}
+		// Is the newest DB comment, or latest modified DB comment, different from local
+		// comments_timestamp?
+		else if (rs[0].hasOwnProperty('c') && rs[0].c != tasks_obj.comments_timestamp)
+		{
+			tasks_obj.comments_timestamp = rs[0].c;
+			MT___page1_async(); // run full
+		}
+	}
 	function MT___page1_async_last_update() {
 		// 
 		console.log('Checking for new');
 		
-		// Xhr
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url: MT___page1_host +
-				'?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+
-				'&' + Math.random()*10000,
-			timeout: 4000,
-			ontimeout: function() {
-				console.log('MT___page1_async_last_update:ontimeout');
-				last_update_check_host({status: 0});
-			},
-			onerror: function() {
-				console.log('MT___page1_async_last_update:onerror');
-				last_update_check_host({status: 0});
-			},
-			onload: function (response) {
-				console.log('MT___page1_async_last_update:onload');
-			},
-			onload: function (response) {
-				var rs = response.responseText;
-				// last_update_check_host
-				// Returns false if response.status != 200
-				if (!last_update_check_host(response)) {
-					return;
-				}
-				
-				/**
-				 * Response is object
-				 *	{
-				 *	h: int, (hits available updated, integer)
-				 *	j: int,	(jobs updated, integer)?
-				 *	 
-				 *	c: int (comments, NEW :), integer) 
-				 *	}
-				 * 
-				 * e.g: [{"j":"1424490769","h":"1424491009","c":"12435678"}] 
-				 * 
-				 * @var tasks_obj.last_update
-				 * 
-				 */
-				rs = JSON.parse(rs);
-				
-				// Does DB match local DB-updated timestamp?
-				//
-				//
-				if (rs[0].h != tasks_obj.last_update) {
-					console.log('last_update != database. Begin db full.');
-					// ...
-					tasks_obj.last_update = rs[0].h;
-					MT___page1_async(); // run full
-				}
-				// Is the newest DB comment, or latest modified DB comment, different from local
-				// comments_timestamp?
-				//
-				else if (rs[0].hasOwnProperty('c') && rs[0].c != tasks_obj.comments_timestamp)
-				{
-					tasks_obj.comments_timestamp = rs[0].c;
-					MT___page1_async(); // run full
-				}
+		// Send request to bg page, since at some point AMT disallowed 
+		// "mixed use" requests (https vs http).
+		var host_ = MT___page1_host +
+			'?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+
+			'&' + Math.random() * 10000;
+		//~ chrome.tabs.query({active: true, currentWindow: true},function(tabs) {
+			//~ chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
+				//~ console.log(response);
+			//~ });
+		//~ });
+		chrome.runtime.sendMessage({loadFrontPage: {host: host_}},
+			function(response) { 
+				console.log(response);
+				MT___page1_async_last_update_onload(response);
 			}
-		});
+		);
+		//~ chrome.extension.sendMessage({loadFrontPage: {host: host_}},
+			//~ function(response) { 
+				//~ console.log(response);
+				//~ MT___page1_async_last_update_onload(response);
+				
+			//~ }
+		//~ );
+
+		// Xhr
+		//~ GM_xmlhttpRequest({
+			//~ method: 'GET',
+			//~ url: MT___page1_host +
+				//~ '?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+
+				//~ '&' + Math.random()*10000,
+			//~ timeout: 4000,
+			//~ ontimeout: function() {
+				//~ console.log(':ontimeout');
+				//~ last_update_check_host({status: 0});
+			//~ },
+			//~ onerror: function() {
+				//~ console.log(':onerror');
+				//~ last_update_check_host({status: 0});
+			//~ },
+			//~ onload: function (response) {
+				
+			//~ }
+		//~ });
 	}
 	
 	/**
