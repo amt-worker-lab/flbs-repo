@@ -14,7 +14,8 @@
 // Changed to 1.69 from 1.2, Sept. 2018.
 // Changed to localhost Jun 2022
 //~ var MT___host = 'http://192.168.1.69';
-var MT___host = 'http://localhost';
+//~ var MT___host = 'http://localhost';
+var MT___host = 'http://192.168.1.86';
 
 /**
  * AMT__GLOBAL_VARS
@@ -4789,26 +4790,6 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 			}
 		});
 		
-		
-		
-		
-		//~ url+= '&company='+encodeURIComponent(d2c.value.trim());
-		//~ url+= '&companyScope=CP'; // CP scope is current/past
-		//~ url+= '&firstName='+encodeURIComponent(d2.value.trim());
-		//~ url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
-		//~ //url+= '&keywords='+encodeURIComponent(d2.value.trim());
-		//~ url+= '&pt=people';
-		//~ url+= '&locationType=I';
-		//~ url+= '&openAdvancedForm=true';
-		//~ url+= '&countryCode='+encodeURIComponent(d2e.value); //?
-		//~ 
-		//~ if (d2d.style.border != '') {
-			//~ url += '&postalCode='+encodeURIComponent(d2d.value);
-			//~ url += '&distance=200';
-			//~ url += '&countryCode='+encodeURIComponent(d2e.value);
-		//~ } else {
-			//~ url += '&countryCode='+encodeURIComponent(d2e.value);
-		//~ }
 	}
 	
 	/**
@@ -18779,7 +18760,6 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
 AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_object) // X: pass reference
 {
 	var input_skips_object = input_skips_object;
-	//~ console.log(input_skips_object);
 	// ...
 	// regular = ^http://www.site.com$
 	// subdomains = [\.\/]site.com$
@@ -20517,233 +20497,6 @@ if (MT___TEST_DEBUG) {
 
 	setTimeout(function() {doSubmit();}, 2000);
 }
-//
-// old doSubmit
-//
-//function doSubmit(form, location, noSubmit, offsetTime) {
-	//// form to submit, or window.location, or add to queue (with noSubmit)
-	//// & return time_to_submit, offsetTime(x) > regularInterval+x
-	
-	//if (!form)
-		//MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
-	//else if (document.getElementById(form))
-		//MT__DOSUBMIT__FORM = document.getElementById(form);
-	//else if (document.getElementsByName(form)[0])
-		//MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
-	
-	//var d = new Date();
-	
-	//if (MT___TEST_DEBUG) {
-		//MT___TEST_DEBUG_start_time = d.getTime() / 1000;
-	//}
-	
-	//var xid = MT__DOSUBMIT__BY_ID_THIS_ID;
-	
-	//var all = GM_getValue('MT__DOSUBMIT__ALL_JOBS');
-	
-	//var time_to_submit = 0;
-	
-	//if (!all) {
-		//// add this
-		//all = [{'id' : MT__DOSUBMIT__BY_ID_THIS_ID, 'time_to_submit' : d.getTime()}];
-		//// update
-		//GM_setValue('MT__DOSUBMIT__ALL_JOBS', JSON.stringify(all));
-	//}
-	//else {
-		
-		//all = JSON.parse(all);
-		
-		//var i;
-		
-		//// remove err
-		//for (i = all.length-1; i >= 0; i--) {
-			//if  (
-				// !all[i].time_to_submit ||
-				//all[i].time_to_submit == null ||
-				//all[i].time_to_submit == NaN ||
-			    //all[i].time_to_submit == undefined
-			    //)
-			//{
-				//all.splice(i, 1); // index, howmany
-			//}
-		//}
-		
-		//// remove old
-		
-		//var changed = false;
-		
-		//var last = false;
-		
-		//var addThis = true;
-		
-		//var x;
-		
-		//var submitTime = 2250 + ((offsetTime) ? offsetTime : 0);
-		
-		// /**
-		 //* Remove previous submits matching this ID
-		 //* 
-		 //*/
-		////XX Aug. 3, 2013
-		////XX Always assume that this will be added. Not assuming this is
-		////XX useful when a submit has been cancelled (escape key), although
-		////XX the submit may still be in the submit object (waiting to submit).
-		////XX To use this, jobs must be removed from the submit object upon submission.
-		////XX Otherwise, they would return here in, say, 800 ms, before the
-		////XX removal time of, say, 2100 ms, and would be able to submit without
-		////XX being added to the submit object.
-		////XX >>This is only assuming, however, that the submit ID is the same, which
-		////XX only OUGHT to occur during debug.
-		////XX 
-		////XX
-		//for (i = all.length-1; i >= 0; i--) { // is this already added?
-			//if (all[i].id == xid) {
-				//all.splice(i, 1); // Aug. 5 // Remove previous
-				////addThis = false;
-				////break;
-			//}
-		//}
-		////XX
-		////XX
-		
-		// /**
-		 //* Find time to submit and remove older than 2100
-		 //* 
-		 //*/
-		//for (i = all.length-1; i >= 0; i--) {
-			////console.log(all[i].time_to_sumbit);
-			// /*if (!all[i]) continue;
-			//if (!all[i].time_to_submit || all[i].time_to_submit == null || all[i].time_to_submit == NaN ||
-				//all[i].time_to_submit == undefined
-			   //) {
-			////	all.splice(i, 1); // index, howmany
-				//continue;
-			//}*/
-			
-			//x = all[i].time_to_submit;
-			//x*= 1;
-			
-			//if (x < d.getTime() - submitTime) {
-				//all.splice(i, 1);
-			//}
-			//else if (x + submitTime < d.getTime()) {
-				//all.splice(i, 1); // index, howmany
-			//}
-			//else if (!last) { // 
-				//last = true;
-				//time_to_submit = x + submitTime;
-			//}
-			
-		//}
-		
-		//if (time_to_submit == 0) {
-			//time_to_submit = d.getTime();
-		//}
-		
-		//// add this
-		//if (addThis) {
-			//// push time()
-			//all.push({'id' : xid, 'time_to_submit' : time_to_submit}); // add this
-		//}
-		
-		//// change to seconds until submit
-		//time_to_submit = time_to_submit - d.getTime(); // 20s in future, - now = 20s
-		
-		//// update local storage
-		//GM_setValue('MT__DOSUBMIT__ALL_JOBS', JSON.stringify(all));
-		
-		////
-		//console.log('submit queue:'+all.length);//return;
-		////
-			
-	//}
-	////
-	//console.log('time_to_submit:'+time_to_submit);
-	//console.log('ID:'+xid);
-	////
-	//if (noSubmit) {
-		//return time_to_submit;
-	//}
-	
-	//// set a timeout to submit this job
-	//// if negative then submits immediately
-	//setTimeout(function() {
-		
-		//// remove from submit
-		//var all = GM_getValue('MT__DOSUBMIT__ALL_JOBS');
-		//if (all) {
-			
-			//// Check heartbeat. Is this job ID in list of
-			//// jobs waiting to submit? If not, for any reason,
-			//// then add it back.
-			
-			//// !! if time_to_submit > 0 !!
-			//// ?? Sept. 19, 2013
-			//if (time_to_submit != 0) {
-				//// remove
-				//all = JSON.parse(all);
-				//var i;
-				//var changed = false;
-				//for (i = all.length-1; i >= 0; i--) {
-					//if (all[i].id == MT__DOSUBMIT__BY_ID_THIS_ID) {
-						//all.splice(i, 1); // index, howmany
-						//changed = true;
-						////break;
-					//}
-				//}
-				//if (changed)
-					//GM_setValue('MT__DOSUBMIT__ALL_JOBS', JSON.stringify(all));
-			//}
-		//}
-		
-		////
-		//// debug return here
-		////
-		// /*if (MT___TEST_DEBUG) {
-			//// add time of job submit
-			
-			//var d = new Date();
-			//GM_setValue(
-				//'MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS',
-				//GM_getValue('MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS') + "\n" + (d.getTime() / 1000) + ' ' + MT__DOSUBMIT__BY_ID_THIS_ID
-			//);
-			
-			//MT___TEST_DEBUG_finish_time = d.getTime() / 1000;
-			
-			//console.log('time to complete:'+Math.round(MT___TEST_DEBUG_finish_time - MT___TEST_DEBUG_start_time));
-			
-			//if (document.getElementById('MT___TEST_DEBUG') != null) {
-				//var dx = document.getElementById('MT___TEST_DEBUG');
-				//dx.value = GM_getValue('MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS');
-			//}
-			
-			//setTimeout(function() {doSubmit();}, 800);
-			
-			//return;
-		//}*/
-		////
-		//// save job submissions
-		// /*
-		//var d = new Date();
-		//GM_setValue(
-			//'MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS',
-			//GM_getValue('MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS') + "\n" + (d.getTime() / 1000) + ' ' + MT__DOSUBMIT__BY_ID_THIS_ID
-		//);
-		//console.log(GM_getValue('MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS'));*/
-		
-		//if (!location)
-			//MT__DOSUBMIT__FORM.submit();
-		//else if (location)
-			//window.location = location;
-		// /*if (noSubmit)
-			//return;
-		//else if (!location)
-			//MT__DOSUBMIT__FORM.submit();
-		//else if (location)
-			//window.location = location;*/
-		
-	//}, time_to_submit);
-//}
 
 /*
  * MT___diffString, diff strings
@@ -21030,12 +20783,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	new AMT___core_factory().createScriptVar('AMT Front Page Threshold (0+)', '100');
 	
 	// Globals...
+	// MT___host is ... not
+	//    AMT__Global_Vars.scriptVars['Server Location']
 	var ignore_requesters__ids,
 		ignore_requesters,
 		// Hosts
 		MT___page1_hosts = [
 			MT___host+'/mturk/.scripts/AMT_Batch/g.php',
-			'http://www.sjshpack.com/AMT/g.php'
+			//~ 'http://www.sjshpack.com/AMT/g.php'
 		],
 		MT___page1_host = MT___page1_hosts[0],
 		MT___page1_host_num = 0,
@@ -23521,10 +23276,6 @@ function AMT___ReturnAndAcceptKeyPress(event) {
  * 
  */
 function AMT___returnAndAcceptButton() {
-	//~ console.log('llllllllllllllllllllllll');
-	//~ console.log(document.cookie);
-	//~ console.log();
-	//~ return; // testing
 	
 	// Assuming one layout for URL.
 	// Another layout is:
@@ -24638,39 +24389,3 @@ function mturk_whois(t, input_submit, output_div, submit_form, callbackFunction)
 		}, 2000);
 	}
 }
-/* OLD FRONT PAGE ITERATION
- * 
-*/ 
-/*function getp(p)
-{	
-	GM_xmlhttpRequest({
-		method: 'GET',
-		url: 'https://www.mturk.com/mturk/viewhits?searchWords=&selectedSearchType=hitgroups&sortType=NumHITs%3A1&pageNumber='+p+'&searchSpec=HITGroupSearch%23T%231%2310%23-1%23T%23%21%23%21NumHITs%211%21%23%21',
-		onload: function (responseDetails) {
-			
-			var rs=responseDetails.responseText;
-			
-			var div=document.getElementById('div__'+p);
-			div.innerHTML=rs;
-					
-				
-			var y=div.getElementsByTagName('table');
-			div.innerHTML='<table>'+y[6].innerHTML+'</table>';
-			
-			var x=div.getElementsByClassName('capsuletarget');
-			for (var i in x)
-			{
-				if (x[i].style)
-					x[i].style.display='none';
-			}
-			
-			var d;
-			var y=document.getElementsByTagName('a');
-			for (var i in y)
-			{
-				
-			}
-			
-		}
-	});
-}*/

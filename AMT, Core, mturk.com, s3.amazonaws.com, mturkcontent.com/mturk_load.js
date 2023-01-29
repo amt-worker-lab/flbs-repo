@@ -193,12 +193,8 @@ function mturk_load()
 			new run().f();// return;
 		}
 		// End Roberts myHITs
-		//
-		//
 		
 		// Only run on these pages!
-		//
-		//
 		/**
 		 * Only run on (preview|previewandaccept|continue|accept|submit|return)
 		 * However, stop running if on the "No more HITs available" page
@@ -310,8 +306,6 @@ function mturk_load()
 		}
 		
 		// Only run on these pages!
-		//
-		//
 		/**
 		 * Only continue on from here if on a job page.
 		 * https://worker.mturk.com/projects/.../tasks...
@@ -599,7 +593,7 @@ function mturk_load()
 				console.log('case ran');
 				break;
 			}
-			console.log('after case ran' + ', AMT___Floater.groupId:' +AMT___Floater.groupId);
+			console.log('after switch(AMT__Global_Vars.groupId) ran, AMT___Floater.groupId:' +AMT___Floater.groupId);
 			if(AMT___Floater.groupId)
 			{
 				AMT___Floater.float();
@@ -899,16 +893,9 @@ function loadGlobalsFromBird() {
 
 /**
  * RUN DOCUMENT
- *
  * 
- * 
- * 
- * 
- * 
- *  
 **/
 var ih;
-
 function initializeIh() {
 	var MyString = function(str) {
 	  this._value = str;
