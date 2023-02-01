@@ -22827,6 +22827,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'AB2WW1DFMYT5F':true,  //The req. known as "Shopping" (doing receipts)
 		};
 		ignore_requesters = {
+			'VacationRentalAPI':true, // Added Jan. 2023
 			'Flying Fish':true,
 			'Digital Rekognition Network':true,
 			'Ibotta Turk':true,
@@ -22862,7 +22863,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'RelevanceQuest':true,
 			'AMTSpeech':true,
 			'Amazon Requester Inc. (Product Ads)':true,
-			'Amazon Requester Inc.':true,
+			//~ 'Amazon Requester Inc.':true, // ??
 			'Chris Callison-Burch':true,
 			'User453':true,
 			'ProductRnR':true,

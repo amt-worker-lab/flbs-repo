@@ -39035,7 +39035,7 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ var reg = /(\d+) *: *([\w\d]+) *+(\d+)/.exec(rs);
 				//~ if (reg) {
 					//~ o.q[0].value = reg[1].toUpperCase() + ':' + reg[2].replace(/0/g, 'O'); // to upper! // 0 to O!!!
-					//~ o.q[1].value = reg[3]; 
+					//~ o.q[1].value = reg[3]; o
 				//~ } else {
 					//~ o.q[0].style.border = '2px solid blue';
 					//~ o.q[1].style.border = '2px solid blue';
