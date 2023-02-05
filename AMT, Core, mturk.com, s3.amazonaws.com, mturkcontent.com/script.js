@@ -91,9 +91,22 @@ function MT__RUN() {
 //regular expression
 			var a = /First Person Name \(unformatted\):<\/strong><\/p>\s+<p>([^<]+)<\/p>/.exec(ih);
 			
+			var x = Array.from(window.document.body.children).reverse().find(
+			  (item) => item.localName === 'crowd-form' && item.shadowRoot !== null && item.shadowRoot.querySelector('input')
+			);
+			var x = document.querySelector("body > crowd-form > form > div > div > div:nth-child(5) > p:nth-child(2) > crowd-input").shadowRoot.querySelector("#input-1 > input");
+			console.log(x);
 
-			var output = [document.getElementsByName('firstName')[0],
-				document.getElementsByName('lastName')[0]];
+			console.log(document.getElementsByName('firstName')[0].openOrClosedShadowRoot);
+			console.log(document.getElementsByName('firstName')[0].shadowRoot);
+			console.log(document.getElementsByName('firstName')[0].firstChild);
+			console.log(document.querySelector('shadow-root'));
+			var output = [
+				document.getElementsByName('firstName')[0].shadowRoot.querySelector('input'),
+				document.getElementsByName('lastName')[0].shadowRoot.querySelector('input'),
+			];
+			// var output = [document.getElementsByName('firstName')[0],
+			// 	document.getElementsByName('lastName')[0]];
 			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
 				textToAnnotate: a[1],
 				output_fields: output,
