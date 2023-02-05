@@ -32,6 +32,103 @@ function MT__RUN() {
 	 * 
 	 */
 	
+	// Bobby (Reformat Names (V1))
+	var s = 'Reformat the persons name into the respective name segments. If the name is a company copy then paste the full unformatted name into both "First Name" and "Last Name" boxes. Disregard middle names if provided. In the event there are two names, fill out the designated box with both respective names joined by a column (ex. First Name: John | Jack, Last Name: Smith | Johnson).';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			//////////
+			// Styles
+			// GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			// // Instructions
+			// GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// //~ GM_addStyle('table {margin-bottom:-20px !important;}');
+			// // Content
+			// GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;width: 50%;}');
+			// //~ GM_addStyle('#field1 {margin:0 !important;padding:0 !important;position:absolute;top:300px;left:0px;width:10%}');
+			// // Other
+			// GM_addStyle('input[type="text"]{margin:0 !important;padding:0 !important;position:absolute;top:0px;left:30px;width:100%;height:48px;zoom:1.6;}');
+			// GM_addStyle('body {background-color: #efe;}');
+			//~ GM_addStyle('.exe:hover {background-color:orange;}');
+			//~ GM_addStyle('#submitButton {width:100%;height:200px;margin-top:-160px;}');
+			// End styles
+			/////////////
+			
+			// var b = document.getElementsByTagName('b');
+			// var o = {
+			// 	u: b[1].innerText.trim().replace(/äó»/gi, '\''),
+			// 	q: [
+			// 		document.getElementsByName('Q5FreeTextInput')[0],
+			// 	],
+			// }
+			
+			// console.log(o);
+			// AMT___addUserDecision(
+			// 	'BenText,2018', function() {
+			// 		return o.u;
+			// 	},
+			// 	['Name(Q5FreeTextInput)[0]']
+			// )
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:100px;left:0%;width:60%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			
+			// annotate
+			// Feature to add:
+			//		Need: "in house", not "in the house",
+			//			but there are two fields. So appendToField
+			//			does not work!
+			// Feature to add:
+			//		Add: Mouseover color
+			               //'<p>SAWYER JACK E ESTATE</p>
+// <p><strong>First Person Name (unformatted):</strong></p>
+//                <p>SAWYER JACK E ESTATE</p>
+//regular expression
+			var a = /First Person Name \(unformatted\):<\/strong><\/p>\s+<p>([^<]+)<\/p>/.exec(ih);
+			
+
+			var output = [document.getElementsByName('firstName')[0],
+				document.getElementsByName('lastName')[0]];
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: a[1],
+				output_fields: output,
+				callback_mouseup: function(addField) {
+					console.log(addField);
+					console.log(addField.value);
+				},
+				// appendToField: true,
+				// appendToField_glue: ' ',
+				//~ delimeter: '',
+				focusToField: false,
+				style: 'border-radius:2px;border:0;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:1.2;',
+			});
+			d1.appendChild(buttons);
+			
+			// ondblclick, remove word from input
+			// var ef = new AMT___events_factory();
+			// ef.mouseup__delete_range({
+			// 	elements: [o.q[0]],
+			// 	blur_element: false,
+			// 	remove_whitespace: true,
+			// });
+			//sbm
+			// document.getElementById('submitButton').onclick = function(e) {
+			// 	e.stopPropagation();
+			// 	e.preventDefault();
+			// 	o.q[0].value = o.q[0].value.trim();
+			// 	if (o.q[0].value == '') return false;
+			// 	AMT___recordAndSubmit();
+			// 	return;
+			// }
+		}
+		new run().f();
+	};
+
 	// "Alexander Gutin"
 	var s = '<p>Once ChatGPT responds, click the <b>Copy code</b> link (see screenshot below). This will copy the text in the black box to your clipboard. Now <i>paste (Ctrl + V)</i> the code <i>exactly</i> as it is on your keyboard here:</p>';
 	if (ih.indexOf(s) != -1)
