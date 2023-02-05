@@ -89,7 +89,6 @@ function MT__RUN() {
 // <p><strong>First Person Name (unformatted):</strong></p>
 //                <p>SAWYER JACK E ESTATE</p>
 //regular expression
-			var a = /First Person Name \(unformatted\):<\/strong><\/p>\s+<p>([^<]+)<\/p>/.exec(ih);
 			
 			// var x = Array.from(window.document.body.children).reverse().find(
 			//   (item) => item.localName === 'crowd-form' && item.shadowRoot !== null && item.shadowRoot.querySelector('input')
@@ -102,27 +101,7 @@ function MT__RUN() {
 			console.log(document.getElementsByName('firstName')[0].openOrClosedShadowRoot);
 			console.log(document.getElementsByName('firstName')[0].shadowRoot);
 			console.log(document.getElementsByName('firstName')[0].firstChild);
-			console.log(document.querySelector('shadow-root'));
-			var output = [
-				document.getElementsByName('firstName')[0].shadowRoot.querySelector('input'),
-				document.getElementsByName('lastName')[0].shadowRoot.querySelector('input'),
-			];
-			// var output = [document.getElementsByName('firstName')[0],
-			// 	document.getElementsByName('lastName')[0]];
-			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
-				textToAnnotate: a[1],
-				output_fields: output,
-				callback_mouseup: function(addField) {
-					console.log(addField);
-					console.log(addField.value);
-				},
-				// appendToField: true,
-				// appendToField_glue: ' ',
-				//~ delimeter: '',
-				focusToField: false,
-				style: 'border-radius:2px;border:0;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:1.2;',
-			});
-			d1.appendChild(buttons);
+			// console.log(document.querySelector('shadow-root'));
 			
 			// ondblclick, remove word from input
 			// var ef = new AMT___events_factory();
@@ -140,6 +119,44 @@ function MT__RUN() {
 			// 	AMT___recordAndSubmit();
 			// 	return;
 			// }
+			var loaded = false;
+			function load(){
+				if (!loaded) {
+					loaded = true;
+				} else {
+					return; //?
+				}
+				var a = /First Person Name \(unformatted\):<\/strong><\/p>\s+<p>([^<]+)<\/p>/.exec(ih);
+				var output = [
+					document.getElementsByName('firstName')[0].shadowRoot.querySelector('input'),
+					document.getElementsByName('lastName')[0].shadowRoot.querySelector('input'),
+				];
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: a[1],
+					output_fields: output,
+					callback_mouseup: function(addField) {
+						console.log(addField);
+						console.log(addField.value);
+					},
+					// appendToField: true,
+					// appendToField_glue: ' ',
+					//~ delimeter: '',
+					focusToField: false,
+					style: 'border-radius:2px;border:0;border-color:0a0c33;background-color:white;border-style:solid;cursor:pointer;zoom:1.2;',
+				});
+				d1.appendChild(buttons);
+			}
+
+			//
+			var intv = window.setInterval(function() {
+				// console.log('to');
+				// console.log();
+				var x = document.getElementsByName('firstName')[0].shadowRoot;
+				if (x != null) {
+					clearInterval(intv);
+					load()
+				}
+			}, 200);
 		}
 		new run().f();
 	};
