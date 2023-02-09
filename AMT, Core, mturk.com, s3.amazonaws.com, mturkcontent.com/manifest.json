@@ -17,7 +17,7 @@
 		"includes/jshash-2.2/md5.js",
 		"includes/sha1.js",
 		"includes/oauth.js",
-		// "huge_vars.js", // removing unless required (Feb/2023)
+		"huge_vars.js", // removing unless required (Feb/2023)
 		"global.js",
 		"includes/Event.js",
 		"includes/Magnifier.js",
