@@ -83,7 +83,9 @@ function MT__RUN() {
           console.log(rs);
           // MT___page1_async_onload(response);
           for (var i in rs) {
-            ims[i].src = rs[i].image;
+            ims[i].src = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=' +
+              encodeURIComponent(rs[i].image) + '&AMT__output_html_from_URL__options={}';
+            //rs[i].image;
             if (i > 5) {
               break;
             }
