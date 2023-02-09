@@ -49,6 +49,11 @@ function MT__RUN() {
         'position:absolute;top:40px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
         a: true // append body
       });
+      // var d2 = ''.div({
+      //   style:
+      //   'position:absolute;top:0px;left:0%;width:50%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
+      //   a: true // append body
+      // });
       // six images, three per row
       var c = 0;
       var ims = [];
@@ -93,7 +98,18 @@ function MT__RUN() {
         }
       );
 
+      function load() {
 
+      }
+      // set a timer to move the <b> to 0/0 and the <input> to 0/50%
+      var intv = window.setInterval(function() {
+        // var x = document.getElementsByName('firstName')[0].shadowRoot;
+        var x = document.querySelector("body > crowd-form > form > div > p:nth-child(4) > b")
+        if (x != null) {
+          clearInterval(intv);
+          load()
+        }
+      }, 200);
     }
     new run().f();
   }
