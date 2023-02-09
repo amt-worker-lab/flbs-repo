@@ -705,6 +705,7 @@ function mturk_load()
 		AMT__Global_Vars.initializeRightClickRA();
 		// Init MT__RUN();
 		MT__RUN();
+		MT__RUN2();
 	}
 	// Else if framed window then only run
 	// when job has been accepted.
@@ -730,6 +731,7 @@ function mturk_load()
 			this.style.backgroundColor = 'lime';
 			AMT__Global_Vars.initializeTabId();
 			MT__RUN();
+			MT__RUN2();
 		}
 		// AddEventListener
 		window.addEventListener('message', function(e) {
