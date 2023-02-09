@@ -49,6 +49,8 @@ function MT__RUN() {
         'position:absolute;top:40px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
         a: true // append body
       });
+
+      var output = null;
       // var d2 = ''.div({
       //   style:
       //   'position:absolute;top:0px;left:0%;width:50%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
@@ -59,7 +61,15 @@ function MT__RUN() {
       var ims = [];
       for (var i=0; i<6; i++) {
         var im = document.createElement('img');
-        im.setAttribute('style', 'width:33%; max-height:200px;');
+        im.setAttribute('style', 'width:33%; max-height:200px; border:1px solid #444;');
+        im.url_ = null;
+        im.onclick = function() {
+          this.style.border = '2px solid green';
+          if (this.url_) {
+            output.value = this.url_;
+            // do submit + nextTab
+          }
+        }
         d1.append(im);
         // c += 1;
         ims.push(im);
@@ -88,6 +98,8 @@ function MT__RUN() {
           console.log(rs);
           // MT___page1_async_onload(response);
           for (var i in rs) {
+            console.log(ims[i]);
+            ims[i].url_ = rs[i].image;
             ims[i].src = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=' +
               encodeURIComponent(rs[i].image) + '&AMT__output_html_from_URL__options={}';
             //rs[i].image;
@@ -99,15 +111,24 @@ function MT__RUN() {
       );
 
       function load() {
-
+        // move
+        var x = document.querySelector("body > crowd-form > form > div > p:nth-child(4) > b")
+        x.setAttribute('style', 'position:absolute;top:0;left:0;padding:0;margin:0;')
+        var x = document.querySelector("body > crowd-form > form > div > crowd-input")
+          .shadowRoot.querySelector("#input-1 > input");
+        output = x;
+        x.setAttribute('style', 'position:absolute;top:0;left:50%;padding:0;margin:0;')
+        console.log('input name:' + x.name);
       }
       // set a timer to move the <b> to 0/0 and the <input> to 0/50%
+      var loaded = false;
       var intv = window.setInterval(function() {
         // var x = document.getElementsByName('firstName')[0].shadowRoot;
         var x = document.querySelector("body > crowd-form > form > div > p:nth-child(4) > b")
-        if (x != null) {
+        if (x != null && !loaded) {
+          loaded = true;
           clearInterval(intv);
-          load()
+          load();
         }
       }, 200);
     }
