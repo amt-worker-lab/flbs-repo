@@ -116,6 +116,8 @@ eventList.forEach(function(e) {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   
   if (request.ddg_image) {
+	console.log(request);
+  	console.log(request.ddg_image.url);
   	GM_xmlhttpRequest({
       method: 'GET',
       url: request.ddg_image.url,

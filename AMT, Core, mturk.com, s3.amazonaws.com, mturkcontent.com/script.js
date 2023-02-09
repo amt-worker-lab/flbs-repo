@@ -39,13 +39,26 @@ function MT__RUN() {
     var run = function() {}
     run.prototype.f = function() {
       console.log('x');
-      var b = document.querySelector("body > crowd-form > form > div > p:nth-child(4) > b");
+      console.log(document.body.innerText);
+      // var b = document.querySelector("body > crowd-form > form > div > p:nth-child(4) > b")//#.innerText;
+      // console.log('b',b)
+      var b = /<p>Find the logo for: <b>([^<]+)<\/b>/.exec(document.body.innerHTML)[1];
 
       var d1 = ''.div({
         style:
-        'position:absolute;top:120px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
+        'position:absolute;top:40px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
         a: true // append body
       });
+      // six images, three per row
+      var c = 0;
+      var ims = [];
+      for (var i=0; i<6; i++) {
+        var im = document.createElement('img');
+        im.setAttribute('style', 'width:33%; max-height:200px;');
+        d1.append(im);
+        // c += 1;
+        ims.push(im);
+      }
 
       // height
       new AMT___core_factory().el_innerHeight({
@@ -53,18 +66,31 @@ function MT__RUN() {
         // to fill up the whole window, minus their
         // distance from page top (top:XX pixels;).
         elements: [d1],
-        offset: 120 // offset top
+        offset: 40 // offset top
       });
 
       // load from server
       // ex http://192.168.1.86/mturk/.scripts/test.py?kw=foo
       var url_ = AMT___POPUP___PROXY_REDACTED_ + '/mturk/.scripts/test.py?kw=' + encodeURIComponent(b);
-      chrome.extension.sendMessage({ddg_image: {host: url_}},
+      console.log(url_);
+      chrome.extension.sendMessage({ddg_image: {url: url_}},
         function(response) {
+          // console.log(response, response.responseText, response.responseText.replace(/\\n$/,''));
           console.log(response);
+          console.log(response.responseText.substr(0, response.responseText.length - 1))
+          var rs = JSON.parse(response.responseText);
+          // var rs = JSON.parse(response.responseText.substr(0, response.responseText.length - 1));
+          console.log(rs);
           // MT___page1_async_onload(response);
+          for (var i in rs) {
+            ims[i].src = rs[i].image;
+            if (i > 5) {
+              break;
+            }
+          }
         }
       );
+
 
     }
     new run().f();
