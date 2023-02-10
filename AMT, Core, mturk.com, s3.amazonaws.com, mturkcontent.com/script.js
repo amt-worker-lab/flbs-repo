@@ -46,7 +46,7 @@ function MT__RUN() {
 
       var d1 = ''.div({
         style:
-        'position:absolute;top:40px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
+        'position:absolute;top:30px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
         a: true // append body
       });
 
@@ -66,8 +66,24 @@ function MT__RUN() {
         im.onclick = function() {
           this.style.border = '2px solid green';
           if (this.url_) {
+            // Apparently the crowd-input is the "real" form, not the 
+            // input that's within the shadow root. So while we set
+            // the value of the input in the shadow root, in order
+            // to see it appear on screen, within the form we must
+            // set form.imageUrl.value? Either that or since both
+            // elements are named 'imageUrl', only the first on the 
+            // page is being submitted to the server (i.e. viewable by
+            // the network tab).
+            // Also, document.getElementsByName('imageUrl') returns
+            // only ONE element.
+            console.log(this.url_, document.getElementsByName('imageUrl'));
             output.value = this.url_;
+            document.getElementsByName('imageUrl')[0].value = this.url_;
+            // document.querySelector("body > crowd-form > form > div > crowd-input").value = this.url_;
+
             // do submit + nextTab
+            // new AMT___core_factory().nextTab();
+            // doSubmit(document.forms[0]);
           }
         }
         d1.append(im);
@@ -77,11 +93,8 @@ function MT__RUN() {
 
       // height
       new AMT___core_factory().el_innerHeight({
-        // This set the elements d1,d1b, and d1c
-        // to fill up the whole window, minus their
-        // distance from page top (top:XX pixels;).
         elements: [d1],
-        offset: 40 // offset top
+        offset: 30 // offset top
       });
 
       // load from server
@@ -97,13 +110,13 @@ function MT__RUN() {
           // var rs = JSON.parse(response.responseText.substr(0, response.responseText.length - 1));
           console.log(rs);
           // MT___page1_async_onload(response);
-          for (var i in rs) {
+          for (var i=0;i<rs.length;i++) {
             console.log(ims[i]);
             ims[i].url_ = rs[i].image;
             ims[i].src = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=' +
               encodeURIComponent(rs[i].image) + '&AMT__output_html_from_URL__options={}';
             //rs[i].image;
-            if (i > 5) {
+            if (i > 4) {
               break;
             }
           }
@@ -117,7 +130,7 @@ function MT__RUN() {
         var x = document.querySelector("body > crowd-form > form > div > crowd-input")
           .shadowRoot.querySelector("#input-1 > input");
         output = x;
-        x.setAttribute('style', 'position:absolute;top:0;left:50%;padding:0;margin:0;')
+        x.setAttribute('style', 'position:fixed;top:0;left:50%;padding:0;margin:0;')
         console.log('input name:' + x.name);
       }
       // set a timer to move the <b> to 0/0 and the <input> to 0/50%
