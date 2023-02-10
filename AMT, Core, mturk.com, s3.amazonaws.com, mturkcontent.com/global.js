@@ -20339,15 +20339,19 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	//~ else if (document.getElementsByName(form)[0])
 		//~ MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
 	
+	// Feb2023: Form must be true.
+	if (!form)
+		return;
+	MT__DOSUBMIT__FORM = form;
 	// Jan2018: Update form.
-	if (!form) // Default form is "#mturk_form".
-		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
-	else if (document.getElementById(form)) // eg VSR
-		MT__DOSUBMIT__FORM = document.getElementById(form);
-	else if (document.getElementsByName(form) && document.getElementsByName(form)[0])
-		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
-	else
-		MT__DOSUBMIT__FORM = document.getElementsByTagName('form')[1];
+	// if (!form) // Default form is "#mturk_form".
+	// 	MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
+	// else if (document.getElementById(form)) // eg VSR
+	// 	MT__DOSUBMIT__FORM = document.getElementById(form);
+	// else if (document.getElementsByName(form) && document.getElementsByName(form)[0])
+	// 	MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
+	// else
+	// 	MT__DOSUBMIT__FORM = document.getElementsByTagName('form')[1];
 	
 	
 	// Debug

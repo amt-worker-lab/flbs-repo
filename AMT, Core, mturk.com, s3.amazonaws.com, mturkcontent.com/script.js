@@ -50,12 +50,8 @@ function MT__RUN() {
         a: true // append body
       });
 
-      var output = null;
-      // var d2 = ''.div({
-      //   style:
-      //   'position:absolute;top:0px;left:0%;width:50%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
-      //   a: true // append body
-      // });
+      // var output = null;
+
       // six images, three per row
       var c = 0;
       var ims = [];
@@ -77,13 +73,30 @@ function MT__RUN() {
             // Also, document.getElementsByName('imageUrl') returns
             // only ONE element.
             console.log(this.url_, document.getElementsByName('imageUrl'));
-            output.value = this.url_;
-            document.getElementsByName('imageUrl')[0].value = this.url_;
+            
+            // update shadow root input as well
+            
+            var imgInp = document.getElementsByName('imageUrl')[0]
+            imgInp.setAttribute('value', this.url_);
+            // .value = this.url_;
+            imgInp.shadowRoot.querySelector('input').value = this.url_;
+            // var shadowInp = document.getElementsByName('imageUrl')[0].shadowRoot.querySelector('input')
+            // shadowInp.dispatchEvent(new Event('click'));
+            // imgInp.dispatchEvent(new Event('click'));
+
+
             // document.querySelector("body > crowd-form > form > div > crowd-input").value = this.url_;
 
             // do submit + nextTab
             // new AMT___core_factory().nextTab();
             // doSubmit(document.forms[0]);
+            // console.log(document.forms[0]);
+            // var cf = document.querySelector("body > crowd-form");
+            // doSubmit(document.querySelector("body > crowd-form > form"));
+
+            // forms not working... 
+            // how about click the button revealed in the elements panel?
+            document.querySelector("body > crowd-form > form > crowd-button").click();
           }
         }
         d1.append(im);
@@ -129,7 +142,7 @@ function MT__RUN() {
         x.setAttribute('style', 'position:absolute;top:0;left:0;padding:0;margin:0;')
         var x = document.querySelector("body > crowd-form > form > div > crowd-input")
           .shadowRoot.querySelector("#input-1 > input");
-        output = x;
+        // output = x;
         x.setAttribute('style', 'position:fixed;top:0;left:50%;padding:0;margin:0;')
         console.log('input name:' + x.name);
       }
