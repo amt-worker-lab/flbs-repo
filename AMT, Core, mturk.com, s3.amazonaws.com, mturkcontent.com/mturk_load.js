@@ -309,6 +309,7 @@ function mturk_load()
 		/**
 		 * Only continue on from here if on a job page.
 		 * https://worker.mturk.com/projects/.../tasks...
+		 * https://worker.mturk.com/projects/3TM075AKFT04ROQLTBOXFIULAZV2C6/tasks/3OLZC0DJ9S53WIBBRQUKH739RSSVIF?assignment_id=3ITXP059P69LMLC75FFG75US21BJSB&auto_accept=true
 		 */
 		if (!/^https?:\/\/(worker\.|)mturk\.com\/projects\/[A-Z0-9]+\/tasks/i.exec(l) &&
 			!/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(document.location.href) &&
