@@ -20340,10 +20340,13 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		//~ MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
 	
 	// Feb2023: Form must be true.
-	if (!form)
-		return;
-	MT__DOSUBMIT__FORM = form;
-	// Jan2018: Update form.
+	// if (!form && !callback_function)
+	// 	return;
+	if (form)
+		MT__DOSUBMIT__FORM = form;
+	else
+		MT__DOSUBMIT__FORM = false;
+	// Jan2018: Set MT__DOSUBMIT__FORM.
 	// if (!form) // Default form is "#mturk_form".
 	// 	MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
 	// else if (document.getElementById(form)) // eg VSR
@@ -23341,6 +23344,7 @@ function AMT___returnAndAcceptButton() {
 		.exec(document.location.href);
 	var MT__newtask_url = u[1] + 'accept_random?ref=w_pl_prvw';
 	var MT__return_form = document.getElementsByTagName('form')[0];
+	console.log('MT__return_form', MT__return_form);
 	if (MT__return_form.action.indexOf('ref=w_wp_rtrn_top') == -1) {
 		// Just in case the form moves around the page.
 		// For example, on VSR the forms are moved around (because of us
@@ -23380,42 +23384,17 @@ function AMT___returnAndAcceptButton() {
 	MT__return_form.appendChild(x);
 	MT__return_form.target = x.name;
 	
-	//------------------------------------------------------------------
-	// Testing R&A
-	//------------------------------------------------------------------
-	// To try: Try send a request to old url + hitid ???
-	//
-	//~ u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
-	//~ var MT__url_returnaccept;
-	//~ MT__url_returnaccept = u;
-	//~ MT__url_returnaccept = MT__url_returnaccept.replace('<a href="', 'https://www.mturk.com');
-	//~ MT__url_returnaccept = __js_clean_html_str(MT__url_returnaccept);
-	//u = '';
-	//<a href="/mturk/return?requesterId=AU06FWQZTTRD1&amp;hitId=33PPUNGG39GOP2WBVVLN4CROCUZRZ4&amp;signature=w7gq5x81cqAtP4ftfXGkA7pFN%2BY%3D&amp;groupId=3XCMB0010QC1BC9LPZSYHFBV3LL3PB&amp;canAccept=&amp;externalHit=true">
-	//~ var MT__gm_groupId;
-	//~ MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
-	//~ MT__gm_groupId = __js_clean_html_str(MT__gm_groupId);
-	//~ MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId);
-	//~ if (MT__gm_groupId)
-		//~ MT__gm_groupId = MT__gm_groupId[1];
-	//~ else
-		//~ return; // Quit here!
-	//~ console.log('HERE');
-	//------------------------------------------------------------------
-	// End testing R&A
-	//------------------------------------------------------------------
-	
 	var d1 = document.createElement('input');
 	d1.setAttribute('id','MT__gm_returnaccept');
 	d1.setAttribute('type','button');
-	d1.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:10000;');
+	d1.setAttribute('style','position:fixed;top:0px;left:0%;width:120px;height:30px;z-index:10000;');
 	d1.setAttribute('value','Return and Accept');
 	document.body.appendChild(d1);
 	
 	var d2 = document.createElement('input');
 	d2.setAttribute('id','MT__gm_returnaccept_non_serverSide');
 	d2.setAttribute('type','button');
-	d2.setAttribute('style','position:fixed;top:0px;left:40%;height:24px;margin-left:240px;z-index:10000;padding-left:0;padding-right:0;');
+	d2.setAttribute('style','position:fixed;top:0px;left:0%;height:30px;margin-left:120px;z-index:10000;padding-left:0;padding-right:0;');
 	d2.setAttribute('value','Non-SV');
 	document.body.appendChild(d2);
 	
@@ -23452,10 +23431,10 @@ function AMT___returnAndAcceptButton() {
 			// 		This is an HTML submit so it may lag.
 			// 		Therefore, submit immediately!
 			//		Then, after timeout, load new task.
+			console.log('MT__return_form - submit');
 			MT__return_form.submit();
 			setTimeout(function() {
 				window.location = MT__newtask_url;
-				
 			}, time_to_submit);
 			
 			//----------------------------------------------------------
@@ -23465,15 +23444,6 @@ function AMT___returnAndAcceptButton() {
 			//		No.
 			// Try XHR header change
 			//		No.
-			/**
-			 * GM XHR does not like:
-global.js:17177 Refused to set unsafe header "Origin"
-global.js:17177 Refused to set unsafe header "Accept-Encoding"
-global.js:17177 Refused to set unsafe header "User-Agent"
-global.js:17177 Refused to set unsafe header "Referer"
-global.js:17177 Refused to set unsafe header "Connection"
-global.js:17177 Refused to set unsafe header "Cookie"
-			 */
 			// Try PHP curl to check with exact curl.
 			// 		No.
 			// Try PHP curl to check with exact curl, plus cookie.
@@ -23482,93 +23452,6 @@ global.js:17177 Refused to set unsafe header "Cookie"
 			//		No.
 			//		Note: The value changed between returning in cookie is: s_nr=(\d+)-Repeat
 			
-			//~ var opts = {
-				//~ server_opts: {
-					//~ url: 'MT__return_form_url',
-					//~ headers_array: [
-						//~ 'Origin: https://worker.mturk.com',
-						//~ 'Accept-Encoding: gzip, deflate, br',
-						//~ 'Accept-Language: en-US,en;q=0.9',
-						//~ 'Upgrade-Insecure-Requests: 1',
-						//~ 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
-						//~ 'Content-Type: application/x-www-form-urlencoded',
-						//~ 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-						//~ 'Cache-Control: max-age=0',
-						//~ 'Referer: https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/3V7ICJJAZA1D8SJYF8FE3P8RW35B41?assignment_id=3XXU1SWE8NGTCETZGVYILVTVKEF0A2&auto_accept=true',
-						//~ 'Connection: keep-alive',
-						//~ 'Cookie: '+document.cookie.replace(/s_nr=(\d+)-Repeat/, 's_nr='+newd+'-Repeat')
-					//~ ],
-					//~ do_not_save_to_file: true,
-					//~ post_obj: {}, // Is defined.
-				//~ },
-				//~ callback_function: function(response) {
-					//~ var rs = response.response.responseText;
-					//~ console.log(rs);
-					//~ console.log('================');
-				//~ }
-			//~ };
-			
-			// Init async load.
-			//~ new AMT___requests_factory().server_load_asynchronously2(opts);
-			
-			//~ GM_xmlhttpRequest({
-				//~ method: 'POST',
-				//~ url: MT__return_form_url, // url to return this HIT
-				//~ data: '',
-				//~ headers: {
-					//~ 'Origin': 'https://worker.mturk.com',
-					//~ 'Accept-Encoding': 'gzip, deflate, br',
-					//~ 'Accept-Language': 'en-US,en;q=0.9',
-					//~ 'Upgrade-Insecure-Requests': '1',
-					//~ 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
-					//~ 'Content-Type': 'application/x-www-form-urlencoded',
-					//~ 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-					//~ 'Cache-Control': 'max-age=0',
-					//~ 'Referer': 'https://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks/34R0BODSP1KTBEZI340E9PKQZWCE58?assignment_id=3WJEQKOXA9NTJ3EHCE2IZ0C5P6KA1E&auto_accept=true',
-					//~ 'Connection': 'keep-alive',
-					//~ 'Cookie': document.cookie
-				//~ },
-				//~ onload: function (response) {
-					//~ // get: 2 identical of these?
-					//~ //http://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks
-					//~ GM_xmlhttpRequest({
-						//~ method: 'GET',
-						//~ url: 'http://worker.mturk.com/projects/3QKP95RWR043MEOAGE1G8XQDJG1X55/tasks', // url to return this HIT
-						//~ onload: function (response) {
-							
-						//~ }
-					//~ });
-				//~ }
-			//~ });
-			
-			////////////////
-			// OLD VERSION
-			////////////////
-				//~ GM_xmlhttpRequest({
-					//~ method: 'POST',
-					//~ url: MT__return_form_url, // url to return this HIT
-					//~ data: '',
-					//~ headers: {
-						//~ "Content-Type": "application/x-www-form-urlencoded"
-					//~ },
-				
-				//~ GM_xmlhttpRequest({
-					//~ method: 'POST',
-					//~ url: MT__return_form_url, // url to return this HIT
-					//~ data: '',
-					//~ headers: {
-						//~ "Content-Type": "application/x-www-form-urlencoded"
-					//~ },
-					//~ onload: function (response) {
-						//~ // get new
-						//~ //
-						//~ window.location = MT__newtask_url;
-						
-						//~ // OLD VERSION
-							//~ // window.location = 
-							//~ // 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
-					//~ }
-				//~ });
 			//------------------------------------------------------------------
 			// End testing R&A
 			//------------------------------------------------------------------

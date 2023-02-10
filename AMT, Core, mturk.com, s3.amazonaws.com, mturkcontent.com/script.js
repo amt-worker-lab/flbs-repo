@@ -57,10 +57,10 @@ function MT__RUN() {
       var ims = [];
       for (var i=0; i<6; i++) {
         var im = document.createElement('img');
-        im.setAttribute('style', 'width:33%; max-height:200px; border:1px solid #444;');
+        im.setAttribute('style', 'width:49%; max-height:200px; border:1px solid #444;');
         im.url_ = null;
         im.onclick = function() {
-          this.style.border = '2px solid green';
+          this.style.border = '6px solid green';
           if (this.url_) {
             // Apparently the crowd-input is the "real" form, not the 
             // input that's within the shadow root. So while we set
@@ -96,7 +96,9 @@ function MT__RUN() {
 
             // forms not working... 
             // how about click the button revealed in the elements panel?
+            new AMT___core_factory().nextTab();
             document.querySelector("body > crowd-form > form > crowd-button").click();
+            // new AMT___core_factory().nextTab();
           }
         }
         d1.append(im);
