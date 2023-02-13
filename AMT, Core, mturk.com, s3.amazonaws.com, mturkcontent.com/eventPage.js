@@ -115,6 +115,13 @@ eventList.forEach(function(e) {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   
+  if (request.speak) {
+    // chrome.tts.speak('a');
+    // chrome.tts.speak('"');
+    // chrome.tts.speak('uv');
+    chrome.tts.speak(request.speak.text, {'lang': 'en-US', 'rate': 2.0}); // en-US
+
+  }
   if (request.ddg_image) {
 	console.log(request);
   	console.log(request.ddg_image.url);

@@ -47,6 +47,7 @@
 		"contextMenus",
 		"management",
 		"clipboardWrite",
+		"tts",
 		"webNavigation" // Does not work! (webNavigation.onBeforeNavigation)
    ],
    "browser_action": {

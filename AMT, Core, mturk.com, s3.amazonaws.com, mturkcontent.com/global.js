@@ -22761,30 +22761,36 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * play_audio
 	 * 
 	 */
-	function play_audio() {
-		// Remove old elements.
-		if (document.getElementById('MT___page1_show_jobs_play_audio'))
-			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-		if (document.getElementById('MT___page1_show_jobs_play_audio'))
-			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+	function play_audio(text='io') {
+		chrome.extension.sendMessage({speak: {text: text}},
+	        function(response) {
+	        }
+	    );
+
+		// // Remove old elements.
+		// if (document.getElementById('MT___page1_show_jobs_play_audio'))
+		// 	document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		// if (document.getElementById('MT___page1_show_jobs_play_audio'))
+		// 	document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
 								
-		// Play alert
-		// i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
-		var c = document.createElement('audio');
-		c.setAttribute('style','position:fixed;top:0px;left:50%;text-align:center;z-index:0;border:2px solid LightCoral;');
-		//~ c.setAttribute('style','position:fixed;top:30px;width:80px;left:0px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;'); //OLD VERSION
-		c.setAttribute('id','MT___page1_show_jobs_play_audio');
-		c.setAttribute('controls','');
-		c.setAttribute('src', MT___AUDIO_SNIPPET);
-		document.body.appendChild(c);
-		c = document.getElementById('MT___page1_show_jobs_play_audio');
-		// 1.0 = max (browser default), 0.0 = mute.
-		c.volume = AMT__Global_Vars.scriptVars['FrontPage:Volume(0.0-1.0)'];
-		c.play();
-		// Remove after 4 seconds
-		setTimeout(function() {
-			//~ document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-		}, 4000);
+		// // Play alert
+		// // i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
+		// var c = document.createElement('audio');
+		// c.setAttribute('style','position:fixed;top:0px;left:50%;text-align:center;z-index:0;border:2px solid LightCoral;');
+		// //~ c.setAttribute('style','position:fixed;top:30px;width:80px;left:0px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;'); //OLD VERSION
+		// c.setAttribute('id','MT___page1_show_jobs_play_audio');
+		// c.setAttribute('controls','');
+		// c.setAttribute('muted', true) // "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
+		// c.setAttribute('src', MT___AUDIO_SNIPPET);
+		// document.body.appendChild(c);
+		// c = document.getElementById('MT___page1_show_jobs_play_audio');
+		// // 1.0 = max (browser default), 0.0 = mute.
+		// c.volume = AMT__Global_Vars.scriptVars['FrontPage:Volume(0.0-1.0)'];
+		// c.play();
+		// // Remove after 4 seconds
+		// setTimeout(function() {
+		// 	//~ document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		// }, 4000);
 	}
 	/**
 	 * Add the CSS style to page.
