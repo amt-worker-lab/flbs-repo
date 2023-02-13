@@ -26,6 +26,7 @@ var AMT__Global_Vars =
 {
 	defaultPersistantScriptVars : [
 		//{name: 'RecordAllHits',			value: 1, isPersistant:true},
+		{name: 'FrontPageText',				value: 'uu', isPersistant:true},
 		{name: 'DS ShiftFarLeft',			value: '0', isPersistant:true},
 		{name: 'DS ShowNextTab',			value: '0', isPersistant:true},
 		{name: 'DS NextTab',				value: '1', isPersistant:true},
@@ -20770,9 +20771,9 @@ AMT___core_factory.prototype.setTimerNamespace = function(str) {
  * 		Old address was
  * 		/^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/
  */
-AMT___core_factory.prototype.amt_home_show_tasks = function() {
+AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Global_Vars=null) {
 	// Check if the page is currently at /mturk/findhits
-	if (!validate_location()) {
+	if (!validate_location() && debug != true) {
 		return false;
 	}
 	
@@ -21193,26 +21194,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				MT___page1_async_last_update_onload(response);
 			}
 		);
-
-		// Xhr
-		//~ GM_xmlhttpRequest({
-			//~ method: 'GET',
-			//~ url: MT___page1_host +
-				//~ '?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+
-				//~ '&' + Math.random()*10000,
-			//~ timeout: 4000,
-			//~ ontimeout: function() {
-				//~ console.log(':ontimeout');
-				//~ last_update_check_host({status: 0});
-			//~ },
-			//~ onerror: function() {
-				//~ console.log(':onerror');
-				//~ last_update_check_host({status: 0});
-			//~ },
-			//~ onload: function (response) {
-				
-			//~ }
-		//~ });
 	}
 	
 	/**
@@ -21889,7 +21870,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// AMT Front Page Threshold (0+)
 		// Less than threshold?
 		tr.f.check_sv_hide = function() {
-			console.log('check_sv_hide', this.tr.hits_available);
+			// console.log('check_sv_hide', this.tr.hits_available);
 			if (this.tr.hits_available.innerText*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
 				this.tr.f.hide();
 			} else {
@@ -22761,7 +22742,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * play_audio
 	 * 
 	 */
-	function play_audio(text='io') {
+	function play_audio(text='') {
+		// console.log(text);
+		if (text == '') {
+			text = AMT__Global_Vars.associativeArrayofDPSV.FrontPageText.value;
+		}
+		// console.log(text);
 		chrome.extension.sendMessage({speak: {text: text}},
 	        function(response) {
 	        }

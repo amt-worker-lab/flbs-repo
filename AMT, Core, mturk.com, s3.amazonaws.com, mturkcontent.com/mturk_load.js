@@ -62,7 +62,7 @@ function mturk_load()
 			)
 		) {
 		// TRY show jobs
-		new AMT___core_factory().amt_home_show_tasks();
+		new AMT___core_factory().amt_home_show_tasks(debug=false, AMT__Global_Vars=AMT__Global_Vars);
 		
 		// Run myHITs
 		// John Roberts
