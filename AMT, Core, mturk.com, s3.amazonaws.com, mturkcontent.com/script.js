@@ -32,6 +32,24 @@ function MT__RUN() {
    * 
    */
   
+  var s = 'Listen to a speech sentence and then choose a score for the audio sample you\'ve just heard.';
+              // Listen to a speech sentence and then choose a score for the audio sample you've just heard.
+  console.log(ih);//l
+  if (ih.indexOf(s) != -1)
+  {
+    console.log('x');
+    var run = function() {}
+    run.prototype.f = function() {
+      window.ondblclick = function() {
+        console.log('x');
+        new AMT___core_factory().nextTab();
+        // document.querySelector("body > crowd-form > form > crowd-button").click();
+        document.querySelector("body > crowd-form > form > crowd-classifier")
+          .shadowRoot.querySelector("#actionsContainer > awsui-button > button").click();
+      }
+    }
+    new run().f();
+  }
   // "Company Logos", "Company"
   var s = '\n    <p>Find a company a company logo for a given company.</p>\n    <p>Find a company logo. Right click on the logo. Click on copy image url. Paste the image URL in the field below.</p>\n    <img width="150" height="200" src="https://directlyapply.com/images/mturkCopyImageAddressLogo.png">\n';
   if (ih.indexOf(s) != -1)
