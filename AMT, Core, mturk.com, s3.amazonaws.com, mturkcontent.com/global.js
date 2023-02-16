@@ -78,7 +78,8 @@ var AMT__Global_Vars =
 	core: {
 		return_accept_run_nextTab: false,
 		// AMT__Global_Vars.core.captcha_string
-		captcha_string: 'In order to accept your next HIT, please type this word into the text box below',
+		// (old) captcha_string: 'In order to accept your next HIT, please type this word into the text box below',
+		captcha_string: 'Please type the following characters in the text box below, then click Submit to continue working on HITs.',
 		getR_Button_NextTab: false,
 		is_running_on_local_dev: false, // This is boolean for e.g. http://localhost/mturk/.dev/HITs/CHIOS%20TESTING.html
 		//~ tabURL: null, // To be loaded in mturk_load(). Useful for e.g. ReloadOnNoHits.
@@ -214,7 +215,7 @@ AMT__Global_Vars.initialize_CAPTCHA_staggered_vars = function() {
 		{
 			AMT__Global_Vars.CAPTCHA_staggered.min_tabs_to_initiate_staggered	= rs.min_tabs_to_initiate_staggered;
 			AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab		= rs.staggered_timeout_per_tab;
-			AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab		= rs.staggered_timeout_per_tab;
+			//?? AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab		= rs.staggered_timeout_per_tab;
 		}
 	);
 }
@@ -677,24 +678,27 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	 * request.CAPTCHA_queue_reload
 	 */
 	// Must set false tmp?
-	var test=false;
+	var test = false;
 	if  (request.CAPTCHA_queue_reload) {
-		// Send success 
+		// Send success
 		// This could be sendResponse(true); As long as it is not sendResponse() or sendResponse(false) or No Response.
 		sendResponse({CAPTCHA_queue_reload__tab_recieved: true});
-		
+		console.log('Told that the captcha has been solved!');
 		if  (
 			document.body.innerHTML.indexOf(AMT__Global_Vars.core.captcha_string) != -1 ||
 			test
 			)
-		{
+		{	
+			console.log('Going to try to accept.');
 			// Go to new href or window.reload()
 			if (document.location.href == 'https://www.mturk.com/mturk/submit') { //
 				var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
 				if (i)
 					window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+				console.log('tried 1');
 			} else
 				window.location.reload();
+				console.log('tried 2');
 		}
 	}
 	
@@ -22938,7 +22942,8 @@ function AMT___oldTopWindowFloatStuff() {
 	*
 	*/
 	var s,t,u,w;
-	s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
+	// s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha (old)
+	s=/Please type the following characters in the text box below, then click Submit to continue working on HITs\./
 	t=/you were viewing could not be accepted/; // Not accepted
 	w=/Want to work on this HIT/; // Not accepted
 	//~ u=/The HIT you were viewing has expired/; //XXNot accepted

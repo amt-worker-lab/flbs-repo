@@ -342,7 +342,8 @@ function mturk_load()
 		 * And do float/skip if desired
 		 * (If job is unaccepted + top window)
 		**/
-		var s=/In order to accept your next HIT, please type this word into the text box below/, // Captcha
+		// (old) s=/In order to accept your next HIT, please type this word into the text box below/, // Captcha
+		var s=/Please type the following characters in the text box below, then click Submit to continue working on HITs\./, // Captcha
 			t=/you were viewing could not be accepted/, // Not accepted
 			//u=/The HIT you were viewing has expired/, //XXNot accepted
 			w=/Want to work on this HIT/, // Not accepted
