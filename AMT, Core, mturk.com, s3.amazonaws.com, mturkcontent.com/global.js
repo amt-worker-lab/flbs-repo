@@ -21212,17 +21212,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Gl
 		// Is ordered by time_posted DESC.
 		// @var new_job
 		var new_job = false;
-		for (var i = 0; i < rs[0].length; i++)
-		{
+		for (var i = 0; i < rs[0].length; i++) {
 			var db_id = rs[0][i];
-			
 			if (tasks_obj.current_db_ids.hasOwnProperty(db_id)) {
 				continue; // Skip
 			}
 			// on page number < 20, hits avail >= 80, !ignored
 			if  (
 				rs[1][i] <  20 &&
-				rs[4][i] >= 80 &&
+				rs[4][i] >= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1 &&
 				!ignore_requesters.hasOwnProperty(rs[3][i]) &&
 				!ignore_requesters__ids.hasOwnProperty(rs[6][i])
 				)
