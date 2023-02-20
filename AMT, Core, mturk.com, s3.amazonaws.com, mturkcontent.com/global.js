@@ -22829,6 +22829,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Gl
 		};
 		ignore_requesters = {
 			'VacationRentalAPI':true, // Added Jan. 2023
+			'VacationRentalAPI CA':true, // Added Jan. 2023
 			'Flying Fish':true,
 			'Digital Rekognition Network':true,
 			'Ibotta Turk':true,
