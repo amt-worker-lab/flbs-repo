@@ -284,6 +284,7 @@ function MT__RUN() {
           document.getElementsByName('firstName')[0].shadowRoot.querySelector('input'),
           document.getElementsByName('lastName')[0].shadowRoot.querySelector('input'),
         ];
+        // imgInp.shadowRoot.querySelector('input').value 
         // for (i in output) {
         //   output[i].style.position = 'absolute';
         //   output[i].style.top = '0px';
