@@ -32,6 +32,47 @@ function MT__RUN() {
    * 
    */
   
+  var s = '<h4> Question: Does the highlighted part of the given image have the correct target text, <b style="color:red">';
+  {
+    console.log('x');
+    var run = function() {}
+    run.prototype.f = function() {
+      // var x = document.querySelector("#cand1")
+      var x = document.getElementsByName('correctness')[1];
+      
+      x.click();
+      x.focus();
+      // var a = 
+      setTimeout(function(){
+        x.scrollIntoView();
+      }, 1000);
+      // submit
+      window.addEventListener('keyup', function(e) {
+        console.log(e.keyCode);
+        if (e.keyCode == 13) { // enter
+          e.stopPropagation();
+          e.preventDefault();
+          //document.getElementsByTagName('img')[0].click();
+          // if (output[0].value.trim() != '' && output[1].value.trim() != '') {
+          new AMT___core_factory().nextTab();
+          document.querySelector("body > crowd-form").shadowRoot.querySelector("#actionsContainer > awsui-button > button > span").click();
+            // document.querySelector("body > crowd-form > form > crowd-button").shadowRoot.querySelector("#react-mount-point > div > awsui-button > button").click();
+          // }
+          return false;
+        }
+      });
+
+      // window.ondblclick = function() {
+      //   console.log('x');
+      //   new AMT___core_factory().nextTab();
+      //   // document.querySelector("body > crowd-form > form > crowd-button").click();
+      //   // document.querySelector("body > crowd-form > form > crowd-classifier")
+      //   //   .shadowRoot.querySelector("#actionsContainer > awsui-button > button").click();
+      // }
+    }
+    new run().f();
+  }
+
   var s = 'Listen to a speech sentence and then choose a score for the audio sample you\'ve just heard.';
               // Listen to a speech sentence and then choose a score for the audio sample you've just heard.
   console.log(ih);//l
