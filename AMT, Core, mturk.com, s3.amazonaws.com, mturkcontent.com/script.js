@@ -41,10 +41,11 @@ function MT__RUN() {
       var x = document.getElementsByName('correctness')[1];
       
       x.click();
-      x.focus();
+
       // var a = 
       setTimeout(function(){
         x.scrollIntoView();
+        x.focus();
       }, 1000);
       // submit
       window.addEventListener('keyup', function(e) {
