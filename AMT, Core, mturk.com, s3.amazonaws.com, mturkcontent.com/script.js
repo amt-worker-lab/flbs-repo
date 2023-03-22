@@ -32,8 +32,100 @@ function MT__RUN() {
    * 
    */
   
+  // 
+  //   <p>Do not give Yelp pages, LinkedIn pages, etc.</p>
+  // create_dashboard_find_url
+  var s = 'The company you want researched will be substituted for the "company" variable \n               when you publish a batch with a CSV input file containing multiple companies';
+  if (ih.indexOf(s) != -1) {
+    console.log('x');
+    var run = function() {}
+    run.prototype.f = function() {
+      var d1 = ''.div({
+        style:
+        'position:absolute;top:30px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;',
+        a: true // append body
+      });
+      // height
+      new AMT___core_factory().el_innerHeight({
+        elements: [d1],
+        offset: 30 // offset top
+      });
+
+      var x = setTimeout(load, 1000);
+
+      function load() {
+        // run after the shadowroot is loaded
+        var o = {
+          q: [document.querySelector("body > crowd-form > form > crowd-input").shadowRoot.querySelector("#input-1 > input")],
+          u: [document.querySelector("body > crowd-form > form > p:nth-child(1) > strong")]
+        }
+        console.log(o);
+        AMT___items_factory.prototype.create_dashboard_find_url({
+          search: {
+            //~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
+            //~ use_duckduckgo_search_engine: true,
+          },
+          searches:[ // 
+            o.q[0].innerText.trim(),
+            // o.comp + ' ' + o.country,
+            // o.comp+' company ' + o.country,
+          ],
+          
+          search_results: {
+            //~ use_domain_only: true,
+            //~ use_full_urls: true,
+            bold: {
+              //~ black: o.boldArray,
+              //~ blue: o.boldArray2,
+              //~ brown: o.boldArray3,
+            },
+            onclick_success: function(e) {
+              //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+              // url
+              o.q[0].value = this.value;
+              // o.q[2].checked = true;
+              this.style.backgroundColor = 'LightGreen';
+              // doSubmit();
+
+              // new AMT___core_factory().nextTab();
+              // document.querySelector("body > crowd-form > form > crowd-button").click();
+
+              return false; // Stop default submit.
+            },
+            //~ url_modifier_callback: function(url) { // Add @ symbol
+              //~ url = '@' + url;
+              //~ return url;
+              //~ // Add trailing slash
+              //~ if (url[url.length-1] != '/')
+                //~ url += '/';
+              //~ return url;
+            //~ },
+            //~ url_ignore_test: function(obj) {
+              //~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+              //~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+              //~ console.log(obj);
+              //~ if (/\/dir\//.exec(obj.url)) {
+                //~ // ignore .../dir/...
+                //~ return true;
+              //~ }
+              //~ return false;
+            //~ },
+          },
+          out_element: o.q[4],
+          parent: d1,
+          offsetTop: 0,
+          //~ AmtRecordAndSubmit: true,
+          AutoReturnAcceptIfZero: false,
+        });
+
+      }
+      
+    }
+    new run().f();
+  }
+
   var s = '<h4> Question: Does the highlighted part of the given image have the correct target text, <b style="color:red">';
-  {
+  if (ih.indexOf(s) != -1) {
     console.log('x');
     var run = function() {}
     run.prototype.f = function() {
@@ -76,9 +168,7 @@ function MT__RUN() {
 
   var s = 'Listen to a speech sentence and then choose a score for the audio sample you\'ve just heard.';
               // Listen to a speech sentence and then choose a score for the audio sample you've just heard.
-  console.log(ih);//l
-  if (ih.indexOf(s) != -1)
-  {
+  if (ih.indexOf(s) != -1){
     console.log('x');
     var run = function() {}
     run.prototype.f = function() {
