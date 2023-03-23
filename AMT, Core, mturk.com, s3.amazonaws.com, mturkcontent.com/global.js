@@ -6357,6 +6357,7 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
   var url = MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(o));
   chrome.extension.sendMessage({xhr: {url: url}},
     function(response) {
+      console.log(response);
       var rs=response.responseText.trim();
       if (response.status != 200) {
         opts_obj.callback_err();
@@ -13169,12 +13170,15 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
   function company_URL__DD_init(el_div, el_inp) {
     var req_proxy;
     var add = options_object.search.str_add_to_searches_hidden;
+    var ddg_url = 'https://api.duckduckgo.com/?format=json&q=';
     // Single
     if (el_inp && el_div) {
       el_div.innerHTML = '';
       var req_proxy = new AMT___xhr_PROXY_REDACTED_({
         duckDuckGo: true,
-        url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(el_inp.value + add),
+        // url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(el_inp.value + add),
+        // http://api.duckduckgo.com/?q=x&format=json
+        url: ddg_url + encodeURIComponent(el_inp.value + add),
         seed: el_div,
         callback_function: company_URL__processProxyResponse,
         return_init_object: true
@@ -13188,14 +13192,14 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
     //count_domains(); innerText = 'Blank!'
     var req_proxy = new AMT___xhr_PROXY_REDACTED_({
       duckDuckGo: true,
-      url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3.value + add),
+      url: ddg_url + encodeURIComponent(d3.value + add),
       seed: d1,
       callback_function: company_URL__processProxyResponse,
       return_init_object: true
     });
     var req_proxy = new AMT___xhr_PROXY_REDACTED_({
       duckDuckGo: true,
-      url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3b.value + add),
+      url: ddg_url + encodeURIComponent(d3b.value + add),
       seed: d1b,
       callback_function: company_URL__processProxyResponse,
       return_init_object: true
@@ -13203,7 +13207,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
     if (d3c.value == '') return;
     var req_proxy = new AMT___xhr_PROXY_REDACTED_({
       duckDuckGo: true,
-      url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(d3c.value + add),
+      url: ddg_url + encodeURIComponent(d3c.value + add),
       seed: d1c,
       callback_function: company_URL__processProxyResponse,
       return_init_object: true
