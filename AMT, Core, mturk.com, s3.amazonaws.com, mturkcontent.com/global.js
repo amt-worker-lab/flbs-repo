@@ -13079,10 +13079,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
     company_URL__SP_init(d1,  this);
   }
   d3b.onblur = function() {
-    // company_URL__SP_init(d1b, this);
+    company_URL__SP_init(d1b, this);
   }
   d3c.onblur = function() {
-    // company_URL__SP_init(d1c, this);
+    company_URL__SP_init(d1c, this);
   }
   // ...
   var ef = new AMT___events_factory();
@@ -19318,7 +19318,9 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
       'As part of StartPage\'s ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user.', // Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
       '<h2 >Please enter the text below to continue using StartPage.</h2>',
       
-      'We apologize for the inconvenience: to prevent possible abuse of the Startpage.com service, your Internet connection has been prevented from accessing it.'
+      'We apologize for the inconvenience: to prevent possible abuse of the Startpage.com service, your Internet connection has been prevented from accessing it.',
+
+      '/*<![CDATA[*/window.pagePath="/captcha-block/";/*]]>*/'
     ]
     // UPDATE
     // As part of StartPage's ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
@@ -19433,135 +19435,113 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
   // UPDATE TO startpage results container June 11, 2015.
   //
   function array_startPage_results(rs) {
-    // NEW NOV 28 2018
-    //~ var r = /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/;
     
-    var dom = new DOMParser().parseFromString(rs, 'text/html');
-    console.log(dom);
-    
-    //var r = /<ol class="list-flat">((.|\s)*?(?=<\/ol>|$)|$)/;
-    var rslts;
+    var arr = [];
     var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
     if(rs.indexOf(not_enough_results_str) != -1) {
       return [];
     } else if (rs.indexOf('Sorry, there are no results for this search.') != -1) {
       return [];
     }
-    
-    // Not enough results.
-    // not_enough_results_str
-    // Returns []
-    //~ if (rs.indexOf(not_enough_results_str) != -1)
-      //~ return [];
-    
-    //Assume we have 1-10 results
 
-    //r.lastIndex = 0;  <-- no need, not testing
-    
-    //var ol = rslts[0];
-    
-    var ol = dom.getElementsByClassName('list-flat')[1];
-    console.log(ol);
-    
-    // Quick bypass of start page, no results??? Needs checking
-    if (ol.getElementsByClassName) {
+    // New Mar. 2023
+    var a = /React\.createElement\(UIStartpage\.HeaderSingleComponent, ([^\n]+)/.exec(rs);
+    if (!a) {
       return [];
     }
-    
-    var rslt = ol.getElementsByClassName('search-result search-item');
-    console.log(rslt);
-    var arr = [];
-    
-    for (var i=0; i<rslt.length; i++) {
-      
-      // link
-      var link = rslt[i].getElementsByTagName('a')[0];
-      
-      // BODY
-      var body = rslt[i].innerHTML;
-      body = body.replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
-      body = body.replace(/<\/b>/gi, '(``)');
-      body = body.replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
-      body = body.replace(/<script>[^<]+<\/script>/gi, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
-      body = body.replace(/<[^>]+>/g, ' ');
-      body = body.replace(/[<>]/g, ' ');
-      body = body.replace(/Anonymous View/, ' ');
-      // Clean it now
-      body = __js_clean_html_str(body);
-      // Replace B
-      body = body.replace(/\(``\)/g, '</b>');
-      body = body.replace(/\(`\)/g, '<b>');
-      // URLs ?
-      if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
-        // Works?
-        // http at start, to - -
-        body = body.replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-        // www at start, to - -
-        body = body.replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+    a = a[1].replace(/\),$/, '');
+    console.log(a);
+    a = JSON.parse(a);
+
+    try {
+      a = a.render.presenter.regions.mainline;
+      for (var i in a) { // array
+        if (a[i].display_type == 'web-google') {
+          for (var j in a[i].results) {
+            var r = a[i].results[j];
+            arr.push([
+              r.clickUrl, r.description, r.title
+            ]);
+          }
+          break;
+        }
       }
-      
-      /////////////////////////
-      // New, March 23
-      // Add third item to return,
-      // which is the website "title",
-      // aka result title.
-      /////////////////////////
-      arr.push([
-        link.href, body, link.innerText.trim()
-      ]);
+    } catch(e) {
+      return [];
     }
-    
-    //~ // 1 = url
-    //~ // 2 = body
-    //~ var contentReg = /<li class="search-result search-item">[\r\n\s\t]*<h3[^>]*><a href="([^"]+)"[^>]*>([^<]+)((.|\s)*?(?=<\/li>|$)|$)/g;
-    //~ var content;
-    //~ var arr = [];
-    //~ while(content = contentReg.exec(ol)) {
-      //~ // What is the website "title", or i.e. result title.
-      //~ // Save this as rs[i][2]
-      //~ // Where rs[i][0] = url
-      //~ // And   rs[i][1] = body
-      
-      //~ // ex: <span class="result_url_heading">Got Questions - Try Alpha</span>
-      //~ // ex: <span class="result_url_heading">Bidder | Define Bidder at Dictionary.com</span>
-      
-      
-      //~ console.log(content);
-      
-      
-      //~ content[2] = content[3].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
-      //~ content[3] = content[3].replace(/<\/b>/gi, '(``)');
-      //~ content[3] = content[3].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
-      //~ content[3] = content[3].replace(/<script>[^<]+<\/script>/gi, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
-      //~ content[3] = content[3].replace(/<[^>]+>/g, ' ');
-      //~ content[3] = content[3].replace(/[<>]/g, ' ');
-      //~ content[3] = content[3].replace(/Anonymous View/, ' ');
-      //~ // Clean it now
-      //~ content[3] = __js_clean_html_str(content[3]);
-      //~ // Replace B
-      //~ content[3] = content[3].replace(/\(``\)/g, '</b>');
-      //~ content[3] = content[3].replace(/\(`\)/g, '<b>');
-      
-      //~ // URLs ?
-      //~ if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
-        //~ // Works?
-        //~ // http at start, to - -
-        //~ content[3] = content[3].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-        //~ // www at start, to - -
-        //~ content[3] = content[3].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
-      //~ }
-      
-      //~ /////////////////////////
-      //~ // New, March 23
-      //~ // Add third item to return,
-      //~ // which is the website "title",
-      //~ // aka result title.
-      //~ /////////////////////////
-      //~ arr.push([
-        //~ content[1], content[3], __js_clean_html_str(content[2])
-      //~ ]);
-    //~ }
     return arr;
+    
+    // old
+    ////// NEW NOV 28 2018
+    /////~ var r = /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/;
+
+    // var dom = new DOMParser().parseFromString(rs, 'text/html');
+    // console.log(dom);
+
+    // // Not enough results.
+    // // not_enough_results_str
+    // // Returns []
+    // //~ if (rs.indexOf(not_enough_results_str) != -1)
+    //   //~ return [];
+    
+    // //Assume we have 1-10 results
+
+    // //r.lastIndex = 0;  <-- no need, not testing
+    
+    // //var ol = rslts[0];
+    
+    // var ol = dom.getElementsByClassName('list-flat')[1];
+    // console.log(ol);
+    
+    // // Quick bypass of start page, no results??? Needs checking
+    // if (ol.getElementsByClassName) {
+    //   return [];
+    // }
+    
+    // var rslt = ol.getElementsByClassName('search-result search-item');
+    // console.log(rslt);
+    // var arr = [];
+    
+    // for (var i=0; i<rslt.length; i++) {
+      
+    //   // link
+    //   var link = rslt[i].getElementsByTagName('a')[0];
+      
+    //   // BODY
+    //   var body = rslt[i].innerHTML;
+    //   body = body.replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
+    //   body = body.replace(/<\/b>/gi, '(``)');
+    //   body = body.replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
+    //   body = body.replace(/<script>[^<]+<\/script>/gi, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
+    //   body = body.replace(/<[^>]+>/g, ' ');
+    //   body = body.replace(/[<>]/g, ' ');
+    //   body = body.replace(/Anonymous View/, ' ');
+    //   // Clean it now
+    //   body = __js_clean_html_str(body);
+    //   // Replace B
+    //   body = body.replace(/\(``\)/g, '</b>');
+    //   body = body.replace(/\(`\)/g, '<b>');
+    //   // URLs ?
+    //   if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+    //     // Works?
+    //     // http at start, to - -
+    //     body = body.replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+    //     // www at start, to - -
+    //     body = body.replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+    //   }
+      
+    //   /////////////////////////
+    //   // New, March 23
+    //   // Add third item to return,
+    //   // which is the website "title",
+    //   // aka result title.
+    //   /////////////////////////
+    //   arr.push([
+    //     link.href, body, link.innerText.trim()
+    //   ]);
+    // }
+    
+    // return arr;
   }
   this.array_startPage_results = array_startPage_results;
   

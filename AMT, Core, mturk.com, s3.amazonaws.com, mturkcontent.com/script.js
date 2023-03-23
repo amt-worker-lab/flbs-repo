@@ -35,6 +35,8 @@ function MT__RUN() {
   // 
   //   <p>Do not give Yelp pages, LinkedIn pages, etc.</p>
   // create_dashboard_find_url
+  // https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=ARL70E283EB6Q
+  // Find the official website, Tradewing
   var s = 'The company you want researched will be substituted for the "company" variable \n               when you publish a batch with a CSV input file containing multiple companies';
   if (ih.indexOf(s) != -1) {
     console.log('x');
@@ -56,17 +58,31 @@ function MT__RUN() {
       function load() {
         // run after the shadowroot is loaded
         var o = {
-          q: [document.querySelector("body > crowd-form > form > crowd-input").shadowRoot.querySelector("#input-1 > input")],
-          u: [document.querySelector("body > crowd-form > form > p:nth-child(1) > strong")]
+          q: [
+            document.querySelector("body > crowd-form > form > crowd-input").shadowRoot.querySelector("#input-1 > input"),
+            document.querySelector("body > crowd-form > form > p:nth-child(1) > strong")
+          ],
         }
         console.log(o);
+        //style
+        document.querySelector("body > crowd-form > form > crowd-button").style.position = 'absolute';
+        document.querySelector("body > crowd-form > form > crowd-button").style.top = '0';
+        document.querySelector("body > crowd-form > form > crowd-button").style.right = '0';
+        document.querySelector("body > crowd-form > form > crowd-input").style.position = 'absolute';
+        document.querySelector("body > crowd-form > form > crowd-input").style.top = '-20px';
+        document.querySelector("body > crowd-form > form > crowd-input").style.right = '100px';
+        document.querySelector("body > crowd-form > form > crowd-input").style.width = '300px';
+        // console.log(o.q[1].innerText.trim());
+
         AMT___items_factory.prototype.create_dashboard_find_url({
           search: {
             //~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
             use_duckduckgo_search_engine: false,
           },
           searches:[ // 
-            o.q[0].innerText.trim(),
+            o.q[1].innerText.trim(),
+            o.q[1].innerText.trim() + ' website',
+            o.q[1].innerText.trim() + ' bank',
             // o.comp + ' ' + o.country,
             // o.comp+' company ' + o.country,
           ],
@@ -87,8 +103,8 @@ function MT__RUN() {
               this.style.backgroundColor = 'LightGreen';
               // doSubmit();
 
-              // new AMT___core_factory().nextTab();
-              // document.querySelector("body > crowd-form > form > crowd-button").click();
+              new AMT___core_factory().nextTab();
+              document.querySelector("body > crowd-form > form > crowd-button").click();
 
               return false; // Stop default submit.
             },
