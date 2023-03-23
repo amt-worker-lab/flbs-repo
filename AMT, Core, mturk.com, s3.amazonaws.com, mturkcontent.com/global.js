@@ -19335,7 +19335,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
       'Cookie:preferences=lang_homepageEEEs/air/eng/N1NsslEEE1N1Nfont_sizeEEEmediumN1Nrecent_results_filterEEE1N1Nlanguage_uiEEEenglishN1Ndisable_open_in_new_windowEEE1N1Ndisable_family_filterEEE1N1Nnum_of_resultsEEE10N1N'
     ];
     //this.obj_vars.catch_success = '<!DOCTYPE HTML>';
-    this.obj_vars.catch_success = '<HTML';
+    // this.obj_vars.catch_success = '<HTML';
+    this.obj_vars.catch_success = '<html';
   }
   
   // duckDuckGo == true
