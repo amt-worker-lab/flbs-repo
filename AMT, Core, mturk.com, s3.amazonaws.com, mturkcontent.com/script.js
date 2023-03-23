@@ -63,7 +63,7 @@ function MT__RUN() {
         AMT___items_factory.prototype.create_dashboard_find_url({
           search: {
             //~ str_add_to_searches_hidden: ' ("sustainability" OR "sustainable" OR "environmental" OR "environment" OR "renewable" OR "renewability")', //
-            use_duckduckgo_search_engine: true,
+            use_duckduckgo_search_engine: false,
           },
           searches:[ // 
             o.q[0].innerText.trim(),

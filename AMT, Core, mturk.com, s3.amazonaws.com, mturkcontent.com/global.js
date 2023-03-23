@@ -3849,13 +3849,12 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
    * 
    */  
   function read_from_disk() {
-    GM_xmlhttpRequest({
-      method: 'GET',
-      url: options.host +
-        '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+
-        encodeURIComponent(JSON.stringify(options))+
-        '&random='+Math.random(),
-      onload: function (response) {
+    var u =  options.host +
+      '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+
+      encodeURIComponent(JSON.stringify(options))+
+      '&random='+Math.random();
+    chrome.extension.sendMessage({xhr: {url: u}},
+      function(response) {
         var rs = response.responseText;
         if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
           console.log('-----\nFILE DOES NOT EXIST!\n-----');
@@ -3866,7 +3865,25 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
           success(response);
         }
       }
-    });
+    )
+    // GM_xmlhttpRequest({
+    //   method: 'GET',
+    //   url: options.host +
+    //     '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+
+    //     encodeURIComponent(JSON.stringify(options))+
+    //     '&random='+Math.random(),
+    //   onload: function (response) {
+    //     var rs = response.responseText;
+    //     if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
+    //       console.log('-----\nFILE DOES NOT EXIST!\n-----');
+    //       read_from_xhr();
+    //     } else {
+    //       console.log('-----\nRESPONSE CACHED!\n-----');
+    //       response.from_disk = true;
+    //       success(response);
+    //     }
+    //   }
+    // });
   }
   /**
    * function read_from_xhr
@@ -3876,20 +3893,8 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
   function read_from_xhr() {
 
     if (options.method == 'get') {
-      GM_xmlhttpRequest({
-        method: 'GET',
-        url: options.URL,
-        timeout: options.xhr_timeout,
-        ontimeout: function() { // Todo
-          //~ alert('xhr timeout');
-          options.xhr_no_success();
-        },
-        onerror: function() { // Todo
-          //~ alert('xhr error');
-          options.xhr_no_success();
-        },
-        onload: function (response) {
-          //~ var rs = response.responseText;
+      chrome.extension.sendMessage({xhr: {url: options.URL}},
+        function(response) {
           options.response = response;
           var rslt = options.check_pre_write_to_disk(options);
           console.log('bool_check_write_to_disk:'+rslt);
@@ -3899,7 +3904,31 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
             return false;
           }
         }
-      });
+      )
+      // GM_xmlhttpRequest({
+      //   method: 'GET',
+      //   url: options.URL,
+      //   timeout: options.xhr_timeout,
+      //   ontimeout: function() { // Todo
+      //     //~ alert('xhr timeout');
+      //     options.xhr_no_success();
+      //   },
+      //   onerror: function() { // Todo
+      //     //~ alert('xhr error');
+      //     options.xhr_no_success();
+      //   },
+      //   onload: function (response) {
+      //     //~ var rs = response.responseText;
+      //     options.response = response;
+      //     var rslt = options.check_pre_write_to_disk(options);
+      //     console.log('bool_check_write_to_disk:'+rslt);
+      //     if (rslt) {
+      //       write_to_disk(response);
+      //     } else {
+      //       return false;
+      //     }
+      //   }
+      // });
     } else if (options.method.toLowerCase() == 'post') {
       GM_xmlhttpRequest({
         method: 'POST',
@@ -3965,27 +3994,47 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
   function write_to_disk(competed_response) {
     var competed_response = competed_response; // Passes into success(competed_response) func.
     options.tmp_response_text = competed_response.responseText; // This is just a tmp var to pass in the responseText without the full response.
+    var h = {
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+    var d = 'xhr_with_disk_cache__write_to_disk='+
+      encodeURIComponent(JSON.stringify(options))+'&random='+Math.random();
+    var u = options.host + '/mturk/util.php';
+    chrome.extension.sendMessage({xhr: {url: u, method: 'POST', headers: h, data: d}},
+        function(response) {
+          var rs = response.responseText;
+          if (response.status != 200) {
+            console.log('write_to_disk (status):'+response.status);
+            return;
+          }
+          if (rs.trim() != '') {
+            console.log('write_to_disk:'+rs.trim());
+            return;
+          }
+          success(competed_response);
+        }
+      )
     // Make the post request.
-    GM_xmlhttpRequest({
-      method: "POST",
-      url: options.host + '/mturk/util.php',
-      data: 'xhr_with_disk_cache__write_to_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      onload: function(response) {
-        var rs = response.responseText;
-        if (response.status != 200) {
-          console.log('write_to_disk (status):'+response.status);
-          return;
-        }
-        if (rs.trim() != '') {
-          console.log('write_to_disk:'+rs.trim());
-          return;
-        }
-        success(competed_response);
-      }
-    });
+    // GM_xmlhttpRequest({
+    //   method: "POST",
+    //   url: options.host + '/mturk/util.php',
+    //   data: 'xhr_with_disk_cache__write_to_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+    //   headers: {
+    //     "Content-Type": "application/x-www-form-urlencoded"
+    //   },
+    //   onload: function(response) {
+    //     var rs = response.responseText;
+    //     if (response.status != 200) {
+    //       console.log('write_to_disk (status):'+response.status);
+    //       return;
+    //     }
+    //     if (rs.trim() != '') {
+    //       console.log('write_to_disk:'+rs.trim());
+    //       return;
+    //     }
+    //     success(competed_response);
+    //   }
+    // });
   }
 }
 /**
@@ -13026,13 +13075,14 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
   /*END ITEMS*/
   // Onblur
   d3.onblur = function() {
+    // company_URL__DD_init(d1, this);
     company_URL__SP_init(d1,  this);
   }
   d3b.onblur = function() {
-    company_URL__SP_init(d1b, this);
+    // company_URL__SP_init(d1b, this);
   }
   d3c.onblur = function() {
-    company_URL__SP_init(d1c, this);
+    // company_URL__SP_init(d1c, this);
   }
   // ...
   var ef = new AMT___events_factory();
@@ -13161,57 +13211,108 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
       company_URL__DD_init();
     }
   }
+
+  ////////////////////////////////////
   // Init
-  //
+  ////////////////////////////////////
   company_URL__load_skips(false);
+
   /**
    * company_URL__DD_init
+   * el_div, el_inp (optional): pass in a single div or input
    */
   function company_URL__DD_init(el_div, el_inp) {
     var req_proxy;
     var add = options_object.search.str_add_to_searches_hidden;
     var ddg_url = 'https://api.duckduckgo.com/?format=json&q=';
-    // Single
-    if (el_inp && el_div) {
-      el_div.innerHTML = '';
-      var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-        duckDuckGo: true,
-        // url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(el_inp.value + add),
-        // http://api.duckduckgo.com/?q=x&format=json
-        url: ddg_url + encodeURIComponent(el_inp.value + add),
-        seed: el_div,
-        callback_function: company_URL__processProxyResponse,
-        return_init_object: true
-      });
-      return;
-    }
+    // ??
+    // if (el_inp && el_div) {
+    //   el_div.innerHTML = '';
+      // new AMT___requests_factory.xhr_with_disk_cache({
+      //   URL: ddg_url + encodeURIComponent(el_inp.value + add),
+      //   host: 'http://' + AMT__Global_Vars.scriptVars['Server Location'],
+      //   success_callback: function(options) { // options.response[responseText, status, ...]
+      //     var rs = options.response.responseText;
+      //     console.log(rs);
+      //     return;
+      //     // rs
+      //     // // 0=url
+      //     // // 1=full
+      //     // // 2=title of result (new: March 23 2018)
+      //     // var rs = response.rs;
+      //     // // seed_arg
+      //     // var out_div = response.seed;
+
+      //     company_URL__processProxyResponse(options.response);
+      //   }
+      // });     
+      // chrome.extension.sendMessage({xhr: {url: url_}},
+      //   function(response) {
+      //     // console.log(response, response.responseText, response.responseText.replace(/\\n$/,''));
+      //     console.log(response);
+      //     company_URL__processProxyResponse(response);
+      //   }
+      // );
+      // var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+      //   duckDuckGo: true,
+      //   // url: 'https://duckduckgo.com/?ia=web&q=' + encodeURIComponent(el_inp.value + add),
+      //   // http://api.duckduckgo.com/?q=x&format=json
+      //   url: ddg_url + encodeURIComponent(el_inp.value + add),
+      //   seed: el_div,
+      //   callback_function: company_URL__processProxyResponse,
+      //   return_init_object: true
+      // });
+      // return;
+    // }
     
     // Multi
     d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
     // Do not search if blank!
     //count_domains(); innerText = 'Blank!'
-    var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-      duckDuckGo: true,
-      url: ddg_url + encodeURIComponent(d3.value + add),
-      seed: d1,
-      callback_function: company_URL__processProxyResponse,
-      return_init_object: true
-    });
-    var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-      duckDuckGo: true,
-      url: ddg_url + encodeURIComponent(d3b.value + add),
-      seed: d1b,
-      callback_function: company_URL__processProxyResponse,
-      return_init_object: true
-    });
-    if (d3c.value == '') return;
-    var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-      duckDuckGo: true,
-      url: ddg_url + encodeURIComponent(d3c.value + add),
-      seed: d1c,
-      callback_function: company_URL__processProxyResponse,
-      return_init_object: true
-    });
+    if (d3.value != '') {
+      console.log(ddg_url + encodeURIComponent(d3.value + add));
+      new AMT___requests_factory().xhr_with_disk_cache({
+        URL: ddg_url + encodeURIComponent(d3.value + add),
+        host: AMT__Global_Vars.scriptVars['Server Location'], // adds https://
+        success_callback: function(options) { // options.response[responseText, status, ...]
+          var rs = options.response.responseText;
+          console.log(rs);
+          return;
+          // rs
+          // // 0=url
+          // // 1=full
+          // // 2=title of result (new: March 23 2018)
+          // var rs = response.rs;
+          // // seed_arg
+          // var out_div = response.seed;
+
+          company_URL__processProxyResponse(options.response);
+        }
+      });  
+    }
+
+    // var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+    //   duckDuckGo: true,
+    //   url: ddg_url + encodeURIComponent(d3.value + add),
+    //   seed: d1,
+    //   callback_function: company_URL__processProxyResponse,
+    //   return_init_object: true
+    // });
+    // var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+    //   duckDuckGo: true,
+    //   url: ddg_url + encodeURIComponent(d3b.value + add),
+    //   seed: d1b,
+    //   callback_function: company_URL__processProxyResponse,
+    //   return_init_object: true
+    // });
+    // if (d3c.value == '') return;
+    // var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+    //   duckDuckGo: true,
+    //   url: ddg_url + encodeURIComponent(d3c.value + add),
+    //   seed: d1c,
+    //   callback_function: company_URL__processProxyResponse,
+    //   return_init_object: true
+    // });
   }
   /**
    * company_URL__SP_init
@@ -19674,13 +19775,18 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
         o.local_URL_complete  = h + o.local_URL_complete;
         console.log('@proxy_init: start URL:',o.local_URL_init);
         // Xhr
-        GM_xmlhttpRequest({ // init
-          method: "GET",
-          url: o.local_URL_init,
-          onload: function(response) {
+        chrome.extension.sendMessage({xhr: {url: o.local_URL_init}},
+          function(response) {
             //
           }
-        });
+        )
+        // GM_xmlhttpRequest({ // init
+        //   method: "GET",
+        //   url: o.local_URL_init,
+        //   onload: function(response) {
+        //     //
+        //   }
+        // });
       }
     );
   }
@@ -19693,15 +19799,15 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
     var this_obj = this; // legacy
     var callback_function = callback_function;
     var xint = setInterval(function() {
-      GM_xmlhttpRequest({ // init
-        method: "GET",
-        url: o.local_URL_complete,
-        onload: function(response) {
+      
+      chrome.extension.sendMessage({xhr: {url: o.local_URL_complete}},
+        function(response) {
           var rs = response.responseText;
           if (rs.trim() != '') {
             clearInterval(xint);
-          } else
+          } else {
             return;
+          }
           
           // Only process callback once!
           // Problem: Occasionally, Chrome-Bug occurs
@@ -19771,7 +19877,86 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
             callback_function(rs);
           }
         }
-      })
+      );
+      // GM_xmlhttpRequest({ // init
+      //   method: "GET",
+      //   url: o.local_URL_complete,
+      //   onload: function(response) {
+          // var rs = response.responseText;
+          // if (rs.trim() != '') {
+          //   clearInterval(xint);
+          // } else
+          //   return;
+          
+          // // Only process callback once!
+          // // Problem: Occasionally, Chrome-Bug occurs
+          // // or server lags, leaving multiple callbacks
+          // // stacking. Then, all at once, they come in.
+          // // Sometimes they trickle in for up to a minute or
+          // // two at a time!
+          // // Solution: Only allow one callback to proceed.
+          // if (o.processed_callback) {
+          //   return;
+          // }
+          // o.processed_callback = true;
+          // //~ console.log('rs',rs);
+          // console.log('o.duckDuckGoSecondStage:',o.duckDuckGoSecondStage);
+          
+          // // yahoo
+          // if (o.obj_vars.hasOwnProperty('yahoo_array')) {
+          //   rs = array_yahoo_results(rs);
+          // }
+          // // startPage
+          // else if(o.obj_vars.hasOwnProperty('startPage_array')) {
+          //   rs = array_startPage_results(rs);
+          // }
+          // // duckDuckGo
+          // else if(o.obj_vars.hasOwnProperty('duckDuckGo_array')) {
+          //   console.log('@proxy_waitComplete: duckDuckGo_array');
+          //   // First stage.
+          //   if (o.duckDuckGoSecondStage == null) {
+          //     console.log('@proxy_waitComplete: run first stage');
+          //     o.duckDuckGoSecondStage = true;
+          //     if (duckDuckGoId(rs) == null) {
+          //       // Are these good results?
+          //       console.log('@proxy_waitComplete: duckDuckGoId is null');
+          //       rs = array_duckDuckGo_results2(rs);
+          //       // Continue...
+          //       return false;
+          //     }
+          //     else {
+          //       // Load second page, then quit.
+          //       console.log('@proxy_waitComplete: starting stage 2 duckDuckGo');
+          //       // update catch include string
+          //       // "DDG" probably good enough
+          //       o.obj_vars.catch_success = 'DDG';
+          //       generateLocalURL(); // Regenerate local url
+          //       proxy_init();
+          //       proxy_waitComplete(
+          //         o.obj_vars.callback_function
+          //       );
+          //       return;
+          //     }
+          //   } else { // Second stage.
+          //     console.log('@proxy_waitComplete: second stage complete');
+          //     rs = array_duckDuckGo_results(rs);
+          //   }
+          // }
+          // // ...
+          // if (o.obj_vars.return_init_object) {
+          //   o.obj_vars.rs = rs;
+          //   callback_function(o.obj_vars);
+          // }
+          // else if (o.obj_vars.seed_arg1)
+          // {
+          //   callback_function(rs, o.obj_vars.seed_arg1);
+          // }
+          // else
+          // {
+          //   callback_function(rs);
+          // }
+      //   }
+      // })
     }, 1200);
   }
   this.proxy_waitComplete = proxy_waitComplete;
