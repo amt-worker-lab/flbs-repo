@@ -123,24 +123,48 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   }
   if (request.xhr) {
-    GM_xmlhttpRequest({
-      method: 'GET',
-      url: request.xhr.url,
-      timeout: 40000,
-      ontimeout: function() {
-        // console.log('MT___page1_async_last_update:ontimeout');
-        //~ last_update_check_host({status: 0});
-      },
-      onerror: function() {
-        // console.log('MT___page1_async_last_update:onerror');
-        //~ last_update_check_host({status: 0});
-      },
-      onload: function(response) {
-        console.log(response);
-        sendResponse(response);
-        return true;
-      }
-    });
+    var method = request.xhr.hasOwnProperty('method') ? request.xhr.method : 'GET'; // default GET
+    if (method == 'GET') {
+      GM_xmlhttpRequest({
+        method: 'GET',
+        url: request.xhr.url,
+        timeout: 40000,
+        ontimeout: function() {
+          // console.log('MT___page1_async_last_update:ontimeout');
+          //~ last_update_check_host({status: 0});
+        },
+        onerror: function() {
+          // console.log('MT___page1_async_last_update:onerror');
+          //~ last_update_check_host({status: 0});
+        },
+        onload: function(response) {
+          console.log(response);
+          sendResponse(response);
+          return true;
+        }
+      });
+    } else {
+      GM_xmlhttpRequest({
+        method: 'POST',
+        url: request.xhr.url,
+        data: request.xhr.data,
+        headers: request.xhr.headers,
+        timeout: 40000,
+        ontimeout: function() {
+          // console.log('MT___page1_async_last_update:ontimeout');
+          //~ last_update_check_host({status: 0});
+        },
+        onerror: function() {
+          // console.log('MT___page1_async_last_update:onerror');
+          //~ last_update_check_host({status: 0});
+        },
+        onload: function(response) {
+          console.log(response);
+          sendResponse(response);
+          return true;
+        }
+      });
+    }
     return true;
   }
   if (request.ddg_image) {
