@@ -2562,7 +2562,7 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
  * @param {number} options.threshold_to_change => ChangeWindowCount
  * @param {Object} callback_function
  */
-AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
+export AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
   // Is there an iframe on the page?
   // If there is not then this is the end!
   if (!document.getElementsByTagName('iframe').length)
