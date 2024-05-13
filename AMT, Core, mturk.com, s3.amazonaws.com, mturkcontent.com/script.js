@@ -11,9 +11,12 @@ var beginRunTime = new Date().getTime();
  * Scripts execute here, amazonaws.com, mturkcontent.com
  * (mturk.com is in top_window/parent_window)
  * 
- * 
+ * @todo Add more desc. ??
  */
-function MT__RUN() {
+export function MT__RUN() {
+	/** 
+   * test
+	 * /
   // Init Scrapy Tasks
   // NOTE: If the init__scrapy function returns false
   // then there was an "s" match. In which case end now.

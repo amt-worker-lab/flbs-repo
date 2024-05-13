@@ -39127,7 +39127,7 @@ Laurens Hammond, Chicago, Ill.**/
       /*
        * function google_nearby
        * 
-       * @param    callback_obj.(lat,lng)
+       * @param callback_obj.(lat,lng)
        */
       function google_nearbyXX(callback_obj) {
         
@@ -57491,8 +57491,8 @@ Laurens Hammond, Chicago, Ill.**/
       /**
        * function yelp_profile
        * 
-       * @param  div, html element
-       * @returns
+       * @param div, html element
+       * @return
        */
       function yelp_profile(div) {
         var u = div.yhref;
@@ -98222,7 +98222,7 @@ Laurens Hammond, Chicago, Ill.**/
     
     function Edwin_Orange_kybar_prof(num) {
       
-      // @GLOBAL
+      // @param
       //   VIEWSTATE
       
       var b = '__VIEWSTATE='+encodeURIComponent(VIEWSTATE)+'&txtLastname='+encodeURIComponent('')+'&txtFirstName='+encodeURIComponent('')+'&txtCity=&ddlSection=&ddlCounty=&'+encodeURIComponent(num)+'=Select'; //DataGrid1%3A_ctl3%3A_ctl0
@@ -115458,7 +115458,7 @@ qatar,80
        * function form_vars
        * 
        * @param rs, Response text
-       * @returns Object
+       * @return Object
        */
       function form_vars(rs) {
         var v = {
@@ -115799,7 +115799,7 @@ qatar,80
        * function form_vars
        * 
        * @param rs, Response text
-       * @returns Object
+       * @return Object
        */
       function form_vars(rs) {
         var v = {
@@ -118044,7 +118044,7 @@ qatar,80
        * function form_vars
        * 
        * @param rs, Response text
-       * @returns Object
+       * @return Object
        */
       function form_vars(rs) {
         var v = {
@@ -118209,7 +118209,7 @@ qatar,80
        * function form_vars
        * 
        * @param rs, Response text
-       * @returns Object
+       * @return Object
        */
       function form_vars(rs) {
         var v = {
@@ -118434,7 +118434,7 @@ qatar,80
        * function form_vars
        * 
        * @param rs, Response text
-       * @returns Object
+       * @return Object
        */
       function form_vars(rs) {
         var v = {
@@ -118838,7 +118838,7 @@ qatar,80
        * function form_vars
        * 
        * @param rs, Response text
-       * @returns Object
+       * @return Object
        */
       function form_vars(rs) {
         var v = {
@@ -126650,7 +126650,7 @@ qatar,80
       /**
        * function div_click
        * 
-       * @param    div    element
+       * @param div    element
        */
       function div_click(div) {
         div.style.backgroundColor = 'LightGreen';
@@ -167762,7 +167762,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -168150,7 +168150,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -168537,7 +168537,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -168925,7 +168925,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -169358,7 +169358,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -169774,7 +169774,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -170180,7 +170180,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -170576,7 +170576,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -171036,7 +171036,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -171445,7 +171445,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -171852,7 +171852,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -172263,7 +172263,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -172660,7 +172660,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -173052,7 +173052,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -173444,7 +173444,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -173836,7 +173836,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -174547,8 +174547,8 @@ qatar,80
        * @ load_and_save_site_directory
        * @ write_site_directory
        * 
-       * @param    e      event
-       * @param    this    input
+       * @param e      event
+       * @param this    input
        */
       function save_site_directory() {
         console.log('e');
@@ -174688,7 +174688,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -175078,7 +175078,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -175537,7 +175537,7 @@ qatar,80
       /**
        * function company_URL__processProxyResponse
        * 
-       * @param    response    object
+       * @param response    object
        */
       function company_URL__processProxyResponse(response) {
         
@@ -190156,7 +190156,7 @@ qatar,80
     AMT___POPUP__initializeGlobals(
       function() {
         requests_factory.fs__load_skips_file('austin_load_skips', function(tmp_skip_sites) {
-          SKIP_SITES = tmp_skip_sites; // @global var
+          SKIP_SITES = tmp_skip_sites; // @param var
           Daniel_Axelsen_Find_Email__init();
         });
       }
@@ -190967,7 +190967,7 @@ qatar,80
     AMT___POPUP__initializeGlobals(
       function() {
         requests_factory.fs__load_skips_file('austin_load_skips', function(tmp_skip_sites) {
-          SKIP_SITES = tmp_skip_sites; // @global var
+          SKIP_SITES = tmp_skip_sites; // @param var
           EAT_Club_find_comp_email__init();
         });
       }
@@ -191696,7 +191696,7 @@ qatar,80
     AMT___POPUP__initializeGlobals(
       function() {
         requests_factory.fs__load_skips_file('austin_load_skips', function(tmp_skip_sites) {
-          SKIP_SITES = tmp_skip_sites; // @global var
+          SKIP_SITES = tmp_skip_sites; // @param var
           MT_Project_Find_Web_Info__init();
         });
       }
@@ -203499,7 +203499,7 @@ qatar,80
     function Brittany_Graham_contact_name_useProxyInitSearch(first__, isManual__, u, out) { //console.log(AMT___POPUP___PROXY_REDACTED_);
       // init
       /** !!
-       * @global AMT___POPUP___PROXY_REDACTED_
+       * @param AMT___POPUP___PROXY_REDACTED_
        */
       GM_xmlhttpRequest({
         method: "GET",
@@ -215612,7 +215612,7 @@ qatar,80
     KristinHowe_agent_photo_layoutChangeType(false);
     
     // TEST STRING
-    // @globalvar mt___kh_test_str
+    // @paramvar mt___kh_test_str
     
     // radios onclick
     var a = document.getElementsByTagName('input');
@@ -222102,7 +222102,7 @@ qatar,80
  * 
  * @param okay_to_run
  * 
- * @returns ...
+ * @return ...
  */
 function top_window(okay_to_run) {
   var s, s2, s3,
@@ -226655,7 +226655,7 @@ function top_window(okay_to_run) {
       
       //
       /**
-      * @globalvar selectPerson
+      * @paramvar selectPerson
       */
       document.getElementById("p" + selectPerson).style.backgroundColor = "lightgreen";
       for(i=1;i<4;i++)
