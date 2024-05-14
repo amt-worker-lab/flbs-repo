@@ -20,7 +20,7 @@ var MT___host = 'http://192.168.1.86';
 /**
  * AMT__GLOBAL_VARS
  * 
- * 
+ * @class
  **/
 var AMT__Global_Vars =
 {
@@ -161,6 +161,9 @@ var getReturnButton2 = function() {
   return a;
 }
 
+/**
+ * 
+ */
 AMT__Global_Vars.setAcceptedFavicon = function() {//return;
   //~ var link = document.createElement('link');
   //~ var links = document.getElementsByTagName('link');
@@ -199,7 +202,9 @@ AMT__Global_Vars.setAcceptedFavicon = function() {//return;
   //~ link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAALklEQVQ4y2NkYGBg6D7s9Z+BDFBqu42RkVzNMMBEieZRA0YNGDUAARgZGCjLzgCKxAq1UuyhoQAAAABJRU5ErkJggg==';
   document.getElementsByTagName('head')[0].appendChild(link);
 }
-
+/**
+ * @function
+ */
 AMT__Global_Vars.initialize_num_amt_tabs = function() {
   chrome.extension.sendRequest({get_num_amt_tabs: true}, 
     function(rs) 
@@ -209,6 +214,9 @@ AMT__Global_Vars.initialize_num_amt_tabs = function() {
     }
   );
 }
+/**
+ * @function
+ */
 AMT__Global_Vars.initialize_CAPTCHA_staggered_vars = function() {
   chrome.extension.sendRequest({getNTPassBy: true}, 
     function(rs) 
@@ -219,7 +227,9 @@ AMT__Global_Vars.initialize_CAPTCHA_staggered_vars = function() {
     }
   );
 }
-
+/**
+ * @function
+ */
 AMT__Global_Vars.initializeNextTabPassBy = function() {
   chrome.extension.sendRequest({getNTPassBy: true}, 
     function(rs) 
@@ -228,7 +238,9 @@ AMT__Global_Vars.initializeNextTabPassBy = function() {
 
     });
 }
-
+/**
+ * @function
+ */
 AMT__Global_Vars.initialize_return_accept_run_nextTab = function() {
   chrome.extension.sendRequest({getRA_Button_NextTab: true}, 
     function(rs) 
@@ -236,8 +248,10 @@ AMT__Global_Vars.initialize_return_accept_run_nextTab = function() {
       AMT__Global_Vars.core.return_accept_run_nextTab = rs.RA_Button_NextTab == 'On' ? true : false;
     });
 }
-
-//Assumption: We know that we are top window
+/**
+ * @function
+ * @desc Assumption: We know that we are top window
+ */
 AMT__Global_Vars.initializeReturnButton = function () {
   var hasReturnButton = false;
   var allAs = document.getElementsByTagName('a');
@@ -280,8 +294,10 @@ AMT__Global_Vars.initializeReturnButton = function () {
 
 //var allAs = document.getElementsByTagName('a');
 
-
-//This function is deprecated, now uses scriptVar 'Return NextTab'
+/**
+ * @function
+ * @desc This function is deprecated, now uses scriptVar 'Return NextTab'
+ */
 AMT__Global_Vars.initializeR_Button_NextTab = function() {
   
   //~ chrome.extension.sendRequest({getR_Button_NextTab: true}, 
@@ -305,7 +321,9 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
     //~ }
   //~ );
 }
-
+/**
+ * @function
+ */
 AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
   var callback = callback;
   chrome.extension.sendRequest(
@@ -317,7 +335,9 @@ AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
     }
   );
 }
-
+/**
+ * @function
+ */
 AMT__Global_Vars.initializeGroupId = function () {
   if(AMT__Global_Vars.isTopWindow)
   {
@@ -393,7 +413,9 @@ AMT__Global_Vars.initializeGroupId = function () {
     }, false);
   }
 }
-
+/**
+ * @function
+ */
 AMT__Global_Vars.initializeHitId = function () {
   if(AMT__Global_Vars.isTopWindow)
   {
@@ -447,6 +469,9 @@ AMT__Global_Vars.initializeHitId = function () {
   }
 }
 
+/**
+ * @function
+ */
 AMT__Global_Vars.initializeTabId = function() {
     AMT__Global_Vars.isInitializingTabId = true;
     chrome.extension.sendRequest(
@@ -463,6 +488,9 @@ AMT__Global_Vars.initializeTabId = function() {
     );
 }
 
+/**
+ * @function
+ */
 AMT__Global_Vars.initializeRightClickRA = function() {
   if(AMT__Global_Vars.isTopWindow) {
       window.addEventListener('contextmenu', function(e) {
@@ -507,6 +535,12 @@ AMT__Global_Vars.initializeRightClickRA = function() {
   }
 }
 
+/**
+ * 
+ *                           END OF AMT__GLOBAL_VARS
+ * 
+ */
+ 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   if(request.isAcceptedAndTopWindow) {
@@ -608,7 +642,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   //~ }
 });
 
-//
+
+/**
+ * @function
+ */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // There is a bug here. Global.js is replicated in Chrome:AllPages and Chrome:AMT.
   // But next tab passby only needs to run on Chrome:AMT.
@@ -752,19 +789,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 
-/**
- * 
- * 
- *                           END OF AMT__GLOBAL_VARS
- * 
- * 
- * */
+
 
 
 
 /**
  * Utility Tabs
- * 
+ * @function
  */
 //utilityTabs  [{
 //          url: "string",
@@ -798,7 +829,9 @@ function AMT__setUtilityTabs(
     return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions, callbackFromUtility, globalTabOptions);
   }
 }
-
+/**
+ * 
+ */
 function getUtilityTabButton(index) {
   var allInps = document.getElementsByTagName('input');
   var inpReg = /utilityTabBtn([\d]+)\:0\.[\d]+/;
@@ -813,7 +846,9 @@ function getUtilityTabButton(index) {
     }
   }
 }
-
+/**
+ * 
+ */
 function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackFromUtility, globalTabOptions) {
   var containerDiv = document.createElement('div');
   if(utilityPanelOptions &&
@@ -855,6 +890,9 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackF
 }
 
 //Returns the utilityTabBtn associated with the new utility tab
+/**
+ * 
+ */
 function addUtilityTab(utilityTab, globalTabOptions, utilityPanelOptions,runInPreviewMode, callbackFromUtility) {
     containerDiv = doucment.getElementById('AMT__UtilityContainer');
     //Get the index of this newly added utility tab
@@ -923,6 +961,9 @@ AMT__Global_Vars.isQProduct2 = false;
 
 
 //NOTE: The parameters are currently deprecated
+/**
+ * 
+ */
 function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
   AMT__Global_Vars.isQProduct = true;
   
@@ -982,6 +1023,9 @@ function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
 
 //Deprecated
 //This now simply calls nextTab
+/**
+ * 
+ */
 function showNextTab(options) {
   console.log('Showing Next Tab');
   new AMT___core_factory().nextTab();
@@ -1025,6 +1069,9 @@ function showNextTab(options) {
 
 //This is the Constructer Function
 //Call new on this function and pass in the options to initialize the floater's variables!
+/**
+ * @Class
+ */
 var AMT___Floater = function (options) {
   AMT___Floater.acceptCondition = options.acceptCondition ? options.acceptCondition : null;              //done
   AMT___Floater.runMT_Run = options.runMT_Run;                    //done
@@ -1040,10 +1087,10 @@ var AMT___Floater = function (options) {
   AMT___Floater.skipOnReturnedHits = options.skipOnReturnedHits;
 }
 
-
-
-
 //Runs the floater based on its options vairables
+/**
+ * @function
+ */
 AMT___Floater.float = function() {
   
 
@@ -1096,7 +1143,9 @@ AMT___Floater.float = function() {
   
 }
 
-
+/**
+ * @function
+ */
 AMT___Floater.runPreview = function() {
   console.log(AMT___Floater.runMT_Run);
   if(AMT___Floater.runMT_Run)
@@ -1132,11 +1181,15 @@ AMT___Floater.runPreview = function() {
     top_window();
   }
 }
-
+/**
+ * @function
+ */
 AMT___Floater.listenForAcceptSkip = function() {
   window.addEventListener('message', AMT___Floater.acceptOrSkip, false);
 }
-
+/**
+ * @function
+ */
 AMT___Floater.accept = function() {
   if(!AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
   {
@@ -1154,7 +1207,9 @@ AMT___Floater.accept = function() {
   }
   return false;
 }
-
+/**
+ * @function
+ */
 // -800 to 400 on May 30 for Peter Heyneman.
 AMT___Floater.skip = function() {
   console.log('send skip');
@@ -1185,7 +1240,9 @@ AMT___Floater.skip = function() {
   }
 }
 
-
+/**
+ * @function
+ */
 AMT___Floater.acceptOrSkip = function(e) {
   console.log('got accept or skip');
   console.log(e);
@@ -1254,6 +1311,9 @@ var AMT___DECISION_RECORD = new Array();
 
 //Creates and returns a button that says "Record&Submit"
 //Its top/left are roughly near the regular Submit button
+/**
+ * 
+ */
 function AMT___CreateRecordButton()
 {
   var inputs = document.getElementsByTagName("input");
@@ -1288,6 +1348,9 @@ function AMT___CreateRecordButton()
 //recordName: Defines the namespace that these decisions are recorded into, and that past behaviors only reference from
 //matchStringFunction: A function that returns a string. The function runs during RecordAndSubmit and doPastBehavior
 //OutputIdentifiers: An array of how to identify what to record/do past behavior on. E.g. ["Id(Joe)", "ClassName(Monkey)[2]"]
+/**
+ * 
+ */
 function AMT___addUserDecision(recordName, matchStringFunction, outputIdentifiers, decision_opts)
 {
   AMT___DECISION_RECORD.push(new decisionRecord(recordName, matchStringFunction, outputIdentifiers, decision_opts));
@@ -1297,6 +1360,9 @@ function AMT___addUserDecision(recordName, matchStringFunction, outputIdentifier
 //AMT___DECISION_RECORD is an array of decisionRecords
 //recordAndSubmit sends a Match object to the database for each decisionRecord in AMT___DECISION_RECORD
 //doPastBehavior bases its matchStringFunctions on each decisionRecord's matchStringFunction
+/**
+ * 
+ */
 function decisionRecord(recordName, matchStringFunction, outputIdentifiers, decision_opts)
 {
   this.recordName = recordName;
@@ -1311,6 +1377,9 @@ function decisionRecord(recordName, matchStringFunction, outputIdentifiers, deci
 //submitObject is optional object. If it is a string of 'Do Not Submit', no submission happens. Otherwise it submits the form based on its attributes
 //Calls the callback even if the match fails or the threshold isn't met.
 //callback sends back the match or a null value if there isn't one.
+/**
+ * 
+ */
 function AMT___doPastBehavior(recordName, threshold, submitObject, callback, callbackOnFail)
 {
   console.log("inside do past behavior");
@@ -1388,7 +1457,10 @@ function AMT___doPastBehavior(recordName, threshold, submitObject, callback, cal
   }
 }
 
-//Sends match objects to the database based on the namespaces, match string functions, and input identifiers in AMT___DECISION_RECORD (most commonly setup by calls to AMT___addUserDecision)
+//Sends match objects to the database based on the namespace, match string functions, and input identifiers in AMT___DECISION_RECORD (most commonly setup by calls to AMT___addUserDecision)
+/**
+ * 
+ */
 function AMT___recordAndSubmit(form, location, callback_function, offsetTime, doServerSideSubmit)
 {
   try {
@@ -1398,7 +1470,9 @@ function AMT___recordAndSubmit(form, location, callback_function, offsetTime, do
   }
   doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit);
 }
-
+/**
+ * 
+ */
 function AMT___record()
 {
   //console.log(AMT___DECISION_RECORD);
@@ -1427,7 +1501,9 @@ function AMT___record()
     //console.log(JSON.stringify({recordName: recordName, matchString: matchString, outputs: outputs}));
   }
 }
-
+/**
+ * 
+ */
 function showPastReturns(matchString, callback) {
   if(!AMT__Global_Vars.isTopWindow) {
     window.parent.postMessage({
@@ -1474,6 +1550,9 @@ function showPastReturns(matchString, callback) {
 //recordName - The namespace of the match you are asking for
 //matchString - the matchString you want to check against in the database
 //callback(match) - a function that gets called as soon as a match is discovered (or undiscovered) from the database. match is a match object (see below)
+/**
+ * 
+ */
 function AMT___getMatch(recordName, matchString, callback, reference, timeCutOff, returnAllMatches)
 {
   var find = new FindObject(recordName, matchString.replace(/\s/g," "), timeCutOff, returnAllMatches);
@@ -1526,6 +1605,9 @@ function AMT___getMatch(recordName, matchString, callback, reference, timeCutOff
 //recordName: the namespace that the match gets matched against
 //matchString: the matchString in the database
 //outputPairs: an array of outputPairs, e.g. [new OutputPair("Id(Bob)", "n/a"), new OutputPair("Name("Steve")[1],"n/a")]
+/**
+ * 
+ */
 function AMT___addQuestionAnswer(recordName, matchString, outputPairs)
 {
   var match = new Match(recordName, matchString, outputPairs, (new Date).getTime());
@@ -1539,6 +1621,9 @@ function AMT___addQuestionAnswer(recordName, matchString, outputPairs)
 
 //An object with an inputIdentifier, and a value (which gets recorded in doRecording(), or written into the correct input in doWriting())
 //Input Identifier types: Id, TagName, ClassName, Name
+/**
+ * @class
+ */
 function OutputPair(inputIdentifier, value)
 {
   this.inputIdentifier = inputIdentifier;
@@ -1551,6 +1636,9 @@ function OutputPair(inputIdentifier, value)
 }
 
 //Sets value to element.value (or element.checked) where element is determined by the inputIdentifier 
+/**
+ * @function
+ */
 OutputPair.prototype.doRecording = function() {
   //console.log(/(^[^\(]+)/.exec(this.inputIdentifier)[1]);
   //console.log(this)
@@ -1606,8 +1694,10 @@ OutputPair.prototype.doRecording = function() {
   }
 }
 
-
 //Writes this.value to the element of this.inputIdentifier
+/**
+ * @function
+ */
 OutputPair.prototype.doWriting = function() {
   //console.log("this.value inside doWriting: " + this.value);
   var identificationType = /(^[^\(]+)/.exec(this.inputIdentifier)[1];
@@ -1665,6 +1755,9 @@ OutputPair.prototype.doWriting = function() {
 //outputPairs: an array of outputPairs
 //lastTimeOfSubmit: the last time the match was submitted Default: the time this Match gets created
 //count: how many times the match has been recorded. Default: 1 
+/**
+ * 
+ */
 function Match(recordName, matchString,outputPairs,lastTimeOfSubmit,count)
 {
   this.recordName = recordName;
@@ -1681,6 +1774,9 @@ function Match(recordName, matchString,outputPairs,lastTimeOfSubmit,count)
 }
 
 //An object that gets passed to eventPage, then passed into PHP to query the database looking for a match
+/**
+ * 
+ */
 function FindObject(recordName,matchString, timeCutOff, returnAllMatches) {
   if(!timeCutOff)
     timeCutOff = 0;
@@ -1708,6 +1804,9 @@ function FindObject(recordName,matchString, timeCutOff, returnAllMatches) {
  * 
  * */
 
+/**
+ * 
+ */
 function initializeScriptInjection(callBackAMTFunction, varNames, callback, callbackParams) {
   
   AMT__Global_Vars.initializedScriptInjection = true;
@@ -1839,6 +1938,9 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
   //callBackAMTFunction(varNames, callback, callbackParams); //Make sure this runs once the script has finished being injected and ran
 }
 
+/**
+ * 
+ */
 function AMT___GetPageScriptVars(varNames, callback, callbackParams) {
   if(!AMT__Global_Vars.initializedScriptInjection) {
     initializeScriptInjection(this, varNames, callback, callbackParams);
@@ -1857,6 +1959,9 @@ function AMT___GetPageScriptVars(varNames, callback, callbackParams) {
 }
 
 //Remember to implement callback and callback params
+/**
+ * 
+ */
 function AMT___RunPageScript(funcToCall, callback, callbackParams) {
   if(!AMT__Global_Vars.initializedScriptInjection) {
     initializeScriptInjection(this, null, callback, callbackParams);
@@ -1872,7 +1977,9 @@ function AMT___RunPageScript(funcToCall, callback, callbackParams) {
   var evt = new CustomEvent('runPageScript', {detail: data});
   document.dispatchEvent(evt);
 }
-
+/**
+ * 
+ */
 function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
   
 }
@@ -1900,6 +2007,19 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * .rexexLasIndexOf
  * .state_is_valid
  * .str_diff
+ */
+ 
+ //~ --alias String.str_diff
+ //~ * --global
+ //~ * --name str_diff
+ //~ * @name String.str_diff
+/**
+ * @namespace String
+ */
+ 
+/**
+ * @function
+ * @namespace
  */
 String.prototype.str_diff = function(str2) {
   var str1 = this.toString();
@@ -1980,6 +2100,10 @@ String.prototype.str_diff = function(str2) {
  //~ */
 //~ function clean_str_to_auto(str) {
 //~ }
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.clean_str_to_auto = function(opts) {
   var s = this.toString();
   return s.toLowerCase().replace(/&/g, 'and').replace(/[^0-9a-z]/gi, ''); // Replace "&" with "and". Remove all but /[0-9a-z]/i
@@ -1987,6 +2111,10 @@ String.prototype.clean_str_to_auto = function(opts) {
 //Returns an array that contains all name synonyms
 //Note: a Name's Synonyms does NOT includes itself
 //Note: names are returned in lower case
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.getNameSynonyms = function() {
   var s = this.toString();
   firstName = s.toLowerCase();
@@ -2001,15 +2129,19 @@ String.prototype.getNameSynonyms = function() {
   return nameArray;
 }
 /**
- * .div
+ * div
  * 
- * @param {string} style      String; Default='';
- * @param {string} innerHTML  Default=false;
- * @param {string} ce         Default='div'; createElement. E.g. 'br'.
- * @param {Object} a          AppendTo: Default=None. An HTML element, or True.
+ * @param {Object} opts
+ *  .style      String; Default='';
+ *  .innerHTML  Default=false;
+ *  .ce         Default='div'; createElement. E.g. 'br'.
+ *  .a          AppendTo: Default=None. An HTML element, or True.
  *           If element, then it appends DIV to this item.
  *           If True, then appends this element to document.body.
- * @param {string} class
+ *  .class
+ * 
+ * @function
+ * @namespace
  */
 String.prototype.div = function(opts) {
   var s = this.toString();
@@ -2042,6 +2174,8 @@ String.prototype.div = function(opts) {
 }
 /**
  * .format_number_with_commas
+ * @function
+ * @namespace
  */
 String.prototype.format_number_with_commas = function() {
   var s = this.toString();
@@ -2056,6 +2190,9 @@ String.prototype.format_number_with_commas = function() {
  * @param {boolean} options.REG_INCLUDE_DASHES
  * @param {boolean} options.ALERT
  * @param {Object} options.CALLBACK function that returns true/false onchanged
+ * 
+ * @function
+ * @namespace
  */
 String.prototype.string_to_mixed_case = function(options) {
   var s = this.toString().toLowerCase();
@@ -2117,6 +2254,9 @@ String.prototype.string_to_mixed_case = function(options) {
  * @param {number} .least_characters_per_word  int    Number of least amount of characters allowed per word. 0 is no limit. Default=1. This means single letters are not bolded.
  * 
  * @return {string}
+ * 
+ * @function
+ * @namespace
  */
 String.prototype.clean_string_to_array = function(options) {
   
@@ -2178,8 +2318,7 @@ String.prototype.clean_string_to_array = function(options) {
 //http://www.abeautifulsite.net/parsing-urls-in-javascript/
 // fork from https://gist.github.com/jlong/2428561
 /**
- * 
- * 
+ * @example
  {
   hash: ""
   host: "naturespoisons.files.wordpress.com"
@@ -2189,6 +2328,8 @@ String.prototype.clean_string_to_array = function(options) {
   protocol: "http:"
   search: "?w=1200"
  }
+ * @function
+ * @namespace
  */
 String.prototype.parseURL = function() {
   var parser = document.createElement('a'),
@@ -2223,6 +2364,9 @@ String.prototype.parseURL = function() {
  * 
  * MT___countries = [
   {name: 'Bosnia and Herzogovina', code: 'BA'}, 
+ * 
+ * @function
+ * @namespace
  */
 String.prototype.country_code_to_country_name = function() {
   
@@ -2238,6 +2382,10 @@ String.prototype.country_code_to_country_name = function() {
   // None found?
   return str.toUpperCase();
 }
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.stateAbbrToFull = function() {
   
   //~ // BUILD STR
@@ -2266,6 +2414,10 @@ String.prototype.stateAbbrToFull = function() {
   // toUpperCase() ?
   //~ return str.toUpperCase();
 }
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.state_full_to_abbr = function() {
   str = this.toString().toLowerCase().trim();
   // Loop MT___states
@@ -2278,6 +2430,10 @@ String.prototype.state_full_to_abbr = function() {
   // Returns upper!
   return str.toUpperCase();
 }
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.state_abbr_is_valid = function() {
   
   str = this.toString().toLowerCase().trim();
@@ -2294,6 +2450,10 @@ String.prototype.state_abbr_is_valid = function() {
 }
 // Full state, non-abbreviated
 // MT___states ==> e.g. "AL": "Alabama",
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.state_is_valid = function() {
   str = this.toString().toLowerCase().trim();
   for (var i in MT___states) {
@@ -2305,12 +2465,18 @@ String.prototype.state_is_valid = function() {
   // Return false.
   return false;
 }
-
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.regexIndexOf = function(regex, startpos) {
     var indexOf = this.substring(startpos || 0).search(regex);
     return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
 }
-
+/**
+ * @function
+ * @namespace
+ */
 String.prototype.regexLastIndexOf = function(regex, startpos) {
     regex = (regex.global) ? regex : new RegExp(regex.source, "g" + (regex.ignoreCase ? "i" : "") + (regex.multiLine ? "m" : ""));
     if(typeof (startpos) == "undefined") {
@@ -2383,6 +2549,8 @@ var AMT__rq = function() {
  * function amt_home_show_tasks
  * function iframe2parent__addEventListener_child
  * function el_innerHeight
+ * 
+ * @class
  */
 function AMT___core_factory() {
 
@@ -2394,6 +2562,9 @@ function AMT___core_factory() {
 //    then it must be considered whether Right-Click-R&A-nextTab is 0 or 1.
 //    If 0, then cancel nextTab if it is coming from the doSubmit()
 //    function (doSubmitNextTab)!
+/**
+ * 
+ */
 AMT___core_factory.prototype.nextTab = function(options) {
   //~ console.log(options);
   if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
@@ -2421,7 +2592,9 @@ AMT___core_factory.prototype.nextTab = function(options) {
     }
   );
 }
-//
+/**
+ * 
+ */
 AMT___core_factory.prototype.nextWindow = function() {
   console.log('core_nextWindow');
   chrome.extension.sendRequest(
@@ -2434,7 +2607,7 @@ AMT___core_factory.prototype.nextWindow = function() {
   );
 }
 /**
- * .el_innerHeight
+ * el_innerHeight
  * 
  * @param {Object} options
  * @param {Object} .elements
@@ -2517,7 +2690,7 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
   
 }
 /**
- * .childFrame__addEventListener_iframe
+ * childFrame__addEventListener_iframe
  * 
  * @param {Object} options
  */
@@ -2555,14 +2728,14 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
   }
 }
 /**
- * .top_window__addEventListener_iframe
+ * top_window__addEventListener_iframe
  * 
  * @param {Object} options
  * @param {string} options.action
  * @param {number} options.threshold_to_change => ChangeWindowCount
  * @param {Object} callback_function
  */
-export AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
+AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
   // Is there an iframe on the page?
   // If there is not then this is the end!
   if (!document.getElementsByTagName('iframe').length)
@@ -2709,6 +2882,9 @@ export AMT___core_factory.prototype.top_window__addEventListener_iframe = functi
 
 var scriptVarWriteQueue = [];
 var isWritingFromSCWQ = false;
+/**
+ * 
+ */
 AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue, isPersistant, expirationDate) {
   if(!expirationDate) {
     expirationDate = new Date().getTime() + 3*3600*1000;
@@ -2768,7 +2944,9 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
     //~ callback();
   //~ }
 //~ }
-
+/**
+ * 
+ */
 function setScriptVar(stringName, key, value) {
   chrome.storage.local.get('scriptVars', function(obj) {
     var scriptVars = obj.scriptVars;
@@ -2776,7 +2954,9 @@ function setScriptVar(stringName, key, value) {
     chrome.storage.local.set({'scriptVars': scriptVars});
   });
 }
-
+/**
+ * 
+ */
 function setScriptVarObj(obj) {
   chrome.storage.local.get('scriptVars', function(storageObj) {
     var scriptVars = storageObj.scriptVars;
@@ -2784,6 +2964,9 @@ function setScriptVarObj(obj) {
     chrome.storage.local.set({'scriptVars': scriptVars});
   });
 }
+/**
+ * 
+ */
 function setScriptVarFromWriteQueue(obj) {
   isWritingFromSCWQ = true;
   var obj = scriptVarWriteQueue[0];
@@ -2799,8 +2982,9 @@ function setScriptVarFromWriteQueue(obj) {
   });
 }
 
-
-
+/**
+ * 
+ */
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
   
   console.log(options);
@@ -2816,22 +3000,24 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 }
 //~ AMT___core_factory.prototype.iframe2parent__addEventListener_return_HIT = function(options, callback_function) {
 
-
 /**
  * AMT___events_factory
  *
  * keydown__blur_field
  * mouseup__delete_range   
  * mousewheel_zoom_image
+ * 
+ * @class
  */
 function AMT___events_factory(obj_vars) {
   // this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * 
- * @param {Object} element  img: 
- * @param {Object} array    img_array: array of elements (optional)
- * @param {number} int    scroll_speed: int, default 0.1
+ * mousewheel_scroll_image
+ * @param {Object} options_object
+ * 	{Object} element  .img: 
+ * 	{Object} array    .img_array: array of elements (optional)
+ * 	{number} int    .scroll_speed: int, default 0.1
  */
 AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object) {
   
@@ -2866,11 +3052,12 @@ AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object
   }
 }
 /**
- * 
- * @param {Object} element  img: element
- * @param {Object} array    img_array: array of elements (optional)
- * @param {number} int    zoom_speed: default 0.1
- * @param {number} int    onclick_reset_zoom: default 1 (NOTE: if not present then no reset is made.)
+ * mousewheel_zoom_image
+ * @param {Object} options_object
+ *  {Object} element  .img: element
+ *  {Object} array    .img_array: array of elements (optional)
+ *  {number} int    .zoom_speed: default 0.1
+ *  {number} int    .onclick_reset_zoom: default 1 (NOTE: if not present then no reset is made.)
  */
 AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) {
   
@@ -2920,6 +3107,9 @@ AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) 
     }
   }
 }
+/**
+ * keydown__blur_field
+ */
 AMT___events_factory.prototype.keydown__blur_field = function(e) {
   var k = e.keyCode;
   console.log(k);
@@ -2935,9 +3125,10 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 /**
  * mouseup__delete_range
  * 
- * @param {Object} element        html object
- * @param {Object} elements        array, array of html objects
- * @param {boolean} remove_whitespace    boolean    
+ * @param {Object} options_object
+ *  {Object} .element        html object
+ *  {Object} .elements        array, array of html objects
+ *  {boolean} .remove_whitespace    boolean    
  * 
  * @todo PAGE.addEventListener. Then watch for the target, 
  * 	 or something similar (?), and blur this element.
@@ -3023,12 +3214,13 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  *  server_load_asynchronously
  *  xhr_with_disk_cache
  * 
+ * @class
  */
 function AMT___requests_factory(obj_vars) {
   // this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * php_run_task()
+ * php_run_task
  * Run some ambigous php code via util.php, specifying details via options.
  * 
  * Has a response_complete function to alert JS code that server-side
@@ -3040,13 +3232,12 @@ function AMT___requests_factory(obj_vars) {
  * via a status- / complete-file?
  * 
  * @param {Object} options
- * @param {string} options._client
- * @param {Object} options.opts
- * @param {Object} options.opts.{any params to pass to php}
- * @param {Object} options.callback
- * 
- * @param {string} options._status_filename (private) 
- * @param {boolean} options._check_complete (private) 
+ *  {string} options._client
+ *  {Object} options.opts
+ *  {Object} options.opts.{any params to pass to php}
+ *  {Object} options.callback
+ *  {string} options._status_filename (private) 
+ *  {boolean} options._check_complete (private) 
  */
 AMT___requests_factory.prototype.php_run_task = function(options) {
   // Add a filename for the status file.
@@ -3117,8 +3308,8 @@ AMT___requests_factory.prototype.php_run_task = function(options) {
  * On {event}, sends corrected values to DB and gets next REJECTED task "HIT_ID".
  * 
  * @param {Object} options            Object
- * @param {string}  ""  "".correct_value    String  
- * @param {string}  ""  "".fk_requesterUserId  String  
+ *  {string}  ""  "".correct_value    String  
+ *  {string}  ""  "".fk_requesterUserId  String  
  * 
  * @todo:
  * FIX REJECTED TASKS
@@ -3255,8 +3446,9 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
  * 
  * Note that this is different from pdfocr (tesseract) and pdfimages.
  * 
- * @param {string} options.url
- * @param {Object} options.callback
+ * @param {Object} options
+ *  {string} options.url
+ *  {Object} options.callback
  */
 AMT___requests_factory.prototype.pdftotext = function(options) {
   // filename
@@ -3296,14 +3488,14 @@ AMT___requests_factory.prototype.pdftotext = function(options) {
   
 }
 /**
- * function pdfocr
+ * pdfocr
  * 
  * @param {Object} options        Object.
- * @param {string} options.url      Required. String.
- * @param {Object} options.callback    Function. Callback for completed.
- * @param {number} options.psm      Optional. Int. See "$ tesseract -h" for details.
+ *  {string} options.url      Required. String.
+ *  {Object} options.callback    Function. Callback for completed.
+ *  {number} options.psm      Optional. Int. See "$ tesseract -h" for details.
  *             Default=6.
- * @param {string} options.goodchars_file
+ *  {string} options.goodchars_file
  *             Optional. String.
  *             Uses /usr/share/tesseract/tessdata/configs/goodchars
  *             by default.
@@ -3384,7 +3576,7 @@ AMT___requests_factory.prototype.pdfocr = function(options) {
   }
 }
 /**
- * function pdfimages
+ * pdfimages
  * 
  * options        Object.
  * options.url      Required. String.
@@ -3448,7 +3640,7 @@ AMT___requests_factory.prototype.pdfimages = function(options) {
 }
 
 /**
- * function proxy_resolve_URL
+ * proxy_resolve_URL
  * 
  * options            Object.
  * options.URL          Required. String.
@@ -3531,7 +3723,7 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
   }
 }
 /**
- * function xhr
+ * xhr
  * 
  * URL          Required. String.
  * success_callback    Function. Callback for completed.
@@ -3552,7 +3744,7 @@ AMT___requests_factory.prototype.xhr = function(options) {
   });
 }
 /**
- * function server_load_asynchronously
+ * server_load_asynchronously
  * Load a URL asynchonously on server and process callback when complete.
  *     --DEPRECATED. Use server_load_asynchronously2 for better options.
  * 
@@ -3644,7 +3836,7 @@ AMT___requests_factory.prototype.server_load_asynchronously = function(options) 
   }
 }
 /**
- * function server_load_asynchronously2
+ * server_load_asynchronously2
  * Load a URL asynchonously on server and process callback when complete.
  * 
  * options              Required. Object.
@@ -3735,7 +3927,7 @@ AMT___requests_factory.prototype.server_load_asynchronously2 = function(options)
   }
 }
 /**
- * function xhr_with_disk_cache
+ * xhr_with_disk_cache
  * 
  * URL              (Required. String.)
  * 
@@ -4037,9 +4229,9 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
  * google_api_timezone 
  * 
  * @param {Object} options        object
- * @param {number} .lat          float
- * @param {number} .lng          float
- * @param {Object} .callback_function  function
+ *  {number} .lat          float
+ *  {number} .lng          float
+ *  {Object} .callback_function  function
  * 
  * @return {Object} options.reseponse.offset integer Returns the time zone as an integer, offset of UTC. So Eastern would be -5. Pacific would be -8.
  * 
@@ -4113,7 +4305,7 @@ AMT___requests_factory.prototype.google_api_timezone = function(options) {
  * load_precache_urls 
  * 
  * @param {Object} options
- * @param {Object} .urls_array Array of URLs.
+ *  {Object} .urls_array Array of URLs.
  * 
  * @return No return
  */
@@ -4204,6 +4396,9 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
     });
   }, 1000);
 }
+/**
+ * 
+ */
 AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
   
   var options_object = options_object;
@@ -4218,11 +4413,17 @@ AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
     }
   });
 }
+/**
+ * 
+ */
 AMT___requests_factory.prototype.general_functions__numberFormat__numberWithCommas = function(str) {
   var parts = (str + '').split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 }
+/**
+ * 
+ */
 AMT___requests_factory.prototype.general_functions__color__io__dominantColor_colorThiefPHP = function(img_url, callback_function) {
   GM_xmlhttpRequest({
     method: 'GET',
@@ -4240,7 +4441,7 @@ AMT___requests_factory.prototype.general_functions__color__io__dominantColor_col
   });
 }
 /**
- * ...
+ * 
  */
 AMT___requests_factory.prototype.general_functions__countryToAbbreviatedCountry = function(country) {
   // MT___countries
@@ -4304,10 +4505,10 @@ AMT___requests_factory.prototype.general_functions__color__rgbToHsl = function(r
  * In short, a vector for color (H, S, L) in this system can be expressed as
  * (S*L'*cos(2*PI*H), S*L'*sin(2*PI*H), L), where L' = abs(L - 0.5), and we
  * simply calculate the 1-2 distance using these coordinates
- * @param {Object} {Array.<number>} hsl1 First color represented by a 3-element array
+ * @param {Object} hsl1 First color represented by a 3-element array
  *     with hue in range [0, 360], and saturation and luminance values in the
  *     range[0, 1].
- * @param {Object} {Array.<number>} hsl2 Second color represented by a 3-element array
+ * @param {Object} hsl2 Second color represented by a 3-element array
  *     with hue in range [0, 360], and saturation and luminance values in the
  *     range[0, 1].
  * @return {number} Distance between the two colors, in the range [0, 1].
@@ -4332,7 +4533,9 @@ AMT___requests_factory.prototype.general_functions__color__hslDistance = functio
   return (hsl1[2] - hsl2[2]) * (hsl1[2] - hsl2[2]) +
     sl1 * sl1 + sl2 * sl2 - 2 * sl1 * sl2 * Math.cos(dh);
 };
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.general_functions__color__rgbToHex = function(r, g, b)
 {
   var componentToHex = function(c) {
@@ -4341,7 +4544,9 @@ AMT___requests_factory.prototype.general_functions__color__rgbToHex = function(r
   }
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.general_functions__color__hexToRGB = function(hex)
 {
   var hexToR = function (h) {return parseInt((cutHex(h)).substring(0,2),16)}
@@ -4350,7 +4555,9 @@ AMT___requests_factory.prototype.general_functions__color__hexToRGB = function(h
   var cutHex = function (h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
   return [hexToR(hex), hexToG(hex), hexToB(hex)];
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.general_functions__md5 = 
 AMT___requests_factory.prototype.md5 = function(str)
 {
@@ -4370,9 +4577,9 @@ AMT___requests_factory.prototype.md5 = function(str)
 /**
  * 
  * @param {Object} options_object {}
- * @param {string} .url
+ *  {string} .url
+ * ie http://www.ebay.com/itm/SPEEDO-SWIMMING-GOGGLE-BOOMERANG-MIRRORED-UV-LATES-FREE-ANTI-FOG-SOFT-FLEX-FRAME-/231229466737?pt=LH_DefaultDomain_0
  */
-// ie http://www.ebay.com/itm/SPEEDO-SWIMMING-GOGGLE-BOOMERANG-MIRRORED-UV-LATES-FREE-ANTI-FOG-SOFT-FLEX-FRAME-/231229466737?pt=LH_DefaultDomain_0
 AMT___requests_factory.prototype.ebay__get_listings_page = function(options_object) //
 {
   var opts = options_object;
@@ -4411,7 +4618,9 @@ AMT___requests_factory.prototype.ebay__get_listings_page = function(options_obje
     }
   });
 }
-// google_search
+/**
+ * 
+ */
 AMT___requests_factory.prototype.google_search = function(options_object) //
 {
   var opts = options_object;
@@ -4491,19 +4700,19 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
   });
 }
 /**
- * function .linkedin_people_search
+ * linkedin_people_search
  * 
- * 
- * @param {Object} container = div element, append all elements to this
- * @param {Object} search_params = {}
+ * @param {Object} ps_object
+ *  {Object} container = div element, append all elements to this
+ *  {Object} search_params = {}
  *     searches['search-key'] = value
  *     Where search-key = first name, last name, company, zip code, find zip (find zip code from location), job title
  *     This corresponds to the left-side inputs, typically d2a,d2b,d2c,d2d, etc.
- * @param {Object} callback_function : Event : button.onclick
- * @param {boolean} image_search : boolean (t,f)
- * @param {boolean} nextTab : boolean (t,f), call nextTab() on mouse click
- * @param {boolean} sortResults : boolean, sort by people by connectionCount
- * @param {Object} search_complete_callback : function( search_results_arr ) 
+ *  {Object} callback_function : Event : button.onclick
+ *  {boolean} image_search : boolean (t,f)
+ *  {boolean} nextTab : boolean (t,f), call nextTab() on mouse click
+ *  {boolean} sortResults : boolean, sort by people by connectionCount
+ *  {Object} search_complete_callback : function( search_results_arr ) 
  * 
  * NOTES: companyScope and/or titleScope must follow company and title, respectively.
  * Features:
@@ -5340,7 +5549,9 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
     });
   }
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.linkedin_company_search = function(cs_object, callback_func) //
 {
   var kw = cs_object.keywords;
@@ -5378,7 +5589,9 @@ AMT___requests_factory.prototype.linkedin_company_search = function(cs_object, c
     }
   });
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.scrapy__cancel_job = function(jobid, timeout) //
 {
   var jobid = jobid;
@@ -5411,9 +5624,10 @@ AMT___requests_factory.prototype.scrapy__cancel_job = function(jobid, timeout) /
  * Necessary to deploy scrapy_amt project ... ...
  * 1) ./home/share/Development/scrapy/start_scrapyd.sh
  * 2) cd /home/share/Development/scrapy/scrapy_amt && scrapyd-deploy
- */
+ *
 // TODO
 // XXDONE Jun4 2014: MATCH "DOMAIN.COM" WITH "JOBID.JL" FOR CACHED FUTURE REQUESTS!
+ */
 AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_object, callback_function, seed_object) //
 {
   /*
@@ -5451,9 +5665,9 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
   
   /** Function scrapy__begin_scrape__process_completed
    * @param {Object} input_object
-   * @param {string} input_object.rs
-   * @param {Object} input_object.seed_object
-   * @param {Object} input_object.seed_object.callback__scrapy__begin_scrape__process_completed
+   *  {string} input_object.rs
+   *  {Object} input_object.seed_object
+   *  {Object} input_object.seed_object.callback__scrapy__begin_scrape__process_completed
    * 
    * @desc Helper function
   */
@@ -5729,11 +5943,11 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
  * database__select2
  * 
  * @param {Object} options        Object.
- * @param {Object} options.db      Object.
- * @param {string}  ""  ""  .database  String. e.g. "AMT_Batch". (0-9A-Za-z_).
- * @param {string}  ""  ""  .table    String. e.g. "history". (0-9A-Za-z_).
- * @param {Object}  ""  ""  .columns  Array. e.g. ['id', ''] or ['*'].
- * @param {Object}  ""  ""  .filters  Array. e.g. [{
+ *  {Object} options.db      Object.
+ *  {string}  ""  ""  .database  String. e.g. "AMT_Batch". (0-9A-Za-z_).
+ *  {string}  ""  ""  .table    String. e.g. "history". (0-9A-Za-z_).
+ *  {Object}  ""  ""  .columns  Array. e.g. ['id', ''] or ['*'].
+ *  {Object}  ""  ""  .filters  Array. e.g. [{
  *                   field: "XYZ", (0-9A-Za-z_)
                   value: "to-encode-w/mysql-real-escape",
                   operator: "", (<, >, =, LIKE, !=)
@@ -5741,8 +5955,8 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
                 }]
                 Note: "Connector" is what "follows" the field
                 in the query. E.g., `` XYZ="ABC" && ``.
- * @param {number}  ""  ""  .limit    Integer.
- * @param {Object} options.callback    Function.
+ *  {number}  ""  ""  .limit    Integer.
+ *  {Object} options.callback    Function.
  * 
  */
 AMT___requests_factory.prototype.database__select2 = function(options) //
@@ -5779,15 +5993,15 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
  * update ___.___ set { ___[=...]___, [&& ||, ...] } [ where ... ]
  * 
  * @param {Object} options        Object.
- * @param {Object} options.db      Object.
- * @param {string}  ""  ""  .database  String. e.g. "AMT_Batch". (0-9A-Za-z_).
- * @param {string}  ""  ""  .table    String. e.g. "history". (0-9A-Za-z_).
- * @param {string}  ""  ""  .type    String. "UPDATE" or "INSERT"
- * @param {Object}  ""  ""  .columns  Array. e.g. ['id', ...]
- * @param {Object}  ""  ""  .values    Array. Objects{UPDATE} or Strings{INSERT}:
+ *  {Object} options.db      Object.
+ *  {string}  ""  ""  .database  String. e.g. "AMT_Batch". (0-9A-Za-z_).
+ *  {string}  ""  ""  .table    String. e.g. "history". (0-9A-Za-z_).
+ *  {string}  ""  ""  .type    String. "UPDATE" or "INSERT"
+ *  {Object}  ""  ""  .columns  Array. e.g. ['id', ...]
+ *  {Object}  ""  ""  .values    Array. Objects{UPDATE} or Strings{INSERT}:
  *                  e.g. ["to-encode-w/mysql-real-esp", ..., ...]
  *                   e.g. [{field:"XYZ",operater:"=",value:"to-encode-w/mysql-real-esp"},...]
- * @param {Object}  ""  ""  .filters  Array. e.g. [{
+ *  {Object}  ""  ""  .filters  Array. e.g. [{
  *                   where: {field: "XYZ", (0-9A-Za-z_)
                       value: "to-encode-w/mysql-real-esp",
                       operator: "", (<, >, =, LIKE, !=)
@@ -5796,7 +6010,7 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
                 }]
                 Note: "Connector" is what "follows" the field
                 in the query. E.g., `` XYZ="ABC" && ``.
- * @param {Object} options.callback    Function.
+ *  {Object} options.callback    Function.
  * 
  */
 AMT___requests_factory.prototype.database__write2 = function(options) //
@@ -5836,6 +6050,9 @@ AMT___requests_factory.prototype.database__write2 = function(options) //
 // Returns:
 // database_object  .responseObject
 // database_object  .responseText
+/**
+ * 
+ */
 AMT___requests_factory.prototype.database__write = function(database_object, callback_function) //
 {
   var database_object = database_object;
@@ -5943,7 +6160,9 @@ AMT___requests_factory.prototype.io__command_line_request = function(options_obj
     });
   }, 1000);
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__wget_download_images = function(options_object, callback_function_complete) //
 {
   var options_object        = options_object;
@@ -5993,7 +6212,9 @@ AMT___requests_factory.prototype.io__wget_download_images = function(options_obj
     });
   }, 1000);
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__download_file = function(download_object, callback_function) //
 {
   var download_object = download_object;
@@ -6010,7 +6231,9 @@ AMT___requests_factory.prototype.io__download_file = function(download_object, c
     }
   });
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__imagemagick_convert = function(convert_object, callback_function) //
 {
   var convert_object = convert_object;
@@ -6027,7 +6250,9 @@ AMT___requests_factory.prototype.io__imagemagick_convert = function(convert_obje
     }
   });
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__AMT__displayPostStrAsHTML = function(str, iframe) //
 {
   var iframe = iframe;
@@ -6122,7 +6347,9 @@ AMT___requests_factory.prototype.disk_file = function(opts_object) //
   }
   return this;
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__write_to_file = function(write_object, callback_function) //
 {
   var write_object = write_object;
@@ -6150,9 +6377,9 @@ AMT___requests_factory.prototype.io__write_to_file = function(write_object, call
     }
   });
 }
-//
-//
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__file_exists = function(filename, callback_function, options_object) //
 {
   var host = (options_object && options_object.host) ? options_object.host : AMT___POPUP___PROXY_REDACTED_;
@@ -6175,7 +6402,9 @@ AMT___requests_factory.prototype.io__file_exists = function(filename, callback_f
     }
   });
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__read_file = function(file_object, callback_function) //
 {
   var file_object = file_object;
@@ -6209,7 +6438,9 @@ AMT___requests_factory.prototype.io__read_file = function(file_object, callback_
     //~ }
   //~ });
 //~ }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.io__send_email = function(email_object, callback_function) //
 {
   var email_object = email_object;
@@ -6247,7 +6478,9 @@ AMT___requests_factory.prototype.io__send_email = function(email_object, callbac
     //~ }
   //~ });
 }
-//
+/**
+ * 
+ */
 AMT___requests_factory.prototype.parse_yahoo_result = function(rs) //
 {
   //
@@ -6294,7 +6527,9 @@ AMT___requests_factory.prototype.parse_yahoo_result = function(rs) //
     return [];
   }
 }
-// TRY #1
+/**
+ * @desc Try #1
+ */
 AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_get, callback_function) //
 {
   var url = MT___host+
@@ -6317,7 +6552,9 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
   //   }
   // });
 }
-// TRY #2
+/**
+ * @desc Try 2
+ */
 AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 {
   var opts_obj = opts_obj;
@@ -6366,13 +6603,13 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
  * 
  * TRY #3
  * 
- * @param {string} skips_key
- * @param {Object} callback
- * @param {Object} callback_err
- * @param {Object} fork      String: Optional pre-existing skips file to fork
+ * @param {Object} opts_obj
+ *  {string} skips_key
+ *  {Object} callback
+ *  {Object} callback_err
+ *  {Object} fork      String: Optional pre-existing skips file to fork
  *             (e.g. austin_load_skips).
  */
-
 AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 {
   var opts_obj = opts_obj;
@@ -6463,13 +6700,13 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
  * 
  * levensht
  * 
- * 
+ * @class
  */
 function AMT___gen_functions(obj_vars) {
   // this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * Levenshtein
+ * levensht
  * 
  * Q: How does this compare to a "similarity" match?
  */
@@ -6520,12 +6757,12 @@ AMT___gen_functions.prototype.levensht = function(a, b) {
  * AMT___geographic_functions
  * 
  * 
- * 
+ * @class
  */
 function AMT___geographic_functions(obj_vars) {
 }
 /**
- * 
+ * utm_coords_to_geographic
  * www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM
  * 
  * @param {Object} options
@@ -6669,11 +6906,12 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options
 }
 
 /**
- * AMT___geographic_functions.estimate_location(options)
+ * estimate_location
  * Scrapes a URL and returns the best estimate of location.
  * 
- * @param {string} options.url      URL to scrape.
- * @param {Object} options.callback  Function to call on success.
+ * @param {Object} options
+ *  {string} options.url      URL to scrape.
+ *  {Object} options.callback  Function to call on success.
  * 
  * @desc Calls back callback function with param of full state name
  *       or null if no best estimate.
@@ -6760,12 +6998,13 @@ AMT___geographic_functions.prototype.estimate_location = function(options) {
  * 
  * TODO: linkedin.com/Web Test
  * 
+ * @class
  */
 function AMT___site_scrapes(obj_vars) {
   // this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * function scrape
+ * scrape
  *
  * Yellow Pages
  * 
@@ -6785,12 +7024,14 @@ function AMT___site_scrapes(obj_vars) {
  *  LINKEDIN_PROFILE
  * 
  * Typically returns ...
- * @return opts.response.vars.result{} OR results[{rslt}, {rslt}, ... ]
- * @return opts.response.vars.error?
- * @return opts.response.vars.error_type?
+ * return opts.response.vars.result{} OR results[{rslt}, {rslt}, ... ]
+ * return opts.response.vars.error?
+ * return opts.response.vars.error_type?
  * 
  * @TODO: Add ability to cache XHR requests. Bool cache_xhr Default = ?
  * @TODO: For tasks such as signpost: Add "xhr__PROXY_REDACTED_" functionality.
+ * 
+ * 
  */
 AMT___site_scrapes.prototype.scrape = function(options_object) {
   
@@ -8550,6 +8791,7 @@ http%3A%2F%2Fdeancdawson%2Ecom
  * xhr_scrape_page
  * 
  * search_container
+ * @class
  */
 function AMT___items_factory(obj_vars) {
   // this.___SKIP_SITES = ''; // would this work?
@@ -11133,10 +11375,10 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
  *   JONATHAN G MONSARRAT
  *   Brendan
  * 
- * 
- * @param {Object} onclick    Function: Callback for onclick of result.
- * @param {Object} searches    Array: Array of strings.
- * @param {boolean} AutoReturnAcceptIfZero  Boolean: .
+ * @param {Object} options_object
+ *  {Object} onclick    Function: Callback for onclick of result.
+ *  {Object} searches    Array: Array of strings.
+ *  {boolean} AutoReturnAcceptIfZero  Boolean: .
  * 
  * @return {string} Default is Profile URL to .out_element
  */
@@ -12785,11 +13027,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 /**
  * search_container
  * 
- * @param {Object}  `options_object`
- * @param {Object}  `options_object.divs`
- * @param {string}  `options_object.style`
- * @param {Object}  `options_object.textareas`
- * @param {number}  `options_object.offset_top` INT, Default=0.
+ * @param {Object}  options_object
+ *  {Object}  `options_object.divs`
+ *  {string}  `options_object.style`
+ *  {Object}  `options_object.textareas`
+ *  {number}  `options_object.offset_top` INT, Default=0.
  * @return {Object} `container` HTML DIV, Div with keys {.search{.divs[],.textareas[]}}
  */
 AMT___items_factory.prototype.search_container = function(options_object) {
@@ -12849,7 +13091,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
   return container;
 }
 /**
- * AMT___items_factory.create_dashboard_find_url
+ * create_dashboard_find_url
  * 
  * .bold_array                    Array
  * .searches                    Array, Array of strings to search (3=default)
@@ -14028,9 +14270,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
   }
 }
 /**
- * AMT___items_factory.create_dashboard_find_phone
+ * create_dashboard_find_phone
  *
- * -xxxxxxxx----------------------------
  * @param {Object} options_object            object  
  * @param {Object} "".parent                element
  * @param {number} "".distance_close_match  integer, The distance in miles considered to be "close". Where "far" appears as bgcolor=aqua.
@@ -15321,7 +15562,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
   }
 }
 /**
- * AMT___items_factory.create_dashboard_find_address
+ * create_dashboard_find_address
  * 
  *
  * @param {Object} options_object            object  
@@ -17307,7 +17548,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
   
 }
 /**
- * function xhr_scrape_page
+ * xhr_scrape_page
  *
  * .parent_el
  * .keyword_and_index_array
@@ -17530,7 +17771,7 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
   });
 }
 /**
- * function create_annotation_to_output_fields
+ * create_annotation_to_output_fields
  * 
  * Handles buttons/div?/p? mousedown, mouseup events.
  * Handles body.mouseup event.
@@ -17541,19 +17782,19 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
  * 
  * 
  * @param {Object} options_object
- * @param {string} options_object.textToAnnotate = String
- * @param {Object} options_object.output_fields = []
- * @param {Object} options_object.callback_mouseup = Function
- * @param {Object} options_object.callback_mouseup_pre_apply = Function
+ *  {string} options_object.textToAnnotate = String
+ *  {Object} options_object.output_fields = []
+ *  {Object} options_object.callback_mouseup = Function
+ *  {Object} options_object.callback_mouseup_pre_apply = Function
  * 
- * @param {boolean} appendToField
- * @param {string} appendToField_glue
+ *  {boolean} appendToField
+ *  {string} appendToField_glue
  *
- * @param {string} delimeter
- * @param {boolean} focusToField
+ *  {string} delimeter
+ *  {boolean} focusToField
  * 
- * @param {string} style
- * @param {string} selectedText  Text that has been selected.
+ *  {string} style
+ *  {string} selectedText  Text that has been selected.
  *
  * @return {Object} appendable inputs
  * 
@@ -17848,7 +18089,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
   
 }
 /**
- * function create_annotation_from_elements
+ * create_annotation_from_elements
  * 
  * 
  * 
@@ -18159,12 +18400,9 @@ AMT___items_factory.prototype.create_annotation_from_elements = function(options
   
 }
 
-/*
+/**
  * 
- * 
- * 
- * 
- * */
+ */
 AMT___items_factory.prototype.createJobTimer = function(options) {
   if(AMT__Global_Vars.timer.startJobTimer == true && document.getElementById('AMT___JobTimer')) {
     new AMT___items_factory().startJobTimer();
@@ -18273,7 +18511,9 @@ AMT___items_factory.prototype.createJobTimer = function(options) {
     
   }
 }
-
+/**
+ * 
+ */
 AMT___items_factory.prototype.startJobTimer = function() {
   if(!AMT__Global_Vars.sStrings.length) {
     AMT__Global_Vars.startTimerOnSMatch = true;
@@ -18302,21 +18542,21 @@ AMT___items_factory.prototype.startJobTimer = function() {
 
 /**
  * create_dashboard__powers_v1__showScrapyResult_contexts
- * 
- * THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1.
+ *  
+ * @desc THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1.
  * 
  * @param {Object} results_array
  * @param {Object} out_div
- * @param {Object} seed_object.{}
- * @param {boolean} seed_object.input_send_success
- * @param {Object} seed_object.do_submit_callback
- * @param {Object} seed_object.input_onclick_callback
- * @param {boolean} seed_object.do_submit_next_tab
- * @param {boolean} seed_object.do_submit_add_to_tabs_queue
- * @param {boolean} seed_object.sort_results // Jan2018
- * @param {Object} seed_object.contexts_bold_array // Jan2018
+ * @param {Object} seed_object
+ *  {boolean} seed_object.input_send_success
+ *  {Object} seed_object.do_submit_callback
+ *  {Object} seed_object.input_onclick_callback
+ *  {boolean} seed_object.do_submit_next_tab
+ *  {boolean} seed_object.do_submit_add_to_tabs_queue
+ *  {boolean} seed_object.sort_results // Jan2018
+ *  {Object} seed_object.contexts_bold_array // Jan2018
+ * 
  */
-// switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts =
   function(results_array, out_div, seed_object)
 {
@@ -18476,11 +18716,10 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
  * All pages scraped table. (incl. stats?)
  * 
  * And all contexts.
- */
-// 
-//
+ *
 // callback_function(jobid, callback_obj, seed_object);
 // IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
+ */
 AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_response, seed_object)// dashboard/area
 {
   //@callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
@@ -18507,11 +18746,11 @@ AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_resp
 /**
  * .create_dashboard__powers_v1
  * 
- * @param {boolean} seed_object.sort_results // Jan2018
+ * param {boolean} seed_object.sort_results // Jan2018
+ * 
+ * callback_function(jobid, callback_obj, seed_object);
+ * IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
  */
-//
-// callback_function(jobid, callback_obj, seed_object);
-// IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
 AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
 {
   var out_div = seed_object.div;
@@ -18773,6 +19012,9 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
   // br
   out_div.appendChild(document.createElement('br'));
 }
+/**
+ * 
+ */
 AMT___items_factory.prototype.create__input_scrapy_button = function(short_domain,full_url,object_options,callback_function)
 {
   
@@ -19178,6 +19420,9 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
   };
 }
 // DONE XXTODO: REMOVE FROM FILE
+/**
+ * 
+ */
 AMT___items_factory.prototype.create__input_skip_button = function(url, skips_key_php_get, skip_sites_callback) // X: pass reference
 {  
   
@@ -19234,6 +19479,7 @@ AMT___items_factory.prototype.create__input_skip_button = function(url, skips_ke
  * @TODO When response has loaded, make sure to only fire callback
  *     one time! (One time only callback!)
  * 
+ * @class
  */
 function AMT___xhr_PROXY_REDACTED_(obj_vars) {
   // : url
@@ -19924,7 +20170,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
   }
 }
 
-/*
+/**
  * function MT___getInputSelection()
  * 
  * Replace selected text (Range).
@@ -19974,6 +20220,9 @@ function MT___getInputSelection(el) {
         end: end
     };
 }
+/**
+ * 
+ */
 function MT___replaceSelectedText(element, text) {
     var sel = MT___getInputSelection(element);
     var val = element.value;
@@ -19982,6 +20231,9 @@ function MT___replaceSelectedText(element, text) {
     text +
     val.slice(sel.end);
 }
+/**
+ * 
+ */
 function MT___HTMLParser(aHTMLString){
   var html = document.implementation.createDocument("http://www.w3.org/1999/xhtml", "html", null);
   var body = document.createElementNS("http://www.w3.org/1999/xhtml", "body");
@@ -20059,9 +20311,10 @@ if (!this.GM_getValue || (this.GM_getValue.toString && this.GM_getValue.toString
     localStorage.removeItem(name);
   }
 }
-//
-// function GM_addStyle()
-//
+
+/**
+ * 
+ */
 function GM_addStyle(css) {
   var style = document.createElement('style');
   style.textContent = css;
@@ -20082,6 +20335,9 @@ var MT__DOSUBMIT__USER_SET_TYPE = 'regular'; // var to set by user! Types are "r
 var AMT___POPUP___PROXY_REDACTED_      = MT___host; // default is MT___host!
 //~ var AMT___POPUP__doSubmitServerHost  = MT___host; // // !! THIS IS AS OF YET UNDEFINED !! // //
 
+/**
+ * 
+ */
 function AMT___POPUP__initializeGlobals(callback_function) {
   chrome.extension.sendRequest(
     {
@@ -20140,19 +20396,12 @@ AMT___POPUP__initializeGlobals();
 **/
 // submit vars
 var MT__DOSUBMIT__BY_ID_THIS_ID;
-//
 var MT__DOSUBMIT__INTERVAL;
-//
 var MT__DOSUBMIT__INTV_INTERVAL;
-//
 var MT__DOSUBMIT__FORM;
-//
 var MT__DOSUBMIT__LOCATION;
-//
 var MT__DOSUBMIT__CALLBACK_FUNCTION;
-//
 var MT__DOSUBMIT__TIME_TO_SUBMIT;
-//
 var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250; // Stable is 2250 Jan. 2013 to ... Oct. 2014 ... Sep. 2015...
 var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2400; // Stable through October 2017.
 var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2600; // Bumping up October 2017.
@@ -20200,8 +20449,8 @@ MT__DOSUBMIT__BY_ID_THIS_ID = xid;
 /**
  * function doSubmit__serverSide()
  * 
- * @param {string} form, or boolean false
- * @param {string} location/URL of the form, or boolean false
+ * @param {string} form - form or boolean false
+ * @param {string} location - location/URL of the form, or boolean false
  * @param {Object} callback_function
  * @param {number} offsetTime
  */
@@ -20304,12 +20553,13 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
  * function AMT__doSubmit__editSubmitArray()
  * - This function will set the global variable ~MT__DOSUBMIT__TIME_TO_SUBMIT
  * 
- * @param {number} MT__DOSUBMIT__TIME_TO_SUBMIT
- * @param {string} MT__DOSUBMIT__BY_ID_THIS_ID (number or string???)
- * @param {number} MT__DOSUBMIT__MIN_SUBMIT_TIME
  * @param {Object} data Submit array. Edited and returned by function.
  * @param {number} offsetTime
  * @param {number} serverSide_currentTime - if this is server side doSubmit then use the server's current time
+ * 
+ * param {number} MT__DOSUBMIT__TIME_TO_SUBMIT
+ * param {string} MT__DOSUBMIT__BY_ID_THIS_ID (number or string???)
+ * param {number} MT__DOSUBMIT__MIN_SUBMIT_TIME
  * 
  * @return {object} arr_all_submits array
  */
@@ -20437,8 +20687,11 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 /**
  * function doSubmit()
  * 
- * Parameters:
- * @param {Object} form Form to submit, or window.location, or add to queue (with noSubmit) & callback_function
+ * @param {Object} form - Form to submit, or window.location, or add to queue (with noSubmit) & callback_function
+ * @param {string} location
+ * @param {Object} callback_function
+ * @param {number} offsetTime
+ * @param {boolean} doServerSideSubmit
  * 
  * @return {number} time_to_submit offsetTime(x) > regularInterval+x
  */
@@ -20487,7 +20740,9 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
   //
   //
   try {
-    if(document.getElementById('AMT___JobTimer') && !document.getElementById('AMT___nullifyTimer').on && !AMT__Global_Vars.isPreview && document.getElementById('AMT___timerState').innerText != ''
+    if(document.getElementById('AMT___JobTimer')
+	  && !document.getElementById('AMT___nullifyTimer').on 
+	  && !AMT__Global_Vars.isPreview && document.getElementById('AMT___timerState').innerText != ''
       && !callback_function //no callback function means, this isn't an exception case to a regular dosubmit
     ) {
       var time = document.getElementById('AMT___timerState').innerText * 1;
@@ -20604,6 +20859,9 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
     }
   );
 }
+/**
+ * 
+ */
 function doSubmit_2() {
     
   // Exit if necessary
@@ -20684,7 +20942,7 @@ if (MT___TEST_DEBUG) {
   setTimeout(function() {doSubmit();}, 2000);
 }
 
-/*
+/**
  * MT___diffString, diff strings
  * 
  */
@@ -20696,6 +20954,9 @@ function MT___escape(s) {
   n = n.replace(/"/g, "&quot;");
   return n;
 }
+/**
+ * 
+ */
 function MT___diffString( o, n ) {
   // , opts var opts // Aug 10 2016
   o = o.replace(/\s+$/, '');
@@ -20748,11 +21009,17 @@ function MT___diffString( o, n ) {
   }
   return str;
 }
+/**
+ * 
+ */
 function randomColor() {
   return "rgb(" + (Math.random() * 100) + "%, " + 
           (Math.random() * 100) + "%, " + 
           (Math.random() * 100) + "%)";
 }
+/**
+ * 
+ */
 function MT___diffString2( o, n ) {
   o = o.replace(/\s+$/, '');
   n = n.replace(/\s+$/, '');
@@ -20796,6 +21063,9 @@ function MT___diffString2( o, n ) {
   }
   return { o : os , n : ns };
 }
+/**
+ * 
+ */
 function MT___diff( o, n ) {
   var ns = new Object();
   var os = new Object();
@@ -20838,7 +21108,9 @@ function MT___diff( o, n ) {
 }
 
 
-
+/**
+ * 
+ */
 AMT___core_factory.prototype.shiftFarLeft = function() {
   chrome.extension.sendRequest(
       {
@@ -20848,7 +21120,9 @@ AMT___core_factory.prototype.shiftFarLeft = function() {
       }
     );
 }
-
+/**
+ * 
+ */
 AMT___core_factory.prototype.shiftFarRight = function() {
   chrome.extension.sendRequest(
       {
@@ -20860,8 +21134,7 @@ AMT___core_factory.prototype.shiftFarRight = function() {
 }
 
 
-//Options
-/*
+/**
  * matchString   //If not specified is 'default'
  * callback   
  * namespace  //Optional, if unset is the 's'
@@ -20923,12 +21196,17 @@ AMT___core_factory.prototype.getAverageTiming = function(options) {
       }
     },options.callback, null, true);
 }
-
+/**
+ * 
+ */
 AMT___core_factory.prototype.setTimerRecordString = function(str) {
   AMT__Global_Vars.timer.isShowingDefaultString = false;
   document.getElementById('AMT___recordStringInp').value = str;
   AMT__Global_Vars.timer.recordString = str;
 }
+/**
+ * 
+ */
 AMT___core_factory.prototype.setTimerNamespace = function(str) {
   AMT__Global_Vars.timer.isShowingDefaultString = false;
   document.getElementById('AMT___recordNameSpaceInp').value = str;
@@ -23388,7 +23666,9 @@ function AMT___oldTopWindowFloatStuff() {
  * END FUNCTION AMT___oldTopWindowFloatStuff
  */
  
-
+/**
+ * 
+ */
 function AMT___InitializeReturnAndAcceptKeyPress() {
   chrome.extension.sendRequest({getRACustomKey:true}, function(rs) {
     
@@ -23400,6 +23680,9 @@ function AMT___InitializeReturnAndAcceptKeyPress() {
   document.addEventListener("keypress", AMT___ReturnAndAcceptKeyPress);  
 }
 //Also handles retun button keyproess
+/**
+ * 
+ */
 function AMT___ReturnAndAcceptKeyPress(event) {
     //console.log(event.keyCode);
     switch (event.keyCode) {
@@ -23908,7 +24191,7 @@ function AMT___checkCaptchaStatus() {
  * GLOBAL FUNCTIONS
  * 
  */
-/*
+/**
  * MT___numberWithCommas
 **/
 function MT___numberWithCommas(x) {
@@ -23940,7 +24223,7 @@ function MT___lat_lng_distance(lat1, lon1, lat2, lon2) {
   var d = R * c; // mi
   return d;
 }
-/*
+/**
  * MT___yahoo_feeling_lucky
  * 
 **/
@@ -24023,7 +24306,7 @@ function MT___google_api_geocode_parse(rs, callback_function, return_complete_re
     callback_function(rs, input_object); // Full response plus any seed. New Nov. 12, 2015: "Input object" is seed.
     //~ callback_function(rs); // full
 }
-/*
+/**
  * MT___google_api_reverseGeocode
  * return reverse lat/lng
 **/
@@ -24088,7 +24371,7 @@ function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy, 
     }
   });
 }
-/*
+/**
  * MT___google_api_geocode
  * 
  * Returns lat/lng or full response object
@@ -24176,7 +24459,7 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
     }
   });
 }
-/*
+/**
  * exit
  * console.log & new Error
 **/
@@ -24185,9 +24468,15 @@ function exit(msg)
   console.log(msg);
   throw new Error (msg);
 }
+/**
+ * 
+ */
 function __js_escape_regEx(string) {
   return string.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
+/**
+ * 
+ */
 function __js_inarray(array, needle) // //
 {
   for (var i in array)
@@ -24197,6 +24486,9 @@ function __js_inarray(array, needle) // //
   }
   return false;
 }
+/**
+ * 
+ */
 function __js_clean_html_str(s) {
   if (/[<>]/.exec(s)) alert('__js_clean_html_str contains arrows');
   if (s == undefined) return ''; // is blank
@@ -24314,7 +24606,7 @@ function MT__bold(o, arr, options_object) {
 //console.log(MT__bold('all of the fishes ran to the fish store fish', ['fish','ish','fishes']));
 //console.log(MT__bold('all of the fishes ran to the fish store ish', ['fish','ish','fishes']));
 //console.log(MT__bold('all of the fishes ran to the fish store fishes', ['fish','ish','fishes']));
-/*
+/**
  * old whois
  */
 function mturk_whois(t, input_submit, output_div, submit_form, callbackFunction) {

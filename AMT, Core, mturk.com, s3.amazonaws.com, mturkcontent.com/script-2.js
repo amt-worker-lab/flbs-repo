@@ -222092,8 +222092,6 @@ qatar,80
  * END MTURK_RUN
  */
 
-
-
 /**
  * top_window
  * This is a collection of tasks that run in the top window of AMT.
