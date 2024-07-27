@@ -2132,13 +2132,13 @@ String.prototype.getNameSynonyms = function() {
  * div
  * 
  * @param {Object} opts
- *  .style      String; Default='';
- *  .innerHTML  Default=false;
- *  .ce         Default='div'; createElement. E.g. 'br'.
- *  .a          AppendTo: Default=None. An HTML element, or True.
+ * @param {string} opts.style      String; Default='';
+ * @param {string} opts.innerHTML  Default=false;
+ * @param {string} opts.ce         Default='div'; createElement. E.g. 'br'.
+ * @param {Object} opts.a          AppendTo: Default=None. An HTML element, or True.
  *           If element, then it appends DIV to this item.
  *           If True, then appends this element to document.body.
- *  .class
+ * @param {string} opts.class
  * 
  * @function
  * @namespace
@@ -13091,38 +13091,65 @@ AMT___items_factory.prototype.search_container = function(options_object) {
   return container;
 }
 /**
+ * create_dashboard_find_phone
+ *
+ * @param {Object} options_object            object  
+ * @param {Object} "".parent                element
+ * @param {number} "".distance_close_match  integer, The distance in miles considered to be "close". Where "far" appears as bgcolor=aqua.
+ * @param {number} "".input_phone      integer,
+ * @param {string} "".search_term      string,
+ * @param {string} "".location        string,
+ * 
+ */
+ /**
+ * create_annotation_from_elements
+ * 
+ * 
+ * 
+ * @param {Object} options_object {}
+ * @param {Object} options_object.elements = Array
+ * @param {Object} options_object.callback_mouseup = Function
+ * 
+ */
+ 
+/**
  * create_dashboard_find_url
  * 
- * .bold_array                    Array
- * .searches                    Array, Array of strings to search (3=default)
- * .out_element                    HTML input element, Where to put URL
- * .onclick_success                  Function, Callback function for successful find URL
- * .parent                      HTML div element, Container
- * .offsetTop                    Int, Parent div offset top
- * .innerHeight_callback              Function
- * .load_success_callback              Function, Callback after all panels have loaded
- * .search_results                  Object
- * .search_results.use_full_urls          Boolean
- * .search_results.replace_urls_in_result_body    Boolean, Default=False
- * .search_results.url_ignore_test          Function(url), True=Skip, False=Keep
- * .search_results.url_modifier_callback      Function(url)
- * .search_results.clean_body_regex          Array(regexes)
- * .search_results.clean_body_string        Array(strings)
- * .search_results.use_domain_only          Boolean, Default=NULL or False
- * .search_results.use_domain_and_www        Boolean, Default=NULL or False
- * .onclick_check_site_is200            BOOLEAN
- * .onclick_check_site_is200_err_callback      Function()
- * .search                      Object
- * .search.skips                  Object: .fork:Filename, .key:New OR existing file name
- *                             Fork skips file or use a pre-existing skips file.
- * .search.str_add_to_searches_hidden        String, A default string to add to all searched. E.g. " site:linkedin.com". (Feature: Display "debug" message showing this.)
- * .hide_search_fields BOOLEAN
- * .AmtRecordAndSubmit                Use AMT__recordAndSubmit rather than doSubmit
+ * Function does not return.
+ * However, `options_object` elements are modifiable.
+ * e.g.,
+ *     options_object.results.divs;
+ *     options_object.results.textareas;
+ *     options_object.results.[...]
  * 
- * Return: Not much to return. However, `options_object` is modified / modifiable.
- *     options_object.results.divs
- *     options_object.results.textareas
- *     options_object.results...
+ * @param {Object} options_object Object containing parameters for the function.
+ * @param {Array} options_object.bold_array                    
+ * @param {Array} options_object.searches                    			Array of strings to search (3=default)
+ * @param {HTMLObject} options_object.out_element                    	HTML input element, Where to put URL
+ * @param {Function} options_object.onclick_success                  	Callback function for successful find URL
+ * @param {HTMLObject} options_object.parent                      		HTML div element, Container
+ * @param {Number} options_object.offsetTop                    		Parent div offset top
+ * @param {Function} options_object.innerHeight_callback              
+ * @param {Function} options_object.load_success_callback              	Callback after all panels have loaded
+ * @param {Object} options_object.search_results                  
+ * @param {Boolean} options_object.search_results.use_full_urls          
+ * @param {Boolean} options_object.search_results.replace_urls_in_result_body   Default=False
+ * @param {Function} options_object.search_results.url_ignore_test          	Function(url), True=Skip, False=Keep
+ * @param {Function} options_object.search_results.url_modifier_callback      	Function(url)
+ * @param {Array} options_object.search_results.clean_body_regex        Array(regexes)
+ * @param {Array} options_object.search_results.clean_body_string       Array(strings)
+ * @param {Boolean} options_object.search_results.use_domain_only       Default=NULL or False
+ * @param {Boolean} options_object.search_results.use_domain_and_www    Default=NULL or False
+ * @param {Boolean} options_object.onclick_check_site_is200            
+ * @param {Function} options_object.onclick_check_site_is200_err_callback      
+ * @param {Object} options_object.search                      
+ * @param {Object} options_object.search.skips                  
+ * @param {String} options_object.search.str_add_to_searches_hidden		A default string to add to all searched. E.g. " site:linkedin.com". (Feature: Display "debug" message showing this.)
+ * @param {String} options_object.search.skips.fork 					Filename
+ * @param {String} options_object.search.skips.key 		New OR existing file name. Fork skips file or use a pre-existing skips file.
+ * @param {Boolean} options_object.hide_search_fields
+ * @param {Boolean} options_object.AmtRecordAndSubmit                	Use AMT__recordAndSubmit rather than doSubmit.
+ * 
  * 
  */
 AMT___items_factory.prototype.create_dashboard_find_url = function(options_object) {
@@ -14018,8 +14045,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
    * options_object.search_results.create_annotation_from_title.depth:          Integer, How deep in each column to go...
    * options_object.search_results.create_annotation_from_title.display_empty_message:  Boolean
    * 
-   * @return {Object}
-   * div:    An empty div that will be later filled with buttons or an optional "Empty Message".
+   * @return {Object} .div An empty div that will be later filled with buttons or an optional "Empty Message".
    */
   function create_annotation_from_title(url) {
     var obj = options_object.search_results.create_annotation_from_title;

@@ -57491,8 +57491,8 @@ Laurens Hammond, Chicago, Ill.**/
       /**
        * function yelp_profile
        * 
-       * @param div, html element
-       * @return
+       * @param {Object} div, html element
+       * return 
        */
       function yelp_profile(div) {
         var u = div.yhref;
@@ -197738,7 +197738,7 @@ qatar,80
       });
       
     }
-    function DavidFeldsott_yahoo__(out_div, search, launch_first) {
+    function DavidFeldsott_yahoo__2(out_div, search, launch_first) {
       
       // Yahoo
       var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
@@ -198044,8 +198044,8 @@ qatar,80
       d3b.focus(); //
       d3b.blur(); //
     }
-    function Thomas_Morel_li_getProfile(u, public) {
-      if (public == false) {
+    function Thomas_Morel_li_getProfile(u, is_public) {
+      if (is_public == false) {
         GM_xmlhttpRequest({
           method: "GET",
           url: u,
