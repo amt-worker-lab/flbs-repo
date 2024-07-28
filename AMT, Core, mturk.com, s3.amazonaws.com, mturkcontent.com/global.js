@@ -2132,13 +2132,13 @@ String.prototype.getNameSynonyms = function() {
  * div
  * 
  * @param {Object} opts
- * @param {string} opts.style      String; Default='';
- * @param {string} opts.innerHTML  Default=false;
- * @param {string} opts.ce         Default='div'; createElement. E.g. 'br'.
+ * @param {String} opts.style      String; Default='';
+ * @param {String} opts.innerHTML  Default=false;
+ * @param {String} opts.ce         Default='div'; createElement. E.g. 'br'.
  * @param {Object} opts.a          AppendTo: Default=None. An HTML element, or True.
  *           If element, then it appends DIV to this item.
  *           If True, then appends this element to document.body.
- * @param {string} opts.class
+ * @param {String} opts.class
  * 
  * @function
  * @namespace
@@ -2187,8 +2187,8 @@ String.prototype.format_number_with_commas = function() {
  * .string_to_mixed_case
  * 
  * @param {Object} options
- * @param {boolean} options.REG_INCLUDE_DASHES
- * @param {boolean} options.ALERT
+ * @param {Boolean} options.REG_INCLUDE_DASHES
+ * @param {Boolean} options.ALERT
  * @param {Object} options.CALLBACK function that returns true/false onchanged
  * 
  * @function
@@ -2250,10 +2250,10 @@ String.prototype.string_to_mixed_case = function(options) {
  * Description: Remove [^\w\d] from string. Return array split by space.
  * 
  * @param {Object} options            object
- * @param {string} .string            str    String to clean.
- * @param {number} .least_characters_per_word  int    Number of least amount of characters allowed per word. 0 is no limit. Default=1. This means single letters are not bolded.
+ * @param {String} .string            str    String to clean.
+ * @param {Number} .least_characters_per_word  int    Number of least amount of characters allowed per word. 0 is no limit. Default=1. This means single letters are not bolded.
  * 
- * @return {string}
+ * @return {String}
  * 
  * @function
  * @namespace
@@ -2611,7 +2611,7 @@ AMT___core_factory.prototype.nextWindow = function() {
  * 
  * @param {Object} options
  * @param {Object} .elements
- * @param {number} .offset
+ * @param {Number} .offset
  * 
  * NOTES: innerHeight is always -14px because many times the bottom of page will have
  * a horizontal scroll bar.
@@ -2731,8 +2731,8 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
  * top_window__addEventListener_iframe
  * 
  * @param {Object} options
- * @param {string} options.action
- * @param {number} options.threshold_to_change => ChangeWindowCount
+ * @param {String} options.action
+ * @param {Number} options.threshold_to_change => ChangeWindowCount
  * @param {Object} callback_function
  */
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
@@ -3000,6 +3000,112 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 }
 //~ AMT___core_factory.prototype.iframe2parent__addEventListener_return_HIT = function(options, callback_function) {
 
+
+/**
+ * 
+ */
+AMT___core_factory.prototype.shiftFarLeft = function() {
+  chrome.extension.sendRequest(
+      {
+        shiftFarLeft:true
+      },
+      function(r) {
+      }
+    );
+}
+/**
+ * 
+ */
+AMT___core_factory.prototype.shiftFarRight = function() {
+  chrome.extension.sendRequest(
+      {
+        shiftFarRight:true
+      },
+      function(r) {
+      }
+    );
+}
+
+
+/**
+ * matchString   //If not specified is 'default'
+ * callback   
+ * namespace  //Optional, if unset is the 's'
+ * Returns the following:
+ * {
+ * avgTime:
+ * numHits:
+ * }
+ * isDefaultInitialization //Used when script is initializing
+ **/
+AMT___core_factory.prototype.getAverageTiming = function(options) {
+  var namespace = (options.namespace ? options.namespace : AMT__Global_Vars.timer.namespace);
+  var matchString = (options.matchString ? options.matchString : AMT__Global_Vars.timer.recordString);
+  
+  console.log('options in getAverageTiming');
+  console.log(options);
+  
+  if(options.isDefaultInitialization && AMT__Global_Vars.timer.isShowingDefaultString) {
+    new AMT___core_factory().setTimerNamespace(namespace);
+    new AMT___core_factory().setTimerRecordString(matchString);
+  }
+  else {
+    AMT__Global_Vars.timer.isShowingDefaultString;
+    console.log('is not showing default string');
+    new AMT___core_factory().setTimerNamespace(namespace);
+    new AMT___core_factory().setTimerRecordString(matchString);
+    console.log(AMT__Global_Vars);  
+  }
+  
+  AMT___getMatch(namespace, matchString, function(matches, callback) {
+      //console.log('back from AMT___getMatch in getAverageTiming');
+      //console.log(matches);
+      if(matches) {
+        var avgTime;
+        var totalTime = 0;
+        var totalCount = 0;
+        for(var i = 0; i < matches.length; i++) {
+          if( matches[i].outputs[0].value) {
+            console.log(matches[i].outputs[0].value);
+            var timeOutput = matches[i].outputs[0].value *1;
+            totalTime += timeOutput *1;
+            totalCount += (matches[i].count*1);
+          }
+        }
+        avgTime = totalTime/totalCount;
+        document.getElementById('AMT___timerStats').innerText = 'Avg Time: ' + avgTime + ' out of ' + totalCount;
+        callback(
+        {
+          avgTime:avgTime,
+          numHits:matches.length,
+          hits: matches
+        }
+        );
+      }
+      else {
+        document.getElementById('AMT___timerStats').innerText = 'Unrecorded Hit Type';
+        if(callback)
+          callback(null);
+      }
+    },options.callback, null, true);
+}
+/**
+ * 
+ */
+AMT___core_factory.prototype.setTimerRecordString = function(str) {
+  AMT__Global_Vars.timer.isShowingDefaultString = false;
+  document.getElementById('AMT___recordStringInp').value = str;
+  AMT__Global_Vars.timer.recordString = str;
+}
+/**
+ * 
+ */
+AMT___core_factory.prototype.setTimerNamespace = function(str) {
+  AMT__Global_Vars.timer.isShowingDefaultString = false;
+  document.getElementById('AMT___recordNameSpaceInp').value = str;
+  AMT__Global_Vars.timer.recordString = str;
+}
+
 /**
  * AMT___events_factory
  *
@@ -3015,9 +3121,9 @@ function AMT___events_factory(obj_vars) {
 /**
  * mousewheel_scroll_image
  * @param {Object} options_object
- * 	{Object} element  .img: 
- * 	{Object} array    .img_array: array of elements (optional)
- * 	{number} int    .scroll_speed: int, default 0.1
+ * @param {Object} element  .img: 
+ * @param {Object} array    .img_array: array of elements (optional)
+ * @param {Number} int    .scroll_speed: int, default 0.1
  */
 AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object) {
   
@@ -3053,11 +3159,11 @@ AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object
 }
 /**
  * mousewheel_zoom_image
- * @param {Object} options_object
- *  {Object} element  .img: element
- *  {Object} array    .img_array: array of elements (optional)
- *  {number} int    .zoom_speed: default 0.1
- *  {number} int    .onclick_reset_zoom: default 1 (NOTE: if not present then no reset is made.)
+ * @param {Object} 		options_object
+ * @param {HTMLObject} .img: element
+ * @param {Array}      .img_array: array of elements (optional)
+ * @param {Number}     .zoom_speed: default 0.1
+ * @param {Number}     .onclick_reset_zoom: default 1 (NOTE: if not present then no reset is made.)
  */
 AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) {
   
@@ -3126,9 +3232,9 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
  * mouseup__delete_range
  * 
  * @param {Object} options_object
- *  {Object} .element        html object
- *  {Object} .elements        array, array of html objects
- *  {boolean} .remove_whitespace    boolean    
+ * @param {Object} .element        html object
+ * @param {Object} .elements        array, array of html objects
+ * @param {Boolean} .remove_whitespace    boolean    
  * 
  * @todo PAGE.addEventListener. Then watch for the target, 
  * 	 or something similar (?), and blur this element.
@@ -3231,13 +3337,13 @@ function AMT___requests_factory(obj_vars) {
  * mind is to operate async, checking in on the util.php progress
  * via a status- / complete-file?
  * 
- * @param {Object} options
- *  {string} options._client
- *  {Object} options.opts
- *  {Object} options.opts.{any params to pass to php}
- *  {Object} options.callback
- *  {string} options._status_filename (private) 
- *  {boolean} options._check_complete (private) 
+ * @param {Object}  options
+ * @param {String}  ._client
+ * @param {Object}  .opts
+ * @param {Object}  .opts.{any params to pass to php}
+ * @param {Object}  .callback
+ * @param {String}  ._status_filename (private) 
+ * @param {Boolean} ._check_complete (private) 
  */
 AMT___requests_factory.prototype.php_run_task = function(options) {
   // Add a filename for the status file.
@@ -3307,9 +3413,9 @@ AMT___requests_factory.prototype.php_run_task = function(options) {
  * fix_rejected_tasks
  * On {event}, sends corrected values to DB and gets next REJECTED task "HIT_ID".
  * 
- * @param {Object} options            Object
- *  {string}  ""  "".correct_value    String  
- *  {string}  ""  "".fk_requesterUserId  String  
+ * @param {Object} options           
+ * @param {String} .correct_value      
+ * @param {String} .fk_requesterUserId 
  * 
  * @todo:
  * FIX REJECTED TASKS
@@ -3447,8 +3553,8 @@ AMT___requests_factory.prototype.fix_rejected_tasks = function(options) {
  * Note that this is different from pdfocr (tesseract) and pdfimages.
  * 
  * @param {Object} options
- *  {string} options.url
- *  {Object} options.callback
+ * @param {String} .url
+ * @param {Function} .callback
  */
 AMT___requests_factory.prototype.pdftotext = function(options) {
   // filename
@@ -3490,12 +3596,12 @@ AMT___requests_factory.prototype.pdftotext = function(options) {
 /**
  * pdfocr
  * 
- * @param {Object} options        Object.
- *  {string} options.url      Required. String.
- *  {Object} options.callback    Function. Callback for completed.
- *  {number} options.psm      Optional. Int. See "$ tesseract -h" for details.
+ * @param {Object} options        
+ * @param {String} .url      Required.
+ * @param {Function} .callback   Callback for completed.
+ * @param {Number} .psm      Optional. See "$ tesseract -h" for details.
  *             Default=6.
- *  {string} options.goodchars_file
+ * @param {String} .goodchars_file
  *             Optional. String.
  *             Uses /usr/share/tesseract/tessdata/configs/goodchars
  *             by default.
@@ -3578,11 +3684,11 @@ AMT___requests_factory.prototype.pdfocr = function(options) {
 /**
  * pdfimages
  * 
- * options        Object.
- * options.url      Required. String.
- * options.callback    Function. Callback for completed.
+ * @param {Object} options        
+ * @param {String} .url      Required
+ * @param {Function} .callback    Callback for completed.
  * 
- * @return {string} If string, error message.
+ * @return {String} If string, error message.
  *             If string (an integer), then returns the number of images
  *             converted from the pdf.
  */
@@ -3642,9 +3748,9 @@ AMT___requests_factory.prototype.pdfimages = function(options) {
 /**
  * proxy_resolve_URL
  * 
- * options            Object.
- * options.URL          Required. String.
- * options.success_callback    Function. Callback for completed.
+ * @param {Object} options            
+ * @param {String} .URL          Required
+ * @param {Function} .success_callback   Callback for completed.
  * 
  */
 AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
@@ -3725,8 +3831,9 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 /**
  * xhr
  * 
- * URL          Required. String.
- * success_callback    Function. Callback for completed.
+ * @param {Object} options
+ * @param {String} .URL          Required. String.
+ * @param {Function} .success_callback    Function. Callback for completed.
  * 
  */
 AMT___requests_factory.prototype.xhr = function(options) {
@@ -3748,8 +3855,9 @@ AMT___requests_factory.prototype.xhr = function(options) {
  * Load a URL asynchonously on server and process callback when complete.
  *     --DEPRECATED. Use server_load_asynchronously2 for better options.
  * 
- * URL          Required. String.
- * success_callback    Function. Callback for completed.
+ * @param {Object} options
+ * @param {String} .URL          Required
+ * @param {Function} .success_callback    Callback for completed.
  * 
  * @return {Object}
  *   .success_filename
@@ -3839,10 +3947,10 @@ AMT___requests_factory.prototype.server_load_asynchronously = function(options) 
  * server_load_asynchronously2
  * Load a URL asynchonously on server and process callback when complete.
  * 
- * options              Required. Object.
- * options.server_opts        Required. Object. Passed to util.php.
- * options.server_opts.filename    Required. Object. Passed to util.php.
- * options.callback_function    Required. Function. Callback for completed.
+ * @param {Object} options              Required
+ * @param {Object} .server_opts        Required. Passed to util.php.
+ * @param {String} .server_opts.filename    Required. Passed to util.php.
+ * @param {Function} .callback_function    Required. Callback for completed.
  * 
  * @return {Object}
  *   .success_filename
@@ -3929,15 +4037,16 @@ AMT___requests_factory.prototype.server_load_asynchronously2 = function(options)
 /**
  * xhr_with_disk_cache
  * 
- * URL              (Required. String.)
+ * @param {Object} options
+ * @param {String} .URL              (Required. )
  * 
- * host              (Optional. String. Default=MT__host, i.e. 192.168.1.2)
- * filename            (Optional. String. If null default=md5(URL))
- * file_folder          (Optional. String. Default=.cached)
- * method            (Optional. String. "get" or "post". Default="get")
- * data              (Optional. String. Used with xhr post.)
- * success_callback        (Optional. Function. Optional but almost always included. Argument=options, i.e., options.response[responseText, status,...])
- * check_pre_write_to_disk    (Optional. Function. Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.)
+ * @param {String} .host              (Optional.  Default=MT__host, i.e. 192.168.1.2)
+ * @param {String} .filename            (Optional.  If null default=md5(URL))
+ * @param {String} .file_folder          (Optional.  Default=.cached)
+ * @param {String} .method            (Optional.  "get" or "post". Default="get")
+ * @param {String} .data              (Optional.  Used with xhr post.)
+ * @param {Function} .success_callback        (Optional.  Optional but almost always included. Argument=options, i.e., options.response[responseText, status,...])
+ * @param {Function} .check_pre_write_to_disk    (Optional.  Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.)
  * 
  * XXX NOT THIS XXX fail_xhr_if_not_200      (Optional. Boolean. Default=True.)
  * 
@@ -4229,11 +4338,14 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
  * google_api_timezone 
  * 
  * @param {Object} options        object
- *  {number} .lat          float
- *  {number} .lng          float
- *  {Object} .callback_function  function
+ * @param {Number} .lat          float
+ * @param {Number} .lng          float
+ * @param {Function} .callback_function  function
  * 
- * @return {Object} options.reseponse.offset integer Returns the time zone as an integer, offset of UTC. So Eastern would be -5. Pacific would be -8.
+ * @return {Object} options.response.offset integer
+ * 		Returns the time zone as an integer, offset of UTC.
+ *      So Eastern would be -5.
+ *      Pacific would be -8.
  * 
  * NOTE: "The 7 numbers specify the year, month, day, hour, minute, second, and millisecond, in that order:"
  * 
@@ -4305,9 +4417,8 @@ AMT___requests_factory.prototype.google_api_timezone = function(options) {
  * load_precache_urls 
  * 
  * @param {Object} options
- *  {Object} .urls_array Array of URLs.
+ * @param {Array} .urls_array Array of URLs.
  * 
- * @return No return
  */
 AMT___requests_factory.prototype.load_precache_urls = function(options) {
   
@@ -4335,6 +4446,8 @@ AMT___requests_factory.prototype.load_precache_urls = function(options) {
 /**
  * image_2_OCR 
  * 
+ * Modifies & returns via callback the input object with details from the response.
+ * 
  * textcleaner is copied to /usr/local/bin for this script.
  * http://www.fmwconcepts.com/imagemagick/textcleaner/index.php
  * 
@@ -4351,6 +4464,9 @@ AMT___requests_factory.prototype.load_precache_urls = function(options) {
  *  o.response_details [PHP=> thumb: [converted PNG filename, @.cached]; text_file: [ocr filename, @.cached] ]
  *  o.text
  *  e.g. => .callback_function(o)
+ * 
+ * @param {Object} options_object
+ * @param {Function} .callback_function 
  */
 AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
   console.log(options_object);
@@ -4398,6 +4514,8 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 }
 /**
  * 
+ * @param {Object} options_object
+ * @param {Function} .callback_function 
  */
 AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
   
@@ -4414,7 +4532,8 @@ AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
   });
 }
 /**
- * 
+ * @param {String} str
+ * @return {String} Returns formatted string.
  */
 AMT___requests_factory.prototype.general_functions__numberFormat__numberWithCommas = function(str) {
   var parts = (str + '').split(".");
@@ -4422,7 +4541,8 @@ AMT___requests_factory.prototype.general_functions__numberFormat__numberWithComm
   return parts.join(".");
 }
 /**
- * 
+ * @param {String} img_url
+ * @param {Function} callback_function
  */
 AMT___requests_factory.prototype.general_functions__color__io__dominantColor_colorThiefPHP = function(img_url, callback_function) {
   GM_xmlhttpRequest({
@@ -4441,7 +4561,8 @@ AMT___requests_factory.prototype.general_functions__color__io__dominantColor_col
   });
 }
 /**
- * 
+ * @param {String} country
+ * @param {String} Returns abbreviated country code, or Boolean:False.
  */
 AMT___requests_factory.prototype.general_functions__countryToAbbreviatedCountry = function(country) {
   // MT___countries
@@ -4458,9 +4579,10 @@ AMT___requests_factory.prototype.general_functions__countryToAbbreviatedCountry 
 /**
  * Converts a color from RGB color space to HSL color space.
  * Modified from {@link http://en.wikipedia.org/wiki/HLS_color_space}.
- * @param {number} r Value of red, in [0, 255].
- * @param {number} g Value of green, in [0, 255].
- * @param {number} b Value of blue, in [0, 255].
+ * 
+ * @param {Number} r Value of red, in [0, 255].
+ * @param {Number} g Value of green, in [0, 255].
+ * @param {Number} b Value of blue, in [0, 255].
  * @return {Object} Array of numbers, [h, s, l], values for the color, with h an int in
  *    [0, 360] and s and l in [0, 1].
  */
@@ -4505,13 +4627,14 @@ AMT___requests_factory.prototype.general_functions__color__rgbToHsl = function(r
  * In short, a vector for color (H, S, L) in this system can be expressed as
  * (S*L'*cos(2*PI*H), S*L'*sin(2*PI*H), L), where L' = abs(L - 0.5), and we
  * simply calculate the 1-2 distance using these coordinates
+ * 
  * @param {Object} hsl1 First color represented by a 3-element array
  *     with hue in range [0, 360], and saturation and luminance values in the
  *     range[0, 1].
  * @param {Object} hsl2 Second color represented by a 3-element array
  *     with hue in range [0, 360], and saturation and luminance values in the
  *     range[0, 1].
- * @return {number} Distance between the two colors, in the range [0, 1].
+ * @return {Number} Distance between the two colors, in the range [0, 1].
  */
 AMT___requests_factory.prototype.general_functions__color__hslDistance = function(hsl1, hsl2) {
   var sl1, sl2;
@@ -4576,9 +4699,9 @@ AMT___requests_factory.prototype.md5 = function(str)
 }
 /**
  * 
- * @param {Object} options_object {}
- *  {string} .url
- * ie http://www.ebay.com/itm/SPEEDO-SWIMMING-GOGGLE-BOOMERANG-MIRRORED-UV-LATES-FREE-ANTI-FOG-SOFT-FLEX-FRAME-/231229466737?pt=LH_DefaultDomain_0
+ * @param {Object} options_object
+ * @param {String} .url
+ *   ie http://www.ebay.com/itm/SPEEDO-SWIMMING-GOGGLE-BOOMERANG-MIRRORED-UV-LATES-FREE-ANTI-FOG-SOFT-FLEX-FRAME-/231229466737?pt=LH_DefaultDomain_0
  */
 AMT___requests_factory.prototype.ebay__get_listings_page = function(options_object) //
 {
@@ -4703,16 +4826,16 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
  * linkedin_people_search
  * 
  * @param {Object} ps_object
- *  {Object} container = div element, append all elements to this
- *  {Object} search_params = {}
+ * @param {HTMLObject} .container = div element, append all elements to this
+ * @param {Object} .search_params = {}
  *     searches['search-key'] = value
  *     Where search-key = first name, last name, company, zip code, find zip (find zip code from location), job title
  *     This corresponds to the left-side inputs, typically d2a,d2b,d2c,d2d, etc.
- *  {Object} callback_function : Event : button.onclick
- *  {boolean} image_search : boolean (t,f)
- *  {boolean} nextTab : boolean (t,f), call nextTab() on mouse click
- *  {boolean} sortResults : boolean, sort by people by connectionCount
- *  {Object} search_complete_callback : function( search_results_arr ) 
+ * @param {Function} .callback_function : Event : button.onclick
+ * @param {Boolean} .image_search : boolean (t,f)
+ * @param {Boolean} .nextTab : boolean (t,f), call nextTab() on mouse click
+ * @param {Boolean} .sortResults : boolean, sort by people by connectionCount
+ * @param {Object} .search_complete_callback : function( search_results_arr ) 
  * 
  * NOTES: companyScope and/or titleScope must follow company and title, respectively.
  * Features:
@@ -5665,7 +5788,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
   
   /** Function scrapy__begin_scrape__process_completed
    * @param {Object} input_object
-   *  {string} input_object.rs
+   *  {String} input_object.rs
    *  {Object} input_object.seed_object
    *  {Object} input_object.seed_object.callback__scrapy__begin_scrape__process_completed
    * 
@@ -5901,10 +6024,10 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
  * database__select
  * 
  * @param {Object} database_object
- *       .query
- *       .encodeStrings
- *       .timeout
- * @param {Object} callback_function
+ * @param {String}      .query
+ * @param {Array}      .encodeStrings (Array, or Array of objects, or Object (??))
+ * @param {Number}      .timeout
+ * @param {Function} callback_function
  * 
  */
 AMT___requests_factory.prototype.database__select = function(database_object, callback_function) //
@@ -5942,12 +6065,12 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 /**
  * database__select2
  * 
- * @param {Object} options        Object.
- *  {Object} options.db      Object.
- *  {string}  ""  ""  .database  String. e.g. "AMT_Batch". (0-9A-Za-z_).
- *  {string}  ""  ""  .table    String. e.g. "history". (0-9A-Za-z_).
- *  {Object}  ""  ""  .columns  Array. e.g. ['id', ''] or ['*'].
- *  {Object}  ""  ""  .filters  Array. e.g. [{
+ * @param {Object} options   
+ * @param {Object} .db      
+ * @param {String} .database  e.g. "AMT_Batch". (0-9A-Za-z_).
+ * @param {String} .table    e.g. "history". (0-9A-Za-z_).
+ * @param {Array} .columns  e.g. ['id', ''] or ['*'].
+ * @param {Array} .filters  e.g. [{
  *                   field: "XYZ", (0-9A-Za-z_)
                   value: "to-encode-w/mysql-real-escape",
                   operator: "", (<, >, =, LIKE, !=)
@@ -5955,8 +6078,8 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
                 }]
                 Note: "Connector" is what "follows" the field
                 in the query. E.g., `` XYZ="ABC" && ``.
- *  {number}  ""  ""  .limit    Integer.
- *  {Object} options.callback    Function.
+ *  @param {Number}  .limit    
+ *  @param {Function} .callback 
  * 
  */
 AMT___requests_factory.prototype.database__select2 = function(options) //
@@ -5992,16 +6115,16 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
  * insert into ___.___ set { ___[=...]___, [&& ||, ...] }
  * update ___.___ set { ___[=...]___, [&& ||, ...] } [ where ... ]
  * 
- * @param {Object} options        Object.
- *  {Object} options.db      Object.
- *  {string}  ""  ""  .database  String. e.g. "AMT_Batch". (0-9A-Za-z_).
- *  {string}  ""  ""  .table    String. e.g. "history". (0-9A-Za-z_).
- *  {string}  ""  ""  .type    String. "UPDATE" or "INSERT"
- *  {Object}  ""  ""  .columns  Array. e.g. ['id', ...]
- *  {Object}  ""  ""  .values    Array. Objects{UPDATE} or Strings{INSERT}:
+ * @param {Object} options  
+ * @param {Object} .db      
+ * @param {String}  ""  ""  .database  String. e.g. "AMT_Batch". (0-9A-Za-z_).
+ * @param {String}  ""  ""  .table    String. e.g. "history". (0-9A-Za-z_).
+ * @param {String}  ""  ""  .type    String. "UPDATE" or "INSERT"
+ * @param {Array}  ""  ""  .columns  Array. e.g. ['id', ...]
+ * @param {Array}  ""  ""  .values    Array. Objects{UPDATE} or Strings{INSERT}:
  *                  e.g. ["to-encode-w/mysql-real-esp", ..., ...]
  *                   e.g. [{field:"XYZ",operater:"=",value:"to-encode-w/mysql-real-esp"},...]
- *  {Object}  ""  ""  .filters  Array. e.g. [{
+ * @param {Array}  ""  ""  .filters  Array. e.g. [{
  *                   where: {field: "XYZ", (0-9A-Za-z_)
                       value: "to-encode-w/mysql-real-esp",
                       operator: "", (<, >, =, LIKE, !=)
@@ -6010,7 +6133,7 @@ AMT___requests_factory.prototype.database__select2 = function(options) //
                 }]
                 Note: "Connector" is what "follows" the field
                 in the query. E.g., `` XYZ="ABC" && ``.
- *  {Object} options.callback    Function.
+ *  @param {Function} .callback    Function.
  * 
  */
 AMT___requests_factory.prototype.database__write2 = function(options) //
@@ -6604,11 +6727,11 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
  * TRY #3
  * 
  * @param {Object} opts_obj
- *  {string} skips_key
- *  {Object} callback
- *  {Object} callback_err
- *  {Object} fork      String: Optional pre-existing skips file to fork
- *             (e.g. austin_load_skips).
+ * @param {String} .skips_key
+ * @param {Function} .callback
+ * @param {Function} .callback_err
+ * @param {String} .fork      Optional pre-existing skips file to fork.
+ *             E.g. austin_load_skips.
  */
 AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 {
@@ -6766,9 +6889,9 @@ function AMT___geographic_functions(obj_vars) {
  * www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM
  * 
  * @param {Object} options
- *         .easting
- *         .northing
- *         .zone
+ * @param {Number}        .easting
+ * @param {Number}        .northing
+ * @param {Number}        .zone
  * @return {Object} {.lat, .lng}
  */
 AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options) {
@@ -6910,8 +7033,8 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options
  * Scrapes a URL and returns the best estimate of location.
  * 
  * @param {Object} options
- *  {string} options.url      URL to scrape.
- *  {Object} options.callback  Function to call on success.
+ * @param {String} options.url      URL to scrape.
+ * @param {Function} options.callback  Function to call on success.
  * 
  * @desc Calls back callback function with param of full state name
  *       or null if no best estimate.
@@ -7008,10 +7131,10 @@ function AMT___site_scrapes(obj_vars) {
  *
  * Yellow Pages
  * 
- * @param {Object} options_object          object  
- * @param {string} options_object.site        string  
- * @param {string} options_object.url        string  
- * @param {string} options_object.callback_function  string  
+ * @param {Object} options_object            
+ * @param {String} .site          
+ * @param {String} .url          
+ * @param {Function} .callback_function    
  * 
  * Site:
  * --
@@ -8809,14 +8932,13 @@ function AMT___items_factory(obj_vars) {
  * 
  * @param {Object} options_object
  *
- * options_object (object): Options to take in.
- *               ll: {lat: ###, lng: ###}
- *               output_field: String (!!!). This is an ID of the output <html element>!
- *              separator: Default=";"
- *               name: String. Default = null. A store to search for, e.g. "Lowes".
- *               addr: String. Default = null.
- *               last_point_equals_first_point: Boolean. Default = false. (NOT IMPLEMENTED, i.e. is always false.)
- *               end: String. Default = separator. End the string with a symbol or string, such as ";".
+ * @param {Object} .ll: {lat: ###, lng: ###}
+ * @param {String} .output_field: This is an ID of the output <html element>!
+ * @param {String} .separator: Default=";"
+ * @param {String} .name:  Default = null. A store to search for, e.g. "Lowes".
+ * @param {String} .addr:  Default = null.
+ * @param {Boolean} .last_point_equals_first_point:  Default = false. (NOT IMPLEMENTED, i.e. is always false.)
+ * @param {String} .end:  Default = separator. End the string with a symbol or string, such as ";".
  * 
  */
 AMT___items_factory.prototype.create_dashboard_geocode = function(options_object) {
@@ -11183,8 +11305,8 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
     /**
      * function geocode_result
      * 
-     * @param {string} lat
-     * @param {string} lng
+     * @param {String} lat
+     * @param {String} lng
      */
     function geocode_result(lat, lng) {
       if  (
@@ -11376,11 +11498,11 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
  *   Brendan
  * 
  * @param {Object} options_object
- *  {Object} onclick    Function: Callback for onclick of result.
- *  {Object} searches    Array: Array of strings.
- *  {boolean} AutoReturnAcceptIfZero  Boolean: .
+ * @param {Function} .onclick     Callback for onclick of result.
+ * @param {Array} .searches     Array of strings.
+ * @param {Boolean} .AutoReturnAcceptIfZero   
  * 
- * @return {string} Default is Profile URL to .out_element
+ * @return {String} Default is Profile URL to .out_element
  */
 AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options_object) {
   // Emulate an HR border because it's off....
@@ -11786,6 +11908,13 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
  * 
  * e.g. Karen Veltri
  * 
+ * @param {Object} options_object
+ * @param {Array} .searches Array of search objects
+ * @param {String} .searches.first
+ * @param {String} .searches.last
+ * @param {String} .searches.company
+ * @param {String} .searches.location
+ * @param {Function} .searches.onclick_success
  * 
  * searches    Array of objects
  *  [.first        String, Optional
@@ -11795,7 +11924,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
  *   [.onclick_success  Function, Optional
  *   [. {...bold...}
  * 
- * @return {string} Default is Profile URL to .out_element
+ * @return {String} Default is Profile URL to .out_element
  * 
  */
 AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(options_object) {
@@ -12347,7 +12476,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
    * @param {Object} options.response.parsed, type=object
    *     Either: {error: 'LI non-200 response!'}
    *     Or else: { LinkedIn API obj }
-   * @param {string} options.response.parsed.error, type=string
+   * @param {String} options.response.parsed.error, type=string
    *     
    */
   function result(options) {
@@ -12550,14 +12679,15 @@ AMT___items_factory.prototype.create_dashboard_linkedin_sales_nav = function(opt
 /**
  * create_dashboard_linkedin_pub_dir
  * 
- * e.g. Gerry Gorman
- *  
- * searches    Array of objects
- *  [.first    String
- *  [.last    String
- *  [.location  String, Optional, Is for DISPLAY ONLY.
+ * @desc e.g. Gerry Gorman
  * 
- * @return {string} Default is Profile URL to .out_element
+ * @param {Object} options_object
+ * @param {Array} .searches    Array of objects
+ * @param {String} .searches.first  
+ * @param {String} .searches.last   
+ * @param {String} [.location  Optional, Is for DISPLAY ONLY.
+ * 
+ * @return {String} Default is Profile URL to .out_element
  */
 AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(options_object) {
   GM_addStyle('.exe-result-create-dashboard-lipd:hover {background-color:LightGreen;cursor:pointer;}');
@@ -13028,11 +13158,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
  * search_container
  * 
  * @param {Object}  options_object
- *  {Object}  `options_object.divs`
- *  {string}  `options_object.style`
- *  {Object}  `options_object.textareas`
- *  {number}  `options_object.offset_top` INT, Default=0.
- * @return {Object} `container` HTML DIV, Div with keys {.search{.divs[],.textareas[]}}
+ * @param  {Array}  .divs
+ * @param  {String}  .style
+ * @param  {Object}  .textareas
+ * @param  {Number}  .offset_top Default=0.
+ * @return {HTMLObject} `container` HTML DIV, Div with keys {.search{.divs[],.textareas[]}}
  */
 AMT___items_factory.prototype.search_container = function(options_object) {
   // E.g. create 3 search+textarea divs
@@ -13095,10 +13225,10 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  *
  * @param {Object} options_object            object  
  * @param {Object} "".parent                element
- * @param {number} "".distance_close_match  integer, The distance in miles considered to be "close". Where "far" appears as bgcolor=aqua.
- * @param {number} "".input_phone      integer,
- * @param {string} "".search_term      string,
- * @param {string} "".location        string,
+ * @param {Number} "".distance_close_match  integer, The distance in miles considered to be "close". Where "far" appears as bgcolor=aqua.
+ * @param {Number} "".input_phone      integer,
+ * @param {String} "".search_term      string,
+ * @param {String} "".location        string,
  * 
  */
  /**
@@ -14298,12 +14428,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 /**
  * create_dashboard_find_phone
  *
- * @param {Object} options_object            object  
- * @param {Object} "".parent                element
- * @param {number} "".distance_close_match  integer, The distance in miles considered to be "close". Where "far" appears as bgcolor=aqua.
- * @param {number} "".input_phone      integer,
- * @param {string} "".search_term      string,
- * @param {string} "".location        string,
+ * @param {Object} options_object
+ * @param {HTMLObject} .parent
+ * @param {Number} .distance_close_match  The distance in miles considered to be "close". Where "far" appears as bgcolor=aqua.
+ * @param {Number} .input_phone     
+ * @param {String} .search_term     
+ * @param {String} .location        
  * 
  */
 AMT___items_factory.prototype.create_dashboard_find_phone = function(options_object) {
@@ -15591,22 +15721,22 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
  * create_dashboard_find_address
  * 
  *
- * @param {Object} options_object            object  
- * @param {Object} "".parent                element  
- * @param {Object} "".parent_controller_el        element  
- * @param {Object} "".controller_mu_deleterange      element  
- * @param {Object} "".submitButton_onclick_callback    function  
- * @param {Object} "".output_elements          object  
- * @param {Object} "".first_element            element    Default is false. This is the box focused on by default. Also gets "debug" addresses, if present.  
- * @param {Object} ""."". city              element
- * @param {Object} ""."". state              element
- * @param {Object} ""."". country            element
- * @param {boolean} "".accept_skip_us            boolean
- * @param {Object} "".build_complete_callback      function
- * @param {string} "".profile_url            string    This is to be set! Is part of "return" for callbacks.
- * @param {Object} "".bold_locn_array          array
+ * @param {Object} options_object              
+ * @param {HTMLObject} .parent                element  
+ * @param {HTMLObject} .parent_controller_el        element  
+ * @param {HTMLObject} .controller_mu_deleterange      element  
+ * @param {Function} .submitButton_onclick_callback      
+ * @param {Array} .output_elements          
+ * @param {HTMLObject} .first_element            element    Default is false. This is the box focused on by default. Also gets "debug" addresses, if present.  
+ * @param {HTMLObject} .first_element.city              element
+ * @param {HTMLObject} .first_element.state              element
+ * @param {HTMLObject} .first_element.country            element
+ * @param {Boolean} .accept_skip_us            
+ * @param {Function} .build_complete_callback      
+ * @param {String} .profile_url                This is to be set! Is part of "return" for callbacks.
+ * @param {Array} .bold_locn_array          
  * 
- * 
+ * output_elements
  * 
  * @todo
  *     Consider adding foursquare.com.
@@ -17576,12 +17706,13 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 /**
  * xhr_scrape_page
  *
- * .parent_el
- * .keyword_and_index_array
- * .url
- * .short_filename (give filename)
- * .callback_loaded (xhr complete)
- * .replace_absolute_url (bool)
+ * @param {Object} options_object
+ * @param {HTMLObject} .parent_el
+ * @param {Array} .keyword_and_index_array
+ * @param {String} .url
+ * @param {String} .short_filename (give filename)
+ * @param {Function} .callback_loaded (xhr complete)
+ * @param {Boolean} .replace_absolute_url (bool)
  */
 AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
   
@@ -17808,19 +17939,19 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
  * 
  * 
  * @param {Object} options_object
- *  {string} options_object.textToAnnotate = String
- *  {Object} options_object.output_fields = []
- *  {Object} options_object.callback_mouseup = Function
- *  {Object} options_object.callback_mouseup_pre_apply = Function
+ * @param {String} .textToAnnotate 
+ * @param {Array} .output_fields 
+ * @param {Function} .callback_mouseup 
+ * @param {Function} .callback_mouseup_pre_apply 
  * 
- *  {boolean} appendToField
- *  {string} appendToField_glue
+ * @param {Boolean} .appendToField
+ * @param {String} .appendToField_glue
  *
- *  {string} delimeter
- *  {boolean} focusToField
+ * @param {String} .delimeter
+ * @param {Boolean} .focusToField
  * 
- *  {string} style
- *  {string} selectedText  Text that has been selected.
+ * @param {String} .style
+ * @param {String} .selectedText  Text that has been selected.
  *
  * @return {Object} appendable inputs
  * 
@@ -18016,8 +18147,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
    * Append button with "text" and "index" to "div"
    * 
    * @param {Object} div
-   * @param {string} text
-   * @param {number} index
+   * @param {String} text
+   * @param {Number} index
    */
   function appendButton(div, text, index) {
     
@@ -18118,10 +18249,9 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
  * create_annotation_from_elements
  * 
  * 
- * 
- * @param {Object} options_object {}
- * @param {Object} options_object.elements = Array
- * @param {Object} options_object.callback_mouseup = Function
+ * @param {Object} options_object 
+ * @param {Array} .elements 
+ * @param {Function} .callback_mouseup 
  * 
  */
 AMT___items_factory.prototype.create_annotation_from_elements = function(options_object) {
@@ -18290,7 +18420,7 @@ AMT___items_factory.prototype.create_annotation_from_elements = function(options
    * function element_actions
    * 
    * @param {Object} element
-   * @param {number} index
+   * @param {Number} index
    */
   function element_actions(element, index) {
     
@@ -18571,16 +18701,16 @@ AMT___items_factory.prototype.startJobTimer = function() {
  *  
  * @desc THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1.
  * 
- * @param {Object} results_array
- * @param {Object} out_div
+ * @param {Array} results_array
+ * @param {HTMLObject} out_div
  * @param {Object} seed_object
- *  {boolean} seed_object.input_send_success
- *  {Object} seed_object.do_submit_callback
- *  {Object} seed_object.input_onclick_callback
- *  {boolean} seed_object.do_submit_next_tab
- *  {boolean} seed_object.do_submit_add_to_tabs_queue
- *  {boolean} seed_object.sort_results // Jan2018
- *  {Object} seed_object.contexts_bold_array // Jan2018
+ * @param {Boolean} seed_object.input_send_success
+ * @param {Function} seed_object.do_submit_callback
+ * @param {Function} seed_object.input_onclick_callback
+ * @param {Boolean} seed_object.do_submit_next_tab
+ * @param {Boolean} seed_object.do_submit_add_to_tabs_queue
+ * @param {Boolean} seed_object.sort_results
+ * @param {Array} seed_object.contexts_bold_array
  * 
  */
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts =
@@ -18733,8 +18863,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 /**
  * .create_dashboard__powers_v2
  * 
- * TODO.......
  * 
+ * @desc
  * Email table that is sortable.
  * Columns:
  *  Email, Page where scraped
@@ -18772,7 +18902,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_resp
 /**
  * .create_dashboard__powers_v1
  * 
- * param {boolean} seed_object.sort_results // Jan2018
+ * @param {Object} seed_object
+ * @param {Boolean} seed_object.sort_results
  * 
  * callback_function(jobid, callback_obj, seed_object);
  * IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
@@ -19130,12 +19261,12 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
  * Everything is the same but on read / write it utilizes new end-point ['fs_load_skips_file'].
  * 
  * @param {Object} input_skips_object  Object
- * @param {string} .domain: 
- * @param {string} .load_file: 'austin_load_skips'
+ * @param {String} .domain: 
+ * @param {String} .load_file: 'austin_load_skips'
  * @param {Object} .var_skip_sites: SKIP_SITES
  * @param {Object} .callback_function: false
- * @param {string} .full_link: string
- * @param {string} .result_title: string
+ * @param {String} .full_link: string
+ * @param {String} .result_title: string
  * 
  * @return {Object} Returns an input element and bool()
  *   .el_btn
@@ -19289,12 +19420,13 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 /**
  * create__input_skip_button2
  * 
- * domain: x,
- * load_file: 'austin_load_skips', 
- * var_skip_sites: SKIP_SITES, 
- * callback_function: false
+ * @param {Object} input_skips_object
+ * @param {String} .domain: x,
+ * @param {String} .load_file: 'austin_load_skips', 
+ * @param {Object} .var_skip_sites: SKIP_SITES, 
+ * @param {Function} .callback_function: false
  *     
- * Returns an input element and bool()
+ * @return Returns an input element and bool()
  *   {}.el_btn
  *  {}.el_btn_choose
  *   {}.isSkip
@@ -19841,7 +19973,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
    * function array_duckDuckGo_results
    * Parse results and add to results_array as arr[ href, body ].
    * 
-   * @param {boolean} remove_urls_from_body
+   * @param {Boolean} remove_urls_from_body
    * arr.push([
       content[1], content[2]
     ]);
@@ -20273,7 +20405,7 @@ function MT___HTMLParser(aHTMLString){
 }
 
 /**
- * function GM_xmlhttpRequest
+ * GM_xmlhttpRequest
  * 
  */
 function GM_xmlhttpRequest(details) {
@@ -20350,9 +20482,9 @@ function GM_addStyle(css) {
 /**
  * functions for POPUP
  * 
- * @param {string} MT__DOSUBMIT__USER_SET_TYPE
+ * @param {String} MT__DOSUBMIT__USER_SET_TYPE
  * 
- * Read from extension's background page [localstorage] value
+ * @desc Read from extension's background page [localstorage] value
  * 
 **/
 //
@@ -20440,45 +20572,14 @@ for (i = 0; i <= 4; i++) {
   xid += chars[Math.floor(Math.random()*chars.length)];
 }
 MT__DOSUBMIT__BY_ID_THIS_ID = xid;
-//~ /**
- //~ * function doSubmit__getUserSetType()
- //~ * 
- //~ * param {} MT__DOSUBMIT__USER_SET_TYPE
- //~ * 
- //~ * Read from extension's background page [localstorage] value
- //~ */
-//~ function doSubmit__getUserSetType() {
-  //~ chrome.extension.sendRequest(
-    //~ {
-      //~ method: "getLocalStorage",
-      //~ key: "MT__DOSUBMIT__USER_SET_TYPE"
-    //~ },
-    //~ function(response) {
-      //~ if (response.data) {
-        //~ var r = JSON.parse(response.data); // { data: "{}" } or { data: "{ type: "" }" }
-        //~ 
-        //~ //{ type: "[regular OR server side]" }
-        //~ 
-        //~ if (r.type == 'server side') {
-          //~ MT__DOSUBMIT__USER_SET_TYPE = 'server side';
-        //~ } else { // default is local
-          //~ 
-        //~ }
-      //~ } else {
-        //~ 
-      //~ }
-    //~ }
-  //~ );
-//~ }
-//~ // ACTIVATE THIS!
-//~ doSubmit__getUserSetType();
+
 /**
  * function doSubmit__serverSide()
  * 
- * @param {string} form - form or boolean false
- * @param {string} location - location/URL of the form, or boolean false
+ * @param {String} form - form or boolean false
+ * @param {String} location - location/URL of the form, or boolean false
  * @param {Object} callback_function
- * @param {number} offsetTime
+ * @param {Number} offsetTime
  */
 function doSubmit__serverSide(form, location, callback_function, offsetTime) {
   /**
@@ -20579,15 +20680,16 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
  * function AMT__doSubmit__editSubmitArray()
  * - This function will set the global variable ~MT__DOSUBMIT__TIME_TO_SUBMIT
  * 
- * @param {Object} data Submit array. Edited and returned by function.
- * @param {number} offsetTime
- * @param {number} serverSide_currentTime - if this is server side doSubmit then use the server's current time
+ * @param {Array} data Submit array. Edited and returned by function.
+ * @param {Number} offsetTime
+ * @param {Number} serverSide_currentTime - if this is server side doSubmit then use the server's current time
  * 
- * param {number} MT__DOSUBMIT__TIME_TO_SUBMIT
- * param {string} MT__DOSUBMIT__BY_ID_THIS_ID (number or string???)
- * param {number} MT__DOSUBMIT__MIN_SUBMIT_TIME
+ * @desc global params:
+ *  - Number: MT__DOSUBMIT__TIME_TO_SUBMIT
+ *  - String: MT__DOSUBMIT__BY_ID_THIS_ID (number or string???)
+ *  - Number: MT__DOSUBMIT__MIN_SUBMIT_TIME
  * 
- * @return {object} arr_all_submits array
+ * @return {Array} arr_all_submits 
  */
 function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime) {
   
@@ -20714,12 +20816,12 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
  * function doSubmit()
  * 
  * @param {Object} form - Form to submit, or window.location, or add to queue (with noSubmit) & callback_function
- * @param {string} location
+ * @param {String} location
  * @param {Object} callback_function
- * @param {number} offsetTime
- * @param {boolean} doServerSideSubmit
+ * @param {Number} offsetTime
+ * @param {Boolean} doServerSideSubmit
  * 
- * @return {number} time_to_submit offsetTime(x) > regularInterval+x
+ * @return {Number} time_to_submit offsetTime(x) > regularInterval+x
  */
 function doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit) {
   if(!AMT__Global_Vars.isPreview) {
@@ -20969,7 +21071,7 @@ if (MT___TEST_DEBUG) {
 }
 
 /**
- * MT___diffString, diff strings
+ * 
  * 
  */
 function MT___escape(s) {
@@ -20981,7 +21083,8 @@ function MT___escape(s) {
   return n;
 }
 /**
- * 
+ * MT___diffString
+ * @desc diff strings
  */
 function MT___diffString( o, n ) {
   // , opts var opts // Aug 10 2016
@@ -21132,113 +21235,6 @@ function MT___diff( o, n ) {
   }
   return { o: o, n: n };
 }
-
-
-/**
- * 
- */
-AMT___core_factory.prototype.shiftFarLeft = function() {
-  chrome.extension.sendRequest(
-      {
-        shiftFarLeft:true
-      },
-      function(r) {
-      }
-    );
-}
-/**
- * 
- */
-AMT___core_factory.prototype.shiftFarRight = function() {
-  chrome.extension.sendRequest(
-      {
-        shiftFarRight:true
-      },
-      function(r) {
-      }
-    );
-}
-
-
-/**
- * matchString   //If not specified is 'default'
- * callback   
- * namespace  //Optional, if unset is the 's'
- * Returns the following:
- * {
- * avgTime:
- * numHits:
- * }
- * isDefaultInitialization //Used when script is initializing
- **/
-AMT___core_factory.prototype.getAverageTiming = function(options) {
-  var namespace = (options.namespace ? options.namespace : AMT__Global_Vars.timer.namespace);
-  var matchString = (options.matchString ? options.matchString : AMT__Global_Vars.timer.recordString);
-  
-  console.log('options in getAverageTiming');
-  console.log(options);
-  
-  if(options.isDefaultInitialization && AMT__Global_Vars.timer.isShowingDefaultString) {
-    new AMT___core_factory().setTimerNamespace(namespace);
-    new AMT___core_factory().setTimerRecordString(matchString);
-  }
-  else {
-    AMT__Global_Vars.timer.isShowingDefaultString;
-    console.log('is not showing default string');
-    new AMT___core_factory().setTimerNamespace(namespace);
-    new AMT___core_factory().setTimerRecordString(matchString);
-    console.log(AMT__Global_Vars);  
-  }
-  
-  AMT___getMatch(namespace, matchString, function(matches, callback) {
-      //console.log('back from AMT___getMatch in getAverageTiming');
-      //console.log(matches);
-      if(matches) {
-        var avgTime;
-        var totalTime = 0;
-        var totalCount = 0;
-        for(var i = 0; i < matches.length; i++) {
-          if( matches[i].outputs[0].value) {
-            console.log(matches[i].outputs[0].value);
-            var timeOutput = matches[i].outputs[0].value *1;
-            totalTime += timeOutput *1;
-            totalCount += (matches[i].count*1);
-          }
-        }
-        avgTime = totalTime/totalCount;
-        document.getElementById('AMT___timerStats').innerText = 'Avg Time: ' + avgTime + ' out of ' + totalCount;
-        callback(
-        {
-          avgTime:avgTime,
-          numHits:matches.length,
-          hits: matches
-        }
-        );
-      }
-      else {
-        document.getElementById('AMT___timerStats').innerText = 'Unrecorded Hit Type';
-        if(callback)
-          callback(null);
-      }
-    },options.callback, null, true);
-}
-/**
- * 
- */
-AMT___core_factory.prototype.setTimerRecordString = function(str) {
-  AMT__Global_Vars.timer.isShowingDefaultString = false;
-  document.getElementById('AMT___recordStringInp').value = str;
-  AMT__Global_Vars.timer.recordString = str;
-}
-/**
- * 
- */
-AMT___core_factory.prototype.setTimerNamespace = function(str) {
-  AMT__Global_Vars.timer.isShowingDefaultString = false;
-  document.getElementById('AMT___recordNameSpaceInp').value = str;
-  AMT__Global_Vars.timer.recordString = str;
-}
-
 
 /**
  * amt_home_show_tasks
@@ -21683,7 +21679,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Gl
    * 
    * 
    * @param {Object} rs
-   * @return {boolean}
+   * @return {Boolean}
    */
   function has_new_alertable(rs) {
     // Are there new jobs?
@@ -21829,7 +21825,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Gl
    * time_to_diplay
    * Change seconds to readable time.
    * 
-   * @param {number} s  Number of seconds
+   * @param {Number} s  Number of seconds
    */
   function time_to_display(s) {
     var t;
@@ -22303,7 +22299,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Gl
    * function makeRow
    * 
    * @param {Object} row      object  DB row.
-   * @param {boolean} isIgnored  bool  Local object of ignored requesters.
+   * @param {Boolean} isIgnored  bool  Local object of ignored requesters.
    * 
    * @return {Object} Returns an array of two HTML TR elements. First is main row. Second is a hidden row.
    * 
@@ -22622,7 +22618,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Gl
    * A nice place to take them from is tasks_obj.current_db_ids.
    * Where: tasks_obj.current_db_ids[db_id] = true;
    * 
-   * @param {string} chart_type
+   * @param {String} chart_type
    * @param {Object} chart_td
    * 
    * NOTES:
@@ -24286,9 +24282,9 @@ function MT___yahoo_feeling_lucky(q, callbackFunction) {
 }
 /**
  * MT___resolveURL
- * @param {string} url
+ * @param {String} url
  * @param {Object} callback_function
- * @param {string} seed
+ * @param {String} seed
 **/
 function MT___resolveURL(url, callback_function, seed) {
   GM_xmlhttpRequest({ // init
@@ -24306,7 +24302,7 @@ function MT___resolveURL(url, callback_function, seed) {
  * 
  * @param {Object} rs
  * @param {Object} callback_function
- * @param {boolean} return_complete_response
+ * @param {Boolean} return_complete_response
  * @param {Object} input_object
 **/
 function MT___google_api_geocode_parse(rs, callback_function, return_complete_response, input_object) {
