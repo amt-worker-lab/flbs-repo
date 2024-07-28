@@ -21238,16 +21238,18 @@ function MT___diff( o, n ) {
 
 /**
  * amt_home_show_tasks
+ * 
+ * @desc
  * Front page of mturk.com: Show tasks.
  * 
  * Move into core_factory, July 30 2014.
  * AMT___core_factory.prototype. = function() {
  * 
- * TODO: ratings
- * 
  * Jan2018:
  *     Old address was
  *     /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/
+ * 
+ * @TODO: ratings / comments for requesters & tasks; 
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function(debug=false, AMT__Global_Vars=null) {
   // Check if the page is currently at /mturk/findhits
@@ -24283,7 +24285,7 @@ function MT___yahoo_feeling_lucky(q, callbackFunction) {
 /**
  * MT___resolveURL
  * @param {String} url
- * @param {Object} callback_function
+ * @param {Function} callback_function
  * @param {String} seed
 **/
 function MT___resolveURL(url, callback_function, seed) {
@@ -24299,9 +24301,8 @@ function MT___resolveURL(url, callback_function, seed) {
 /**
  * MT___google_api_geocode helper
  * 
- * 
  * @param {Object} rs
- * @param {Object} callback_function
+ * @param {Function} callback_function
  * @param {Boolean} return_complete_response
  * @param {Object} input_object
 **/
@@ -24520,21 +24521,17 @@ function __js_clean_html_str(s) {
   s = div.firstChild.nodeValue;
   return s;
 }
-// o is a string
-// arr is an array of strings to be bolded
-// avoid b
+// remove b
 // go from longest to shortest
 /**
  * function MT__bold
  * 
- * params:
- * o
- * arr
- * options_object {
- *     return_div_element:
- *     color:
- *     percent_matched:
- * 
+ * @param {String} o String without bolding
+ * @param {Array} arr Array of strings to be bolded
+ * @param {Object} options_object
+ * @param {Boolean} options_object.return_div_element
+ * @param {String} options_object.color
+ * @param {Number} options_object.percent_matched
  * 
  * Ex:
 MT__bold('test <b hahaha>test test test test a</b>', ['test']));

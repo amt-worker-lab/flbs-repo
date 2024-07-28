@@ -1,3 +1,14 @@
+/**
+ * Contains 2 functions: MT__RUN2() and top_window()
+ * @TODO: Move into separate files.
+ */
+ 
+/**
+ * MT__RUN2
+ * 
+ * @desc The code for most tasks.
+ *   Generally, each task is run if a *unique* string in the HIT's innerHTML is present.
+ */
 function MT__RUN2() {
 	
   // Global vars...

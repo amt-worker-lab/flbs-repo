@@ -12018,25 +12018,13 @@ var allUkCounties = {
 }
 
 
-//~ if (document.readyState == "complete" || document.readyState == "interactive") {
-	//~ ih = document.body.innerHTML;
-	//~ var loader = new load();
-	//~ if (loader.global_vars.is_running_on_amt) {
-		//~ if(loader.AMT__init_utility_window) {
-			//~ loader.AMT__init_utility_window();
-		//~ }
-	//~ }
-//~ }
-//~ else {
-	//~ document.onreadystatechange = function () {
-		//~ if (document.readyState == "complete" || document.readyState == "interactive") {
-			//~ ih = document.body.innerHTML;
-			//~ var loader = new load();
-			//~ if (loader.global_vars.is_running_on_amt) {
-				//~ if(loader.AMT__init_utility_window){
-					//~ loader.AMT__init_utility_window();
-				//~ }
-			//~ }
-		//~ }
-	//~ }
-//~ }
+
+
+
+
+
+
+
+
+
+

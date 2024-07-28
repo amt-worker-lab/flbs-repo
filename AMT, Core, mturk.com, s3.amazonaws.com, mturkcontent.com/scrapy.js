@@ -1,16 +1,18 @@
 /**
  * function init__scrapy
  * 
+ * @desc These are all scrapy tasks that have been refactored into a single file.
+ * 
  * @return	True=No "s" found. Continue to check for "s" matches.
  * 			False="s" match found. Stop checking for "s" matches.
  *			e.g. function a(){ return false}; console.log(a() == false) // true
  * 
  * Note: On starting scrapy...
- * 		cd /home/dave/share/Development/scrapy/
- *		source venv/bin/activate
- * 		./start-scrapyd.sh
- * 		cd scrapy_amt/
- *		scrapyd-deploy
+ * 		$ cd /home/dave/share/Development/scrapy/
+ *		$ source venv/bin/activate
+ * 		$ ./start-scrapyd.sh
+ * 		$ cd scrapy_amt/
+ *		$ scrapyd-deploy
  * 
  * Note: If running on David's computer then run scrapyd-deploy a second
  * time because it fails the first time.
