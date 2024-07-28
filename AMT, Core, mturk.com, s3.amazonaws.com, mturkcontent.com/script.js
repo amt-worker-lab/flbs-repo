@@ -6,21 +6,11 @@
  */
 var beginRunTime = new Date().getTime();
 
-
-//~ /**
- //~ * meh
- //~ * @param {number} m - mehh
- //~ */
-//~ function testing_testing(m) {
-	//~ alert('x');
-//~ }
-
 /**
  * FUNCTION MT__RUN
  * Scripts execute here, amazonaws.com, mturkcontent.com
  * (mturk.com is in top_window/parent_window)
  * 
- * @todo Add more desc. ??
  */
 export function MT__RUN() {
 	/** 

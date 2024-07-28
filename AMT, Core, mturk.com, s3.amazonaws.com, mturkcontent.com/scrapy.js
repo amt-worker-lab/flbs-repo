@@ -3,7 +3,7 @@
  * 
  * @desc These are all scrapy tasks that have been refactored into a single file.
  * 
- * @return	True=No "s" found. Continue to check for "s" matches.
+ * @return {Boolean} True=No "s" found. Continue to check for "s" matches.
  * 			False="s" match found. Stop checking for "s" matches.
  *			e.g. function a(){ return false}; console.log(a() == false) // true
  * 

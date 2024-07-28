@@ -31,12 +31,12 @@ function ResolvedHit(hId,type,accountName,userName,isFail,typeOfF) {
 			this.computerId = null; //Gets set in submitChecker.js
 	}
 
-var doc = document.body.innerHTML;
-var loc = window.location.href;
-var locReg = /mturk.com/;
+	var doc = document.body.innerHTML;
+	var loc = window.location.href;
+	var locReg = /mturk.com/;
 
 
-chrome.extension.sendMessage({
+	chrome.extension.sendMessage({
 				WhatsMyTabResolvedHitRequest: true,
 				currentUrl: loc
 			}, function(rs) {
