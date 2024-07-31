@@ -5122,7 +5122,9 @@ function MT__RUN2() {
    * Marketing Research
    * Ryan Doherty
    * Ben
-   * 
+   * John Curtis
+   * Leeron Azoulai
+   * Emily Zong
    */
   // Ben
   // Summarize short answers
@@ -6281,7 +6283,7 @@ function MT__RUN2() {
     }
     new run().f();
     return;
-  }  
+  }
   // Preferred Networks, Inc (IIP)
   // Write an instruction to move an object
   // 

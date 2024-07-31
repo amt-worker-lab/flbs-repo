@@ -9,7 +9,7 @@ EXPIRED_FAIL = 'The HIT you were viewing has expired.';
 //Only run in top window
 if(window.location.href != 'https://www.mturk.com/mturk/externalSubmit') {
 
-function ResolvedHit(hId,type,accountName,userName,isFail,typeOfF) {
+	function ResolvedHit(hId,type,accountName,userName,isFail,typeOfF) {
 			//alert('running on the inside');
 			this.hitId = hId;
 			if(type == 'return')

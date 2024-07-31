@@ -4038,21 +4038,23 @@ AMT___requests_factory.prototype.server_load_asynchronously2 = function(options)
  * xhr_with_disk_cache
  * 
  * @param {Object} options
- * @param {String} .URL              (Required. )
+ * @param {String} .URL              Required. 
  * 
- * @param {String} .host              (Optional.  Default=MT__host, i.e. 192.168.1.2)
- * @param {String} .filename            (Optional.  If null default=md5(URL))
- * @param {String} .file_folder          (Optional.  Default=.cached)
- * @param {String} .method            (Optional.  "get" or "post". Default="get")
- * @param {String} .data              (Optional.  Used with xhr post.)
- * @param {Function} .success_callback        (Optional.  Optional but almost always included. Argument=options, i.e., options.response[responseText, status,...])
- * @param {Function} .check_pre_write_to_disk    (Optional.  Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.)
+ * @param {String} .host              Optional.  Default=MT__host, i.e. 192.168.1.2
+ * @param {String} .filename            Optional.  If null default=md5(URL)
+ * @param {String} .file_folder          Optional.  Default=.cached
+ * @param {String} .method            Optional.  "get" or "post". Default="get"
+ * @param {String} .data              Optional.  Used with xhr post.
+ * @param {Function} .success_callback        Optional.  Optional but almost always included. Argument=options, i.e., options.response[responseText, status,...]
+ * @param {Function} .check_pre_write_to_disk   Optional.  Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.
  * 
- * XXX NOT THIS XXX fail_xhr_if_not_200      (Optional. Boolean. Default=True.)
  * 
- * TODO: Add a param that will allow to overwrite the file on disk. Under a) any circumstance; b) if responseText=... And so on.
+ * 
+ * @desc: Todo: Add a param that will allow to overwrite the file on disk. Under a) any circumstance; b) if responseText=... And so on.
+ * 
  */
 AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
+  // OLD: @desc: XXX NOT THIS XXX fail_xhr_if_not_200      (Optional. Boolean. Default=True.)
   
   // Verify object params
   //options
