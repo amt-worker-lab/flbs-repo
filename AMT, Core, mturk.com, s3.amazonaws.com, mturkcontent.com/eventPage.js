@@ -601,11 +601,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
           active: (currentUtility.active != null ? currentUtility.active : (sender.tab.active && i == 0 ? true :false))
         }, 
         function(newTab) {
-          console.log('New Tab Created with url:' +newTab.url);
+          console.log('New Tab Created with url:', newTab );
           //~ console.log(newTab);
-          var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
+          var ownerTabId = /###tabId(\d+)/.exec(newTab.pendingUrl)[1];
           //~ console.log('ownerTabId:' + ownerTabId);
-          var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
+          var utTabPos = /###at(\d+)/.exec(newTab.pendingUrl)[1];
           //~ console.log('utTabPos:' + utTabPos);
           UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
         });
@@ -636,7 +636,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
                 break;
             }
             if(!found) {
-              chrome.tabs.remove(allTabs[i].id); // XXXXXXXXXXXXXXXCOMMENT OUT FOR TESTING JAN2018
+              //~ chrome.tabs.remove(allTabs[i].id); // XXXXXXXXXXXXXXXCOMMENT OUT FOR TESTING JAN2018
             }
           }
         }

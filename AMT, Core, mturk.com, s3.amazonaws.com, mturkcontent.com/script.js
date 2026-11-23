@@ -12,7 +12,7 @@ var beginRunTime = new Date().getTime();
  * (mturk.com is in top_window/parent_window)
  * 
  */
-export function MT__RUN() {
+function MT__RUN() {
 	/** 
    * test
 	 * /

@@ -174053,6 +174053,9 @@ qatar,80
     var run = function() {};
     run.prototype.f = function() {
       console.log('');
+      // temp override
+      AMT__Global_Vars.isPreview = false;
+      
       GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr,table,thead,tbody,tr,td {margin:0;padding:0;font-size:12px;}');
       GM_addStyle('table,thead,tbody,tr,td {margin:0 !important;padding:0 !important;}');
       
@@ -174618,6 +174621,7 @@ qatar,80
           );
       }
       function set_util_windows(array_windows) {
+        console.log('suw', array_windows);
         AMT__setUtilityTabs(
           array_windows,
           null,
@@ -174706,6 +174710,8 @@ qatar,80
       function company_URL__processProxyResponse(response) {
         
         var rs = response.rs;
+        
+        console.log('resp:',rs);
         
         // rs
         // 0=url
@@ -214297,12 +214303,14 @@ qatar,80
   // cookcountyclerk.com (LATEST, MAR 2018)
   //
   //~ s = '<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>';
-  s = '<li>Open <a href="https://taxdelinquent.cookcountyclerk.com"> Cook County Delinquent Tax Search</a></li>\n  <li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>'
+  s = '<li>Open <a href="https://taxdelinquent.cookcountyclerk.com"> Cook County Delinquent Tax Search</a></li>\n	<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>';
+  console.log('y', ih);
   if  (
     ih.indexOf(s) != -1
     //~ ih.indexOf('http://www.cookcountyclerk.com') != -1 
     )
   {
+    console.log('xx');
     var run = function() {};
     run.prototype.f = function() {
       GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
@@ -214347,28 +214355,71 @@ qatar,80
         // else...
         doSubmit();
       }
+      
+      //
+      //~ curl 'https://taxdelinquent.cookcountyclerkil.gov/' \
+  //~ -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
+  //~ -H 'accept-language: en-US,en;q=0.9' \
+  //~ -H 'cache-control: max-age=0' \
+  //~ -H 'content-type: application/x-www-form-urlencoded' \
+  //~ -b '__RequestVerification_API_KEY_REDACTED_; _cfuvid=pMYFDStBN736m5KIT8JfukewJDD38CC9N9X0c9VdoW8-1772732875.8918831-1.0.1.1-aQUjFyLytdKYrf5DuCUoUrXjFkjQmRe2.0Gs8amrmAM; AWSALB=+pCKzFv51+pnHPH6nto+cioxrWFk6LJS6ON9Bbbmu1KcJ07Y/e7EA5bZLmTUdX/B4cwutToNAqLbwC4q5uaXF80gFR6aiecFXySHya7FEpVf4ILupkVNXQAEF09F; AWSALBCORS=+pCKzFv51+pnHPH6nto+cioxrWFk6LJS6ON9Bbbmu1KcJ07Y/e7EA5bZLmTUdX/B4cwutToNAqLbwC4q5uaXF80gFR6aiecFXySHya7FEpVf4ILupkVNXQAEF09F' \
+  //~ -H 'origin: https://taxdelinquent.cookcountyclerkil.gov' \
+  //~ -H 'priority: u=0, i' \
+  //~ -H 'referer: https://taxdelinquent.cookcountyclerkil.gov/' \
+  //~ -H 'sec-ch-ua: "Not.A/Brand";v="99", "Chromium";v="136"' \
+  //~ -H 'sec-ch-ua-mobile: ?0' \
+  //~ -H 'sec-ch-ua-platform: "Linux"' \
+  //~ -H 'sec-fetch-dest: document' \
+  //~ -H 'sec-fetch-mode: navigate' \
+  //~ -H 'sec-fetch-site: same-origin' \
+  //~ -H 'sec-fetch-user: ?1' \
+  //~ -H 'upgrade-insecure-requests: 1' \
+  //~ -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36' \
+  //~ --data-raw '__RequestVerification_API_KEY_REDACTED_&Pin=25-12-421-002-0000'
+  
       //
       //
       var opts = {
         server_opts: {
-          url: 'https://taxdelinquent.cookcountyclerk.com/',
+          url: 'https://taxdelinquent.cookcountyclerkil.gov/',
+          //~ url: 'https://taxdelinquent.cookcountyclerk.com/',
           //~ _PROXY_REDACTED__use_proxy: true,
           //~ cookie_filename: 'test-cookie'+Math.random()+'.'+Math.random()+'.file',
           headers_array: [
-            'Origin: https://taxdelinquent.cookcountyclerk.com',
+           'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' ,
+  'accept-language: en-US,en;q=0.9' ,
+  'cache-control: max-age=0' ,
+  'content-type: application/x-www-form-urlencoded' ,
+  '__RequestVerification_API_KEY_REDACTED_; _cfuvid=pMYFDStBN736m5KIT8JfukewJDD38CC9N9X0c9VdoW8-1772732875.8918831-1.0.1.1-aQUjFyLytdKYrf5DuCUoUrXjFkjQmRe2.0Gs8amrmAM; AWSALB=+pCKzFv51+pnHPH6nto+cioxrWFk6LJS6ON9Bbbmu1KcJ07Y/e7EA5bZLmTUdX/B4cwutToNAqLbwC4q5uaXF80gFR6aiecFXySHya7FEpVf4ILupkVNXQAEF09F; AWSALBCORS=+pCKzFv51+pnHPH6nto+cioxrWFk6LJS6ON9Bbbmu1KcJ07Y/e7EA5bZLmTUdX/B4cwutToNAqLbwC4q5uaXF80gFR6aiecFXySHya7FEpVf4ILupkVNXQAEF09F' ,
+  'origin: https://taxdelinquent.cookcountyclerkil.gov' ,
+  'priority: u=0, i' ,
+  'referer: https://taxdelinquent.cookcountyclerkil.gov/' ,
+  'sec-ch-ua: "Not.A/Brand";v="99", "Chromium";v="136"' ,
+  'sec-ch-ua-mobile: ?0' ,
+  'sec-ch-ua-platform: "Linux"' ,
+  'sec-fetch-dest: document' ,
+  'sec-fetch-mode: navigate' ,
+  'sec-fetch-site: same-origin' ,
+  'sec-fetch-user: ?1',
+  'upgrade-insecure-requests: 1',
+  'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
+  
+            //~ 'Origin: https://taxdelinquent.cookcountyclerkil.gov',
+            //~ 'Origin: https://taxdelinquent.cookcountyclerk.com',
             //~ 'Accept-Encoding: gzip, deflate, br',
-            'Accept-Language: en-US,en;q=0.9',
-            'Upgrade-Insecure-Requests: 1',
-            'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
-            'Content-Type: application/x-www-form-urlencoded',
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'Cache-Control: max-age=0',
-            'Referer: https://taxdelinquent.cookcountyclerk.com/',
-            'Connection: keep-alive',
+            //~ 'Accept-Language: en-US,en;q=0.9',
+            //~ 'Upgrade-Insecure-Requests: 1',
+            //~ 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+            //~ 'Content-Type: application/x-www-form-urlencoded',
+            //~ 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            //~ 'Cache-Control: max-age=0',
+            //~ 'Referer: https://taxdelinquent.cookcountyclerkil.gov/',
+            //~ 'Referer: https://taxdelinquent.cookcountyclerk.com/',
+            //~ 'Connection: keep-alive',
           ],
           //~ do_not_save_to_file: true,
           short_filename: o.filename,
-          post_object_as_str: 'Pin='+encodeURIComponent(o.pin),
+          post_object_as_str: '__RequestVerification_API_KEY_REDACTED_&Pin='+encodeURIComponent(o.pin),
           
         },
         callback_function: function(response) {
@@ -214379,7 +214430,8 @@ qatar,80
             return;
           }
           // set iframe
-          d1.src = 'http://192.168.1.2/mturk/.cached/'+o.filename;
+          //~ d1.src = 'http://192.168.1.2/mturk/.cached/'+o.filename;
+          d1.src = 'http://localhost/mturk/.cached/'+o.filename;
           // pin
           if (rs.indexOf(o.pin) == -1) {
             d2_err('pin number is missing from scraped document!');

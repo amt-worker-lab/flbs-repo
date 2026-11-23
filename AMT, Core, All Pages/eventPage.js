@@ -886,12 +886,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	// get
 	function storage__get(id, request) {
 		chrome.tabs.getSelected(id, function(tab) {
-			if (tab.incognito === true) {
-				sendResponse({data: localStorage[request.key + '____INCOGNITO_SESSION']});
-			}
-			else {
-				sendResponse({data: localStorage[request.key]});
-			}
+      sendResponse({data: localStorage[request.key + '____INCOGNITO_SESSION']});
+      // Mar 2026 (Error handling response: TypeError: Cannot read properties of undefined (reading 'incognito'))
+			//~ if (tab.incognito === true) {
+				//~ sendResponse({data: localStorage[request.key + '____INCOGNITO_SESSION']});
+			//~ }
+			//~ else {
+				//~ sendResponse({data: localStorage[request.key]});
+			//~ }
 		});
 	}
 	// save

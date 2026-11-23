@@ -14,8 +14,8 @@
 // Changed to 1.69 from 1.2, Sept. 2018.
 // Changed to localhost Jun 2022
 //~ var MT___host = 'http://192.168.1.69';
-//~ var MT___host = 'http://localhost';
-var MT___host = 'http://192.168.1.86';
+var MT___host = 'http://localhost';
+//~ var MT___host = 'http://192.168.1.86';
 
 /**
  * AMT__GLOBAL_VARS
@@ -350,10 +350,20 @@ AMT__Global_Vars.initializeGroupId = function () {
     var x = /^https?:\/\/worker\.mturk\.com\/projects\/([A-Z0-9]+)\//
       .exec(document.location.href);
     if (!x || !x.length || !x[1]) {
-      alert('AMT__Global_Vars.initializeGroupId: Missing group id!');
-      return;
+      //~ alert('AMT__Global_Vars.initializeGroupId: Missing group id!');
+      //~ return;
+    //~ } else {
+      // Localhost dev
+      //~ http://localhost/mturk/.dev/HITs/john%20white.html?hit_id=1
+      if (document.location.href.indexOf('http://localhost/mturk/.dev/HITs') != -1) {
+        AMT__Global_Vars.groupId = null;
+      } else {
+        alert('AMT__Global_Vars.initializeGroupId: Missing group id!');
+        return;
+      }
+    } else {
+      AMT__Global_Vars.groupId = x[1];
     }
-    AMT__Global_Vars.groupId = x[1];
     // OLD GROUP ID.
     //~ var groupIdReg = /<input type="hidden" name="groupId" value="([^"]*)">/;
     //~ var groupId = groupIdReg.exec(ih);
@@ -823,7 +833,9 @@ function AMT__setUtilityTabs(
       utilityTabs[i].id = "" + i + ":" + Math.random();
     }
     var sr = chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
-      function(rs){}
+      function(rs){
+        console.log('sendRequest response', rs);
+      }
     );
     console.log('@function:AMT__setUtilityTabs - sr:', sr);
     return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions, callbackFromUtility, globalTabOptions);
@@ -2102,7 +2114,9 @@ String.prototype.str_diff = function(str2) {
 //~ }
 /**
  * @function
- * @namespace
+ * Clean string for "automated use-cases".
+ * Returns a string that can be used for matching,
+ * e.g., "Dunkin Donuts" is equivalent to "**Dunkin - Donuts**"
  */
 String.prototype.clean_str_to_auto = function(opts) {
   var s = this.toString();
@@ -19809,7 +19823,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
   // UPDATE TO startpage results container June 11, 2015.
   //
   function array_startPage_results(rs) {
-    
+    //~ console.log('sp arr', rs);    
     var arr = [];
     var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
     if(rs.indexOf(not_enough_results_str) != -1) {
@@ -19817,13 +19831,23 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
     } else if (rs.indexOf('Sorry, there are no results for this search.') != -1) {
       return [];
     }
-
+    
+    // New Mar. 2026
+    var a = /React\.createElement\(UIStartpage\.AppSerpWeb, ([^\n]+)/.exec(rs);
+    
     // New Mar. 2023
-    var a = /React\.createElement\(UIStartpage\.HeaderSingleComponent, ([^\n]+)/.exec(rs);
+    //~ var a = /React\.createElement\(UIStartpage\.HeaderSingleComponent, ([^\n]+)/.exec(rs);
+    
     if (!a) {
       return [];
     }
-    a = a[1].replace(/\),$/, '');
+    console.log(a);
+    // Mar 26
+    a = a[1].replace(/\)$/, '');
+    
+    // Mar. 23
+    //~ a = a[1].replace(/\),$/, '');
+    
     console.log(a);
     a = JSON.parse(a);
 

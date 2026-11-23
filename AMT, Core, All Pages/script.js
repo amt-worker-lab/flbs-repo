@@ -1204,10 +1204,6 @@ function load()
 			//~ d3b.contentWindow.postMessage({task: 'AMT__Kristin_Howe_agent_photos__yahoo_bot', agent_name: NAME}, "*"); // !!
 		//~ }, 400);
 		
-		
-		
-		KristinHowe_agent_photo_activate_images__yb();
-		
 		// KristinHowe_agent_photo_images__add_image
 		function KristinHowe_agent_photo_images__add_image(page_img, pos_left) {
 			//create an image
@@ -1328,7 +1324,8 @@ function load()
 				}
 			}
 		}
-			
+		
+    KristinHowe_agent_photo_activate_images__yb();	
 	}
 	/*
 	 * Thomas Haymore
@@ -2063,14 +2060,15 @@ function load()
 			return;
 		
 		// init
-		activate_images();
+		//~ activate_images();
 		
 		// Highlight Strings
 		var gf = new AMT___global_factory();
 		gf.highlight_strings_in_page({
 			strings: [
 				data.agent_name,
-				data.agent_name_clean
+				data.agent_name_clean,
+        'Judy Borowski'  // Test: March 2026
 			]
 		});
 		
@@ -4664,7 +4662,7 @@ function load()
 	//Make all images on all pages hot)
 	//
 	//
-	if(RUN_HOWE_CODE)
+	if(RUN_HOWE_CODE && document.location.href.indexOf('http://localhost') !== 0)
 	{
 		
 		GM_addStyle('#manual__d1> {text-align:left !important !important !important !important;}');
@@ -5066,7 +5064,40 @@ function load()
 				}
 			}
 		}
-		// activate images function
+		
+    function KristinHowe_agent_photo_images__add_image(page_img, pos_left) {
+			//create an image
+			//getBounding
+			var b = page_img.getBoundingClientRect();
+			var left = b.left *1;
+			//left -= 60;
+			left += pos_left;
+			var top = b.top *1;
+			top += document.body.scrollTop*1;
+			
+			var d = document.createElement('div');
+			d.setAttribute(
+				'style',
+				'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
+			);
+			d.setAttribute('class', 'manual__exe_div_162435168649');
+			var d_= document.createElement('img');
+			//~ d_.setAttribute('class', 'manual__exe_image_162435168649');
+			d_.setAttribute(
+				'style',
+				'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
+			);
+			d_.src = page_img.src;
+			//~ d.appendChild(d_);
+			//~ document.body.appendChild(d);
+			
+			//~ console.log('pos_left:'+pos_left+' left:'+left);
+			//~ console.log(d_);
+      
+      page_img.parentNode.parentNode.appendChild(d_);
+		}
+		
+    // activate images function
 		function KristinHowe_agent_photo_activate_images() {
 			// Iterate through all images and add an image "button."
 			// Background color is set from domain.
@@ -5096,16 +5127,18 @@ function load()
 			for (var i in a) {
 				if (i == 'length') break;
 				if (!a[i].src || a[i].src == '') continue;
-				KristinHowe_agent_photo_images__add_image(a[i], 200); // ABOVE !!
-				KristinHowe_agent_photo_images__add_image(a[i], 20);
-				KristinHowe_agent_photo_images__add_image(a[i], -200);
+        a[i].style.border = '8px dashed green';
+				//~ KristinHowe_agent_photo_images__add_image(a[i], 200); // ABOVE !!
+				//~ KristinHowe_agent_photo_images__add_image(a[i], 20);
+				//~ KristinHowe_agent_photo_images__add_image(a[i], -200);
 			}
 			
 			
 			
 			// Send to parent/job window
 			// Write value to db
-			var a = document.getElementsByClassName('manual__exe_image_162435168649');
+			//~ var a = document.getElementsByClassName('manual__exe_image_162435168649');
+      var a = document.getElementsByTag('img');
 			for (var i in a) {
 				a[i].onclick = function() {
 					this.style.border = '4px solid LightGreen';
@@ -5118,7 +5151,7 @@ function load()
 					x.appendChild(document.createTextNode(this.src));
 					
 					var u;
-					u = 'http://192.168.1.6/mturk/util6.php'+
+					u = 'http://localhost/mturk/util6.php'+
 						'?kristin_howe_photos__complete_name='+
 						encodeURIComponent(AGENT_NAME)+
 						'&kristin_howe_photos__complete_site='+

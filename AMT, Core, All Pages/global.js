@@ -22,7 +22,7 @@ var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-l
  * 
  */
 //
-var MT___host = 'http://192.168.1.2';
+var MT___host = 'http://localhost';
 
 /**
  * 
